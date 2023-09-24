@@ -22,4 +22,4 @@
 	* To enter ```pipenv shell```
 	* To exit ```exit```
 7. Download required dependencies 
-	* To exit ```pip install -r requirements.txt```
+	* ```pip install -r requirements.txt```
