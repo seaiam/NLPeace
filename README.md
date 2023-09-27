@@ -29,6 +29,10 @@ David Lemme
 Nelly Bozorgzad 
 Joshua-James Nantel-Ouimet
 
+## Group Meeting Details
+
+See the [Meetings Minutes] (https://github.com/seaiam/NLPeace/wiki) section for more details on our recurring meetings. 
+
 ## Technology
 
 * Programming Languages: Python
@@ -42,6 +46,9 @@ Joshua-James Nantel-Ouimet
 * Deployment: Docker (?)
 * Other Tools: [List any other relevant technologies or tools]
 
+## License
+
+See the [LICENSE] ( link to license file ) file for license rights and limitations (MIT).
 
 
 
