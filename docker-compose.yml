@@ -8,5 +8,4 @@ services:
       - ./NLPeace/:/usr/src/NLPeace/
     ports:
       - 8000:8000
-    env_file:
-      - ./.env.dev
+      
