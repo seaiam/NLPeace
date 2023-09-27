@@ -48,7 +48,7 @@ See the [Meetings Minutes] (https://github.com/seaiam/NLPeace/wiki) section for 
 
 ## License
 
-See the [LICENSE] ( link to license file ) file for license rights and limitations (MIT).
+See the [LICENSE] (https://github.com/seaiam/NLPeace/blob/main/LICENSE) file for license rights and limitations (MIT).
 
 
 
