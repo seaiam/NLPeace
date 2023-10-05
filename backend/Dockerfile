@@ -20,14 +20,30 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-version: '3.8'
+# Pull official base python image
+FROM python:3.10.13-alpine3.18
+LABEL maintainer="SOEN490"
 
-services:
-  web:
-    build: ./
-    command: python manage.py runserver 0.0.0.0:8000
-    volumes:
-      - ./NLPeace/:/usr/src/NLPeace/
-    ports:
-      - 8000:8000
-      
+ENV PYTHONUNBUFFERED 1
+
+COPY ./requirements.txt /tmp/requirements.txt
+COPY ./api /api
+WORKDIR /api
+EXPOSE 8000
+
+RUN python -m venv /py && \
+    /py/bin/pip install --upgrade pip && \
+    apk add --update --no-cache postgresql-client && \
+    apk add --update --no-cache --virtual .tmp-build-deps \
+        build-base postgresql-dev musl-dev && \
+    /py/bin/pip install -r /tmp/requirements.txt && \
+    rm -rf /tmp && \
+    apk del .tmp-build-deps && \
+    adduser \
+        --disabled-password \
+        --no-create-home \
+        django-user
+
+ENV PATH="/py/bin:$PATH"
+
+USER django-user
