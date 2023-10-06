@@ -24,6 +24,6 @@ jobs:
         cd ./backend
         pipenv install
     - name: Run Tests
-      working-directory: ./backend/api
+      working-directory: backend
       run: |
-        pipenv run python manage.py test
+        pipenv run python ./api/manage.py test
