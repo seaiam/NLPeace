@@ -2,6 +2,7 @@
 venv/
 flasky/venv/
 .vscode/
+.idea/
 
 migrations/
 
