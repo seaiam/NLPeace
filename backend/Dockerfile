@@ -27,8 +27,8 @@ LABEL maintainer="SOEN490"
 ENV PYTHONUNBUFFERED 1
 
 COPY ./requirements.txt /tmp/requirements.txt
-COPY ../backend /backend
-WORKDIR /backend
+COPY ./api /api
+WORKDIR /api
 EXPOSE 8000
 
 RUN python -m venv /py && \
