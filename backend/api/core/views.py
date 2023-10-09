@@ -1,12 +1,63 @@
+from django.shortcuts import render, redirect
+from django.contrib.auth import login, authenticate, logout
+
 from rest_framework import permissions
 from rest_framework import status
 from rest_framework.parsers import MultiPartParser, FormParser
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
-from models import User
-from serializers import UserSerializer
+from .models import User
+from .serializers import UserSerializer
 
+from .forms import *
+
+def signUp(request):  
+    if request.method == 'POST':  
+        form = UserRegistrationForm()  
+        if form.is_valid():
+            #user is saved to the database with info provided from the form  
+            form.save()  
+            return redirect('login.html')
+    else:
+        # empty form 
+        form = UserRegistrationForm() 
+    context = {  
+        'form':form  
+    }  
+    return render(request, 'register.html', context)
+
+def login(request):  
+    if request.method == 'POST':  
+        form = LogInForm()  
+        if form.is_valid():
+            username = form.cleaned_data['username']
+            email = form.cleaned_data['email']
+            password = form.cleaned_data['password']
+            if username is "":
+                user = authenticate(request,email=email,password=password)
+            else:
+                user = authenticate(request,username=username,password=password)
+            if user:
+                login(request, user)
+                messages.success(request,f'logged in')
+                return redirect('home.html')
+        
+        # form is not valid or user is not authenticated
+        messages.error(request,f'Invalid username/email or password')
+        return render(request,'login.html')
+    else:
+        # empty form 
+        form = LogInForm() 
+    context = {  
+        'form':form  
+    }  
+    return render(request, 'login.html', context) 
+
+def logout(request):
+    logout(request)
+    messages.success(request,f'logged out')
+    return redirect('login.html')  
 
 class UserAPIView(APIView):
     permission_classes = [permissions.IsAuthenticated]
