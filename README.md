@@ -35,7 +35,7 @@ respectful environment, all written posts undergo automatic moderation to preven
 | 6   | David Lemme     | 40157270    | davrine    | 
 | 7   | Raya Maria Lahoud     | 40129965    | rayalahoud    |
 | 8   | Mira Aji     | 40041473    | miraaji    |
-| 9   | Nelly Bozorgzad      | 40289770    | nellyb4    |
+| 9   | Nelly Bozorgzad      | 40189770    | nellyb4    |
 | 10   | Adam Qamar     | 40175980    | aqa02    |
 
 ## Group Meeting Details
