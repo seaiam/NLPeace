@@ -21,8 +21,9 @@ jobs:
       run: |
         python -m pip install --upgrade pip
         pip install pipenv --user
+        cd ./backend
         pipenv install
     - name: Run Tests
-      working-directory: NLPeace/
+      working-directory: backend
       run: |
-        pipenv run python manage.py test
+        pipenv run python ./api/manage.py test
