@@ -1,0 +1,175 @@
+body{
+    font-family: PT Serif;
+    background-color: #00001c;
+  }
+
+  p{
+    color: #00001c;
+  }
+
+  /* For login page */
+
+  .login-box{
+    position: absolute;
+    width: 350px;
+    height: 500px;
+    border-radius: 15px;
+    padding: 35px;
+    max-width: 100%;
+    max-height: 100%;
+    left: 0;
+    right: 0;
+    top: 0;
+    bottom: 0;
+    background-image: linear-gradient(0deg, #F9D1C4, #9BBDDD);
+    margin: auto;
+    overflow: auto;
+   
+  }
+
+  .text-center{
+    margin-top: 10px;
+    font-weight: 900;
+    font-size: 2.0rem;
+    color: #00001c;
+    letter-spacing: 1px;
+    font-family: PT Serif;
+  }
+
+  .login-inputs{
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom:-20px;
+  }
+
+  .icons {
+    position: absolute;
+    right: 15px;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    float:right;
+}
+  
+  input{
+  width: 100%;
+	height: 40px;
+	background: #ffffff;
+	margin: 30px auto;
+	padding: 10px;
+  border-color: #000;
+	border-radius: 10px;
+	display: flex;
+  }
+
+  .fa-user-alt{
+    color: #00001c;
+  }
+   
+  .fa-lock{
+    color: #00001c;
+  }
+
+  .login-button{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-top:70px;
+  }
+
+  .button1{
+    background: none;
+    border: 1px solid black;
+    border-radius:20px;
+    width:70%;
+    padding:10px;
+    font-weight: 600;
+    transition: 0.5s;
+    background-size: 200% auto;
+    box-shadow: 0 0 20px #eee;
+    background-image: linear-gradient(to right, #F9D1C4 0%, #9BBDDD 51%, #F9D1C4 100%);
+  }
+
+  button:hover {
+    background-position: right center;
+  }
+
+  .forgot-password{
+    margin-top:5px;
+    position:absolute; 
+    left:39px;
+  }
+
+  .create-account{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    
+  }
+  .account{
+    position:absolute;
+    bottom:0px;
+  }
+
+   /* For Sign Up page */
+   .signup-box{
+    position: relative;
+    width: 500px;
+    height: 100%;
+    border-radius: 15px;
+    padding: 35px;
+    max-width: 360px;
+    background-image: linear-gradient(0deg, #F9D1C4, #9BBDDD);
+    margin-top:50px;
+    margin-bottom:50px;
+    overflow: auto;
+
+  }
+
+
+  .signup-inputs{
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom:-30px;
+  }
+
+  .signup-button{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-top:40px;
+  }
+
+  .button2{
+    background: none;
+    border: 1px solid black;
+    border-radius:20px;
+    width:70%;
+    padding:10px;
+    font-weight: 600;
+    transition: 0.5s;
+    background-size: 200% auto;
+    box-shadow: 0 0 20px #eee;
+    background-image: linear-gradient(to right, #F9D1C4 0%, #9BBDDD 51%, #F9D1C4 100%);
+  }
+
+  button:hover {
+    background-position: right center;
+  }
+
+  .other-account{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-top:30px;
+    
+  }
+
+  .already-account{
+    position:absolute;
+    bottom:0px;
+  }
