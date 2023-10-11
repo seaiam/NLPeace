@@ -1,10 +1,7 @@
 body{
     font-family: PT Serif;
     background-color: #00001c;
-  }
-
-  p{
-    color: #00001c;
+    color: #D9D9D9;
   }
 
   /* For login page */
@@ -44,16 +41,16 @@ body{
     margin-bottom:-20px;
   }
 
-  input{
-  width: 100%;
-	height: 40px;
-	background: #ffffff;
-	margin: 30px auto;
-	padding: 10px;
-  border-color: #000;
-	border-radius: 10px;
-	display: flex;
-  }
+  /* input{
+    width: 100%;
+    height: 40px;
+    background: #ffffff;
+    margin: 30px auto;
+    padding: 10px;
+    border-color: #000;
+    border-radius: 10px;
+    display: flex;
+  } */
 
   .login-button{
     display: flex;
@@ -111,7 +108,6 @@ body{
 
   }
 
-
   .signup-inputs{
     position: relative;
     display: flex;
@@ -127,7 +123,7 @@ body{
     margin-top:40px;
   }
 
-  .button2{
+.button2{
     background: none;
     border: 1px solid black;
     border-radius:20px;
@@ -138,21 +134,227 @@ body{
     background-size: 200% auto;
     box-shadow: 0 0 20px #eee;
     background-image: linear-gradient(to right, #F9D1C4 0%, #9BBDDD 51%, #F9D1C4 100%);
-  }
+}
 
-  button:hover {
+button:hover {
     background-position: right center;
-  }
+}
 
-  .other-account{
+.other-account{
     display: flex;
     justify-content: center;
     align-items: center;
     margin-top:30px;
     
-  }
+}
 
-  .already-account{
+.already-account{
     position:absolute;
     bottom:0px;
+}
+
+hr{
+    color:#D9D9D9;
+    border-color: #D9D9D9;
+}
+
+.navbar {
+    background-color: #00001c;
+    position: relative; 
+    z-index: 1000; 
+}
+
+.btn.btn-dark.d-lg-none {
+    position: absolute;
+    top: 5px;
+    left: 10px;
+    z-index: 1010; 
+}
+
+/* Sidebar css */
+.sidebar {
+    position: fixed;
+    top: 60px; 
+    left: 0;
+    height: calc(100% - 60px); 
+    width: 250px;
+    background-color: #00001c; 
+    padding-top: 20px;
+}
+
+.sidebar ul {
+    list-style-type: none;
+    padding: 0;
+}
+
+.sidebar-item {
+    text-align: left;
+    padding: 15px 50px;
+    transition: all 0.3s;
+    font-size: 1.3em;
+    display: flex;
+    align-items: center;
+    border-radius: 25px;
+    cursor: pointer;
+    transition: background 0.3s;
+    color: #D9D9D9;
+}
+
+.sidebar-item i {
+    margin-right: 10px; 
+}
+
+.sidebar-item:hover {
+    color: black;
+    background: linear-gradient(to right, #F9D1C4 0%, #9BBDDD 51%, #F9D1C4 100%);
+    border-radius: 25px;
+    cursor: pointer;
+    transition: 0.3s;
+}
+
+.sidebar-item a {
+    color: #D9D9D9;
+    text-decoration: none;
+    display: block;
+    width: 100%;
+}
+
+.sidebar-item a:hover {
+    color: #000;
+}
+
+/* Profile Page css */
+.profile-page {
+    padding: 4% 0 0;
+    margin: auto;
   }
+
+.profile-page .box{
+    margin-top: -31px;
+  margin-bottom: 26px;
+  }
+
+.box {
+    position: relative;
+    z-index: 1;
+    background: #00001c;
+    border-radius: 15px;
+    max-width: 600px;
+    margin: 0 auto 100px;
+    padding: 35px;
+    
+  }
+  
+ /* css for user followers and following*/
+.followers{
+    color: #d9d9d9;
+    text-decoration:none;
+  }
+  
+.following{
+    color: #d9d9d9;
+    text-decoration:none;
+}   
+
+/* Banner */
+.banner {
+    background-color: #919196;
+    height: 150px;
+    border-radius: 15px 15px 0 0; 
+    margin-bottom: -60px; 
+    position: relative;
+    z-index: 0;
+}
+
+ /* Banner pencil icon */
+.edit-icon {
+    position: absolute; 
+    top: 10px; 
+    right: 10px;
+    cursor: pointer;
+    z-index: 3;
+    color: #00001c;
+}
+
+/* Profile picture */
+.circle {
+    border-radius: 100% !important;
+    overflow: hidden;
+    width: 125px;
+    height: 125px;
+    border: 3px solid #00001c;
+    vertical-align: middle;
+    position: relative;
+    z-index: 1;
+}
+  
+/* Profile picture upload button */
+.upload-button{
+    padding: 0px 95px;
+    margin: 0 auto;
+    position:relative;
+    top: -25px;
+    color: #d9d9d9;
+    z-index: 2;
+}
+
+.profile-picture{
+    text-align: center;
+    align-content: center;
+    align-items: center;
+    vertical-align: middle;
+}
+
+/* edit profile button */
+.row {
+    align-items: center;  
+}
+
+.editButton {
+    display: inline-block;
+    padding: 5px 12px;  
+    border: none;
+    background-color: #d9d9d9; 
+    color: #000;
+    text-align: center;
+    border-radius: 50px;
+    transition: background-color 0.3s ease;
+}
+
+.editButton:hover {
+    color: black;
+    background: linear-gradient(to right, #F9D1C4 0%, #9BBDDD 51%, #F9D1C4 100%);
+    text-decoration: none;
+
+}
+
+.tabs {
+    display: flex;
+    justify-content: space-around;
+    padding: 10px 0;
+}
+
+.tab {
+    text-decoration: none;
+    color: #D9D9D9;
+    padding: 10px 15px;
+    transition: background-color 0.3s;
+}
+
+.tab:hover {
+    background-color: #d9d9d9;
+}
+
+.tab.active {
+    border-bottom: 2px solid #D9D9D9;
+    padding-bottom: 8px;
+}
+
+@media (max-width: 991.98px) { /* Bootstrap's large breakpoint */
+    .sidebar {
+        width: 100%;
+        height: 100%;
+        position: relative;
+        top: 0;
+    }
+}
