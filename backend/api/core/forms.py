@@ -42,9 +42,8 @@ class UserRegistrationForm(UserCreationForm):
         return user  
 
 class LogInForm(AuthenticationForm):
-    email = forms.EmailField(label='Email')
+    username = forms.EmailField(label='Email')
     password = forms.CharField(label='Password', widget=forms.PasswordInput)
-
 
 class EditProfileForm(forms.Form):
     uuid = forms.HiddenInput()

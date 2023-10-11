@@ -1,9 +1,13 @@
 from django.contrib.auth import login, authenticate, logout
 from django.shortcuts import render, redirect
 from .models import User
-
+from django.contrib import messages
 from .forms import *
 from .models import User
+from api.logger_config import configure_logger
+logger = configure_logger(__name__)
+
+
 
 def profile(request):
     return render(request, 'home.html')
@@ -26,17 +30,21 @@ def signUp(request):
 
 def logInToApp(request):
     if request.method == 'POST':
+        logger.info("logging user into app...")
         form = LogInForm(request.POST)
         if form.is_valid():
+            logger.info("validating form...")
             print("valid form")
             email = form.cleaned_data['email']
             password = form.cleaned_data['password']
             user = authenticate(request, email=email, password=password)
-            print(user)
             if user:
                 login(request, user)
                 messages.success(request, f'logged in')
-                return redirect('home.html')
+                stored_messages = messages.get_messages(request)
+                for msg in stored_messages:
+                    logger.info(msg)
+                return redirect('../home')
 
         # form is not valid or user is not authenticated
         messages.error(request, f'Invalid email or password')
@@ -48,7 +56,6 @@ def logInToApp(request):
         'form': form
     }
     return render(request, 'login.html', context)
-
 
 def logout(request):
     logout(request)
