@@ -1,17 +1,20 @@
 from django.contrib.auth import login, authenticate, logout
 from django.shortcuts import render, redirect
+from .models import User
 
 from .forms import *
 from .models import User
 
+def profile(request):
+    return render(request, 'home.html')
 
 def signUp(request):
     if request.method == 'POST':
-        form = UserRegistrationForm()
+        form = UserRegistrationForm(request.POST)
         if form.is_valid():
             # user is saved to the database with info provided from the form
             form.save()
-            return redirect('login.html')
+            return redirect('../auth/login/')
     else:
         # empty form 
         form = UserRegistrationForm()
@@ -21,24 +24,22 @@ def signUp(request):
     return render(request, 'register.html', context)
 
 
-def login(request):
+def logInToApp(request):
     if request.method == 'POST':
-        form = LogInForm()
+        form = LogInForm(request.POST)
         if form.is_valid():
-            username = form.cleaned_data['username']
+            print("valid form")
             email = form.cleaned_data['email']
             password = form.cleaned_data['password']
-            if username is "":
-                user = authenticate(request, email=email, password=password)
-            else:
-                user = authenticate(request, username=username, password=password)
+            user = authenticate(request, email=email, password=password)
+            print(user)
             if user:
                 login(request, user)
                 messages.success(request, f'logged in')
                 return redirect('home.html')
 
         # form is not valid or user is not authenticated
-        messages.error(request, f'Invalid username/email or password')
+        messages.error(request, f'Invalid email or password')
         return render(request, 'login.html')
     else:
         # empty form 
