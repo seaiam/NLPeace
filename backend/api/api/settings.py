@@ -145,7 +145,7 @@ LOGGING = {
             'propagate': True,
         },
         # Include the logger for your app
-        'your_app_name': {  # Replace 'your_app_name' with the name of the app containing your logInToApp view
+        'your_app_name': {
             'handlers': ['console'],
             'level': 'DEBUG',
         },
