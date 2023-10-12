@@ -18,7 +18,7 @@ def signUp(request):
         if form.is_valid():
             # user is saved to the database with info provided from the form
             form.save()
-            return redirect('../auth/login/')
+            return redirect('../auth/custom-login/')
     else:
         # empty form 
         form = UserRegistrationForm()
@@ -34,33 +34,32 @@ def logInToApp(request):
         form = LogInForm(request.POST)
         if form.is_valid():
             logger.info("validating form...")
-            print("valid form")
-            email = form.cleaned_data['email']
+            username = form.cleaned_data['username']
             password = form.cleaned_data['password']
-            user = authenticate(request, email=email, password=password)
+            user = authenticate(request, username=username, password=password)
+            logger.info("Authenticated user: ", user)
             if user:
                 login(request, user)
                 messages.success(request, f'logged in')
-                stored_messages = messages.get_messages(request)
-                for msg in stored_messages:
-                    logger.info(msg)
+                logger.info("logged in user: ", user)
                 return redirect('../home')
-
+        else:
+            logger.error(form.errors)
         # form is not valid or user is not authenticated
         messages.error(request, f'Invalid email or password')
-        return render(request, 'login.html')
+        return render(request, 'registration/login.html')
     else:
         # empty form 
         form = LogInForm()
     context = {
         'form': form
     }
-    return render(request, 'login.html', context)
+    return render(request, 'registration/login.html', context)
 
 def logout(request):
     logout(request)
     messages.success(request, f'logged out')
-    return redirect('login.html')
+    return redirect('login')
 
 
 def update_user(request):
