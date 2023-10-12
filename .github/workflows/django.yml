@@ -7,7 +7,7 @@ on:
 
 jobs:
   test:
-    name: Test
+    name: Test-All
     runs-on: ubuntu-latest
     steps:
       - name: Authenticate with Docker Hub
