@@ -48,6 +48,15 @@ class LogInForm(AuthenticationForm):
 
     password = forms.CharField(label='Password', widget=forms.PasswordInput(attrs={'placeholder' :'Password'}))
 
+
+#class EditProfileForm(forms.Form):
+    #uuid = forms.UUIDField(widget=forms.HiddenInput())
+    #bio = forms.CharField(label='Bio', widget=forms.Textarea(attrs={'class': 'form-control'}))
+    #banner = forms.ImageField(widget=forms.ClearableFileInput(attrs={'class': 'form-control'}))
+    #pic = forms.ImageField(widget=forms.ClearableFileInput(attrs={'class': 'form-control'}))
+
+
+
 class EditProfileForm(forms.Form):
     uuid = forms.HiddenInput()
     bio = forms.CharField(label='Bio', widget=forms.Textarea)

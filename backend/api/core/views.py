@@ -62,9 +62,17 @@ def logout(request):
     return redirect('login')
 
 
-def update_user(request):
-    if request.method == 'POST':
-        form = EditProfileForm(request.POST)
+def update_user(request,section):
+      if request.method == 'GET':
+        if section == 'bio':
+            return render(request, 'newBio.html', {'form': EditProfileForm()})
+        elif section == 'pic':
+            return render(request, 'newProfilepic.html', {'form': EditProfileForm()})
+        elif section == 'banner':
+            return render(request, 'newBanner.html', {'form': EditProfileForm()})
+        
+      elif request.method == 'POST':
+        form = EditProfileForm(request.POST,request.FILES)
         if form.is_valid():
             user = User.objects.get(uuid=form.cleaned_data['uuid'])
             updated = False
@@ -79,5 +87,7 @@ def update_user(request):
                 updated = True
             if updated:
                 user.save()
+                return redirect(f'edit_{section}')
         # TODO redirect to profile
-        return redirect('/')
+        return redirect('profile')
+       

@@ -24,4 +24,8 @@ urlpatterns = [
     path("auth/custom-login/", views.logInToApp, name="custom-login"),
     path('register/', views.signUp, name='register'),
     path('accounts/profile/', views.profile, name='profile'),
+    path('accounts/profile/update_user/bio/', views.update_user, {'section': 'bio'}, name='edit_bio'),
+    path('accounts/profile/update_user/banner/', views.update_user, {'section': 'banner'}, name='edit_banner'),
+    path('accounts/profile/update_user/pic/', views.update_user, {'section': 'pic'}, name='edit_pic'),
+
 ]
