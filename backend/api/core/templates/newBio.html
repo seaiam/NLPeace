@@ -1,0 +1,18 @@
+{% extends 'base.html' %} 
+{% block content %}
+<form action="" method="POST" name="myform">
+    {{ form.hidden_tag() }}
+    
+    <!--Bio input-->
+    {{ form.description.label(class="form-outline mb-4")}}
+    {{ form.description(class="form-control") }}
+    <br/>
+
+    <!-- Submit-->
+    <div class="text-center">
+    {{ form.submit(class="btn btn-primary btn-block mb-4") }}
+    <br/>
+    </div>
+</form>
+
+{% endblock %} 

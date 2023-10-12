@@ -1,7 +1,6 @@
 body{
     font-family: PT Serif;
     background-color: #00001c;
-    /* color: #D9D9D9; */
   }
 
   /* For login page */
@@ -255,7 +254,15 @@ hr{
 .following{
     color: #d9d9d9;
     text-decoration:none;
-}   
+}
+
+.fa-user-friends{
+  color: #d9d9d9;
+}
+
+.fa-search{
+  color: #d9d9d9;
+}
 
 /* Banner */
 .banner {
@@ -320,13 +327,13 @@ hr{
     text-align: center;
     border-radius: 50px;
     transition: background-color 0.3s ease;
+    text-decoration: none;
 }
 
 .editButton:hover {
     color: black;
     background: linear-gradient(to right, #F9D1C4 0%, #9BBDDD 51%, #F9D1C4 100%);
     text-decoration: none;
-
 }
 
 .tabs {
