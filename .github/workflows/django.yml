@@ -17,9 +17,6 @@ jobs:
         with:
           username: ${{ secrets.DOCKERHUB_DAVRINE }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
-      - name: ls
-        working-directory: backend
-        run: ls
       - name: Test
         working-directory: backend
         run: docker-compose run --rm app sh -c "python manage.py wait_for_db && python manage.py test"
