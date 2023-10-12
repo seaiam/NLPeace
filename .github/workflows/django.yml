@@ -16,7 +16,7 @@ jobs:
           username: ${{ secrets.DOCKERHUB_DAVRINE }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
       - name: ls
-        uses: ls
+        run: ls
       # - name: Checkout
       #   uses: actions/checkout@v3
       - name: Test
