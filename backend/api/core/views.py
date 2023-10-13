@@ -5,8 +5,6 @@ from django.shortcuts import render, redirect
 from PIL import Image
 from .forms import *
 
-logger = configure_logger(__name__)
-
 def home(request):
     return render(request, 'index.html')
 
@@ -21,14 +19,10 @@ def register_user(request):
             form.save()
             username = form.cleaned_data['username']
             password = form.cleaned_data['password1']
-            logger.info(f"New user creation attempt: {username}")
             user = authenticate(request, username=username, password=password)
             login(request, user)
             messages.success(request, ("Registration Successful!"))
-            logger.info("Successfully created account!")
             return redirect('profile')
-        else:
-            logger.info("Error with form...")
     else:
         # empty form
         form = UserRegistrationForm()
@@ -43,13 +37,10 @@ def login_user(request):
         username = request.POST['username']
         password = request.POST['password']
         user = authenticate(request, username=username, password=password)
-        logger.info(f"Trying to sign in user: {username} ")
         if user is not None:
-            logger.info("Success!")
             login(request, user)
             return redirect('profile')
         else:
-            logger.info(f"Error logging in user: {username}")
             messages.success(request, ("There was an error logging in. Try again..."))
             return redirect('login')
     else:
