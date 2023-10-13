@@ -38,10 +38,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'core',
-<<<<<<< HEAD:backend/api/api/settings.py
     'core.tests'
-=======
->>>>>>> main:NLPeace/NLPeace/settings.py
 ]
 
 MIDDLEWARE = [
@@ -55,11 +52,8 @@ MIDDLEWARE = [
 ]
 
 ROOT_URLCONF = 'api.urls'
-<<<<<<< HEAD:backend/api/api/settings.py
 AUTHENTICATION_BACKENDS = ['django.contrib.auth.backends.ModelBackend']
 
-=======
->>>>>>> main:NLPeace/NLPeace/settings.py
 
 TEMPLATES = [
     {
@@ -78,12 +72,9 @@ TEMPLATES = [
 ]
 
 WSGI_APPLICATION = 'api.wsgi.application'
-<<<<<<< HEAD:backend/api/api/settings.py
 MESSAGE_STORAGE = 'django.contrib.messages.storage.session.SessionStorage'
-=======
 
 
->>>>>>> main:NLPeace/NLPeace/settings.py
 # Database
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases
 
