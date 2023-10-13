@@ -13,11 +13,11 @@ images/
 flasky/static/images/
 static/images
 
-*.jpg
-*.png 
-*.jpeg 
-*.gif 
-*.HEIC
+ *.jpg
+# *.png 
+# *.jpeg 
+ *.gif 
+ *.HEIC
 
 # Byte-compiled / optimized / DLL files
 __pycache__/

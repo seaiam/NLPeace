@@ -1,6 +1,9 @@
+
 from django.test import TestCase
 from django.urls import reverse
 from django.contrib.auth.models import User
+from django.core.files.uploadedfile import SimpleUploadedFile
+from core.forms import *
 
 class UserLoginTest(TestCase):
 
@@ -46,3 +49,20 @@ class UserLoginTest(TestCase):
 
         # Check if the response redirects to the desired page after login
         self.assertRedirects(response, '/accounts/profile/')
+
+
+class EditProfilePicFormTest(TestCase):
+
+    def test_valid_form(self):
+        form = EditProfilePicForm(files={"pic": SimpleUploadedFile("testProfilePic.png", b"file_content")})
+        if not form.is_valid():
+            print(form.errors)
+        self.assertTrue
+
+class EditProfileBannerFormTest(TestCase):
+
+    def test_valid_form(self):
+        form = EditProfileBannerForm(files={"banner": SimpleUploadedFile("testProfileBanner.png", b"file_content")})
+        if not form.is_valid():
+            print(form.errors)
+        self.assertTrue
