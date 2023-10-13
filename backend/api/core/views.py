@@ -1,10 +1,9 @@
+from api.logger_config import configure_logger
+from django.contrib import messages
 from django.contrib.auth import login, authenticate, logout
 from django.shortcuts import render, redirect
-from .models import User
-from django.contrib import messages
 from .forms import *
-from .models import User
-from api.logger_config import configure_logger
+
 logger = configure_logger(__name__)
 
 
@@ -60,28 +59,6 @@ def logout(request):
     messages.success(request, f'logged out')
     return redirect('login')
 
-
-# def update_user(request,section):
-#       if request.method == 'GET':
-#         if section == 'bio':
-#             return render(request, 'newBio.html', {'form': EditProfileForm()})
-#         elif section == 'pic':
-#             return render(request, 'newProfilepic.html', {'form': EditProfileForm()})
-#         elif section == 'banner':
-#             return render(request, 'newBanner.html', {'form': EditProfileForm()})
-        
-    #   elif request.method == 'POST':
-    #     form = EditProfileForm(request.POST,request.FILES)
-    #     if form.is_valid():
-    #         form.save()
-    #     return redirect('profile')
-    # else:
-    #     form = EditProfileForm()
-    # context = {
-    #     'form': form
-    # }
-    # return render(request, 'newBio.html', context)
-
 def updateProfileBanner(request):
     if request.method == 'POST':
         form = EditProfileBannerForm(request.POST, request.FILES)
@@ -97,12 +74,12 @@ def updateProfileBanner(request):
 
 def updateBio(request):
     if request.method == 'POST':
-        form = EditProfileForm(request.POST)
+        form = EditBioForm(request.POST)
         if form.is_valid():
             form.save()
         return redirect('profile')
     else:
-        form = EditProfileForm()
+        form = EditBioForm()
     context = {
         'form': form
     }
@@ -110,7 +87,7 @@ def updateBio(request):
 
 def updateProfilePicture(request):
     if request.method == 'POST':
-        form = EditProfilePicForm(request.POST, request.FILES, instance=request.user)
+        form = EditProfilePicForm(request.POST, request.FILES)
         if form.is_valid():
             form.save()
             return redirect('profile')
