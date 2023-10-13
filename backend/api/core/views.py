@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 from api.logger_config import configure_logger
 from django.contrib import messages
 from django.contrib.auth import login, authenticate, logout
@@ -104,3 +105,8 @@ def updateProfilePicture(request):
         'form': form
     }
     return render(request, 'newProfilepic.html', context)
+=======
+from django.shortcuts import render
+
+# Create your views here.
+>>>>>>> main
