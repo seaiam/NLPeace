@@ -2,6 +2,7 @@ from api.logger_config import configure_logger
 from django.contrib import messages
 from django.contrib.auth import login, authenticate, logout
 from django.shortcuts import render, redirect
+from PIL import Image
 from .forms import *
 
 logger = configure_logger(__name__)
@@ -59,11 +60,15 @@ def logout(request):
     messages.success(request, f'logged out')
     return redirect('login')
 
+import os
+
 def updateProfileBanner(request):
     if request.method == 'POST':
         form = EditProfileBannerForm(request.POST, request.FILES, instance=request.user)
         if form.is_valid():
-            form.save()
+            pic = form.cleaned_data['banner']
+            with Image.open(pic) as im:
+                im.save(f'api/core/media/profileBanners/{request.user.username}.{pic.image.format}')
         return redirect('profile')
     else:
         form = EditProfileBannerForm()
@@ -89,7 +94,9 @@ def updateProfilePicture(request):
     if request.method == 'POST':
         form = EditProfilePicForm(request.POST, request.FILES, instance=request.user)
         if form.is_valid():
-            form.save()
+            pic = form.cleaned_data['pic']
+            with Image.open(pic) as im:
+                im.save(f'api/core/media/profilePictures/{request.user.username}.{pic.image.format}')
             return redirect('profile')
     else:
         form = EditProfilePicForm()
