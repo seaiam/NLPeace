@@ -1,24 +1,62 @@
 {% extends 'base.html' %} 
 {% block content %}
+<div class="collapse d-lg-block" id="sidebarMenu">
+    <div class="sidebar">
+        <ul>
+            <li class="sidebar-item">
+                <a href="#">
+                    <i class="fa fa-user-circle"></i>
+                    Profile
+                </a>
+            </li>
+            <li class="sidebar-item">
+                <a href="#">
+                    <i class="fa fa-home"></i>
+                    Home
+                </a>
+            </li>
+            <li class="sidebar-item">
+                <a href="#">
+                    <i class="fas fa-comment-dots"></i>
+                    Messages
+                </a>
+            </li>
+            <li class="sidebar-item">
+                <a href="#">
+                    <i class="fa fa-bell"></i>
+                    Notifications
+                </a>
+            </li>
+            <li class="sidebar-item">
+                <a href="#">
+                    <i class="fa fa-bookmark"></i>
+                    Bookmarks
+                </a>
+            </li>
+            <li class="sidebar-item">
+                <a href="#">
+                    <i class="fa fa-cog"></i>
+                    Settings
+                </a>
+            </li>
+        </ul>
+    </div>
+  </div>   
 <form action="" method="post" enctype="multipart/form-data" name="myform">
     {% csrf_token %}
 
     <div class="form-group">
-        <label for="{{ form.banner.id_for_label }}" class="form-outline mb-4">Profile Picture</label>
+        <label for="{{ form.banner.id_for_label }}" class="form-outline mb-4" style="font-size:20px;">Update Banner</label>
       {{ form.banner }}
       {% for error in form.banner.errors %}
       <span style="color: red;">{{ error }}</span>
   {% endfor %}
     </div>
 
-    <!-- See Image -->
-    <div class="text-center">
-            <img src="{{user.banner.url}}" alt="Banner">
-    </div>
     <br/>
     <!-- Submit -->
     <div class="text-center">
-    <button type="submit" class="btn btn-primary btn-block mb-4">Submit</button>
+    <button type="submit" class="submitButton">Submit</button>
     <br/>
     </div>
 </form>

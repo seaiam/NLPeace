@@ -399,6 +399,41 @@ textarea {
   background: linear-gradient(to right, #F9D1C4 0%, #6A8DB3 51%, #F9D1C4 100%);
 }
 
+.form-group {
+  margin-bottom: 15px;
+  width: 50%;
+  justify-content: center;
+  position: relative;
+  margin: auto;
+}
+
+.form-label {
+  display: block;
+  margin-bottom: 8px;
+  font-weight: bold;
+}
+
+input[type="file"] {
+  width: 100%;
+  padding: 10px;
+  border: 1px solid #000;
+  border-radius: 10px;
+  background-color: #9f9f9f;
+}
+
+.submitButton{
+  background: linear-gradient(to right, #F9D1C4 0%, #9BBDDD 51%, #F9D1C4 100%) !important;
+  color: #00001c !important;
+  border: none;
+  border-radius: 20px;
+  cursor: pointer;
+  transition: background 0.5s;
+  font-size: 25px;
+  padding-right:30px;
+  padding-left:30px;
+}
+
+
 @media (max-width: 991.98px) { /* Bootstrap's large breakpoint */
     .sidebar {
         width: 100%;
