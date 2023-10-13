@@ -61,7 +61,7 @@ def logout(request):
 
 def updateProfileBanner(request):
     if request.method == 'POST':
-        form = EditProfileBannerForm(request.POST, request.FILES)
+        form = EditProfileBannerForm(request.POST, request.FILES, instance=request.user)
         if form.is_valid():
             form.save()
         return redirect('profile')
@@ -74,7 +74,7 @@ def updateProfileBanner(request):
 
 def updateBio(request):
     if request.method == 'POST':
-        form = EditBioForm(request.POST)
+        form = EditBioForm(request.POST, instance=request.user)
         if form.is_valid():
             form.save()
         return redirect('profile')
@@ -87,7 +87,7 @@ def updateBio(request):
 
 def updateProfilePicture(request):
     if request.method == 'POST':
-        form = EditProfilePicForm(request.POST, request.FILES)
+        form = EditProfilePicForm(request.POST, request.FILES, instance=request.user)
         if form.is_valid():
             form.save()
             return redirect('profile')
