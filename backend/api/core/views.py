@@ -82,3 +82,6 @@ def update_user(request):
                 user.save()
         # TODO redirect to profile
         return redirect('/')
+    
+def settings(request):
+    return render(request, 'settings.html')
