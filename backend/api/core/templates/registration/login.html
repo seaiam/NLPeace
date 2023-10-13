@@ -2,37 +2,35 @@
 
 {% block title %}Login Page {% endblock %}
 
-
+{% load static %}
 {% block content %}
 <div class="container">
     <div class = "d-flex align-items-center justify-content-center">
-      <form method="post">
+      <form method="post" action="{% url 'login' %}">
         {% csrf_token %}
-         <div class= "login-box">
-                <div class="text-center">Log In</div>
-                <div class = "login-inputs">
-                  <!-- {{ form.username.label_tag }} -->
-                  {{ form.username }}
-                  {{ form.username.errors }}
-                </div>
+        <div class= "login-box">
+            <div class="text-center">Log In</div>
+            <div class = "mb-3">
+              <label for="inputUsername" class="form-label">Username</label>
+              <input type="text" class="form-control" name="username">
+            </div>
 
-                <div class = "login-inputs">
-                  <!-- {{ form.password.label_tag }} -->
-                  {{ form.password }}
-                  {{ form.password.errors }}
-                </div>
+            <div class = "mb-3">
+              <label for="inputPassword" class="form-label">Password</label>
+              <input type="password" class="form-control" name="password">
+            </div>
 
-                <div class="forgot-password">
-                  <a href="" style = "color:#00001c;">Forgot Password ?</a>
-                </div>
+            <div class="forgot-password">
+              <a href="" style = "color:#00001c;">Forgot Password ?</a>
+            </div>
 
-                <div class = "login-button">
-                    <button type="submit" class="button1">Log In</button>
-                </div>
+            <div class = "login-button">
+              <button type="submit" class="button1">Log In</button>
+            </div>
 
-                <div class="create-account">
-                    <p class = "account"><br>Not a member?&nbsp;<a href="/" style = "color:#00001c;">Create an Account</a></p> 
-                </div>
+            <div class="create-account">
+              <p class = "account"><br>Not a member?&nbsp;<a href="{% url 'register_user' %}" style = "color:#00001c;">Create an Account</a></p> 
+            </div>
         </div>
      </form>
     </div> 

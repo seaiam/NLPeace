@@ -12,14 +12,14 @@ class UserRegistrationForm(UserCreationForm):
     password1 = forms.CharField(label='Choose a password', widget=forms.PasswordInput(attrs={'placeholder' :'Password'}))
     password2 = forms.CharField(label='Confirm password', widget=forms.PasswordInput(attrs={'placeholder' :'Confirm Password'}))
   
-    def username_clean(self):  
-        username = self.cleaned_data['username'].lower()  
+    def clean_username(self):  
+        username = self.cleaned_data['username'] 
         new = User.objects.filter(username = username)  
         if new.count():  
             raise ValidationError("User Already Exist")  
         return username  
   
-    def email_clean(self):  
+    def clean_email(self):  
         email = self.cleaned_data['email'].lower()  
         new = User.objects.filter(email=email)  
         if new.count():  
@@ -42,9 +42,9 @@ class UserRegistrationForm(UserCreationForm):
         )  
         return user  
 
-class LogInForm(AuthenticationForm):
-    username = forms.EmailField(label='Email',widget=forms.EmailInput(attrs={'placeholder' :'Email'}))
-    password = forms.CharField(label='Password', widget=forms.PasswordInput(attrs={'placeholder' :'Password'}))
+#class LogInForm(AuthenticationForm):
+ #   username = forms.EmailField(label='Email',widget=forms.EmailInput(attrs={'placeholder' :'Email'}))
+  #  password = forms.CharField(label='Password', widget=forms.PasswordInput(attrs={'placeholder' :'Password'}))
 
 class EditBioForm(forms.Form):
     bio = forms.CharField(label='Bio', widget=forms.Textarea)

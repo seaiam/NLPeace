@@ -108,11 +108,19 @@ body{
 
   }
 
+  label {
+    display: block;
+    margin-bottom: 5px; /*Space between label and input*/
+  }
+
+  input {
+      margin-bottom: 10px; /*Space between input and next label*/
+    }
   .signup-inputs{
     position: relative;
     display: flex;
-    align-items: center;
-    justify-content: center;
+    flex-direction: column;
+    align-items: flex-start;
     margin: 30px auto;
   }
 

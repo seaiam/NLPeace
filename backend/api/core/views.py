@@ -6,58 +6,58 @@ from .forms import *
 
 logger = configure_logger(__name__)
 
+def home(request):
+    return render(request, 'index.html')
 
 def profile(request):
     return render(request, 'home.html')
 
-def signUp(request):
+def register_user(request):
     if request.method == 'POST':
         form = UserRegistrationForm(request.POST)
         if form.is_valid():
             # user is saved to the database with info provided from the form
             form.save()
-            return redirect('../auth/login')
+            username = form.cleaned_data['username']
+            password = form.cleaned_data['password1']
+            logger.info(f"New user creation attempt: {username}")
+            user = authenticate(request, username=username, password=password)
+            login(request, user)
+            messages.success(request, ("Registration Successful!"))
+            logger.info("Successfully created account!")
+            return redirect('profile')
+        else:
+            logger.info("Error with form...")
     else:
-        # empty form 
+        # empty form
         form = UserRegistrationForm()
     context = {
         'form': form
     }
-    return render(request, 'register.html', context)
+    return render(request, 'registration/register.html', context)
 
 
-def logInToApp(request):
-    if request.method == 'POST':
-        logger.info("logging user into app...")
-        form = LogInForm(request.POST)
-        if form.is_valid():
-            logger.info("validating form...")
-            username = form.cleaned_data['username']
-            password = form.cleaned_data['password']
-            user = authenticate(request, username=username, password=password)
-            logger.info("Authenticated user: ", user)
-            if user:
-                login(request, user)
-                messages.success(request, f'logged in')
-                logger.info("logged in user: ", user)
-                return redirect('../home')
+def login_user(request):
+    if request.method == "POST":
+        username = request.POST['username']
+        password = request.POST['password']
+        user = authenticate(request, username=username, password=password)
+        logger.info(f"Trying to sign in user: {username} ")
+        if user is not None:
+            logger.info("Success!")
+            login(request, user)
+            return redirect('profile')
         else:
-            logger.error(form.errors)
-        # form is not valid or user is not authenticated
-        messages.error(request, f'Invalid email or password')
-        return render(request, 'registration/login.html')
+            logger.info(f"Error logging in user: {username}")
+            messages.success(request, ("There was an error logging in. Try again..."))
+            return redirect('login')
     else:
-        # empty form 
-        form = LogInForm()
-    context = {
-        'form': form
-    }
-    return render(request, 'registration/login.html', context)
+        return render(request, 'registration/login.html', {})
 
-def logout(request):
+def logout_user(request):
     logout(request)
     messages.success(request, f'logged out')
-    return redirect('login')
+    return redirect('home')
 
 def updateProfileBanner(request):
     if request.method == 'POST':
