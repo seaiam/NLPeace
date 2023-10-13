@@ -8,7 +8,6 @@ from api.logger_config import configure_logger
 logger = configure_logger(__name__)
 
 
-
 def profile(request):
     return render(request, 'home.html')
 
@@ -18,7 +17,7 @@ def signUp(request):
         if form.is_valid():
             # user is saved to the database with info provided from the form
             form.save()
-            return redirect('../auth/custom-login/')
+            return redirect('../auth/login')
     else:
         # empty form 
         form = UserRegistrationForm()
@@ -62,32 +61,62 @@ def logout(request):
     return redirect('login')
 
 
-def update_user(request,section):
-      if request.method == 'GET':
-        if section == 'bio':
-            return render(request, 'newBio.html', {'form': EditProfileForm()})
-        elif section == 'pic':
-            return render(request, 'newProfilepic.html', {'form': EditProfileForm()})
-        elif section == 'banner':
-            return render(request, 'newBanner.html', {'form': EditProfileForm()})
+# def update_user(request,section):
+#       if request.method == 'GET':
+#         if section == 'bio':
+#             return render(request, 'newBio.html', {'form': EditProfileForm()})
+#         elif section == 'pic':
+#             return render(request, 'newProfilepic.html', {'form': EditProfileForm()})
+#         elif section == 'banner':
+#             return render(request, 'newBanner.html', {'form': EditProfileForm()})
         
-      elif request.method == 'POST':
-        form = EditProfileForm(request.POST,request.FILES)
+    #   elif request.method == 'POST':
+    #     form = EditProfileForm(request.POST,request.FILES)
+    #     if form.is_valid():
+    #         form.save()
+    #     return redirect('profile')
+    # else:
+    #     form = EditProfileForm()
+    # context = {
+    #     'form': form
+    # }
+    # return render(request, 'newBio.html', context)
+
+def updateProfileBanner(request):
+    if request.method == 'POST':
+        form = EditProfileBannerForm(request.POST, request.FILES)
         if form.is_valid():
-            user = User.objects.get(uuid=form.cleaned_data['uuid'])
-            updated = False
-            if user.is_bio_updated(form.cleaned_data['bio']):
-                user.bio = form.cleaned_data['bio']
-                updated = True
-            if user.is_banner_updated(form.cleaned_data['banner']):
-                user.banner = form.cleaned_data['banner']
-                updated = True
-            if user.is_pic_updated(form.cleaned_data['pic']):
-                user.pic = form.cleaned_data['pic']
-                updated = True
-            if updated:
-                user.save()
-                return redirect(f'edit_{section}')
-        # TODO redirect to profile
+            form.save()
         return redirect('profile')
-       
+    else:
+        form = EditProfileBannerForm()
+    context = {
+        'form': form
+    }
+    return render(request, 'newBanner.html', context)
+
+def updateBio(request):
+    if request.method == 'POST':
+        form = EditProfileForm(request.POST)
+        if form.is_valid():
+            form.save()
+        return redirect('profile')
+    else:
+        form = EditProfileForm()
+    context = {
+        'form': form
+    }
+    return render(request, 'newBio.html', context)
+
+def updateProfilePicture(request):
+    if request.method == 'POST':
+        form = EditProfilePicForm(request.POST, request.FILES, instance=request.user)
+        if form.is_valid():
+            form.save()
+            return redirect('profile')
+    else:
+        form = EditProfilePicForm()
+    context = {
+        'form': form
+    }
+    return render(request, 'newProfilepic.html', context)

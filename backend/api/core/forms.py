@@ -45,7 +45,6 @@ class UserRegistrationForm(UserCreationForm):
 class LogInForm(AuthenticationForm):
     # username = forms.EmailField(label='Email')
     username = forms.EmailField(label='Email',widget=forms.EmailInput(attrs={'placeholder' :'Email'}))
-
     password = forms.CharField(label='Password', widget=forms.PasswordInput(attrs={'placeholder' :'Password'}))
 
 
@@ -55,10 +54,19 @@ class LogInForm(AuthenticationForm):
     #banner = forms.ImageField(widget=forms.ClearableFileInput(attrs={'class': 'form-control'}))
     #pic = forms.ImageField(widget=forms.ClearableFileInput(attrs={'class': 'form-control'}))
 
+# class EditProfileForm(forms.Form):
+#     uuid = forms.HiddenInput()
+#     bio = forms.CharField(label='Bio', widget=forms.Textarea)
+#     banner = forms.FileField()
+#     pic = forms.FileField()
 
-
-class EditProfileForm(forms.Form):
-    uuid = forms.HiddenInput()
+class EditBioForm(forms.Form):
     bio = forms.CharField(label='Bio', widget=forms.Textarea)
-    banner = forms.FileField()
-    pic = forms.FileField()
+
+class EditProfilePicForm(forms.ModelForm):
+    class Meta:
+        model = User
+        fields = ['pic']
+
+class EditProfileBannerForm(forms.Form):
+    banner = forms.ImageField()

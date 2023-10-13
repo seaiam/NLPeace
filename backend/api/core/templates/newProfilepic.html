@@ -42,12 +42,12 @@
       </ul>
   </div>
 </div>   
-  <form action="" method="post" enctype="multipart/form-data" name="myform">
+  <form  method="post" enctype="multipart/form-data" >
       {% csrf_token %}
 
       <div class="form-group" style="color: #00001c;">
           <label for="{{ form.pic.id_for_label }}" class="form-outline mb-4" style="font-size:20px;">Update Profile Picture</label>
-        {{ form.pic }}
+        {{ form.as_p }}
         {% for error in form.pic.errors %}
         <span style="color: red;">{{ error }}</span>
         {% endfor %}
