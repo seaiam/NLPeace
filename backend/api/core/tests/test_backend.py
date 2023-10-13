@@ -32,7 +32,7 @@ class UserLoginTest(TestCase):
             'password1': 'newpassword456',
             'password2': 'newpassword456',
         }
-        self.client.post(reverse('register'), registration_data)
+        self.client.post(reverse('register_user'), registration_data)
 
         # Now, attempt to log in with the new user
         login_data = {
@@ -45,4 +45,4 @@ class UserLoginTest(TestCase):
         self.assertTrue(response.wsgi_request.user.is_authenticated)
 
         # Check if the response redirects to the desired page after login
-        self.assertRedirects(response, '/')
+        self.assertRedirects(response, '/accounts/profile/')
