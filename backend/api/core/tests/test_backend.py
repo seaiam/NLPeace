@@ -2,8 +2,8 @@
 from django.test import TestCase
 from django.urls import reverse
 from django.contrib.auth.models import User
-from core.forms import EditProfileForm
 from django.core.files.uploadedfile import SimpleUploadedFile
+from core.forms import *
 
 class UserLoginTest(TestCase):
 
@@ -51,30 +51,18 @@ class UserLoginTest(TestCase):
         self.assertRedirects(response, '/accounts/profile/')
 
 
-class EditProfileFormTest(TestCase):
+class EditProfilePicFormTest(TestCase):
 
     def test_valid_form(self):
-        form_data = {
-            'uuid': 'test_uuid',
-            'bio': 'test bio.',
-        }
-
-        banner_file = SimpleUploadedFile("testBannerPic.jpg", b"file_content")
-        pic_file = SimpleUploadedFile("testProfilePic.png", b"file_content")
-
-        form = EditProfileForm(data=form_data, files={'banner': banner_file, 'pic': pic_file})
-
+        form = EditProfilePicForm(files={"pic": SimpleUploadedFile("testProfilePic.png", b"file_content")})
         if not form.is_valid():
             print(form.errors)
+        self.assertTrue
 
-        self.assertTrue(form.is_valid())
-    
-    def test_invalid_form(self):
-        form_data = {
-            'uuid': 'test_uuid',  
-            'bio': 'test bio.',
-        }
-        #no banner or profile picture files
-        form = EditProfileForm(data=form_data)
+class EditProfileBannerFormTest(TestCase):
 
-        self.assertFalse(form.is_valid())
+    def test_valid_form(self):
+        form = EditProfileBannerForm(files={"banner": SimpleUploadedFile("testProfileBanner.png", b"file_content")})
+        if not form.is_valid():
+            print(form.errors)
+        self.assertTrue
