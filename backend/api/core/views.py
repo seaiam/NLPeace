@@ -104,3 +104,6 @@ def updateProfilePicture(request):
         'form': form
     }
     return render(request, 'newProfilepic.html', context)
+
+def settings(request):
+    return render(request, 'settings.html')
