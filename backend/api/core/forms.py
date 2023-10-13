@@ -1,24 +1,25 @@
-from django import forms
-from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.forms import AuthenticationForm
+from django.contrib.auth.forms import UserCreationForm
 from django.core.exceptions import ValidationError
+from django import forms
 from .models import User
+
 class UserRegistrationForm(UserCreationForm):
-    username = forms.CharField(label='Username', min_length=4, max_length=50)
+    username = forms.CharField(label='Username',widget=forms.TextInput(attrs={'placeholder' :'Username'}), min_length=4, max_length=50)
 
-    email = forms.EmailField(label='email')
+    email = forms.EmailField(label='Email',widget=forms.EmailInput(attrs={'placeholder' :'Email'}))
 
-    password1 = forms.CharField(label='Choose a password', widget=forms.PasswordInput)
-    password2 = forms.CharField(label='Confirm password', widget=forms.PasswordInput)
+    password1 = forms.CharField(label='Choose a password', widget=forms.PasswordInput(attrs={'placeholder' :'Password'}))
+    password2 = forms.CharField(label='Confirm password', widget=forms.PasswordInput(attrs={'placeholder' :'Confirm Password'}))
   
-    def username_clean(self):  
-        username = self.cleaned_data['username'].lower()  
+    def clean_username(self):  
+        username = self.cleaned_data['username'] 
         new = User.objects.filter(username = username)  
         if new.count():  
             raise ValidationError("User Already Exist")  
         return username  
   
-    def email_clean(self):  
+    def clean_email(self):  
         email = self.cleaned_data['email'].lower()  
         new = User.objects.filter(email=email)  
         if new.count():  
@@ -41,12 +42,19 @@ class UserRegistrationForm(UserCreationForm):
         )  
         return user  
 
-class LogInForm(AuthenticationForm):
-    username = forms.EmailField(label='Email')
-    password = forms.CharField(label='Password', widget=forms.PasswordInput)
+#class LogInForm(AuthenticationForm):
+ #   username = forms.EmailField(label='Email',widget=forms.EmailInput(attrs={'placeholder' :'Email'}))
+  #  password = forms.CharField(label='Password', widget=forms.PasswordInput(attrs={'placeholder' :'Password'}))
 
-class EditProfileForm(forms.Form):
-    uuid = forms.HiddenInput()
+class EditBioForm(forms.Form):
     bio = forms.CharField(label='Bio', widget=forms.Textarea)
-    banner = forms.FileField()
-    pic = forms.FileField()
+
+class EditProfilePicForm(forms.ModelForm):
+    class Meta:
+        model = User
+        fields = ['pic']
+
+class EditProfileBannerForm(forms.ModelForm):
+    class Meta:
+        model = User
+        fields = ['banner']

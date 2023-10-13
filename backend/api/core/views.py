@@ -1,87 +1,106 @@
+from api.logger_config import configure_logger
+from django.contrib import messages
 from django.contrib.auth import login, authenticate, logout
 from django.shortcuts import render, redirect
-from .models import User
-from django.contrib import messages
+from PIL import Image
 from .forms import *
-from .models import User
-from api.logger_config import configure_logger
+
 logger = configure_logger(__name__)
 
-
+def home(request):
+    return render(request, 'index.html')
 
 def profile(request):
     return render(request, 'home.html')
 
-def signUp(request):
+def register_user(request):
     if request.method == 'POST':
         form = UserRegistrationForm(request.POST)
         if form.is_valid():
             # user is saved to the database with info provided from the form
             form.save()
-            return redirect('../auth/login/')
+            username = form.cleaned_data['username']
+            password = form.cleaned_data['password1']
+            logger.info(f"New user creation attempt: {username}")
+            user = authenticate(request, username=username, password=password)
+            login(request, user)
+            messages.success(request, ("Registration Successful!"))
+            logger.info("Successfully created account!")
+            return redirect('profile')
+        else:
+            logger.info("Error with form...")
     else:
-        # empty form 
+        # empty form
         form = UserRegistrationForm()
     context = {
         'form': form
     }
-    return render(request, 'register.html', context)
+    return render(request, 'registration/register.html', context)
 
 
-def logInToApp(request):
-    if request.method == 'POST':
-        logger.info("logging user into app...")
-        form = LogInForm(request.POST)
-        if form.is_valid():
-            logger.info("validating form...")
-            print("valid form")
-            email = form.cleaned_data['email']
-            password = form.cleaned_data['password']
-            user = authenticate(request, email=email, password=password)
-            if user:
-                login(request, user)
-                messages.success(request, f'logged in')
-                stored_messages = messages.get_messages(request)
-                for msg in stored_messages:
-                    logger.info(msg)
-                return redirect('../home')
-
-        # form is not valid or user is not authenticated
-        messages.error(request, f'Invalid email or password')
-        return render(request, 'login.html')
+def login_user(request):
+    if request.method == "POST":
+        username = request.POST['username']
+        password = request.POST['password']
+        user = authenticate(request, username=username, password=password)
+        logger.info(f"Trying to sign in user: {username} ")
+        if user is not None:
+            logger.info("Success!")
+            login(request, user)
+            return redirect('profile')
+        else:
+            logger.info(f"Error logging in user: {username}")
+            messages.success(request, ("There was an error logging in. Try again..."))
+            return redirect('login')
     else:
-        # empty form 
-        form = LogInForm()
+        return render(request, 'registration/login.html', {})
+
+def logout_user(request):
+    logout(request)
+    messages.success(request, f'logged out')
+    return redirect('home')
+
+import os
+
+def updateProfileBanner(request):
+    if request.method == 'POST':
+        form = EditProfileBannerForm(request.POST, request.FILES, instance=request.user)
+        if form.is_valid():
+            pic = form.cleaned_data['banner']
+            with Image.open(pic) as im:
+                im.save(f'api/core/media/profileBanners/{request.user.username}.{pic.image.format}')
+        return redirect('profile')
+    else:
+        form = EditProfileBannerForm()
     context = {
         'form': form
     }
-    return render(request, 'login.html', context)
+    return render(request, 'newBanner.html', context)
 
-def logout(request):
-    logout(request)
-    messages.success(request, f'logged out')
-    return redirect('login.html')
-
-
-def update_user(request):
+def updateBio(request):
     if request.method == 'POST':
-        form = EditProfileForm(request.POST)
+        form = EditBioForm(request.POST, instance=request.user)
         if form.is_valid():
-            user = User.objects.get(uuid=form.cleaned_data['uuid'])
-            updated = False
-            if user.is_bio_updated(form.cleaned_data['bio']):
-                user.bio = form.cleaned_data['bio']
-                updated = True
-            if user.is_banner_updated(form.cleaned_data['banner']):
-                user.banner = form.cleaned_data['banner']
-                updated = True
-            if user.is_pic_updated(form.cleaned_data['pic']):
-                user.pic = form.cleaned_data['pic']
-                updated = True
-            if updated:
-                user.save()
-        # TODO redirect to profile
-        return redirect('/')
-    
-def settings(request):
-    return render(request, 'settings.html')
+            form.save()
+        return redirect('profile')
+    else:
+        form = EditBioForm()
+    context = {
+        'form': form
+    }
+    return render(request, 'newBio.html', context)
+
+def updateProfilePicture(request):
+    if request.method == 'POST':
+        form = EditProfilePicForm(request.POST, request.FILES, instance=request.user)
+        if form.is_valid():
+            pic = form.cleaned_data['pic']
+            with Image.open(pic) as im:
+                im.save(f'api/core/media/profilePictures/{request.user.username}.{pic.image.format}')
+            return redirect('profile')
+    else:
+        form = EditProfilePicForm()
+    context = {
+        'form': form
+    }
+    return render(request, 'newProfilepic.html', context)

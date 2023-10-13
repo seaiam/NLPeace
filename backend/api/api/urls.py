@@ -17,12 +17,22 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path, include
 from core import views
+from django.conf import settings
+from django.conf.urls.static import static
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path("auth/", include("django.contrib.auth.urls")),
-    path("auth/", views.logInToApp, name="login"),
-    path('register/', views.signUp, name='register'),
+    path('auth/', include("django.contrib.auth.urls")),
+    path('login_user', views.login_user, name="login"),
+    path('logout_user', views.logout_user, name="logout_user"),
+    path('register_user', views.register_user, name='register_user'),
+    path('', views.home, name="home"),
     path('accounts/profile/', views.profile, name='profile'),
-    path('settings/', views.settings, name='settings')   
+    path('settings/', views.settings, name='settings'),   
+    path('accounts/profile/updateBio/', views.updateBio, name='edit_bio'),
+    path('accounts/profile/updateBanner/', views.updateProfileBanner, name='edit_banner'),
+    path('accounts/profile/updatePic/', views.updateProfilePicture, name='edit_pic'),
 ]
+
+if settings.DEBUG:
+    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

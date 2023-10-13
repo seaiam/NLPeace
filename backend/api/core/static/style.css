@@ -1,7 +1,6 @@
 body{
     font-family: PT Serif;
     background-color: #00001c;
-    color: #D9D9D9;
   }
 
   /* For login page */
@@ -38,10 +37,10 @@ body{
     display: flex;
     align-items: center;
     justify-content: center;
-    margin-bottom:-20px;
+    margin: 30px auto;
   }
 
-  /* input{
+  /* .log{
     width: 100%;
     height: 40px;
     background: #ffffff;
@@ -56,7 +55,7 @@ body{
     display: flex;
     justify-content: center;
     align-items: center;
-    margin-top:70px;
+    margin-top:90px;
   }
 
   .button1{
@@ -91,6 +90,7 @@ body{
   .account{
     position:absolute;
     bottom:0px;
+    color:#00001c
   }
 
    /* For Sign Up page */
@@ -108,12 +108,20 @@ body{
 
   }
 
+  label {
+    display: block;
+    margin-bottom: 5px; /*Space between label and input*/
+  }
+
+  input {
+      margin-bottom: 10px; /*Space between input and next label*/
+    }
   .signup-inputs{
     position: relative;
     display: flex;
-    align-items: center;
-    justify-content: center;
-    margin-bottom:-30px;
+    flex-direction: column;
+    align-items: flex-start;
+    margin: 30px auto;
   }
 
   .signup-button{
@@ -191,7 +199,7 @@ hr{
     text-align: left;
     padding: 15px 50px;
     transition: all 0.3s;
-    font-size: 1.3em;
+    font-size: 1.36em;
     display: flex;
     align-items: center;
     border-radius: 25px;
@@ -254,7 +262,15 @@ hr{
 .following{
     color: #d9d9d9;
     text-decoration:none;
-}   
+}
+
+.fa-user-friends{
+  color: #d9d9d9;
+}
+
+.fa-search{
+  color: #d9d9d9;
+}
 
 /* Banner */
 .banner {
@@ -319,13 +335,13 @@ hr{
     text-align: center;
     border-radius: 50px;
     transition: background-color 0.3s ease;
+    text-decoration: none;
 }
 
 .editButton:hover {
     color: black;
     background: linear-gradient(to right, #F9D1C4 0%, #9BBDDD 51%, #F9D1C4 100%);
     text-decoration: none;
-
 }
 
 .tabs {
@@ -349,6 +365,82 @@ hr{
     border-bottom: 2px solid #D9D9D9;
     padding-bottom: 8px;
 }
+
+.bio-form {
+  max-width: 500px;
+  margin: auto;
+}
+
+.form-group {
+  margin-bottom: 20px;
+}
+
+label {
+  display: block;
+  margin-bottom: 5px;
+  font-weight: bold;
+  color:#D9D9D9;
+}
+
+textarea {
+  width: 100%;
+  padding: 10px;
+  border-radius: 4px;
+  border: 1px solid #D9D9D9;
+  font-size: 14px;
+  resize: vertical; 
+  background-color: #d3d3d3;
+}
+
+
+.btn-primary {
+  background: linear-gradient(to right, #F9D1C4 0%, #9BBDDD 51%, #F9D1C4 100%) !important;
+  color: #00001c !important;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background 0.5s;
+}
+
+.btn-primary:hover {
+  background: linear-gradient(to right, #F9D1C4 0%, #6A8DB3 51%, #F9D1C4 100%);
+}
+
+.form-group {
+  margin-bottom: 15px;
+  width: 50%;
+  justify-content: center;
+  position: relative;
+  margin: auto;
+}
+
+.form-label {
+  display: block;
+  margin-bottom: 8px;
+  font-weight: bold;
+}
+
+input[type="file"] {
+  width: 100%;
+  padding: 10px;
+  border: 1px solid #000;
+  border-radius: 10px;
+  background-color: #9f9f9f;
+}
+
+.submitButton{
+  background: linear-gradient(to right, #F9D1C4 0%, #9BBDDD 51%, #F9D1C4 100%) !important;
+  color: #00001c !important;
+  border: none;
+  border-radius: 20px;
+  cursor: pointer;
+  transition: background 0.5s;
+  font-size: 25px;
+  padding-right:30px;
+  padding-left:30px;
+}
+
 
 @media (max-width: 991.98px) { /* Bootstrap's large breakpoint */
     .sidebar {
