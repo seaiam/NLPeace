@@ -28,10 +28,10 @@ urlpatterns = [
     path('register_user', views.register_user, name='register_user'),
     path('', views.home, name="home"),
     path('accounts/profile/', views.profile, name='profile'),
-    path('settings/', views.settings, name='settings'),   
     path('accounts/profile/updateBio/', views.updateBio, name='edit_bio'),
     path('accounts/profile/updateBanner/', views.updateProfileBanner, name='edit_banner'),
     path('accounts/profile/updatePic/', views.updateProfilePicture, name='edit_pic'),
+    path('settings/', views.settings, name='settings')   
 ]
 
 if settings.DEBUG:
