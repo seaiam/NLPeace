@@ -4,7 +4,7 @@ flasky/venv/
 .vscode/
 .idea/
 
-migrations/
+# migrations/
 
 __pycache__/
 
