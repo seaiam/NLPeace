@@ -46,11 +46,9 @@ See the [Meetings Minutes](https://github.com/seaiam/NLPeace/wiki) section for m
 
 * **Programming Languages:** Python
 * **Web Framework:** Django
-* **Frontend Framework:** React
-* **Database:** MySQL
-* **Natural Language Processing (NLP):** spaCy, NLTK (Python libraries)
-* **Machine Learning (ML):** TensorFlow
-* **Web Development Tools:** HTML, CSS, JavaScript
+* **Database:** PostgreSQL
+* **Natural Language Processing (NLP):** pandas, NLTK, numpy, sklearn
+* **Web Development Tools:** HTML, CSS, JavaScript, Bootstrap
 * **Version Control:** GitHub
 * **Deployment:** Docker 
 
