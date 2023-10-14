@@ -1,0 +1,49 @@
+{% extends "base.html" %}
+
+{% block title %}Home Page {% endblock %}
+{% load static %}
+
+{% block content %}
+<!-- <H1> REGISTRATION </H1> -->
+<div class="container">
+    <div class = "d-flex align-items-center justify-content-center">
+<form action="{% url 'register_user' %}" method="POST">
+    {% csrf_token %}
+    <div class="signup-box">
+        <!--{{ form.as_p }}-->
+        <div class="text-center">Sign Up</div>
+        <div class="mb-3">
+            {{form.email.label_tag}}
+            <br>
+            {{ form.email }}
+            {{ form.email.errors}}
+        </div>
+        <div class="mb-3">
+            {{form.username.label_tag}}
+            <br>
+            {{ form.username }}
+            {{ form.username.errors }}
+        </div>
+        <div class="mb-3">
+            {{form.password1.label_tag}}
+            {{ form.password1 }}
+            {{ form.password1.errors}}
+        </div>
+        <div class="mb-3">
+            {{form.password2.label_tag}}
+            {{ form.password2 }}
+            {{ form.password2.errors}}
+        </div>
+        <div class="signup-button">
+            <button type="submit" class="button2">Sign Up</button>
+        </div>
+        <div class="other-account">
+            <p class="already-account"><br>Already have an account?&nbsp;<a href="/auth/login" style="color:#00001c;">Log In</a></p>
+        </div>
+    </div>
+</form>
+
+    </div> 
+  </div>
+
+{% endblock %}

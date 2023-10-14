@@ -1,0 +1,102 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Home Page {% endblock %}
+
+
+  {% block content %}
+  <div class="collapse d-lg-block" id="sidebarMenu">
+      <div class="sidebar">
+          <ul>
+              <li class="sidebar-item">
+                  <a href="#">
+                      <i class="fa fa-user-circle"></i>
+                      Profile
+                  </a>
+              </li>
+              <li class="sidebar-item">
+                  <a href="#">
+                      <i class="fa fa-home"></i>
+                      Home
+                  </a>
+              </li>
+              <li class="sidebar-item">
+                  <a href="#">
+                      <i class="fas fa-comment-dots"></i>
+                      Messages
+                  </a>
+              </li>
+              <li class="sidebar-item">
+                  <a href="#">
+                      <i class="fa fa-bell"></i>
+                      Notifications
+                  </a>
+              </li>
+              <li class="sidebar-item">
+                  <a href="#">
+                      <i class="fa fa-bookmark"></i>
+                      Bookmarks
+                  </a>
+              </li>
+              <li class="sidebar-item">
+                  <a href="#">
+                      <i class="fa fa-cog"></i>
+                      Settings
+                  </a>
+              </li>
+          </ul>
+      </div>
+  </div>   
+      
+  <div class="profile-page">
+      <div class="box">
+        <!-- banner upload -->
+        <div class="banner">
+          <img src="{{user.banner.url}}" class="banner" alt="Banner">
+          <a href="{% url 'edit_banner' %}">
+          <i class="fa fa-pencil-alt edit-icon"></i>
+          </a>
+        </div>
+          <div class="row">
+              <div class="col-md-5">
+              <!-- profile picture upload -->
+              <div class="circle">
+              <img src="{{user.pic.url}}" width="130" class="profile-picture" alt="Profile Picture">
+              </div>
+              <a href="{% url 'edit_pic' %}">
+                  <i class='fa fa-camera upload-button'></i>
+              </a>      
+              </div>
+          </div>            
+        <div class="row">
+          <div class="col-md-4">
+              <h4 style="color:#D9D9D9;">{{ user.username }}</h4>
+          </div>
+          <div class="col-md-5">
+              <i class='fas fa-user-friends'></i> <a class="followers">Followers</a> &nbsp;&nbsp;
+              <i class='fas fa-search'></i> <a class="following">Following</a>
+          </div>
+          <div class="col-md-3 text-md-right">
+              <a class="editButton" href="{% url 'edit_bio' %}" role="button">Edit Profile</a>
+          </div>
+      </div>
+          <div><header>
+             <p style="color:#D9D9D9;">{{user.bio}}</p>
+          </header></div>
+       
+      <hr>
+  
+      <div class="tabs">
+          <a href="#" class="tab active" id="postsTab">Posts</a>
+          <a href="#" class="tab" id="repliesTab">Replies</a>
+          <a href="#" class="tab" id="mediaTab">Media</a>
+          <a href="#" class="tab" id="likesTab">Likes</a>
+      </div>
+      
+      </div>
+  </div>
+  
+      </br>
+    </br>
+
+{% endblock %}
