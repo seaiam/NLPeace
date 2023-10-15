@@ -1,47 +1,6 @@
 {% extends 'base.html' %} 
 {% block content %}
-<div class="collapse d-lg-block" id="sidebarMenu">
-    <div class="sidebar">
-        <ul>
-            <li class="sidebar-item">
-                <a href="#">
-                    <i class="fa fa-user-circle"></i>
-                    Profile
-                </a>
-            </li>
-            <li class="sidebar-item">
-                <a href="#">
-                    <i class="fa fa-home"></i>
-                    Home
-                </a>
-            </li>
-            <li class="sidebar-item">
-                <a href="#">
-                    <i class="fas fa-comment-dots"></i>
-                    Messages
-                </a>
-            </li>
-            <li class="sidebar-item">
-                <a href="#">
-                    <i class="fa fa-bell"></i>
-                    Notifications
-                </a>
-            </li>
-            <li class="sidebar-item">
-                <a href="#">
-                    <i class="fa fa-bookmark"></i>
-                    Bookmarks
-                </a>
-            </li>
-            <li class="sidebar-item">
-                <a href="#">
-                    <i class="fa fa-cog"></i>
-                    Settings
-                </a>
-            </li>
-        </ul>
-    </div>
-  </div>   
+
 <form action="" method="post" enctype="multipart/form-data" name="myform">
     {% csrf_token %}
 
