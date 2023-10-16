@@ -138,3 +138,13 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 #We define where profile pictures and banner pictures will be stored
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'api','core', 'media')
+
+#SMTP Configuration
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST='smtp.gmail.com'
+EMAIL_PORT=587
+EMAIL_USE_TLS=True
+EMAIL_HOST_USER='mira0ajji@gmail.com'
+EMAIL_HOST_PASSWORD='iuuw qgmc hxuz ixgd'
+#EMAIL_BACKEND = "django.core.mail.backends.filebased.EmailBackend"
+#EMAIL_FILE_PATH = BASE_DIR / "sent_emails"
