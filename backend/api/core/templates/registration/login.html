@@ -29,14 +29,16 @@
         {% csrf_token %}
         <div class= "login-box">
             <div class="text-center">Log In</div>
-            <div class = "mb-3">
-              <label for="inputUsername" class="form-label">Username</label>
-              <input type="text" class="form-control" name="username">
+            <div class = "login-inputs">
+              <span class="icons"><i class="fa fa-user-alt" aria-hidden="true"></i></span>
+              <label for="inputUsername" class="form-label">Username <br></label>
+              <input type="text" class="form-login" name="username">
             </div>
 
-            <div class = "mb-3">
+            <div class = "login-inputs">
+              <span class="icons"><i class="fa fa-lock" aria-hidden="true"></i></span>
               <label for="inputPassword" class="form-label">Password</label>
-              <input type="password" class="form-control" name="password">
+              <input type="password" class="form-login" name="password">
             </div>
 
             <div class="forgot-password">
