@@ -33,23 +33,48 @@ body{
   }
 
   .login-inputs{
+    margin: 15px auto;
     position: relative;
-    display: flex;
     align-items: center;
     justify-content: center;
-    margin: 30px auto;
   }
 
-  /* .log{
+  .form-login{
     width: 100%;
     height: 40px;
     background: #ffffff;
-    margin: 30px auto;
+    margin: 10px auto;
     padding: 10px;
     border-color: #000;
     border-radius: 10px;
     display: flex;
-  } */
+  }
+
+  .form-label{
+    color:#00001c;
+  }
+
+  .icons {
+    position: absolute;
+    right: 10px;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    float:right;
+    margin-top:15px;
+}
+  
+  .fa-user-alt{
+    color: #00001c;
+  }
+   
+  .fa-lock{
+    color: #00001c;
+  }
+
+  .fa-envelope{
+    color: #00001c;
+  }
 
   .login-button{
     display: flex;
@@ -108,21 +133,24 @@ body{
 
   }
 
-  label {
-    display: block;
-    margin-bottom: 5px; /*Space between label and input*/
-  }
 
-  input {
-      margin-bottom: 10px; /*Space between input and next label*/
-    }
   .signup-inputs{
     position: relative;
-    display: flex;
+    /* display: flex; */
     flex-direction: column;
     align-items: flex-start;
-    margin: 30px auto;
+    margin: 10px auto;
   }
+
+  /* .icons1 {
+    position: absolute;
+    right: 10px;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    float:right;
+    top:15px;
+  } */
 
   .signup-button{
     display: flex;
