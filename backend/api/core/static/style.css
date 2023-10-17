@@ -310,6 +310,11 @@ hr{
     z-index: 0;
 }
 
+.banner img {
+  width: 100%;
+  object-fit: cover;
+}
+
  /* Banner pencil icon */
 .edit-icon {
     position: absolute; 
