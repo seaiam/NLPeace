@@ -13,7 +13,7 @@ def home(request):
 
 def profile(request):
     profile = Profile.objects.get_or_create(pk=request.user.id)
-    return render(request, 'home.html', {'profile': profile[0]})
+    return render(request, 'home.html', {'profile': profile[0], 'form': EditBioForm(instance=profile[0])})
 
 def register_user(request):
     if request.method == 'POST':
@@ -71,19 +71,13 @@ def updateProfileBanner(request):
     return render(request, 'newBanner.html', context)
 
 def updateBio(request):
-    print("test")
     if request.method == 'POST':
         profile = Profile.objects.get_or_create(pk=request.user.id)
         form = EditBioForm(request.POST, instance=profile[0])
         if form.is_valid():
             form.save()
         return redirect('profile')
-    else:
-        form = EditBioForm()
-    context = {
-        'form': form
-    }
-    return render(request, 'newBio.html', context)
+    # TODO render 500
 
 def updateProfilePicture(request):
     if request.method == 'POST':

@@ -44,11 +44,11 @@
                 <div class="popup-content">
                     <span class="close">&times;</span>
                     <p class="biolabel">Update Bio</p>
-                    <form action="" method="POST" enctype="multipart/form-data" name="myform" class="bio-form">
+                    <form action="updateBio/" method="POST" name="myform" class="bio-form">
                         {% csrf_token %}
-                    <textarea name="{{ form.bio.name }}" id="{{ form.bio.id_for_label }}" rows="4" placeholder="Bio">{{ form.bio.value|default:'' }}</textarea>
-                    <br>
-                    <button id="saveBtn" class="saveButton">Save</button>
+                        {{ form.bio }}
+                        <br>
+                        <button id="saveBtn" class="saveButton">Save</button>
                     </form>
                 </div>
             </div>
