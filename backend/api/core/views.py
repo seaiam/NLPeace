@@ -3,6 +3,7 @@ from api.logger_config import configure_logger # TODO add logging statements
 from django.contrib import messages
 from django.contrib.auth import login, authenticate, logout
 from django.shortcuts import render, redirect
+from django.contrib.auth.decorators import login_required
 
 from .forms import *
 from .models import Profile
@@ -11,6 +12,7 @@ def home(request):
     # TODO we need to check authentication status here and redirect to registration page if not
     return render(request, 'index.html')
 
+@login_required
 def profile(request):
     profile = Profile.objects.get_or_create(pk=request.user.id)
     return render(request, 'home.html', {'profile': profile[0], 'form': EditBioForm(instance=profile[0])})
@@ -55,7 +57,7 @@ def logout_user(request):
     messages.success(request, f'logged out')
     return redirect('home')
 
-
+@login_required
 def updateProfileBanner(request):
     if request.method == 'POST':
         profile = Profile.objects.get_or_create(pk=request.user.id)
@@ -70,6 +72,7 @@ def updateProfileBanner(request):
     }
     return render(request, 'newBanner.html', context)
 
+@login_required
 def updateBio(request):
     if request.method == 'POST':
         profile = Profile.objects.get_or_create(pk=request.user.id)
@@ -79,6 +82,7 @@ def updateBio(request):
         return redirect('profile')
     # TODO render 500
 
+@login_required
 def updateProfilePicture(request):
     if request.method == 'POST':
         profile = Profile.objects.get_or_create(pk=request.user.id)
