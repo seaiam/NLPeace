@@ -71,6 +71,7 @@ def updateProfileBanner(request):
     return render(request, 'newBanner.html', context)
 
 def updateBio(request):
+    print("test")
     if request.method == 'POST':
         profile = Profile.objects.get_or_create(pk=request.user.id)
         form = EditBioForm(request.POST, instance=profile[0])

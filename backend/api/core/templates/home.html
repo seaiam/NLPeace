@@ -5,7 +5,7 @@
 
 
   {% block content %}
-      
+  {% csrf_token %}    
   <div class="profile-page">
       <div class="box">
         <!-- banner upload -->
@@ -39,7 +39,19 @@
               <i class='fas fa-search'></i> <a class="following">Following</a>
           </div>
           <div class="col-md-3 text-md-right">
-              <a class="editButton" href="{% url 'edit_bio' %}" role="button">Edit Profile</a>
+            <button id="editBtn" class="editButton">Edit Profile</button>
+            <div id="myModal" class="popup">
+                <div class="popup-content">
+                    <span class="close">&times;</span>
+                    <p class="biolabel">Update Bio</p>
+                    <form action="" method="POST" enctype="multipart/form-data" name="myform" class="bio-form">
+                        {% csrf_token %}
+                    <textarea name="{{ form.bio.name }}" id="{{ form.bio.id_for_label }}" rows="4" placeholder="Bio">{{ form.bio.value|default:'' }}</textarea>
+                    <br>
+                    <button id="saveBtn" class="saveButton">Save</button>
+                    </form>
+                </div>
+            </div>
           </div>
       </div>
           <div><header>
