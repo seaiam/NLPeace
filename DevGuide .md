@@ -3,7 +3,7 @@
 
   
 
-## Setup
+## Local Setup
 
 1. Install Python Version 3.10 
 
@@ -21,3 +21,7 @@
 6. Enter/Exit Virtual Environment 
 	* To enter ```pipenv shell```
 	* To exit ```exit```
+
+## Run tests from container
+* run this command after building the container:
+     ```docker-compose exec app python manage.py test core.tests```
