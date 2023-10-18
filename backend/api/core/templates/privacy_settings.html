@@ -1,0 +1,14 @@
+
+<div class="content">
+    <h2>Privacy Settings</h2>
+    <form action="" method="POST" name="privacy_form" class="privacy-form">
+        {% csrf_token %}
+        {{ privacy_form.is_private }}
+        <br>
+        <button id="saveBtnPrivacy" class="saveButton">Save Privacy Settings</button>
+        <div class="homepage-link">
+            <a href="{% url 'profile'%}">back to profile</a>
+        </div>
+    </form>
+</div>
+

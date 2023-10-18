@@ -1,3 +1,4 @@
+from django.http import HttpResponseForbidden
 from api.logger_config import configure_logger # TODO add logging statements
 
 from django.contrib import messages
@@ -96,3 +97,28 @@ def updateProfilePicture(request):
         'form': form
     }
     return render(request, 'newProfilepic.html', context)
+
+
+@login_required
+def privacy_settings_view(request, user_id):
+    user = User.objects.get(pk=user_id)
+    profile_instance = user.profile
+
+    if request.user != user:  # Ensure users can only edit their own privacy settings
+        return HttpResponseForbidden("You don't have permission to edit this user's settings.")
+
+    if request.method == "POST":
+        form = PrivacySettingsForm(request.POST, instance=profile_instance)
+        if form.is_valid():
+            form.save()
+            messages.success(request, "Privacy settings updated!")
+            return redirect('privacy_settings', user_id=user_id)
+    else:
+        form = PrivacySettingsForm(instance=profile_instance)
+
+    context = {
+        'privacy_form': form
+    }
+    
+    return render(request, 'privacy_settings.html', context)
+
