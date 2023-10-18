@@ -142,15 +142,14 @@ body{
     margin: 10px auto;
   }
 
-  /* .icons1 {
+  .icons1 {
     position: absolute;
     right: 10px;
     height: 100%;
     display: flex;
     align-items: center;
     float:right;
-    top:15px;
-  } */
+  }
 
   .signup-button{
     display: flex;
@@ -216,6 +215,7 @@ button:hover {
 }
 
 .forgotPassword-inputs{
+  margin: 15px auto;
   position: relative;
   align-items: center;
   justify-content: center;
