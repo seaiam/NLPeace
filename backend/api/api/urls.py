@@ -28,15 +28,12 @@ urlpatterns = [
     path('logout_user', views.logout_user, name="logout_user"),
     path('register_user', views.register_user, name='register_user'),
     path('', views.home, name="home"),
-    path('accounts/',include('django.contrib.auth.urls')),
     path('accounts/profile/', views.profile, name='profile'),
     path('accounts/profile/updateBio/', views.updateBio, name='edit_bio'),
     path('accounts/profile/updateBanner/', views.updateProfileBanner, name='edit_banner'),
     path('accounts/profile/updatePic/', views.updateProfilePicture, name='edit_pic'),
-    path('reset_password/',auth_views.PasswordResetView.as_view(template_name="password_reset.html"),name="reset_password"),
-    path('reset_password_sent/',auth_views.PasswordResetDoneView.as_view(template_name="password_reset_sent.html"),name="password_reset_done"),
-    path('reset/<uidb64>/<token>/',auth_views.PasswordResetConfirmView.as_view(template_name="password_reset_form.html"),name="password_reset_confirm"),
-    path('reset_password_complete/',auth_views.PasswordResetCompleteView.as_view(template_name="password_reset_done.html"),name="password_reset_complete"),
+    path('forget_password/',views.ForgetPassword,name='forget_password'),
+    path('change_password/<token>/',views.ChangePassword,name='change_password'),
 ]
 if settings.DEBUG:
     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
