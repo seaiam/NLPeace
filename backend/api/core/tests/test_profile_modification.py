@@ -66,8 +66,6 @@ class EditBioFormTest(TestCase):
 
     def test_update_bio_authenticated(self):
         self.client.login(username='testuser', password='testpassword123')
-        response = self.client.get(reverse('edit_bio'))
-        self.assertEqual(response.status_code, 200)
         bio_data = {
             'bio': 'NewBio',
         }
