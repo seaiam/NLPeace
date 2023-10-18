@@ -1,8 +1,7 @@
-from django.contrib.auth.forms import AuthenticationForm
 from django.contrib.auth.forms import UserCreationForm
 from django.core.exceptions import ValidationError
 from django import forms
-from .models import User
+from .models import Profile, User
 
 class UserRegistrationForm(UserCreationForm):
     username = forms.CharField(label='Username',widget=forms.TextInput(attrs={'class': 'form-login'}), min_length=4, max_length=50)
@@ -38,23 +37,21 @@ class UserRegistrationForm(UserCreationForm):
         user = User.objects.create_user(  
             self.cleaned_data['username'],  
             self.cleaned_data['email'],  
-            self.cleaned_data['password1'] ,
+            self.cleaned_data['password1'],
         )  
-        return user  
+        return user
 
-#class LogInForm(AuthenticationForm):
- #   username = forms.EmailField(label='Email',widget=forms.EmailInput(attrs={'placeholder' :'Email'}))
-  #  password = forms.CharField(label='Password', widget=forms.PasswordInput(attrs={'placeholder' :'Password'}))
-
-class EditBioForm(forms.Form):
-    bio = forms.CharField(label='Bio', widget=forms.Textarea)
+class EditBioForm(forms.ModelForm):
+    class Meta:
+        model = Profile
+        fields = ['bio']
 
 class EditProfilePicForm(forms.ModelForm):
     class Meta:
-        model = User
+        model = Profile
         fields = ['pic']
 
 class EditProfileBannerForm(forms.ModelForm):
     class Meta:
-        model = User
+        model = Profile
         fields = ['banner']
