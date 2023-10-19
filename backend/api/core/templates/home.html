@@ -23,6 +23,8 @@
               <div class="circle">
               {% if profile.pic %}
               <img src="{{profile.pic.url}}" width="130" class="profile-picture" alt="Profile Picture">
+              {% else %}
+              <img src="{% static 'default.jpg' %}" width="100%" class="profile-picture" alt="Profile Picture"
               {% endif %}
               </div>
               <a href="{% url 'edit_pic' %}">
@@ -55,7 +57,7 @@
           </div>
       </div>
           <div><header>
-             <p style="color:#D9D9D9;">{{profile.bio}}</p>
+            <p style="color:#D9D9D9;">{{profile.bio}}</p>
           </header></div>
        
       <hr>
