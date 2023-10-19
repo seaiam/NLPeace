@@ -76,4 +76,18 @@ class EditBioFormTest(TestCase):
 
     def test_update_profile_banner_unauthenticated(self):
         response = self.client.get(reverse('edit_bio'))
-        self.assertRedirects(response, '/accounts/login/?next=/accounts/profile/updateBio/')  
+        self.assertRedirects(response, '/accounts/login/?next=/accounts/profile/updateBio/')
+
+class DefaultProfilePicTest(TestCase):
+    def setUp(self):
+        # Create a test user with email as the login identifier
+        self.email = 'testuser@email.com'
+        self.username = 'testuser'
+        self.password = 'testpassword123'
+        self.user = User.objects.create_user(username=self.username, email=self.email, password=self.password)
+        self.profile = Profile.objects.create(user=self.user)
+    
+    def test_profile_without_profile_picutre_has_default(self):
+        self.client.login(username='testuser', password='testpassword123')
+        response = self.client.get(reverse('profile'))
+        self.assertContains(response, 'default.jpg')
