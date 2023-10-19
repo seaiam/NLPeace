@@ -24,7 +24,7 @@
               {% if profile.pic %}
               <img src="{{profile.pic.url}}" width="130" class="profile-picture" alt="Profile Picture">
               {% else %}
-              <img src="{% static 'default.jpg' %}" width="100%" class="profile-picture" alt="Profile Picture"
+              <img src="{% static 'default.jpg' %}" width="100%" class="profile-picture default-profile-picture" alt="Profile Picture" />
               {% endif %}
               </div>
               <a href="{% url 'edit_pic' %}">

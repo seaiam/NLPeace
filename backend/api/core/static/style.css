@@ -343,6 +343,10 @@ hr{
     vertical-align: middle;
 }
 
+.default-profile-picture {
+  border-radius: 100%;
+}
+
 /* edit profile button */
 .row {
     align-items: center;  
