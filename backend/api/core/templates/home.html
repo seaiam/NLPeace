@@ -40,6 +40,7 @@
               <i class='fas fa-user-friends'></i> <a class="followers">Followers</a> &nbsp;&nbsp;
               <i class='fas fa-search'></i> <a class="following">Following</a>
           </div>
+          {% if request.user == profile.user or not profile.is_private %}
           <div class="col-md-3 text-md-right">
             <button id="editBtn" class="editButton">Edit Profile</button>
             <div id="myModal" class="popup">
@@ -52,6 +53,9 @@
                         <br>
                         <button id="saveBtn" class="saveButton">Save</button>
                     </form>
+                    <div class="settings-link">
+                        <a href="{% url 'privacy_settings' user_id=request.user.id %}">Edit Privacy Settings</a>
+                    </div>
                 </div>
             </div>
           </div>
@@ -68,8 +72,12 @@
           <a href="#" class="tab" id="mediaTab">Media</a>
           <a href="#" class="tab" id="likesTab">Likes</a>
       </div>
-      
+      {%else%}
+      <p style="color: #D9D9D9;">This account is private</p>
+    
+      {% endif %}
       </div>
+
   </div>
   
       </br>
