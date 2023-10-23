@@ -110,7 +110,3 @@ def updateProfilePicture(request):
         'form': form
     }
     return render(request, 'newProfilepic.html', context)
-
-@login_required
-def create_post(request):
-    return render(request, 'home')
