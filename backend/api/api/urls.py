@@ -31,6 +31,7 @@ urlpatterns = [
     path('accounts/profile/updateBio/', views.updateBio, name='edit_bio'),
     path('accounts/profile/updateBanner/', views.updateProfileBanner, name='edit_banner'),
     path('accounts/profile/updatePic/', views.updateProfilePicture, name='edit_pic'),
+    path('create_post/', views.create_post, name='create_post')
 ]
 if settings.DEBUG:
     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

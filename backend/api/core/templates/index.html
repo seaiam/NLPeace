@@ -8,4 +8,22 @@
 <div>
 <h1 style="text-align: center; color: #D9D9D9;">Home page! Welcome</h1>
 </div>
+
+<div style="text-align: center; color: #D9D9D9">
+    <h2>Create a post!</h2>
+    <form method="post">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit">Post</button>
+    </form>
+
+    <h2>All posts</h2>
+    <ul>
+        {% for post in posts %}
+            <li>{{ post.content }} @{{ post.user.username }} ({{ post.created_at|date:"F d, Y H:i" }})</li>
+        {% empty %}
+            <li>No posts available. </li>
+        {% endfor %}
+    </ul>
+</div>
 {% endblock %}

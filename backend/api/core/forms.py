@@ -1,7 +1,7 @@
 from django.contrib.auth.forms import UserCreationForm
 from django.core.exceptions import ValidationError
 from django import forms
-from .models import Profile, User
+from .models import Profile, User, Post
 
 class UserRegistrationForm(UserCreationForm):
     username = forms.CharField(label='Username',widget=forms.TextInput(attrs={'class': 'form-login'}), min_length=4, max_length=50)
@@ -55,3 +55,8 @@ class EditProfileBannerForm(forms.ModelForm):
     class Meta:
         model = Profile
         fields = ['banner']
+
+class PostForm(forms.ModelForm):
+    class Meta:
+        model = Post
+        fields = ['content']
