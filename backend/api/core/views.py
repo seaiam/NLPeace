@@ -10,8 +10,22 @@ from .forms import *
 from .models import Profile
 
 def home(request):
-    # TODO we need to check authentication status here and redirect to registration page if not
-    return render(request, 'index.html')
+    if request.user.is_authenticated:
+        if request.method == 'POST':
+            form = PostForm(request.POST)
+            if form.is_valid():
+                post = form.save(commit=False)
+                post.user = request.user
+                post.save()
+                return redirect('home')
+            
+        #User is authenticated
+        posts = Post.objects.all().order_by('-created_at')
+        form = PostForm()
+        return render(request, 'index.html', {'posts': posts, 'form': form})
+    else:
+        #redirect user to login page
+        return redirect('login')
 
 @login_required
 def profile(request):

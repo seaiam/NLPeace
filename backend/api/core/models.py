@@ -7,3 +7,11 @@ class Profile(models.Model):
     banner = models.ImageField(upload_to='profileBanners/', null=True, blank=True)
     pic = models.ImageField(upload_to='profilePictures/', null=True, blank=True)
     is_private = models.BooleanField(default=True)
+
+class Post(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    content = models.CharField(max_length=280)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return self.content
