@@ -61,4 +61,35 @@
         {% endfor %}
     </ul>
 </div>
+
+{% for post in posts %}
+<div class=" d-flex justify-content-center align-items-center">
+    <div class="card" style="width: 39rem; border-radius: 30px;margin-top:20px; overflow: hidden;background: linear-gradient(to right, #F9D1C4 0%, #9BBDDD 51%, #F9D1C4 100%);">
+          <div class="card-body">
+           
+                      <div class = "row">
+                        <div class = "col-4">
+                            <img src="default.jpg" alt="" class="user-pic">
+                        </div>
+                        <div class = "col-8">
+                            <h5 class="card-title">Roger</h5>
+                            <h6 class="card-subtitle mb-2 text-muted">@{{ post.user.username }}</h6>
+                        </div>
+                      </div>
+                      <p class="card-text">{{ post.content }}</p>
+                    <hr>
+                    <div class ="icons-list" >
+                      <div class="like" style=" float:left;"><i class="fa fa-thumbs-up" aria-hidden="true"> Likes</i></div>
+                      <div class="comment"style=" float:left;"> <i class="fa fa-comment" aria-hidden="true"> Comments</i> </div> 
+                      <div class="share"style=" float:left;"><i class="fa fa-retweet" aria-hidden="true"> Repost</i> </div>
+                    </div>
+                  
+          </div>
+    </div>
+  </div>
+
+  {% empty %}
+  <li>No posts available. </li>
+{% endfor %} 
+
 {% endblock %}

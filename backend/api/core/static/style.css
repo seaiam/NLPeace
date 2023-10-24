@@ -680,3 +680,40 @@ button:hover {
   align-items: center;
 }
 
+/* Post feed page */
+
+img {
+  max-width:100%;
+}
+.user-pic {
+  border-radius:100px;
+  width:48px;
+  margin-right: 15px;
+}
+
+.icons-list{
+width: 100%;
+white-space: nowrap;
+overflow: auto;
+
+color: #00001c;
+}
+
+.like{
+  display: flex;
+  justify-content: center;
+
+}
+
+.comment{
+  display: flex;
+  justify-content: center;
+  margin-left:60px;
+}
+
+.share{
+  display: flex;
+  justify-content: center;
+  margin-left:60px;
+}
+
