@@ -1,18 +1,24 @@
-from api.logger_config import configure_logger
+from api.logger_config import configure_logger # TODO add logging statements
+
 from django.contrib import messages
 from django.contrib.auth import login, authenticate, logout
 from django.shortcuts import render, redirect
-from PIL import Image
+from django.contrib.auth.decorators import login_required
+
 from .forms import *
 import uuid 
 from django.conf import settings
 from django.core.mail import send_mail
+from .models import Profile
 
 def home(request):
+    # TODO we need to check authentication status here and redirect to registration page if not
     return render(request, 'index.html')
 
+@login_required
 def profile(request):
-    return render(request, 'home.html')
+    profile = Profile.objects.get_or_create(pk=request.user.id)
+    return render(request, 'home.html', {'profile': profile[0], 'form': EditBioForm(instance=profile[0])})
 
 def register_user(request):
     if request.method == 'POST':
@@ -54,44 +60,39 @@ def logout_user(request):
     # messages.success(request, f'logged out')
     return redirect('login')
 
-import os
-
+@login_required
 def updateProfileBanner(request):
     if request.method == 'POST':
-        form = EditProfileBannerForm(request.POST, request.FILES, instance=request.user)
-        if form.is_valid():
-            pic = form.cleaned_data['banner']
-            with Image.open(pic) as im:
-                im.save(f'api/core/media/profileBanners/{request.user.username}.{pic.image.format}')
-        return redirect('profile')
-    else:
-        form = EditProfileBannerForm()
-    context = {
-        'form': form
-    }
-    return render(request, 'newBanner.html', context)
-
-def updateBio(request):
-    if request.method == 'POST':
-        form = EditBioForm(request.POST, instance=request.user)
+        profile = Profile.objects.get_or_create(pk=request.user.id)
+        form = EditProfileBannerForm(request.POST, request.FILES, instance=profile[0])
         if form.is_valid():
             form.save()
         return redirect('profile')
     else:
-        form = EditBioForm()
+        form = EditProfileBannerForm()
     context = {
-        'form': form
+        'form': form,
     }
-    return render(request, 'newBio.html', context)
+    return render(request, 'newBanner.html', context)
 
+@login_required
+def updateBio(request):
+    if request.method == 'POST':
+        profile = Profile.objects.get_or_create(pk=request.user.id)
+        form = EditBioForm(request.POST, instance=profile[0])
+        if form.is_valid():
+            form.save()
+        return redirect('profile')
+    # TODO render 500
+
+@login_required
 def updateProfilePicture(request):
     if request.method == 'POST':
-        form = EditProfilePicForm(request.POST, request.FILES, instance=request.user)
+        profile = Profile.objects.get_or_create(pk=request.user.id)
+        form = EditProfilePicForm(request.POST, request.FILES, instance=profile[0])
         if form.is_valid():
-            pic = form.cleaned_data['pic']
-            with Image.open(pic) as im:
-                im.save(f'api/core/media/profilePictures/{request.user.username}.{pic.image.format}')
-            return redirect('profile')
+            form.save()
+        return redirect('profile')
     else:
         form = EditProfilePicForm()
     context = {
