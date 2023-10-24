@@ -56,6 +56,17 @@ class EditProfileBannerForm(forms.ModelForm):
         model = Profile
         fields = ['banner']
 
+class PrivacySettingsForm(forms.ModelForm):
+    is_private = forms.ChoiceField(
+        choices=((False, 'Public'), (True, 'Private')),
+        widget=forms.Select,
+        initial=True
+    )
+
+    class Meta:
+        model = Profile
+        fields = ['is_private']
+
 class PostForm(forms.ModelForm):
     content = forms.CharField(label='', widget=forms.Textarea(attrs={'class': 'widget-post__textarea scroller', 'style': 'background-color: #D9D9D9;', 'placeholder': 'Start a Post...'}))
     class Meta:

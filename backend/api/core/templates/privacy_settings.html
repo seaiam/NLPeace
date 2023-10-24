@@ -1,0 +1,52 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.5.0/css/all.css" integrity="sha384-B4dIYHKNBt8Bc12p+WXckhzcICo0wtJAoU8YZTY5qE0Id1GSseTk6S+L3BlXeVIU" crossorigin="anonymous">
+    <link rel="stylesheet"  type="text/css" href="{% static 'style.css' %}">
+</head>
+<body>
+
+
+<!-- <div class="content">
+    <h2>Privacy Settings</h2>
+    <form action="" method="POST" name="privacy_form" class="privacy-form">
+        {% csrf_token %}
+        {{ privacy_form.is_private }}
+        <br>
+        <button id="saveBtnPrivacy" class="saveButton">Save Privacy Settings</button>
+        <div class="homepage-link">
+            <a href="{% url 'profile'%}">back to profile</a>
+        </div>
+    </form>
+</div> -->
+
+<div class="container">
+    <div class = "d-flex align-items-center justify-content-center">
+        <form action="" method="POST" name="privacy_form" class="privacy-form">
+            {% csrf_token %}
+            <div class= "privacy-box">
+                <h2>Privacy Settings</h2>
+                {{ privacy_form.is_private }}
+                    <div class = "privacy-button">
+                         <button id="saveBtnPrivacy" class="save-Button">Save Privacy Settings</button>
+                    </div>
+                    <div class="profile-link">
+                        <a href="{% url 'profile'%}" style = "color:#00001c;">Back to profile</a>
+                    </div>
+            </div>
+        </form>
+      
+    </div> 
+  </div>
+
+ <!-- Bootstrap JS and Popper.js -->
+ <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+ <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
+ <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+ <script src="{% static 'style.js' %}" type="text/javascript"></script>
+</body>
+</html>
