@@ -108,10 +108,11 @@ def send_forget_password_mail(email,token):
     send_mail(subject,message,email_from,recipient_list)
     return True
 
-def ChangePassword(request,token):
-   
+
+def ChangePassword(request, token):
+     
     try:
-        profile=User.objects.filter(forget_password_token=token).first()
+        profile=Profile.objects.filter(forget_password_token=token).first()
        
         if request.method == 'POST':
             new_password=request.POST.get('new_password')
@@ -121,7 +122,7 @@ def ChangePassword(request,token):
             if new_password!=confirm_password:
                 messages.success(request,"The passwords don't match. Make sure they do.")
                 return redirect(f'/change_password/{token}/')
-            user=User.objects.get(username=profile.username)
+            user=User.objects.get(username=profile.user.username)
             user.set_password(new_password)
             user.save()
             messages.success(request,"You have successfully reset your password.")
@@ -139,10 +140,11 @@ def ForgetPassword(request):
             if not User.objects.filter(email=email).first():
                 messages.success(request,'No user found with this email.')
                 return redirect('forget_password')
-            user=User.objects.get(email=email)
+            user_obj=User.objects.get(email=email)
+            profile=Profile.objects.get(user=user_obj)
             token=str(uuid.uuid4())
-            user.forget_password_token=token
-            user.save()
+            profile.forget_password_token=token
+            profile.save()
             send_forget_password_mail(email,token)
             messages.success(request,"An email has been sent.")
             return redirect('forget_password')
