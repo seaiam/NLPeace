@@ -57,6 +57,7 @@ class EditProfileBannerForm(forms.ModelForm):
         fields = ['banner']
 
 class PostForm(forms.ModelForm):
+    content = forms.CharField(label='', widget=forms.Textarea(attrs={'class': 'widget-post__textarea scroller', 'style': 'background-color: #D9D9D9;', 'placeholder': 'Start a Post...'}))
     class Meta:
         model = Post
         fields = ['content']

@@ -3,20 +3,55 @@
 
 {% block title %}Index Page {% endblock %}
 
-
 {% block content %}
-<div>
-<h1 style="text-align: center; color: #D9D9D9;">Home page! Welcome</h1>
+
+<div class="row justify-content-center">   
+    <div class="col-5">
+        <div class="card" style="background: linear-gradient(to right, #F9D1C4 0%, #9BBDDD 51%, #F9D1C4 100%);  border-radius: 15px;">
+            <div class="card-body">
+                <div class="row">
+                    <div class="col">
+                        <div>
+                            <form method="post" id="widget-form" class="widget-post__form" name="form" aria-label="post widget">
+                                {% csrf_token %}
+                                <div class="widget-post__content">
+                                <textarea name="{{ form.content.name }}" id="post-content" class="widget-post__textarea scroller" placeholder="Start a Post...">{{ form.content.value|default:'' }}</textarea>
+                                </div>
+                                <div class="widget-post__options is--hidden" id="stock-options">
+                                </div>
+                                <div class="widget-post__actions post--actions">
+                                    <div class="post-actions__attachments">
+                                        <label for="upload-image" class="post-actions__label">
+                                        <i class="fa fa-camera" sty aria-hidden="true"></i> 
+                                        Photo
+                                        </label>
+                                        &nbsp; &nbsp; &nbsp; &nbsp;
+
+                                        <label for="upload-image" class="post-actions__label">
+                                            <i class="fa fa-video" aria-hidden="true"></i> 
+                                        Video
+                                        </label>
+                                        &nbsp; &nbsp; &nbsp; &nbsp;
+
+                                        <label for="upload-image" class="post-actions__label">
+                                            <i class="fa fa-list-ul" aria-hidden="true"></i> 
+                                        Poll
+                                        </label>
+                                    </div>
+                                    <div class="post-actions__widget">
+                                    <button type="submit" class="btn post-actions__publish">Post</button>
+                                    </div>
+                                </div>
+                            </form>
+                        </div> 
+                    </div>    
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
 
 <div style="text-align: center; color: #D9D9D9">
-    <h2>Create a post!</h2>
-    <form method="post">
-        {% csrf_token %}
-        {{ form.as_p }}
-        <button type="submit">Post</button>
-    </form>
-
     <h2>All posts</h2>
     <ul>
         {% for post in posts %}
