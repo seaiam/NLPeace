@@ -69,7 +69,9 @@
                       <div class = "row">
                         <div class = "col-2">
                             {% if post.user.profile and post.user.profile.pic %}
-                                <img src="{{ post.user.profile.pic.url }}" alt="{{ post.user.username }}'s profile picture"class="user-pic">
+                                <img src="{{ post.user.profile.pic.url }}" alt="{{ post.user.username }}'s profile picture" class="user-pic">
+                            {% else %}
+                                <img src="{% static 'default.jpg' %}" class="user-pic" alt="{{ post.user.username }}'s profile picture" />
                             {% endif %}
 
                               </div>
