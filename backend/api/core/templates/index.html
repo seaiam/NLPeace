@@ -5,9 +5,8 @@
 
 {% block content %}
 
-<div class="row justify-content-center">   
-    <div class="col-5">
-        <div class="card" style="background: linear-gradient(to right, #F9D1C4 0%, #9BBDDD 51%, #F9D1C4 100%);  border-radius: 15px; margin-bottom:30px;">
+<div class="d-flex justify-content-center align-items-center">   
+        <div class="card" style="width: 39rem; background: linear-gradient(to right, #F9D1C4 0%, #9BBDDD 51%, #F9D1C4 100%);  border-radius: 15px; margin-bottom:30px;">
             <div class="card-body">
                 <div class="row">
                     <div class="col">
@@ -48,22 +47,10 @@
                 </div>
             </div>
         </div>
-    </div>
 </div>
 
-<!-- <div style="text-align: center; color: #D9D9D9">
-    <h2>All posts</h2>
-    <ul>
-        {% for post in posts %}
-            <li>{{ post.content }} @{{ post.user.username }} ({{ post.created_at|date:"F d, Y H:i" }})</li>
-        {% empty %}
-            <li>No posts available. </li>
-        {% endfor %}
-    </ul>
-</div> -->
-
 {% for post in posts %}
-<div class=" d-flex justify-content-center align-items-center">
+<div class="d-flex justify-content-center align-items-center">
     <div class="card" style="width: 39rem; border-radius: 30px;margin:20px 0px 20px 0px;  overflow: hidden;background: linear-gradient(to right, #F9D1C4 0%, #9BBDDD 51%, #F9D1C4 100%);">
           <div class="card-body">
                       <div class = "row">
@@ -73,22 +60,21 @@
                             {% else %}
                                 <img src="{% static 'default.jpg' %}" class="user-pic" alt="{{ post.user.username }}'s profile picture" />
                             {% endif %}
-
-                              </div>
-                        <div class = "col-8">
-                            <h4 class="card-title">@{{ post.user.username }}</h4>
-                        </div>
-                      </div>
-                      <p class="card-text">{{ post.content }}</p>
-                      <h6 class="card-subtitle mb-2" style ="float: right;">{{ post.created_at|date:"F d, Y H:i" }}</h6>
-                      <br>
-                    <hr>
-                    <div class ="icons-list" >
-                        <div class="feed" ><i class="fa fa-thumbs-up" aria-hidden="true"> Likes</i></div>
-                        <div class="feed"> <i class="fa fa-comment" aria-hidden="true"> Comments</i> </div> 
-                        <div class="feed"><i class="fa fa-retweet" aria-hidden="true"> Repost</i> </div>
                     </div>
-          </div>
+                    <div class = "col-8">
+                            <h4 class="card-title">@{{ post.user.username }}</h4>
+                    </div>
+                </div>
+                <p class="card-text">{{ post.content }}</p>
+                <h6 class="card-subtitle mb-2" style ="float: right;">{{ post.created_at|date:"F d, Y H:i" }}</h6>
+                <br>
+                <hr>
+                <div class ="icons-list" >
+                    <div class="feed" ><i class="fa fa-thumbs-up" aria-hidden="true"> Likes</i></div>
+                    <div class="feed"> <i class="fa fa-comment" aria-hidden="true"> Comments</i> </div> 
+                    <div class="feed"><i class="fa fa-retweet" aria-hidden="true"> Repost</i> </div>
+                </div>
+        </div>
     </div>
   </div>
 
