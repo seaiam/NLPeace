@@ -12,7 +12,7 @@
                 <div class="row">
                     <div class="col">
                         <div>
-                            <form method="post" id="widget-form" class="widget-post__form" name="form" aria-label="post widget">
+                            <form method="post" id="widget-form" class="widget-post__form" enctype="multipart/form-data" name="form" aria-label="post widget">
                                 {% csrf_token %}
                                 <div class="widget-post__content">
                                 <textarea name="{{ form.content.name }}" id="post-content" class="widget-post__textarea scroller" placeholder="Start a Post...">{{ form.content.value|default:'' }}</textarea>
@@ -25,6 +25,7 @@
                                         <i class="fa fa-camera" sty aria-hidden="true"></i> 
                                         Photo
                                         </label>
+                                        {{ form.image }}
                                         &nbsp; &nbsp; &nbsp; &nbsp;
 
                                         <label for="upload-image" class="post-actions__label">
