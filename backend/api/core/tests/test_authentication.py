@@ -146,7 +146,7 @@ class ChangePasswordTest(TestCase):
         # Check the response status code and content
         self.assertEqual(response.status_code, 200)
 
-    # Check for the decoded message in the response
+    
         self.assertContains(response, "The passwords are not matching. Make sure they do.")
         
     
