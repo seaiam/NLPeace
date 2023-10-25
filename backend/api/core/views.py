@@ -120,7 +120,7 @@ def ChangePassword(request, token):
             
 
             if new_password!=confirm_password:
-                messages.success(request,"The passwords don't match. Make sure they do.")
+                messages.success(request,"The passwords are not matching. Make sure they do.")
                 return redirect(f'/change_password/{token}/')
             user=User.objects.get(username=profile.user.username)
             user.set_password(new_password)
