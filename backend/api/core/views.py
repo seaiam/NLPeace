@@ -12,7 +12,6 @@ from .models import Profile
 def home(request):
     if request.user.is_authenticated:
         if request.method == 'POST':
-            print(request.FILES)
             form = PostForm(request.POST, request.FILES)
             if form.is_valid():
                 post = form.save(commit=False)
