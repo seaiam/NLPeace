@@ -566,21 +566,6 @@ input[type="file"] {
   border-radius: 1.5em;
 }
 
-.widget-post___image {
-  display: none;
-  justify-content: center;
-  padding: .5em;
-}
-
-  .widget-post___image img {
-    border: solid 1px black;
-  }
-
-  .widget-post___image label {
-    margin-left: 8px;
-    align-self: flex-end;
-  }
-
 .post-actions__label {
   cursor: pointer;
   font-size: 16px; 

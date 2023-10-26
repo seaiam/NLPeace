@@ -16,9 +16,9 @@
         const upload = document.getElementById("id_image");
         const div = document.getElementById("preview_image");
         const image = div.getElementsByTagName('IMG')[0];
-        div.style.display = "none";
-        image.src = "#";
         upload.value = null;
+        div.style.display = "none"; 
+        image.src = "#";
     }
 
 </script>
@@ -31,6 +31,10 @@
                     <div>
                         <form method="post" id="widget-form" class="widget-post__form" enctype="multipart/form-data" name="form" aria-label="post widget">
                             {% csrf_token %}
+                            <div id="preview_image" style="display: none;">
+                                <button type="button" class="close" onclick="handleOnDeletePhotoClick()" style="color: #00001c;">&times;</button>
+                                <img class="card-img-top mb-2" src="#" />
+                            </div>
                             <div class="widget-post__content">
                             <textarea name="{{ form.content.name }}" id="post-content" class="widget-post__textarea scroller" placeholder="Start a Post...">{{ form.content.value|default:'' }}</textarea>
                             </div>
@@ -60,10 +64,6 @@
                                 <button type="submit" class="btn post-actions__publish">Post</button>
                                 </div>
                             </div>
-                            <div id="preview_image" class="widget-post___image">
-                                <img src="#" style="width: 100%; max-width: max-content; height: auto;"/>
-                                <label class="post-actions__label" onclick="handleOnDeletePhotoClick()"><i class="fa fa-trash"></i></label>
-                            </div>
                         </form>
                     </div> 
                 </div>    
@@ -88,6 +88,9 @@
                         <h4 class="card-title">@{{ post.user.username }}</h4>
                     </div>
                 </div>
+                {% if post.image %}
+                <img class="card-img-top mt-2" src="{{ post.image.url }}" alt="Post image" />
+                {% endif %}
                 <p class="card-text">{{ post.content }}</p>
                 <h6 class="card-subtitle mb-2" style ="float: right;">{{ post.created_at|date:"F d, Y H:i" }}</h6>
                 <br>
@@ -117,7 +120,7 @@
                 image.src = reader.result;
             };
             reader.readAsDataURL(e.target.files[0]);
-            div.style.display = "flex";
+            div.style.display = "block";
         }
     });
 
