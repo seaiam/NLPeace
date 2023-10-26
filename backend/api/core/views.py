@@ -34,6 +34,28 @@ def profile(request):
     profile = Profile.objects.get_or_create(pk=request.user.id)
     return render(request, 'home.html', {'profile': profile[0], 'form': EditBioForm(instance=profile[0])})
 
+@login_required
+def settings(request):
+    if request.method == 'GET':
+        user = User.objects.get_or_create(pk=request.user.id)
+        if user[1] is False:
+            return HttpResponseNotFound
+        return render(request, 'settings.html', {'user': user[0], 'form': EditUsernamePasswordForm(instance=user[0])})
+    return HttpResponseServerError
+
+@login_required
+def update_username_password(request):
+    if request.method == 'POST':
+        new_user = User.objects.get_or_create(pk=request.user.id)
+        if new_user[1] is False:
+            return HttpResponseNotFound
+        
+        form = EditUsernamePasswordForm(request.POST, instance=new_user[0])
+        if form.is_valid():
+            form.save()
+            return redirect('profile')
+    return HttpResponseServerError
+
 def register_user(request):
     if request.method == 'POST':
         form = UserRegistrationForm(request.POST)
@@ -99,18 +121,6 @@ def updateBio(request):
         return redirect('profile')
     # TODO render 500
     
-@login_required
-def update_username_password(request):
-    if request.method == 'POST':
-        new_user = User.objects.get_or_create(pk=request.user.id)
-        if new_user[1] is False:
-            return HttpResponseNotFound
-        
-        form = EditUsernamePasswordForm(request.POST, instance=new_user[0])
-        if form.is_valid():
-            form.save()
-            return redirect('profile')
-    return HttpResponseServerError
 
 @login_required
 def updateProfilePicture(request):

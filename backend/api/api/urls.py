@@ -32,6 +32,7 @@ urlpatterns = [
     path('accounts/profile/updateBanner/', views.updateProfileBanner, name='edit_banner'),
     path('accounts/profile/updatePic/', views.updateProfilePicture, name='edit_pic'),
     path('user/<int:user_id>/privacy/', views.privacy_settings_view, name='privacy_settings'),
+    path('accounts/profile/settings/', views.settings, name='settings'),
     path('accounts/profile/updateUser/', views.update_username_password, name='update_username_password'),
 ]
 if settings.DEBUG:
