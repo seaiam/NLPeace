@@ -1,4 +1,6 @@
 from django.http import HttpResponseForbidden
+from django.http import HttpResponseServerError
+from django.http import HttpResponseNotFound
 from api.logger_config import configure_logger # TODO add logging statements
 
 from django.contrib import messages
@@ -96,6 +98,19 @@ def updateBio(request):
             form.save()
         return redirect('profile')
     # TODO render 500
+    
+@login_required
+def update_username_password(request):
+    if request.method == 'POST':
+        new_user = User.objects.get_or_create(pk=request.user.id)
+        if new_user[1] is False:
+            return HttpResponseNotFound
+        
+        form = EditUsernamePasswordForm(request.POST, instance=new_user[0])
+        if form.is_valid():
+            form.save()
+            return redirect('profile')
+    return HttpResponseServerError
 
 @login_required
 def updateProfilePicture(request):
