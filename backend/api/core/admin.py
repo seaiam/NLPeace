@@ -1,7 +1,7 @@
 from django.contrib import admin
 from django.contrib.auth.models import User
 
-from .models import Profile
+from .models import Post, Profile
 
 class ProfileInline(admin.TabularInline):
     model = Profile
@@ -13,3 +13,4 @@ class UserAdmin(admin.ModelAdmin):
 
 admin.site.unregister(User)
 admin.site.register(User, UserAdmin)
+admin.site.register(Post)
