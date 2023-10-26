@@ -51,32 +51,30 @@
 
 {% for post in posts %}
 <div class="d-flex justify-content-center align-items-center">
-    <div class="card" style="width: 39rem; border-radius: 30px;margin:20px 0px 20px 0px;  overflow: hidden;background: linear-gradient(to right, #F9D1C4 0%, #9BBDDD 51%, #F9D1C4 100%);">
-          <div class="card-body">
-                      <div class = "row">
+        <div class="card" style="width: 39rem; border-radius: 30px;margin:20px 0px 20px 0px;  overflow: hidden;background: linear-gradient(to right, #F9D1C4 0%, #9BBDDD 51%, #F9D1C4 100%);">
+            <div class="card-body">
+                    <div class = "row">
                         <div class = "col-2">
                             {% if post.user.profile and post.user.profile.pic %}
                                 <img src="{{ post.user.profile.pic.url }}" alt="{{ post.user.username }}'s profile picture" class="user-pic">
                             {% else %}
                                 <img src="{% static 'default.jpg' %}" class="user-pic" alt="{{ post.user.username }}'s profile picture" />
                             {% endif %}
+                        </div>
+                           <h5 class="card-title" style = "padding-bottom: 5%;">@{{ post.user.username }}</h5> 
                     </div>
-                    <div class = "col-8">
-                            <h4 class="card-title">@{{ post.user.username }}</h4>
+                    <p class="card-text">{{ post.content }}</p>
+                    <h6 class="card-subtitle mb-2" style ="float: right;">{{ post.created_at|date:"F d, Y H:i" }}</h6>
+                    <br>
+                    <hr>
+                    <div class ="icons-list" >
+                        <div class="feed" ><i class="fa fa-thumbs-up" aria-hidden="true"> Likes</i></div>
+                        <div class="feed"> <i class="fa fa-comment" aria-hidden="true"> Comments</i> </div> 
+                        <div class="feed"><i class="fa fa-retweet" aria-hidden="true"> Repost</i> </div>
                     </div>
-                </div>
-                <p class="card-text">{{ post.content }}</p>
-                <h6 class="card-subtitle mb-2" style ="float: right;">{{ post.created_at|date:"F d, Y H:i" }}</h6>
-                <br>
-                <hr>
-                <div class ="icons-list" >
-                    <div class="feed" ><i class="fa fa-thumbs-up" aria-hidden="true"> Likes</i></div>
-                    <div class="feed"> <i class="fa fa-comment" aria-hidden="true"> Comments</i> </div> 
-                    <div class="feed"><i class="fa fa-retweet" aria-hidden="true"> Repost</i> </div>
-                </div>
+            </div>
         </div>
-    </div>
-  </div>
+</div>
 
   {% empty %}
   <li>No posts available. </li>
