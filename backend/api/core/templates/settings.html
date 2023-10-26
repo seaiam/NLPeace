@@ -53,45 +53,43 @@
     <button class="tabbutton" onclick="openTab(event, 'Password')">Password</button>
   </div>
 
-  <div id="Account" class="tabcontent">
-    <div class="container">
-            
-        <form action="EditUsernamePasswordForm" method="post" name="editPassForm">
+<div id="Account" class="tabcontent">
+    <div class="container">    
+        <form action="./updateUsername" method="post" name="editUsernameForm">
             {% csrf_token %}
             <div class="editPassword-box">
                 <div class="text-left">Change your Username</div>
-                <div class="form-group">
-                    {{ EditUsernamePasswordForm.username }}
-                    <input type="text" placeholder="Enter your new Username" class="settings-textbox" required>
-                </div>
-                <div class="signup-button">
-                    <button type="submit" class="button2">Save Changes</button>
-                </div>                                
+                    <div class="form-group">
+                        {{ editUsernameForm.username }}
+                    </div>
+                    <div class="signup-button">
+                        <button type="submit" class="button2">Save Changes</button>
+                    </div>  
+                </div>                              
             </div>
         </form>         
-      </div>
     </div>
         
     <div id="Password" class="tabcontent">
-        <div class="container">
-            
-            <form action="" method="post" name="editPassForm">
+        <div class="container"> 
+            <form action="./updatePassword" method="post" name="editPasswordForm">
                 {% csrf_token %}
                 <div class="editPassword-box">
                     <div class="text-left">Change your Password</div>
-                    <div class = "form-group">                        
-                    <input type="text" placeholder="Current Password" class="settings-textbox" required>                                          
-                    <input type="password" placeholder="Enter your new Password" class="settings-textbox" required>                       
-                    <input type="password" placeholder="Confirm new Password" class="settings-textbox" required>
+                        <div class = "form-group">                        
+                            <input type="password" placeholder="Enter your new Password" class="settings-textbox" required>                       
+                            <input type="password" placeholder="Confirm new Password" class="settings-textbox" required>
+                        </div>
                     </div>
                     <div class="signup-button">
-                    <button type="submit" class="button2">Save Changes</button>                    
+                        <button type="submit" class="button2">Save Changes</button>                    
                     </div>                                        
                 </div>
             </form>              
-          </div>
+        </div>
     </div>
-      
+</div>
+
     <script>
         function openTab(event, tabName) {           
             var tabcontent, tabbutton;

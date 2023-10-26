@@ -46,10 +46,10 @@ class EditBioForm(forms.ModelForm):
         model = Profile
         fields = ['bio']
         
-class EditUsernamePasswordForm(forms.ModelForm):
+class EditUsernameForm(forms.ModelForm):
     class Meta:
         model = User
-        fields = ['username','password']
+        fields = ['username']
 
 class EditProfilePicForm(forms.ModelForm):
     class Meta:

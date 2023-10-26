@@ -7,6 +7,7 @@ from django.contrib import messages
 from django.contrib.auth import login, authenticate, logout
 from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import login_required
+from django.contrib.auth.forms import PasswordChangeForm
 
 from .forms import *
 from .models import Profile
@@ -37,20 +38,32 @@ def profile(request):
 @login_required
 def settings(request):
     if request.method == 'GET':
-        user = User.objects.get_or_create(pk=request.user.id)
-        if user[1] is False:
+        user = User.objects.get(pk=request.user.id)
+        if user is None:
             return HttpResponseNotFound
-        return render(request, 'settings.html', {'user': user[0], 'form': EditUsernamePasswordForm(instance=user[0])})
+        return render(request, 'settings.html', {'user': user, 'editUsernameForm': EditUsernameForm(instance=user)})
+    
+@login_required
+def update_username(request):
+    if request.method == 'POST':
+        new_user = User.objects.get(pk=request.user.id)
+        if new_user is None:
+            return HttpResponseNotFound
+        
+        form = EditUsernameForm(request.POST, instance=new_user)
+        if form.is_valid():
+            form.save()
+            return redirect('profile')
     return HttpResponseServerError
 
 @login_required
-def update_username_password(request):
+def update_password(request):
     if request.method == 'POST':
-        new_user = User.objects.get_or_create(pk=request.user.id)
-        if new_user[1] is False:
+        new_user = User.objects.get(pk=request.user.id)
+        if new_user is None:
             return HttpResponseNotFound
         
-        form = EditUsernamePasswordForm(request.POST, instance=new_user[0])
+        form = PasswordChangeForm(request.POST, instance=new_user)
         if form.is_valid():
             form.save()
             return redirect('profile')

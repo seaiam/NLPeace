@@ -33,7 +33,9 @@ urlpatterns = [
     path('accounts/profile/updatePic/', views.updateProfilePicture, name='edit_pic'),
     path('user/<int:user_id>/privacy/', views.privacy_settings_view, name='privacy_settings'),
     path('accounts/profile/settings/', views.settings, name='settings'),
-    path('accounts/profile/updateUser/', views.update_username_password, name='update_username_password'),
+    path('accounts/profile/settings/updateUsername', views.update_username, name='update_username'),
+    path('accounts/profile/settings/updatePassword', views.update_password, name='update_password'),
+
 ]
 if settings.DEBUG:
     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
