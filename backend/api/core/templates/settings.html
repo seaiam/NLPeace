@@ -55,7 +55,7 @@
 
 <div id="Account" class="tabcontent">
     <div class="container">    
-        <form action={% url 'update_password' %} method="post" name="editUsernameForm">
+        <form action={% url 'update_username' %} method="post" name="editUsernameForm">
             {% csrf_token %}
             <div class="editPassword-box">
                 <div class="text-left">Change your Username</div>
