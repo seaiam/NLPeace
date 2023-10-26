@@ -2,7 +2,7 @@ from django.http import HttpResponseForbidden
 from django.http import HttpResponseServerError
 from django.http import HttpResponseNotFound
 from api.logger_config import configure_logger # TODO add logging statements
-
+from django.contrib.auth import update_session_auth_hash
 from django.contrib import messages
 from django.contrib.auth import login, authenticate, logout
 from django.shortcuts import render, redirect
@@ -41,7 +41,7 @@ def settings(request):
         user = User.objects.get(pk=request.user.id)
         if user is None:
             return HttpResponseNotFound
-        return render(request, 'settings.html', {'user': user, 'editUsernameForm': EditUsernameForm(instance=user)})
+        return render(request, 'settings.html', {'user': user, 'editUsernameForm': EditUsernameForm(instance=user),'editPasswordForm': PasswordChangeForm(request.user)})
     
 @login_required
 def update_username(request):
@@ -63,9 +63,10 @@ def update_password(request):
         if new_user is None:
             return HttpResponseNotFound
         
-        form = PasswordChangeForm(request.POST, instance=new_user)
+        form = PasswordChangeForm(request.user, request.POST)
         if form.is_valid():
-            form.save()
+            user=form.save()
+            update_session_auth_hash(request, user)
             return redirect('profile')
     return HttpResponseServerError
 
