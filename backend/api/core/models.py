@@ -8,3 +8,13 @@ class Profile(models.Model):
     pic = models.ImageField(upload_to='profilePictures/', null=True, blank=True)
     forget_password_token=models.CharField(max_length=100,default='')
 
+    is_private = models.BooleanField(default=True)
+
+class Post(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    content = models.CharField(max_length=280)
+    image = models.ImageField(upload_to='postImages/', null=True, blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return self.content

@@ -1,3 +1,4 @@
+from django.http import HttpResponseForbidden
 from api.logger_config import configure_logger # TODO add logging statements
 
 from django.contrib import messages
@@ -12,8 +13,22 @@ from django.core.mail import send_mail
 from .models import Profile
 
 def home(request):
-    # TODO we need to check authentication status here and redirect to registration page if not
-    return render(request, 'index.html')
+    if request.user.is_authenticated:
+        if request.method == 'POST':
+            form = PostForm(request.POST, request.FILES)
+            if form.is_valid():
+                post = form.save(commit=False)
+                post.user = request.user
+                post.save()
+                return redirect('home')
+            
+        #User is authenticated
+        posts = Post.objects.all().order_by('-created_at')
+        form = PostForm()
+        return render(request, 'index.html', {'posts': posts, 'form': form})
+    else:
+        #redirect user to login page
+        return redirect('login')
 
 @login_required
 def profile(request):
@@ -151,3 +166,27 @@ def ForgetPassword(request):
     except Exception as e:
      print(e)
     return render(request,'forget_password.html')
+
+@login_required
+def privacy_settings_view(request, user_id):
+    user = User.objects.get(pk=user_id)
+    profile_instance = user.profile
+
+    if request.user != user:  # Ensure users can only edit their own privacy settings
+        return HttpResponseForbidden("You don't have permission to edit this user's settings.")
+
+    if request.method == "POST":
+        form = PrivacySettingsForm(request.POST, instance=profile_instance)
+        if form.is_valid():
+            form.save()
+            messages.success(request, "Privacy settings updated!")
+            return redirect('privacy_settings', user_id=user_id)
+    else:
+        form = PrivacySettingsForm(instance=profile_instance)
+
+    context = {
+        'privacy_form': form
+    }
+    
+    return render(request, 'privacy_settings.html', context)
+
