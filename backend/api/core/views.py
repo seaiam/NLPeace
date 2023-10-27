@@ -13,7 +13,9 @@ from .forms import *
 import uuid 
 from django.conf import settings
 from django.core.mail import send_mail
-from .models import Profile
+from .models import *
+
+logger=configure_logger('view_logger')
 
 def home(request):
     if request.user.is_authenticated:
@@ -39,7 +41,7 @@ def profile(request):
     return render(request, 'home.html', {'profile': profile[0], 'form': EditBioForm(instance=profile[0])})
 
 @login_required
-def settings(request):
+def profile_settings(request):
     if request.method == 'GET':
         user = User.objects.get(pk=request.user.id)
         if user is None:
@@ -192,7 +194,7 @@ def ForgetPassword(request):
         if request.method=="POST":
             email=request.POST.get('email')
             if not User.objects.filter(email=email).first():
-                messages.success(request,'No user found with this email.')
+                messages.warning(request,'No user found with this email.')
                 return redirect('forget_password')
             user_obj=User.objects.get(email=email)
             profile=Profile.objects.get(user=user_obj)
