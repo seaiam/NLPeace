@@ -1,7 +1,6 @@
 from django.test import TestCase
 from django.urls import reverse
 from django.core.files.uploadedfile import SimpleUploadedFile
-from core.forms import EditBioForm, EditProfileBannerForm, EditProfilePicForm
 from core.models import User, Profile
 from django.contrib.messages import get_messages
 

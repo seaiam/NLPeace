@@ -1,6 +1,7 @@
 from django.test import TestCase
 from django.urls import reverse
 from django.contrib.auth.models import User
+from django.core.files.uploadedfile import SimpleUploadedFile
 from core.models import Post
 from core.forms import PostForm
 
@@ -33,3 +34,13 @@ class PostTestCase(TestCase):
         # Verify that the form used in the view is an instance of PostForm
         response = self.client.get(reverse('home'))
         self.assertIsInstance(response.context['form'], PostForm)
+    
+    def test_post_with_image(self):
+        response = self.client.post(reverse('home'), {
+            'content': 'Test post',
+            'image': {'image': SimpleUploadedFile('../static/default.png', b'file_content')}
+        })
+        self.assertEqual(response.status_code, 302)
+        post = Post.objects.first()
+        self.assertIsNotNone(post)
+        self.assertIsNotNone(post.image)

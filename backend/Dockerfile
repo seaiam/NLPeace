@@ -26,10 +26,16 @@ LABEL maintainer="SOEN490"
 
 ENV PYTHONUNBUFFERED 1
 
+
+
+
+
 COPY ./requirements.txt /tmp/requirements.txt
 COPY ./api /api
 WORKDIR /api
 EXPOSE 8000
+
+
 
 RUN python -m venv /py && \
     /py/bin/pip install --upgrade pip && \
@@ -44,6 +50,7 @@ RUN python -m venv /py && \
         --no-create-home \
         django-user
 
+RUN apk add --update --no-cache bind-tools
 ENV PATH="/py/bin:$PATH"
 
 USER django-user
