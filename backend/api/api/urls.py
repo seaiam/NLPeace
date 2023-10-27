@@ -19,6 +19,7 @@ from django.urls import path, include
 from core import views
 from django.conf import settings
 from django.conf.urls.static import static
+from django.contrib.auth import views as auth_views
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -26,13 +27,18 @@ urlpatterns = [
     path('accounts/login/', views.login_user, name="login"),
     path('logout_user', views.logout_user, name="logout_user"),
     path('register_user', views.register_user, name='register_user'),
-    path('', views.home, name="home"),
+    path('', views.home, name='home'),
     path('accounts/profile/', views.profile, name='profile'),
     path('accounts/profile/updateBio/', views.updateBio, name='edit_bio'),
     path('accounts/profile/updateBanner/', views.updateProfileBanner, name='edit_banner'),
     path('accounts/profile/updatePic/', views.updateProfilePicture, name='edit_pic'),
-    path('user/<int:user_id>/privacy/', views.privacy_settings_view, name='privacy_settings'),
     path('500/', views.error_500, name='error_500'),
+    path('accounts/profile/settings/', views.profile_settings, name='profile_settings'),
+    path('accounts/profile/settings/updateUsername', views.update_username, name='update_username'),
+    path('accounts/profile/settings/updatePassword', views.update_password, name='update_password'),
+    path('forget_password/',views.ForgetPassword,name='forget_password'),
+    path('change_password/<token>/',views.ChangePassword,name='change_password'),
+    path('user/<int:user_id>/privacy/', views.privacy_settings_view, name='privacy_settings'),
 ]
 
 if settings.DEBUG:
