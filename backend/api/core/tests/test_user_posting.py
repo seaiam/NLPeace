@@ -40,3 +40,26 @@ class PostTestCase(TestCase):
             'content': '',
             'image': SimpleUploadedFile("../static/testProfilePic.jpg", b"file_content" )})
         self.assertEqual(response.status_code, 200)
+
+class CommentTestCase(TestCase):
+
+    def setUp(self):
+        self.user = User.objects.create_user(username='testuser', password='password')
+        self.client.login(username='testuser', password='password')
+        self.post = Post.objects.create(user=self.user, content='Parent Post')
+    
+    def test_add_comment(self):
+        response = self.client.post(reverse('comment', args=[self.post.id]), {'content': 'Test comment'})
+        self.assertEqual(response.status_code, 302)  #testing that we get redirected
+        self.assertEqual(self.post.replies.count(), 1) #testing that we have 1 reply in the database
+        comment = self.post.replies.first()
+        self.assertEqual(comment.content, 'Test comment') #testing the content of the comment
+
+    def test_invalid_comment(self):
+        response = self.client.post(reverse('comment', args=[self.post.id]), {'content': ''})
+        self.assertEqual(response.status_code, 200) #form validation fail
+        self.assertEqual(self.post.replies.count(), 0) #testing that we have 0 reply in the database
+
+    def test_comment_form(self):
+        response = self.client.get(reverse('comment', args=[self.post.id]))
+        self.assertIsInstance(response.context['form'], PostForm)
