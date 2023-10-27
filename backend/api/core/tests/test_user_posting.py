@@ -37,9 +37,13 @@ class PostTestCase(TestCase):
     
     def test_post_with_image(self):
         response = self.client.post(reverse('home'), {
-            'content': '',
-            'image': SimpleUploadedFile("../static/testProfilePic.jpg", b"file_content" )})
-        self.assertEqual(response.status_code, 200)
+            'content': 'Test post',
+            'image': {'image': SimpleUploadedFile('../static/default.png', b'file_content')}
+        })
+        self.assertEqual(response.status_code, 302)
+        post = Post.objects.first()
+        self.assertIsNotNone(post)
+        self.assertIsNotNone(post.image)
 
 class CommentTestCase(TestCase):
 
