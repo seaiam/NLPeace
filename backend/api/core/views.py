@@ -122,3 +122,8 @@ def privacy_settings_view(request, user_id):
     
     return render(request, 'privacy_settings.html', context)
 
+def error_404(request):
+    return render(request, '404.html', status=404)
+
+def error_500(request):
+    raise ValueError("Error 500, Server error")
