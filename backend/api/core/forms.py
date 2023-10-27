@@ -45,6 +45,11 @@ class EditBioForm(forms.ModelForm):
     class Meta:
         model = Profile
         fields = ['bio']
+        
+class EditUsernameForm(forms.ModelForm):
+    class Meta:
+        model = User
+        fields = ['username']
 
 class EditProfilePicForm(forms.ModelForm):
     class Meta:

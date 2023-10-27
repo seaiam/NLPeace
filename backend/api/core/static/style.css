@@ -1,182 +1,264 @@
-body{
-    font-family: PT Serif;
-    background-color: #00001c;
-  }
-
-  /* For login page */
-
-.login-box{
-    position: absolute;
-    width: 350px;
-    height: 500px;
-    border-radius: 15px;
-    padding: 35px;
-    max-width: 100%;
-    max-height: 100%;
-    left: 0;
-    right: 0;
-    top: 0;
-    bottom: 0;
-    background-image: linear-gradient(0deg, #F9D1C4, #9BBDDD);
-    margin: auto;
-    overflow: auto;
-   
-  }
-
-  .text-center{
-    margin-top: 10px;
-    font-weight: 900;
-    font-size: 2.0rem;
-    color: #00001c;
-    letter-spacing: 1px;
-    font-family: PT Serif;
-  }
-
-  .login-inputs{
-    margin: 15px auto;
-    position: relative;
-    align-items: center;
-    justify-content: center;
-  }
-
-  .form-login{
-    width: 100%;
-    height: 40px;
-    background: #ffffff;
-    margin: 10px auto;
-    padding: 10px;
-    border-color: #000;
-    border-radius: 10px;
-    display: flex;
-  }
-
-  .form-label{
-    color:#00001c;
-  }
-
-  .icons {
-    position: absolute;
-    right: 10px;
-    height: 100%;
-    display: flex;
-    align-items: center;
-    float:right;
-    margin-top:15px;
+body {
+  font-family: PT Serif;
+  background-color: #00001c;
 }
-  
-  .fa-user-alt{
-    color: #00001c;
-  }
-   
-  .fa-lock{
-    color: #00001c;
-  }
 
-  .fa-envelope{
-    color: #00001c;
-  }
+/* For login page */
 
-  .login-button{
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    margin-top:90px;
-  }
+.login-box {
+  position: absolute;
+  width: 350px;
+  height: 500px;
+  border-radius: 15px;
+  padding: 35px;
+  max-width: 100%;
+  max-height: 100%;
+  left: 0;
+  right: 0;
+  top: 0;
+  bottom: 0;
+  background-image: linear-gradient(0deg, #F9D1C4, #9BBDDD);
+  margin: auto;
+  overflow: auto;
 
-  .button1{
-    background: none;
-    border: 1px solid black;
-    border-radius:20px;
-    width:70%;
-    padding:10px;
-    font-weight: 600;
-    transition: 0.5s;
-    background-size: 200% auto;
-    box-shadow: 0 0 20px #eee;
-    background-image: linear-gradient(to right, #F9D1C4 0%, #9BBDDD 51%, #F9D1C4 100%);
-  }
+}
 
-  button:hover {
-    background-position: right center;
-  }
+.tabcontent1 {
+  width: 10rem;
+  margin-left: 50rem;
+}
 
-  .forgot-password{
-    margin-top:5px;
-    position:absolute; 
-    left:39px;
-  }
+.text-center {
+  margin-top: 10px;
+  font-weight: 900;
+  font-size: 2.0rem;
+  color: #00001c;
+  letter-spacing: 1px;
+  font-family: PT Serif;
+}
 
-  .create-account{
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    
-  }
-  .account{
-    position:absolute;
-    bottom:0px;
-    color:#00001c
-  }
+.login-inputs {
+  margin: 15px auto;
+  position: relative;
+  align-items: center;
+  justify-content: center;
+}
 
-   /* For Sign Up page */
-   .signup-box{
-    position: relative;
-    width: 500px;
-    height: 100%;
-    border-radius: 15px;
-    padding: 35px;
-    max-width: 360px;
-    background-image: linear-gradient(0deg, #F9D1C4, #9BBDDD);
-    margin-top:50px;
-    margin-bottom:50px;
-    overflow: auto;
+.form-login {
+  width: 100%;
+  height: 40px;
+  background: #ffffff;
+  margin: 10px auto;
+  padding: 10px;
+  border-color: #000;
+  border-radius: 10px;
+  display: flex;
+}
 
-  }
+.form-label {
+  color: #00001c;
+}
 
+.icons {
+  position: absolute;
+  right: 10px;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  float: right;
+  margin-top: 15px;
+}
 
-  .signup-inputs{
-    position: relative;
-    /* display: flex; */
-    flex-direction: column;
-    align-items: flex-start;
-    margin: 10px auto;
-  }
+.fa-user-alt {
+  color: #00001c;
+}
 
-  .signup-button{
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    margin-top:40px;
-  }
+.fa-lock {
+  color: #00001c;
+}
 
-.button2{
-    background: none;
-    border: 1px solid black;
-    border-radius:20px;
-    width:70%;
-    padding:10px;
-    font-weight: 600;
-    transition: 0.5s;
-    background-size: 200% auto;
-    box-shadow: 0 0 20px #eee;
-    background-image: linear-gradient(to right, #F9D1C4 0%, #9BBDDD 51%, #F9D1C4 100%);
+.fa-envelope {
+  color: #00001c;
+}
+
+.login-button {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-top: 90px;
+}
+
+.button1 {
+  background: none;
+  border: 1px solid black;
+  border-radius: 20px;
+  width: 70%;
+  padding: 10px;
+  font-weight: 600;
+  transition: 0.5s;
+  background-size: 200% auto;
+  box-shadow: 0 0 20px #eee;
+  background-image: linear-gradient(to right, #F9D1C4 0%, #9BBDDD 51%, #F9D1C4 100%);
 }
 
 button:hover {
-    background-position: right center;
+  background-position: right center;
 }
 
-.other-account{
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    margin-top:30px;
-    
+.forgot-password {
+  margin-top: 5px;
+  position: absolute;
+  left: 39px;
 }
 
-.already-account{
-    position:absolute;
-    bottom:0px;
+.create-account {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+}
+
+.account {
+  position: absolute;
+  bottom: 0px;
+  color: #00001c
+}
+
+/* For Sign Up page */
+.signup-box {
+  position: relative;
+  width: 500px;
+  height: 100%;
+  border-radius: 15px;
+  padding: 35px;
+  max-width: 360px;
+  background-image: linear-gradient(0deg, #F9D1C4, #9BBDDD);
+  margin-top: 50px;
+  margin-bottom: 50px;
+  overflow: auto;
+
+}
+
+
+.signup-inputs {
+  position: relative;
+  /* display: flex; */
+  flex-direction: column;
+  align-items: flex-start;
+  margin: 10px auto;
+}
+
+.signup-button {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-top: 40px;
+}
+
+.button2 {
+  background: none;
+  border: 1px solid black;
+  border-radius: 20px;
+  width: 70%;
+  padding: 10px;
+  font-weight: 600;
+  transition: 0.5s;
+  background-size: 200% auto;
+  box-shadow: 0 0 20px #eee;
+  background-image: linear-gradient(to right, #F9D1C4 0%, #9BBDDD 51%, #F9D1C4 100%);
+}
+
+button:hover {
+  background-position: right center;
+}
+
+.other-account {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-top: 30px;
+
+}
+
+.already-account {
+  position: absolute;
+  bottom: 0px;
+}
+
+/* forgot Password */
+
+.forgotPassword-box{
+  position: absolute;
+  width: 350px;
+  height: 500px;
+  border-radius: 15px;
+  padding: 35px;
+  max-width: 100%;
+  max-height: 100%;
+  left: 0;
+  right: 0;
+  top: 0;
+  bottom: 0;
+  background-image: linear-gradient(0deg, #F9D1C4, #9BBDDD);
+  margin: auto;
+  overflow: auto;
+
+}
+
+.descp{
+  text-align: justify;
+  text-justify: inter-word;
+  margin-top:10px;
+}
+
+.forgotPassword-inputs{
+  margin: 15px auto;
+  position: relative;
+  align-items: center;
+  justify-content: center;
+}
+
+.icons1 {
+  position: absolute;
+  right: 10px;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  float:right;
+}
+
+/* change password */
+
+.changepassword-box{
+  position: absolute;
+  width: 350px;
+  height: 500px;
+  border-radius: 15px;
+  padding: 35px;
+  max-width: 100%;
+  max-height: 100%;
+  left: 0;
+  right: 0;
+  top: 0;
+  bottom: 0;
+  background-image: linear-gradient(0deg, #F9D1C4, #9BBDDD);
+  margin: auto;
+  overflow: auto;
+
+}
+
+.changepassword-inputs{
+  margin: 15px auto;
+  position: relative;
+  align-items: center;
+  justify-content: center;
+}
+
+.passwordchange-button{
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-top:90px;
 }
 
 hr{
@@ -185,118 +267,118 @@ hr{
 }
 
 .navbar {
-    background-color: #00001c;
-    position: relative; 
-    z-index: 1000; 
+  background-color: #00001c;
+  position: relative;
+  z-index: 1000;
 }
 
 .btn.btn-dark.d-lg-none {
-    position: absolute;
-    top: 5px;
-    left: 10px;
-    z-index: 1010; 
+  position: absolute;
+  top: 5px;
+  left: 10px;
+  z-index: 1010;
 }
 
 /* Sidebar css */
 .sidebar {
-    position: fixed;
-    top: 60px; 
-    left: 0;
-    height: calc(100% - 60px); 
-    width: 270px;
-    background-color: #00001c; 
-    padding-top: 20px;
+  position: fixed;
+  top: 60px;
+  left: 0;
+  height: calc(100% - 60px);
+  width: 270px;
+  background-color: #00001c;
+  padding-top: 20px;
 }
 
 .sidebar ul {
-    list-style-type: none;
-    padding: 0;
+  list-style-type: none;
+  padding: 0;
 }
 
 .sidebar-item {
-    text-align: left;
-    padding: 15px 50px;
-    transition: all 0.3s;
-    font-size: 1.36em;
-    display: flex;
-    align-items: center;
-    border-radius: 25px;
-    cursor: pointer;
-    transition: background 0.3s;
-    color: #D9D9D9;
+  text-align: left;
+  padding: 15px 50px;
+  transition: all 0.3s;
+  font-size: 1.36em;
+  display: flex;
+  align-items: center;
+  border-radius: 25px;
+  cursor: pointer;
+  transition: background 0.3s;
+  color: #D9D9D9;
 }
 
 .sidebar-item i {
-    margin-right: 10px; 
+  margin-right: 10px;
 }
 
 .sidebar-item:hover {
-    color: black;
-    background: linear-gradient(to right, #F9D1C4 0%, #9BBDDD 51%, #F9D1C4 100%);
-    border-radius: 25px;
-    cursor: pointer;
-    transition: 0.3s;
+  color: black;
+  background: linear-gradient(to right, #F9D1C4 0%, #9BBDDD 51%, #F9D1C4 100%);
+  border-radius: 25px;
+  cursor: pointer;
+  transition: 0.3s;
 }
 
 .sidebar-item a {
-    color: #D9D9D9;
-    text-decoration: none;
-    display: block;
-    width: 100%;
+  color: #D9D9D9;
+  text-decoration: none;
+  display: block;
+  width: 100%;
 }
 
 .sidebar-item a:hover {
-    color: #000;
+  color: #000;
 }
 
 /* Profile Page css */
 .profile-page {
-    padding: 4% 0 0;
-    margin: auto;
-  }
-
-.profile-page .box{
-    margin-top: -31px;
-  margin-bottom: 26px;
-  }
-
-.box {
-    position: relative;
-    z-index: 1;
-    background: #00001c;
-    border-radius: 15px;
-    max-width: 620px;
-    margin: 0 auto 100px;
-    padding: 35px;
-  }
-  
- /* css for user followers and following*/
-.followers{
-    color: #d9d9d9;
-    text-decoration:none;
-  }
-  
-.following{
-    color: #d9d9d9;
-    text-decoration:none;
+  padding: 4% 0 0;
+  margin: auto;
 }
 
-.fa-user-friends{
+.profile-page .box {
+  margin-top: -31px;
+  margin-bottom: 26px;
+}
+
+.box {
+  position: relative;
+  z-index: 1;
+  background: #00001c;
+  border-radius: 15px;
+  max-width: 620px;
+  margin: 0 auto 100px;
+  padding: 35px;
+}
+
+/* css for user followers and following*/
+.followers {
+  color: #d9d9d9;
+  text-decoration: none;
+}
+
+.following {
+  color: #d9d9d9;
+  text-decoration: none;
+}
+
+.fa-user-friends {
   color: #d9d9d9;
 }
 
-.fa-search{
+.fa-search {
   color: #d9d9d9;
 }
 
 /* Banner */
 .banner {
-    background-color: #919196;
-    height: 150px;
-    border-radius: 15px 15px 0 0; 
-    margin-bottom: -60px; 
-    position: relative;
-    z-index: 0;
+  background-color: #919196;
+  height: 150px;
+  border-radius: 15px 15px 0 0;
+  margin-bottom: -60px;
+  position: relative;
+  z-index: 0;
 }
 
 .banner img {
@@ -304,43 +386,43 @@ hr{
   object-fit: cover;
 }
 
- /* Banner pencil icon */
+/* Banner pencil icon */
 .edit-icon {
-    position: absolute; 
-    top: 10px; 
-    right: 10px;
-    cursor: pointer;
-    z-index: 3;
-    color: #00001c;
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  cursor: pointer;
+  z-index: 3;
+  color: #00001c;
 }
 
 /* Profile picture */
 .circle {
-    border-radius: 100% !important;
-    overflow: hidden;
-    width: 125px;
-    height: 125px;
-    border: 3px solid #00001c;
-    vertical-align: middle;
-    position: relative;
-    z-index: 1;
-}
-  
-/* Profile picture upload button */
-.upload-button{
-    padding: 0px 95px;
-    margin: 0 auto;
-    position:relative;
-    top: -25px;
-    color: #d9d9d9;
-    z-index: 2;
+  border-radius: 100% !important;
+  overflow: hidden;
+  width: 125px;
+  height: 125px;
+  border: 3px solid #00001c;
+  vertical-align: middle;
+  position: relative;
+  z-index: 1;
 }
 
-.profile-picture{
-    text-align: center;
-    align-content: center;
-    align-items: center;
-    vertical-align: middle;
+/* Profile picture upload button */
+.upload-button {
+  padding: 0px 95px;
+  margin: 0 auto;
+  position: relative;
+  top: -25px;
+  color: #d9d9d9;
+  z-index: 2;
+}
+
+.profile-picture {
+  text-align: center;
+  align-content: center;
+  align-items: center;
+  vertical-align: middle;
 }
 
 .default-profile-picture {
@@ -349,47 +431,47 @@ hr{
 
 /* edit profile button */
 .row {
-    align-items: center;  
+  align-items: center;
 }
 
 .editButton {
-    display: inline-block;
-    padding: 5px 12px;  
-    border: none;
-    background: linear-gradient(to right, #F9D1C4 0%, #9BBDDD 51%, #F9D1C4 100%);
-    color: #000;
-    text-align: center;
-    border-radius: 50px;
-    transition: background-color 0.3s ease;
-    text-decoration: none;
+  display: inline-block;
+  padding: 5px 12px;
+  border: none;
+  background: linear-gradient(to right, #F9D1C4 0%, #9BBDDD 51%, #F9D1C4 100%);
+  color: #000;
+  text-align: center;
+  border-radius: 50px;
+  transition: background-color 0.3s ease;
+  text-decoration: none;
 }
 
 .editButton:hover {
-    color: black;
-    background: linear-gradient(to right, #F9D1C4 0%, #9BBDDD 51%, #F9D1C4 100%);
-    text-decoration: none;
+  color: black;
+  background: linear-gradient(to right, #F9D1C4 0%, #9BBDDD 51%, #F9D1C4 100%);
+  text-decoration: none;
 }
 
 .tabs {
-    display: flex;
-    justify-content: space-around;
-    padding: 10px 0;
+  display: flex;
+  justify-content: space-around;
+  padding: 10px 0;
 }
 
 .tab {
-    text-decoration: none;
-    color: #D9D9D9;
-    padding: 10px 15px;
-    transition: background-color 0.3s;
+  text-decoration: none;
+  color: #D9D9D9;
+  padding: 10px 15px;
+  transition: background-color 0.3s;
 }
 
 .tab:hover {
-    background-color: #d9d9d9;
+  background-color: #d9d9d9;
 }
 
 .tab.active {
-    border-bottom: 2px solid #D9D9D9;
-    padding-bottom: 8px;
+  border-bottom: 2px solid #D9D9D9;
+  padding-bottom: 8px;
 }
 
 .bio-form {
@@ -405,7 +487,7 @@ hr{
   display: block;
   margin-bottom: 5px;
   font-weight: bold;
-  color:#D9D9D9;
+  color: #D9D9D9;
 }
 
 textarea {
@@ -414,7 +496,7 @@ textarea {
   border-radius: 4px;
   border: 1px solid #D9D9D9;
   font-size: 14px;
-  resize: vertical; 
+  resize: vertical;
   background-color: #d3d3d3;
 }
 
@@ -455,7 +537,7 @@ input[type="file"] {
   background-color: #9f9f9f;
 }
 
-.submitButton{
+.submitButton {
   background: linear-gradient(to right, #F9D1C4 0%, #9BBDDD 51%, #F9D1C4 100%) !important;
   color: #00001c !important;
   border: none;
@@ -463,35 +545,35 @@ input[type="file"] {
   cursor: pointer;
   transition: background 0.5s;
   font-size: 25px;
-  padding-right:30px;
-  padding-left:30px;
+  padding-right: 30px;
+  padding-left: 30px;
 }
 
 /* Popup for Bio */
 .popup {
-  display: none; 
-  position: fixed; 
-  z-index: 3; 
+  display: none;
+  position: fixed;
+  z-index: 3;
   left: 0;
   top: 0;
-  width: 100%; 
-  height: 100%; 
-  overflow: auto; 
-  background-color: rgba(0,0,0,0.4); 
-  align-items: center; 
-  justify-content: center; 
+  width: 100%;
+  height: 100%;
+  overflow: auto;
+  background-color: rgba(0, 0, 0, 0.4);
+  align-items: center;
+  justify-content: center;
 }
 
 /* Popup Content for Bio */
 .popup-content {
   position: relative;
   background-color: #00001c;
-  margin: 15% auto; 
+  margin: 15% auto;
   padding: 20px;
   border: 1px solid #888;
-  width: 80%; 
-  max-width: 500px; 
-  box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2);
+  width: 80%;
+  max-width: 500px;
+  box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2);
 }
 
 .popup-content textarea {
@@ -516,7 +598,7 @@ input[type="file"] {
 
 .saveButton {
   display: inline-block;
-  padding: 5px 25px;  
+  padding: 5px 25px;
   border: none;
   background: linear-gradient(to right, #F9D1C4 0%, #9BBDDD 51%, #F9D1C4 100%);
   color: #000;
@@ -531,14 +613,14 @@ input[type="file"] {
   text-decoration: none;
 }
 
-.biolabel{
-  text-align: left; 
-  color:#D9D9D9;
+.biolabel {
+  text-align: left;
+  color: #D9D9D9;
 }
 
 /* Post Creation Form */
 .card-body {
-  padding-bottom: 1px; 
+  padding-bottom: 1px;
 }
 
 .widget-post__content {
@@ -568,8 +650,8 @@ input[type="file"] {
 
 .post-actions__label {
   cursor: pointer;
-  font-size: 16px; 
-  color:#00001c;
+  font-size: 16px;
+  color: #00001c;
 }
 
 .widget-post__actions {
@@ -579,7 +661,7 @@ input[type="file"] {
 
 .post--actions {
   position: relative;
-  padding: .5em;  
+  padding: .5em;
 }
 
 .post-actions__attachments {
@@ -619,8 +701,17 @@ input[type="file"] {
   white-space: nowrap;
   position: absolute;
   top: 0;
-} 
+}
 
+/* Media Queries */
+@media (max-width: 991.98px) {
+  .sidebar {
+    width: 100%;
+    height: 100%;
+    position: relative;
+    top: 0;
+  }
+}
 
 /* privacy settings page */
 .privacy-box{
@@ -636,22 +727,22 @@ input[type="file"] {
   background-image: linear-gradient(0deg, #F9D1C4, #9BBDDD);
   margin: auto;
   overflow: auto;
- 
+
 }
 
-.privacy-button{
+.privacy-button {
   display: flex;
   justify-content: center;
   align-items: center;
-  margin-top:20px;
+  margin-top: 20px;
 }
 
-.save-Button{
+.save-Button {
   background: none;
   border: 1px solid black;
-  border-radius:20px;
-  width:50%;
-  padding:10px;
+  border-radius: 20px;
+  width: 50%;
+  padding: 10px;
   font-weight: 600;
   transition: 0.5s;
   background-size: 200% auto;
@@ -663,8 +754,8 @@ button:hover {
   background-position: right center;
 }
 
-.profile-link{
-  padding-top:50px;
+.profile-link {
+  padding-top: 50px;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -728,4 +819,3 @@ hr {
         margin-top: 10px;
     }
 }
-

@@ -6,6 +6,8 @@ class Profile(models.Model):
     bio = models.TextField(null=True, blank=True)
     banner = models.ImageField(upload_to='profileBanners/', null=True, blank=True)
     pic = models.ImageField(upload_to='profilePictures/', null=True, blank=True)
+    forget_password_token=models.CharField(max_length=100,default='')
+
     is_private = models.BooleanField(default=True)
 
 class Post(models.Model):
