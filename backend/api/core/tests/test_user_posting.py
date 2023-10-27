@@ -63,3 +63,15 @@ class CommentTestCase(TestCase):
     def test_comment_form(self):
         response = self.client.get(reverse('comment', args=[self.post.id]))
         self.assertIsInstance(response.context['form'], PostForm)
+
+    def test_comment_with_image(self):
+        imageComent={"image": SimpleUploadedFile("../static/default.jpg", b"file_content")}
+        response = self.client.post(reverse('comment', args=[self.post.id]), {
+            'content': 'Test comment with image',
+            'image': imageComent,
+        })
+        self.assertEqual(response.status_code, 302) #testing that we get redirected
+        self.assertEqual(self.post.replies.count(), 1) #testing that we have 1 reply in the database
+        comment = self.post.replies.first()
+        self.assertEqual(comment.content, 'Test comment with image')
+        self.assertIsNotNone(comment.image) #testing the content of the coment
