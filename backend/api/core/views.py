@@ -1,16 +1,19 @@
 from django.http import HttpResponseForbidden
+from django.http import HttpResponseServerError
+from django.http import HttpResponseNotFound
 from api.logger_config import configure_logger # TODO add logging statements
-
+from django.contrib.auth import update_session_auth_hash
 from django.contrib import messages
 from django.contrib.auth import login, authenticate, logout
 from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import login_required
+from django.contrib.auth.forms import PasswordChangeForm
 
 from .forms import *
 import uuid 
 from django.conf import settings
 from django.core.mail import send_mail
-from .models import Profile
+from .models import *
 
 def home(request):
     if request.user.is_authenticated:
@@ -34,6 +37,41 @@ def home(request):
 def profile(request):
     profile = Profile.objects.get_or_create(pk=request.user.id)
     return render(request, 'home.html', {'profile': profile[0], 'form': EditBioForm(instance=profile[0])})
+
+@login_required
+def profile_settings(request):
+    if request.method == 'GET':
+        user = User.objects.get(pk=request.user.id)
+        if user is None:
+            return HttpResponseNotFound
+        return render(request, 'settings.html', {'user': user, 'editUsernameForm': EditUsernameForm(instance=user),'editPasswordForm': PasswordChangeForm(request.user)})
+    
+@login_required
+def update_username(request):
+    if request.method == 'POST':
+        new_user = User.objects.get(pk=request.user.id)
+        if new_user is None:
+            return HttpResponseNotFound
+        
+        form = EditUsernameForm(request.POST, instance=new_user)
+        if form.is_valid():
+            form.save()
+            return redirect('profile')
+    return HttpResponseServerError
+
+@login_required
+def update_password(request):
+    if request.method == 'POST':
+        new_user = User.objects.get(pk=request.user.id)
+        if new_user is None:
+            return HttpResponseNotFound
+        
+        form = PasswordChangeForm(request.user, request.POST)
+        if form.is_valid():
+            user=form.save()
+            update_session_auth_hash(request, user)
+            return redirect('profile')
+    return HttpResponseServerError
 
 def register_user(request):
     if request.method == 'POST':
@@ -99,6 +137,7 @@ def updateBio(request):
             form.save()
         return redirect('profile')
     # TODO render 500
+    
 
 @login_required
 def updateProfilePicture(request):
@@ -153,7 +192,7 @@ def ForgetPassword(request):
         if request.method=="POST":
             email=request.POST.get('email')
             if not User.objects.filter(email=email).first():
-                messages.success(request,'No user found with this email.')
+                messages.warning(request,'No user found with this email.')
                 return redirect('forget_password')
             user_obj=User.objects.get(email=email)
             profile=Profile.objects.get(user=user_obj)
