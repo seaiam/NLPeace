@@ -3,6 +3,36 @@ var modal = document.getElementById("myModal");
 var btn = document.getElementById("editBtn");
 var span = document.getElementsByClassName("close")[0];
 
+const handleOnPhotoClick = () => {
+    const upload = document.getElementById("id_image");
+    upload.click();
+}
+
+const handleOnDeletePhotoClick = () => {
+    const upload = document.getElementById("id_image");
+    const div = document.getElementById("preview_image");
+    const image = div.getElementsByTagName('IMG')[0];
+    upload.value = null;
+    div.style.display = "none"; 
+    image.src = "#";
+}
+
+$(document).ready(() => {
+    const upload = document.getElementById("id_image");
+    const div = document.getElementById("preview_image");
+    const image = div.getElementsByTagName("IMG")[0]
+    upload.addEventListener('change', e => {
+        const reader = new FileReader()
+        if (e.target.files && e.target.files[0]) {
+            reader.onload = () => {
+                image.src = reader.result;
+            };
+            reader.readAsDataURL(e.target.files[0]);
+            div.style.display = "block";
+        }
+    });
+});
+
 // When the user clicks on the button, open the modal
 btn.onclick = function() {
     modal.style.display = "block";
