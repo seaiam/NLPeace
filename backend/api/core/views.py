@@ -15,8 +15,6 @@ from django.conf import settings
 from django.core.mail import send_mail
 from .models import *
 
-logger=configure_logger('view_logger')
-
 def home(request):
     if request.user.is_authenticated:
         if request.method == 'POST':
