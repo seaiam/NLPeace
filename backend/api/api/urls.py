@@ -39,6 +39,8 @@ urlpatterns = [
     path('forget_password/',views.ForgetPassword,name='forget_password'),
     path('change_password/<token>/',views.ChangePassword,name='change_password'),
     path('user/<int:user_id>/privacy/', views.privacy_settings_view, name='privacy_settings'),
+    path('user/<int:user_id>/privacy/', views.privacy_settings_view, name='privacy_settings'),
+    path('comment/<int:post_id>', views.comment, name='comment'),
 ]
 
 if settings.DEBUG:
