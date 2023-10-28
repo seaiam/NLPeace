@@ -15,6 +15,6 @@ class Post(models.Model):
     content = models.CharField(max_length=280)
     image = models.ImageField(upload_to='postImages/', null=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
-
+    parent_post = models.ForeignKey('self', null=True, blank=True, on_delete=models.CASCADE, related_name='replies')
     def __str__(self):
         return self.content

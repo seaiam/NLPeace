@@ -24,7 +24,7 @@ def home(request):
                 post.user = request.user
                 post.save()
                 return redirect('home')
-            
+    
         #User is authenticated
         posts = Post.objects.all().order_by('-created_at')
         form = PostForm()
@@ -229,3 +229,22 @@ def privacy_settings_view(request, user_id):
     
     return render(request, 'privacy_settings.html', context)
 
+def comment(request, post_id):
+    if request.user.is_authenticated:
+        if request.method == 'POST':
+            form = PostForm(request.POST, request.FILES)
+            if form.is_valid():
+                post = form.save(commit=False)
+                post.user = request.user
+                post.parent_post = Post.objects.get(pk=post_id)
+                post.save()
+                return redirect('comment', post_id = post_id)
+        #User is authenticated
+        post = Post.objects.get(pk=post_id)
+        replies = Post.objects.filter(parent_post=post_id)
+        form = PostForm()
+        context = {'post': post, 'form': form, 'replies':replies}
+        return render(request, 'comment.html', context)
+    else:
+        #redirect user to login page
+        return redirect('login')
