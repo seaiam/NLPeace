@@ -32,6 +32,7 @@ urlpatterns = [
     path('accounts/profile/updateBio/', views.updateBio, name='edit_bio'),
     path('accounts/profile/updateBanner/', views.updateProfileBanner, name='edit_banner'),
     path('accounts/profile/updatePic/', views.updateProfilePicture, name='edit_pic'),
+    path('500/', views.error_500, name='error_500'),
     path('accounts/profile/settings/', views.profile_settings, name='profile_settings'),
     path('accounts/profile/settings/updateUsername', views.update_username, name='update_username'),
     path('accounts/profile/settings/updatePassword', views.update_password, name='update_password'),
@@ -41,5 +42,6 @@ urlpatterns = [
     path('user/<int:user_id>/privacy/', views.privacy_settings_view, name='privacy_settings'),
     path('comment/<int:post_id>', views.comment, name='comment'),
 ]
+
 if settings.DEBUG:
     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
