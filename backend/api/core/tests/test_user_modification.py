@@ -1,6 +1,6 @@
 from django.test import TestCase
 from django.urls import reverse
-from core.models import User
+from django.contrib.auth.models import User
 
 class EditBioFormTest(TestCase):
     def setUp(self):

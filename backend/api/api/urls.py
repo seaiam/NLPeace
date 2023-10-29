@@ -16,7 +16,7 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path, include
-from core import views
+from core.views import authentication_views, main_pages_views, profile_views
 from django.conf import settings
 from django.conf.urls.static import static
 from django.contrib.auth import views as auth_views
@@ -24,23 +24,22 @@ from django.contrib.auth import views as auth_views
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('auth/', include("django.contrib.auth.urls")),
-    path('accounts/login/', views.login_user, name="login"),
-    path('logout_user', views.logout_user, name="logout_user"),
-    path('register_user', views.register_user, name='register_user'),
-    path('', views.home, name='home'),
-    path('accounts/profile/', views.profile, name='profile'),
-    path('accounts/profile/updateBio/', views.updateBio, name='edit_bio'),
-    path('accounts/profile/updateBanner/', views.updateProfileBanner, name='edit_banner'),
-    path('accounts/profile/updatePic/', views.updateProfilePicture, name='edit_pic'),
-    path('500/', views.error_500, name='error_500'),
-    path('accounts/profile/settings/', views.profile_settings, name='profile_settings'),
-    path('accounts/profile/settings/updateUsername', views.update_username, name='update_username'),
-    path('accounts/profile/settings/updatePassword', views.update_password, name='update_password'),
-    path('forget_password/',views.ForgetPassword,name='forget_password'),
-    path('change_password/<token>/',views.ChangePassword,name='change_password'),
-    path('user/<int:user_id>/privacy/', views.privacy_settings_view, name='privacy_settings'),
-    path('user/<int:user_id>/privacy/', views.privacy_settings_view, name='privacy_settings'),
-    path('comment/<int:post_id>', views.comment, name='comment'),
+    path('accounts/login/', authentication_views.login_user, name="login"),
+    path('logout_user', authentication_views.logout_user, name="logout_user"),
+    path('register_user', authentication_views.register_user, name='register_user'),
+    path('', main_pages_views.home, name='home'),
+    path('accounts/profile/', main_pages_views.profile, name='profile'),
+    path('accounts/profile/updateBio/', profile_views.updateBio, name='edit_bio'),
+    path('accounts/profile/updateBanner/', profile_views.updateProfileBanner, name='edit_banner'),
+    path('accounts/profile/updatePic/', profile_views.updateProfilePicture, name='edit_pic'),
+    path('500/', main_pages_views.error_500, name='error_500'),
+    path('accounts/profile/settings/', profile_views.profile_settings, name='profile_settings'),
+    path('accounts/profile/settings/updateUsername', profile_views.update_username, name='update_username'),
+    path('accounts/profile/settings/updatePassword', profile_views.update_password, name='update_password'),
+    path('forget_password/', authentication_views.ForgetPassword,name='forget_password'),
+    path('change_password/<token>/',authentication_views.ChangePassword,name='change_password'),
+    path('user/<int:user_id>/privacy/', profile_views.privacy_settings_view, name='privacy_settings'),
+    path('comment/<int:post_id>', main_pages_views.comment, name='comment'),
 ]
 
 if settings.DEBUG:

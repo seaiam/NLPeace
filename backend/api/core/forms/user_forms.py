@@ -1,7 +1,7 @@
 from django.contrib.auth.forms import UserCreationForm
 from django.core.exceptions import ValidationError
 from django import forms
-from .models import Profile, User, Post
+from core.models.models import User
 
 class UserRegistrationForm(UserCreationForm):
     username = forms.CharField(label='Username',widget=forms.TextInput(attrs={'class': 'form-login'}), min_length=4, max_length=50)
@@ -40,41 +40,3 @@ class UserRegistrationForm(UserCreationForm):
             self.cleaned_data['password1'],
         )  
         return user
-
-class EditBioForm(forms.ModelForm):
-    class Meta:
-        model = Profile
-        fields = ['bio']
-        
-class EditUsernameForm(forms.ModelForm):
-    class Meta:
-        model = User
-        fields = ['username']
-
-class EditProfilePicForm(forms.ModelForm):
-    class Meta:
-        model = Profile
-        fields = ['pic']
-
-class EditProfileBannerForm(forms.ModelForm):
-    class Meta:
-        model = Profile
-        fields = ['banner']
-
-class PrivacySettingsForm(forms.ModelForm):
-    is_private = forms.ChoiceField(
-        choices=((False, 'Public'), (True, 'Private')),
-        widget=forms.Select,
-        initial=True
-    )
-
-    class Meta:
-        model = Profile
-        fields = ['is_private']
-
-class PostForm(forms.ModelForm):
-    content = forms.CharField(label='', widget=forms.Textarea(attrs={'class': 'widget-post__textarea scroller', 'style': 'background-color: #D9D9D9;', 'placeholder': 'Start a Post...'}))
-    class Meta:
-        model = Post
-        fields = ['content', 'image','parent_post']
-        widgets = {'image': forms.FileInput(attrs={'style': 'display:none'})}
