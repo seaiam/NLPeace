@@ -1,7 +1,7 @@
 from django.test import TestCase
 from django.urls import reverse
 from django.core.files.uploadedfile import SimpleUploadedFile
-from core.models import User, Profile
+from core.models.models import *
 from django.contrib.messages import get_messages
 
 

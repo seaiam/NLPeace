@@ -2,8 +2,8 @@ from django.test import TestCase
 from django.urls import reverse
 from django.contrib.auth.models import User
 from django.core.files.uploadedfile import SimpleUploadedFile
-from core.models import Post
-from core.forms import PostForm
+from core.models.models import Post
+from core.forms.posting_forms import PostForm
 
 class PostTestCase(TestCase):
     def setUp(self):
