@@ -180,7 +180,7 @@ def ChangePassword(request, token):
             user.set_password(new_password)
             user.save()
             messages.success(request,"You have successfully reset your password.")
-            return redirect(f'/change_password/{token}/')
+            return redirect('home')
         
     except Exception as e:
         print(e)
@@ -201,7 +201,7 @@ def ForgetPassword(request):
             profile.save()
             send_forget_password_mail(email,token)
             messages.success(request,"An email has been sent.")
-            return redirect('forget_password')
+            return redirect('login')
     except Exception as e:
      print(e)
     return render(request,'forget_password.html')
