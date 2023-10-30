@@ -1,8 +1,7 @@
 
 from django.test import TestCase
 from django.urls import reverse
-from core.models import User
-from core.models import Profile
+from core.models.models import User , Profile
 from django.core.exceptions import ObjectDoesNotExist
 
 
@@ -20,7 +19,6 @@ class UserLoginTest(TestCase):
         # Log in directly
         login_success = self.client.login(username=self.username, password=self.password)
         self.assertTrue(login_success)
-
 
 
     def test_incorrect_login(self):
