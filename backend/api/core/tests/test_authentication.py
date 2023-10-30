@@ -81,6 +81,7 @@ class ForgetPasswordTest(TestCase):
         user = User.objects.get(email=self.email)
         profile = Profile.objects.get(user=user)
         self.assertIsNotNone(profile.forget_password_token)
+        self.assertRedirects(response, '/accounts/login/')
 
             #Try a user email that doesn't exist
     def test_forget_password_wrong_email(self):
@@ -93,7 +94,8 @@ class ForgetPasswordTest(TestCase):
         
         #check to see if response shows the desired message
         self.assertContains(response, "No user found with this email.")
-     
+        self.assertRedirects(response, '/forget_password/')
+
        
 class ChangePasswordTest(TestCase):
 
@@ -128,6 +130,7 @@ class ChangePasswordTest(TestCase):
         # Check the response status code and content
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, "You have successfully reset your password.")
+        self.assertRedirects(response, '/accounts/login/')
         
         
 
@@ -146,6 +149,7 @@ class ChangePasswordTest(TestCase):
 
     
         self.assertContains(response, "The passwords are not matching. Make sure they do.")
+        
         
     
    
