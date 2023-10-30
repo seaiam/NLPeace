@@ -3,6 +3,7 @@ from django.http import HttpResponseForbidden
 from django.contrib import messages
 from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import login_required
+from django.shortcuts import get_object_or_404
 
 from core.forms.profile_forms import *
 from core.forms.posting_forms import *
@@ -25,6 +26,19 @@ def home(request):
     else:
         #redirect user to login page
         return redirect('login')
+    
+
+def repost(request, post_id):
+    if request.user.is_authenticated:
+        if request.method == 'POST':
+            original_post = get_object_or_404(Post, id=post_id)
+            repost_content = f"Reposted from @{original_post.user.username}: {original_post.content}"
+            new_post = Post(content=repost_content, user=request.user)
+            new_post.save()
+            return redirect('home')
+    else:
+        return redirect('login')
+
 @login_required
 def profile(request):
     profile = Profile.objects.get_or_create(pk=request.user.id)

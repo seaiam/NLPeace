@@ -40,6 +40,7 @@ urlpatterns = [
     path('change_password/<token>/',authentication_views.ChangePassword,name='change_password'),
     path('user/<int:user_id>/privacy/', profile_views.privacy_settings_view, name='privacy_settings'),
     path('comment/<int:post_id>', main_pages_views.comment, name='comment'),
+    path('repost/<int:post_id>/', main_pages_views.repost, name='repost'),
 ]
 
 if settings.DEBUG:
