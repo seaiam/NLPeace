@@ -80,7 +80,7 @@
                     <div class="feed"> <i class="fa fa-comment" aria-hidden="true"> <a href="{% url 'comment' post_id=post.id %}">Comment</a></i> </div> 
                     <form method="post" action="{% url 'repost' post.id %}">
                         {% csrf_token %}
-                        <button type="submit">Repost</button>
+                        <div class="feed"><i class="fa fa-retweet" aria-hidden="true">  <button type="submit" class = "repost-button">Repost</button></i> </div>
                     </form>                    
                     
                 </div>
