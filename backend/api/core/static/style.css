@@ -613,7 +613,7 @@ input[type="file"] {
   text-decoration: none;
 }
 
-.biolabel {
+.modalTitle {
   text-align: left;
   color: #D9D9D9;
 }
@@ -775,7 +775,7 @@ img {
 .icons-list{
 color: #00001c;
 display: grid;  
-grid-template-columns: 1fr 1.5fr 1fr;  
+grid-template-columns: 1fr 1fr 1fr 1fr;  
 padding-bottom:10px;
 }
 

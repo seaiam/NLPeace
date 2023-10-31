@@ -46,7 +46,7 @@
             <div id="myModal" class="popup">
                 <div class="popup-content">
                     <span class="close">&times;</span>
-                    <p class="biolabel">Update Bio</p>
+                    <p class="modalTitle">Update Bio</p>
                     <form action="updateBio/" method="POST" name="myform" class="bio-form">
                         {% csrf_token %}
                         {{ form.bio }}
