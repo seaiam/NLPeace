@@ -21,7 +21,7 @@ def home(request):
         #User is authenticated
         posts = Post.objects.all().order_by('-created_at')
         form = PostForm()
-        return render(request, 'index.html', {'posts': posts, 'form': form})
+        return render(request, 'index.html', {'posts': posts, 'form': form, 'reportPostForm': PostReportForm()})
     else:
         #redirect user to login page
         return redirect('login')
