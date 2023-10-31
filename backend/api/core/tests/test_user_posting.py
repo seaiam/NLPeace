@@ -79,3 +79,26 @@ class CommentTestCase(TestCase):
         comment = self.post.replies.first()
         self.assertEqual(comment.content, 'Test comment with image')
         self.assertIsNotNone(comment.image) #testing the content of the coment
+
+class RepostTestCase(TestCase):
+    def setUp(self):
+        # Create two users and log in one of them
+        self.user1 = User.objects.create_user(username='testuser1', password='password1')
+        self.user2 = User.objects.create_user(username='testuser2', password='password2')
+        self.client.login(username='testuser2', password='password2')
+
+        # Create an original post by user1
+        self.original_post = Post.objects.create(user=self.user1, content='Original post content')
+
+    def test_repost_post(self):
+        # Repost the original post u
+        response = self.client.post(reverse('repost', args=[self.original_post.id]))
+        self.assertEqual(response.status_code, 302)  # redirect after reposting
+
+        self.assertEqual(Post.objects.count(), 2)  # Check that a new post was created in the database
+
+        # Verify the content of the repost
+        repost = Post.objects.exclude(id=self.original_post.id).first()
+        expected_content = f"Reposted from @{self.original_post.user.username}: {self.original_post.content}"
+        self.assertEqual(repost.content, expected_content)
+        self.assertEqual(repost.user, self.user2)  # Verify that the author of the repost is actually user2
