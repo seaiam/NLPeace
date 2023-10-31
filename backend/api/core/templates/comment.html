@@ -5,24 +5,6 @@
 
 {% block content %}
 
-<script>
-
-    const handleOnPhotoClick = () => {
-        const upload = document.getElementById("id_image");
-        upload.click();
-    }
-
-    const handleOnDeletePhotoClick = () => {
-        const upload = document.getElementById("id_image");
-        const div = document.getElementById("preview_image");
-        const image = div.getElementsByTagName('IMG')[0];
-        upload.value = null;
-        div.style.display = "none"; 
-        image.src = "#";
-    }
-
-</script>
-
 <div class="d-flex justify-content-center align-items-center">   
     <div class="card" style="width: 39rem; background: linear-gradient(to right, #F9D1C4 0%, #9BBDDD 51%, #F9D1C4 100%);  border-radius: 15px; margin-bottom:30px;">
         <div class="card-body">
@@ -96,6 +78,7 @@
                     <div class="feed" ><i class="fa fa-thumbs-up" aria-hidden="true"> Likes</i></div>
                     <div class="feed"> <i class="fa fa-comment" aria-hidden="true"> Comment</i> </div> 
                     <div class="feed"><i class="fa fa-retweet" aria-hidden="true"> Repost</i> </div>
+                    <div class="feed"><i class="fa fa-flag" aria-hidden="true"> Report</i></div>
                 </div>
             </div>
         </div>
@@ -130,27 +113,5 @@
         </div>
     <div>
         {% endfor %}
-
-
-
-<script>
-
-    $(document).ready(() => {
-        const upload = document.getElementById("id_image");
-        const div = document.getElementById("preview_image");
-        const image = div.getElementsByTagName("IMG")[0]
-        upload.addEventListener('change', e => {
-            const reader = new FileReader()
-            if (e.target.files && e.target.files[0]) {
-                reader.onload = () => {
-                    image.src = reader.result;
-                };
-                reader.readAsDataURL(e.target.files[0]);
-                div.style.display = "block";
-            }
-        });
-    });
-
-</script>
 
 {% endblock %}
