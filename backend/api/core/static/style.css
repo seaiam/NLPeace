@@ -791,6 +791,37 @@ hr {
   color: #00001c;
 }
 
+/* seacrh-user css*/
+.search-user-text{
+  color: white;
+  text-align: center;
+}
+
+.user-button {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  /* margin-top: 20px; */
+}
+
+.follow-button {
+  background: none;
+  border: 1px solid black;
+  border-radius: 20px;
+  width: 30%;
+  padding: 10px;
+  font-weight: 600;
+  color: #00001c;
+  transition: 0.5s;
+  background-size: 200% auto;
+  box-shadow: 0 0 20px #eee;
+  background-image: linear-gradient(to right, #F9D1C4 0%, #9BBDDD 51%, #F9D1C4 100%);
+}
+
+button:hover {
+  background-position: right center;
+}
+
 /* Media Queries */
 @media (max-width: 991.98px) { 
     .sidebar {
