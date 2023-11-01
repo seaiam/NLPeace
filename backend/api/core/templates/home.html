@@ -13,9 +13,11 @@
           {% if profile.banner %}
           <img src="{{profile.banner.url}}" class="banner" alt="Banner">
           {% endif %}
+          {% if profile.user.id == request.user.id %}
           <a href="{% url 'edit_banner' %}">
           <i class="fa fa-pencil-alt edit-icon"></i>
           </a>
+          {% endif %}
         </div>
           <div class="row">
               <div class="col-md-5">
@@ -27,9 +29,11 @@
               <img src="{% static 'default.jpg' %}" width="100%" class="profile-picture default-profile-picture" alt="Profile Picture" />
               {% endif %}
               </div>
+              {% if profile.user.id == request.user.id %}
               <a href="{% url 'edit_pic' %}">
                   <i class='fa fa-camera upload-button'></i>
-              </a>      
+              </a> 
+              {% endif %}     
               </div>
           </div>            
         <div class="row">

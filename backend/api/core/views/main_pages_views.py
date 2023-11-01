@@ -30,6 +30,12 @@ def profile(request):
     profile = Profile.objects.get_or_create(pk=request.user.id)
     return render(request, 'home.html', {'profile': profile[0], 'form': EditBioForm(instance=profile[0])})
 
+@login_required
+def guest(request,user_id):
+    user=User.objects.get(pk=user_id)
+    profile=Profile.objects.get(user=user)
+    return render(request,'home.html',{'user':user,'profile':profile})
+
 def comment(request, post_id):
     if request.user.is_authenticated:
         if request.method == 'POST':
