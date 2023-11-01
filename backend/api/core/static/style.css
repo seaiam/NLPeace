@@ -822,6 +822,17 @@ button:hover {
   background-position: right center;
 }
 
+.user-name{
+  /* text-decoration: none; */
+  color:#00001c;
+  font-weight: 500;
+  font-size: 150%;
+}
+
+.user-name, .user-name:visited,.user-name:hover,.user-name:active {
+  text-decoration:none;
+  color: #00001c;
+}
 /* Media Queries */
 @media (max-width: 991.98px) { 
     .sidebar {

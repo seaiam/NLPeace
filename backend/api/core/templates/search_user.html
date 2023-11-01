@@ -36,7 +36,7 @@
                             {% else %}
                                 <img src="{% static 'default.jpg' %}" class="user-pic" alt="{{ result.username }}'s profile picture" />
                             {% endif %}
-                            <a href="{% url 'guest' result.id %}">{{ result.username }}</a>
+                            <a href="{% url 'guest' result.id %}" class="user-name">{{ result.username }}</a>
                         </div>
                         <div class="col-6">
                             <div class="user-button">
