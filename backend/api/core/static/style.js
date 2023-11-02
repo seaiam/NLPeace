@@ -19,9 +19,9 @@ const handleOnDeletePhotoClick = () => {
 
 const handleReportClick = (target) => {
     const modal = document.getElementById("reportModal");
-    const id = document.getElementById("reportedPostId");
+    const id = document.getElementById("id_post");
     modal.style.display = "block";
-    id.value = $(target).siblings()[0].innerHTML;
+    id.value = $(target).siblings()[0].value;
 }
 
 const handleReportClose = () => {

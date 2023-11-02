@@ -11,4 +11,5 @@ class PostForm(forms.ModelForm):
 class PostReportForm(forms.ModelForm):
     class Meta:
         model = PostReport
-        fields = ['category', 'info']
+        fields = ['post', 'category', 'info']
+        widgets = {'post': forms.HiddenInput()}
