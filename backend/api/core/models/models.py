@@ -29,3 +29,7 @@ class PostReport(models.Model):
     post = models.ForeignKey(Post, on_delete=models.CASCADE)
     category = models.IntegerField(choices=Category.choices)
     info = models.TextField(null=True, blank=True)
+    date_reported = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f'{self.reporter.username} -- {PostReport.Category(self.category).name} -- {self.date_reported}'
