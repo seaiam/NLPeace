@@ -764,14 +764,15 @@ img {
 }
 
 .icons-list{
-color: #00001c;
-display: grid;  
-grid-template-columns: 1fr 1.5fr 1fr;  
-padding-bottom:10px;
+  color: #00001c;
+  display: grid;  
+  grid-template-columns: 1fr 1.5fr 1fr;  
+  padding-bottom:10px;
 }
 
 .feed{
   margin-left:20%;
+  font-weight: 800;
 }
 
 hr {
@@ -795,6 +796,15 @@ hr {
 
 .user-pic {
   margin-top: 0;
+}
+
+.comment-link{
+  text-decoration: none !important;
+  color: #00001c;
+}
+
+.comment-link:hover{
+  color: #00001c;
 }
 
 /* Media Queries */
