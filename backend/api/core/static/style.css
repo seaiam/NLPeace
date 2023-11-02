@@ -782,6 +782,21 @@ hr {
   color: #00001c;
 }
 
+/* Aligning Profile picture with posts*/
+.top-aligned-row {
+  align-items: start;
+}
+
+.top-aligned-row .col-2,
+.top-aligned-row .col-10 {
+  padding-top: 0;
+  margin-top: 0;
+}
+
+.user-pic {
+  margin-top: 0;
+}
+
 /* Media Queries */
 @media (max-width: 991.98px) {
   .sidebar {

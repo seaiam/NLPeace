@@ -58,7 +58,7 @@
 <div class="d-flex justify-content-center align-items-center">
         <div class="card" style="width: 39rem; border-radius: 30px;margin:20px 0px 20px 0px;  overflow: hidden;background: linear-gradient(to right, #F9D1C4 0%, #9BBDDD 51%, #F9D1C4 100%);">
             <div class="card-body">
-                <div class = "row">
+                <div class = "row top-aligned-row">
                     <div class = "col-2">
                         {% if post.user.profile and post.user.profile.pic %}
                             <img src="{{ post.user.profile.pic.url }}" alt="{{ post.user.username }}'s profile picture" class="user-pic">
@@ -74,7 +74,7 @@
                 {% if post.image %}
                 <img class="card-img-top mt-2" src="{{ post.image.url }}" alt="Post image" />
                 {% endif %}
-                <h6 class="card-subtitle mb-2" style ="float: right;">{{ post.created_at|date:"F d, Y H:i" }}</h6>
+                <h6 class="card-subtitle mb-2" style ="float: right;">{{ post.created_at|date:"M d, Y H:i" }}</h6>
                 <br>
                 <hr>
                 <div class ="icons-list" >
