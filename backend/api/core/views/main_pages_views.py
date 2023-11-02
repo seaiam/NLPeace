@@ -59,6 +59,7 @@ def report(request):
                 report = form.save(commit=False)
                 report.reporter = request.user
                 report.save()
+                messages.success(request, 'Post successfully reported.')
         return redirect('home')
     return redirect('login')
 
