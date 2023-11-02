@@ -66,12 +66,14 @@
                             <img src="{% static 'default.jpg' %}" class="user-pic" alt="{{ post.user.username }}'s profile picture" />
                         {% endif %}
                     </div>
-                        <h5 class="card-title" style = "padding-bottom: 5%;">@{{ post.user.username }}</h5> 
+                    <div class="col-10">
+                        <h5 class="card-title">@{{ post.user.username }}</h5>
+                        <p class="card-text">{{ post.content }}</p>
+                    </div>
                 </div>
                 {% if post.image %}
                 <img class="card-img-top mt-2" src="{{ post.image.url }}" alt="Post image" />
                 {% endif %}
-                <p class="card-text">{{ post.content }}</p>
                 <h6 class="card-subtitle mb-2" style ="float: right;">{{ post.created_at|date:"F d, Y H:i" }}</h6>
                 <br>
                 <hr>
