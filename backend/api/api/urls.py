@@ -19,7 +19,6 @@ from django.urls import path, include
 from core.views import authentication_views, main_pages_views, profile_views
 from django.conf import settings
 from django.conf.urls.static import static
-from django.contrib.auth import views as auth_views
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -40,7 +39,7 @@ urlpatterns = [
     path('change_password/<token>/',authentication_views.ChangePassword,name='change_password'),
     path('user/<int:user_id>/privacy/', profile_views.privacy_settings_view, name='privacy_settings'),
     path('comment/<int:post_id>', main_pages_views.comment, name='comment'),
-    path('report/', main_pages_views.report, name='report')
+    path('report/', main_pages_views.report, name='report'),
 ]
 
 if settings.DEBUG:
