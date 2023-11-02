@@ -57,3 +57,41 @@ saveBtn.onclick = function() {
     console.log("Bio saved:", bioInput.value);
     modal.style.display = "none";
 }
+
+//Comment
+$(document).ready(() => {
+    const upload = document.getElementById("id_image");
+    const div = document.getElementById("preview_image");
+    const image = div.getElementsByTagName("IMG")[0]
+    upload.addEventListener('change', e => {
+        const reader = new FileReader()
+        if (e.target.files && e.target.files[0]) {
+            reader.onload = () => {
+                image.src = reader.result;
+            };
+            reader.readAsDataURL(e.target.files[0]);
+            div.style.display = "block";
+        }
+    });
+});
+
+//Settings
+function openTab(event, tabName) {           
+    var tabcontent, tabbutton;
+
+    tabcontent = document.getElementsByClassName("tabcontent");
+    for (i = 0; i < tabcontent.length; i++) {
+        tabcontent[i].style.display = "none";
+    }
+
+    tabbutton = document.getElementsByClassName("tabbutton");
+
+    for (i = 0; i < tabbutton.length; i++) {
+        tabbutton[i].className = tabbutton[i].className.replace(" active", "");
+    }
+    document.getElementById(tabName).style.display = "block";
+    event.currentTarget.classList.add("active");
+
+}
+// opening tab 1 by default
+document.getElementById("defaultOpen").click();
