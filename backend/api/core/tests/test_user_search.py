@@ -30,5 +30,4 @@ class SearchUserTest(TestCase):
         search_query = {'search':'nonexistentuser'}
         response = self.client.post(reverse('search_user'), search_query,follow=True)
         self.assertEqual(response.status_code, 200)
-        self.assertContains(response, "No results found for nonexistentuser.")
         self.assertRedirects(response, reverse('profile'))

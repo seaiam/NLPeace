@@ -126,7 +126,7 @@ def search_user(request):
         
           return render(request,'search_user.html',{'search':search,'searched':searched})
          else:
-             messages.success(request, f"No results found for {search}.")
+             messages.success(request, f"No results found for '{search}'.")
     
     return redirect('profile')
 
