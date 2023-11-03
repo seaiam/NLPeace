@@ -26,28 +26,10 @@
             </ul> -->
             <form class="form-inline" method="POST" action="{% url 'search_user' %}">
                 {% csrf_token %}
-                <input class="form-control mr-sm-2" type="search" placeholder="Search" aria-label="Search" name="search" list="search" id="search-input">
-                    <datalist id="search">
-                        {% for user in users %}
-                        <option value="{{user.username}}"  data-url="{% url 'guest' user.id %}" > </option>
-                        {% endfor %}
-                    </datalist>
-                
+                <input class="form-control mr-sm-2" type="search" placeholder="Search" aria-label="Search" name="search"  id="search-input">
                 <button class="btn btn-outline-light my-2 my-sm-0" type="submit">Search</button>
             </form>
         </div>
     </div>
 </nav>
 
-<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-<script>
-    $('#search-input').on('input', function() {
-        var selectedOption = $('#search option[value="' + $(this).val() + '"]');
-        if (selectedOption) {
-            var url = selectedOption.data('url');
-            if (url) {
-                window.location.href = url;
-            }
-        }
-    });
-</script>
