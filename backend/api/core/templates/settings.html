@@ -1,17 +1,62 @@
 {% extends "base.html" %}
+{% load static %}
 
 {% block title %}Settings Page {% endblock %}
 
-<html> 
-<body>
-  {% block content %}  
-
+  {% block content %}
+ 
+ <div class = "container">
   <div class="tab-btns">
     <button class="tabbutton" onclick="openTab(event, 'Account')" id="defaultOpen">Account</button>
     <button class="tabbutton" onclick="openTab(event, 'Password')">Password</button>
   </div>
 
+
+
 <div id="Account" class="tabcontent">
+    <div class = "d-flex align-items-center justify-content-center">
+        <div class="card" style="width: 40rem; border-radius: 30px; margin:50px; overflow: hidden;background: linear-gradient(to right, #F9D1C4 0%, #9BBDDD 51%, #F9D1C4 100%);">
+            <div class="card-body">
+                <form action={% url 'update_username' %} method="post" name="editUsernameForm">
+                    {% csrf_token %}
+                        <div class="text-left">Change your Username</div>
+                            <div class="card-text">
+                                {{ editUsernameForm.username }}
+                            </div>
+                            <div class="username-button">
+                                <button type="submit" class="btn btn-default">Save Changes</button>
+                        </div>  
+                </form>     
+            </div>  
+         </div>
+    </div>
+</div>
+
+<div id="Password" class="tabcontent">
+    <div class = "d-flex align-items-center justify-content-center">
+        <div class="card" style="width: 50rem; border-radius: 30px; margin:50px; overflow: hidden;background: linear-gradient(to right, #F9D1C4 0%, #9BBDDD 51%, #F9D1C4 100%);">
+            <div class="card-body">
+                <form action={% url 'update_password' %} method="post" name="editPasswordForm">
+                    {% csrf_token %}
+                        <div class="text-left">Change your Password</div>
+                            <div class = "edit-inputs">          
+                                {{editPasswordForm}}  
+                                {% comment %}
+                                <!-- <input type="password" placeholder="Enter your new Password" class="settings-textbox" required>                       
+                                <input type="password" placeholder="Confirm new Password" class="settings-textbox" required> -->
+                                {% endcomment %}
+                            </div>
+                        <div class="username-button">
+                            <button type="submit" class="btn btn-default">Save Changes</button>                    
+                        </div>                                        
+                </form>   
+            </div>  
+         </div>
+    </div>
+</div>
+</div>
+
+<!-- <div id="Account" class="tabcontent">
     <div class="container">    
         <form action={% url 'update_username' %} method="post" name="editUsernameForm">
             {% csrf_token %}
@@ -26,9 +71,9 @@
                 </div>                              
             </div>
         </form>         
-    </div>
+    </div> -->
         
-    <div id="Password" class="tabcontent1 d-flex justify-content-center">
+    <!-- <div id="Password" class="tabcontent">
         <div class="container"> 
             <form action={% url 'update_password' %} method="post" name="editPasswordForm">
                 {% csrf_token %}
@@ -39,15 +84,15 @@
                             {% comment %} <input type="password" placeholder="Enter your new Password" class="settings-textbox" required>                       
                             <input type="password" placeholder="Confirm new Password" class="settings-textbox" required> {% endcomment %}
                         </div>
-                    </div>
+                  
                     <div class="signup-button">
                         <button type="submit" class="button2">Save Changes</button>                    
                     </div>                                        
                 </div>
-            </form>              
-        </div>
-    </div>
-</div>
+            </form>   
+        </div>           
+        </div> -->
+
+
+    
 {% endblock %}
-</body>
-</html>

@@ -10,6 +10,7 @@ class EditUsernameForm(forms.ModelForm):
     class Meta:
         model = User
         fields = ['username']
+        widgets = {'username': forms.TextInput(attrs={'class': 'form-username'})}
 
 class EditProfilePicForm(forms.ModelForm):
     class Meta:
