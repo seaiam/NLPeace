@@ -18,3 +18,18 @@ class Post(models.Model):
     parent_post = models.ForeignKey('self', null=True, blank=True, on_delete=models.CASCADE, related_name='replies')
     def __str__(self):
         return self.content
+
+class PostReport(models.Model):
+    class Category(models.IntegerChoices):
+        HATE = 0, 'Hate'
+        ABUSE_AND_HARASSMENT = 1, 'Abuse and harassment'
+        VIOLENT_SPEECH = 2, 'Violent speech'
+
+    reporter = models.ForeignKey(User, on_delete=models.DO_NOTHING)
+    post = models.ForeignKey(Post, on_delete=models.CASCADE)
+    category = models.IntegerField(choices=Category.choices)
+    info = models.TextField(null=True, blank=True)
+    date_reported = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f'{self.reporter.username} -- {PostReport.Category(self.category).name} -- {self.date_reported}'
