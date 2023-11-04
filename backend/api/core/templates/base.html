@@ -65,7 +65,7 @@
         {% endblock %}
     </div>   
 
-    <div class="container">
+    <!-- <div class="container">
         {% if messages %}
             {% for message in messages %}
                 <div class="alert alert-warning alert-dismissible fade show"
@@ -78,7 +78,18 @@
             {% endfor %}
         
         {% endif %}
-    </div>
+    </div> -->
+            <div class="container">
+                    {% if messages %}
+                    {% for message in messages %}
+                <div class="alert alert-warning alert-dismissible fade show ">
+                    {{ message }}
+                    <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
+                    {% endfor %}
+                    
+                    {% endif %}
+                </div>
+            </div>
 
 
     <!--NEW PAGES EXTEND CONTENT BLOCK-->

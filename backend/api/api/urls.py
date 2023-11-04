@@ -39,6 +39,9 @@ urlpatterns = [
     path('change_password/<token>/',authentication_views.ChangePassword,name='change_password'),
     path('user/<int:user_id>/privacy/', profile_views.privacy_settings_view, name='privacy_settings'),
     path('comment/<int:post_id>', main_pages_views.comment, name='comment'),
+    path('accounts/profile/search/',profile_views.search_user,name="search_user"),
+    path('guest/<int:user_id>/', main_pages_views.guest ,name="guest"),
+    
     path('report/', main_pages_views.report, name='report'),
 ]
 
