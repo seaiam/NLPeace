@@ -19,7 +19,6 @@ from django.urls import path, include
 from core.views import authentication_views, main_pages_views, profile_views
 from django.conf import settings
 from django.conf.urls.static import static
-from django.contrib.auth import views as auth_views
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -43,6 +42,7 @@ urlpatterns = [
     path('accounts/profile/search/',profile_views.search_user,name="search_user"),
     path('guest/<int:user_id>/', main_pages_views.guest ,name="guest"),
     
+    path('report/', main_pages_views.report, name='report'),
 ]
 
 if settings.DEBUG:

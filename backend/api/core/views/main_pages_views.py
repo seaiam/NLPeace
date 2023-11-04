@@ -21,7 +21,7 @@ def home(request):
         #User is authenticated
         posts = Post.objects.all().order_by('-created_at')
         form = PostForm()
-        return render(request, 'index.html', {'posts': posts, 'form': form})
+        return render(request, 'index.html', {'posts': posts, 'form': form, 'reportPostForm': PostReportForm()})
     else:
         #redirect user to login page
         return redirect('login')
@@ -57,6 +57,20 @@ def comment(request, post_id):
     else:
         #redirect user to login page
         return redirect('login')
+
+@login_required
+def report(request):
+    if request.user.is_authenticated:
+        if request.method == 'POST':
+            form = PostReportForm(request.POST)
+            if form.is_valid():
+                report = form.save(commit=False)
+                report.reporter = request.user
+                report.save()
+                messages.success(request, 'Post successfully reported.')
+        return redirect('home')
+    return redirect('login')
+
 
 def error_404(request):
     return render(request, '404.html', status=404)
