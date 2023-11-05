@@ -4,6 +4,7 @@ from django.contrib.auth.models import User
 from django.core.files.uploadedfile import SimpleUploadedFile
 from core.models.models import Post
 from core.forms.posting_forms import PostForm
+from core.models.models import Repost
 
 class PostTestCase(TestCase):
     def setUp(self):
@@ -80,25 +81,25 @@ class CommentTestCase(TestCase):
         self.assertEqual(comment.content, 'Test comment with image')
         self.assertIsNotNone(comment.image) #testing the content of the coment
 
+
 class RepostTestCase(TestCase):
     def setUp(self):
-        # Create two users and log in one of them
-        self.user1 = User.objects.create_user(username='testuser1', password='password1')
-        self.user2 = User.objects.create_user(username='testuser2', password='password2')
-        self.client.login(username='testuser2', password='password2')
-
-        # Create an original post by user1
-        self.original_post = Post.objects.create(user=self.user1, content='Original post content')
+        self.user = User.objects.create_user(username='testuser', password='password')
+        self.other_user = User.objects.create_user(username='otheruser', password='password')
+        self.post = Post.objects.create(user=self.other_user, content='Test post')
+        self.client.login(username='testuser', password='password')
 
     def test_repost_post(self):
-        # Repost the original post u
-        response = self.client.post(reverse('repost', args=[self.original_post.id]))
-        self.assertEqual(response.status_code, 302)  # redirect after reposting
+        response = self.client.post(reverse('repost', kwargs={'post_id': self.post.id}))
+        self.assertEqual(response.status_code, 302)  # Expect a redirect after reposting
+        self.assertEqual(Repost.objects.count(), 1) # Check that repost was created in database
 
-        self.assertEqual(Post.objects.count(), 2)  # Check that a new post was created in the database
+        repost = Repost.objects.first()
+        self.assertEqual(repost.post, self.post)
+        self.assertEqual(repost.user, self.user)
 
-        # Verify the content of the repost
-        repost = Post.objects.exclude(id=self.original_post.id).first()
-        expected_content = f"Reposted from @{self.original_post.user.username}: {self.original_post.content}"
-        self.assertEqual(repost.content, expected_content)
-        self.assertEqual(repost.user, self.user2)  # Verify that the author of the repost is actually user2
+    def test_repost_unauthenticated(self):
+        self.client.logout()
+        response = self.client.post(reverse('repost', kwargs={'post_id': self.post.id}))
+        self.assertEqual(response.status_code, 302)  # redirect to login
+        self.assertEqual(Repost.objects.count(), 0)  # repost not created in the database
