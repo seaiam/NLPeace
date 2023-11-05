@@ -24,7 +24,7 @@ def home(request):
         form = PostForm()
         reposted_post_ids = Repost.objects.filter(user=request.user).values_list('post_id', flat=True)
     
-        return render(request, 'index.html', {'posts': posts, 'form': form, 'reposted_post_ids': reposted_post_ids})
+        return render(request, 'index.html', {'posts': posts, 'form': form, 'reportPostForm': PostReportForm(), 'reposted_post_ids': reposted_post_ids})
     else:
         #redirect user to login page
         return redirect('login')
@@ -42,7 +42,15 @@ def repost(request, post_id):
 @login_required
 def profile(request):
     profile = Profile.objects.get_or_create(pk=request.user.id)
+   
     return render(request, 'home.html', {'profile': profile[0], 'form': EditBioForm(instance=profile[0])})
+
+@login_required
+def guest(request,user_id):
+    user=User.objects.get(pk=user_id)
+    profile=Profile.objects.get(user=user)
+    
+    return render(request,'home.html',{'user':user,'profile':profile,})
 
 def comment(request, post_id):
     if request.user.is_authenticated:
@@ -63,6 +71,20 @@ def comment(request, post_id):
     else:
         #redirect user to login page
         return redirect('login')
+
+@login_required
+def report(request):
+    if request.user.is_authenticated:
+        if request.method == 'POST':
+            form = PostReportForm(request.POST)
+            if form.is_valid():
+                report = form.save(commit=False)
+                report.reporter = request.user
+                report.save()
+                messages.success(request, 'Post successfully reported.')
+        return redirect('home')
+    return redirect('login')
+
 
 def error_404(request):
     return render(request, '404.html', status=404)

@@ -2,7 +2,7 @@ from django.test import TestCase
 from django.urls import reverse
 from django.contrib.auth.models import User
 from django.core.files.uploadedfile import SimpleUploadedFile
-from core.models.models import Post
+from core.models.models import Post, PostReport
 from core.forms.posting_forms import PostForm
 from core.models.models import Repost
 
@@ -81,7 +81,6 @@ class CommentTestCase(TestCase):
         self.assertEqual(comment.content, 'Test comment with image')
         self.assertIsNotNone(comment.image) #testing the content of the coment
 
-
 class RepostTestCase(TestCase):
     def setUp(self):
         self.user = User.objects.create_user(username='testuser', password='password')
@@ -103,3 +102,16 @@ class RepostTestCase(TestCase):
         response = self.client.post(reverse('repost', kwargs={'post_id': self.post.id}))
         self.assertEqual(response.status_code, 302)  # redirect to login
         self.assertEqual(Repost.objects.count(), 0)  # repost not created in the database
+
+class ReportTestCase(TestCase):
+    def setUp(self):
+        self.user = User.objects.create_user(username='testuser', password='password')
+        self.client.login(username='testuser', password='password')
+        self.post = Post.objects.create(user=self.user, content='testpost')
+    
+    def test_report_post(self):
+        response = self.client.post(reverse('report'), {'post': self.post.id, 'category': 0})
+        reports = PostReport.objects.all()
+        self.assertEqual(response.status_code, 302)
+        self.assertEqual(1, reports.count())
+

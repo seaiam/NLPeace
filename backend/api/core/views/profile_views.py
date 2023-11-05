@@ -13,6 +13,7 @@ import uuid
 from django.conf import settings
 from django.core.mail import send_mail
 from core.models.models import *
+from django.contrib.auth.models import User
 
 @login_required
 def profile_settings(request):
@@ -111,3 +112,21 @@ def privacy_settings_view(request, user_id):
     }
     
     return render(request, 'privacy_settings.html', context)
+
+@login_required
+def search_user(request):
+    if request.method=="POST":
+        #Grab the value of search from the form
+        search=request.POST.get('search')
+        # if the ther is searching then grab the searched user
+        if search:
+         searched=User.objects.filter(username__icontains=search)
+        #Display search results if searched exists
+         if searched:
+        
+          return render(request,'search_user.html',{'search':search,'searched':searched})
+         else:
+             messages.success(request, f"No results found for '{search}'.")
+    
+    return redirect('profile')
+
