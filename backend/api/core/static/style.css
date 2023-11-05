@@ -808,12 +808,18 @@ button:focus {
 border: none;
 padding: 0;
 background: none;
-color: blue;
+color: #0047ab;
 font-style: italic;
 }
 
 .feed-reposted{
-  color:blue;
+  color:#0047ab;
+}
+
+.repost-info{
+  font-weight: bold;
+  margin-bottom:10px;
+  font-size: large;
 }
 
 /* Media Queries */

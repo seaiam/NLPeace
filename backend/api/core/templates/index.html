@@ -58,18 +58,15 @@
 <div class="d-flex justify-content-center align-items-center">
         <div class="card" style="width: 39rem; border-radius: 30px;margin:20px 0px 20px 0px;  overflow: hidden;background: linear-gradient(to right, #F9D1C4 0%, #9BBDDD 51%, #F9D1C4 100%);">
             <div class="card-body">
+                    {% if post.reposts.all %}
+                    {% for repost in post.reposts.all %}
+                        <div class="repost-info">
+                            Reposted by @{{ repost.user.username }}
+                        </div>
+                    {% endfor %}
+                    {% endif %}
                 <div class = "row">
                     <div class = "col-2">
-                        {% if post.reposts.all %}
-                        <div class="repost-info">
-                        Reposted by
-                        </div>
-                        {% for repost in post.reposts.all %}
-                            <div class="repost-info">
-                                @{{ repost.user.username }}
-                            </div>
-                        {% endfor %}
-                        {% endif %}
                         {% if post.user.profile and post.user.profile.pic %}
                             <img src="{{ post.user.profile.pic.url }}" alt="{{ post.user.username }}'s profile picture" class="user-pic">
                         {% else %}
@@ -91,20 +88,17 @@
                     <form method="post" action="{% url 'repost' post.id %}">
                         {% csrf_token %}
                         {% if post.id in reposted_post_ids %}
-                            <!-- <button type="button" class="reposted-button" disabled>Reposted</button> -->
                             <div class="feed-reposted"><i class="fa fa-retweet" aria-hidden="true">  <button type="button" class = "reposted-button" disabled>Reposted</button></i> </div>
                         {% else %}
                         <div class="feed"><i class="fa fa-retweet" aria-hidden="true">  <button type="submit" class = "repost-button">Repost</button></i> </div>
                         {% endif %}
                     </form>
-                    
-  
-  </div>
+                </div>
                    
                     
-                </div>
             </div>
         </div>
+    </div>
 </div>
 
 
