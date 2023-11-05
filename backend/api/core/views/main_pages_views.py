@@ -4,6 +4,7 @@ from django.contrib import messages
 from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import get_object_or_404
+from itertools import chain
 
 from core.forms.profile_forms import *
 from core.forms.posting_forms import *
@@ -37,12 +38,20 @@ def repost(request, post_id):
     else:
         return redirect('login')
 
-
-
 @login_required
 def profile(request):
     profile = Profile.objects.get_or_create(pk=request.user.id)
-    return render(request, 'home.html', {'profile': profile[0], 'form': EditBioForm(instance=profile[0])})
+    posts = Post.objects.filter(user = request.user)
+    reposts = Repost.objects.filter(user = request.user)
+    #we combine all user posts and reposts to show them chronogically on the user profile
+    all_Posts = list(chain(posts, reposts))
+    all_Posts.sort(key=lambda item: item.created_at, reverse=True)
+    context = {
+        'profile': profile[0], 
+        'form': EditBioForm(instance=profile[0]),
+        'posts': all_Posts
+        }
+    return render(request, 'home.html', context)
 
 def comment(request, post_id):
     if request.user.is_authenticated:
