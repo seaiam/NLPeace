@@ -133,6 +133,13 @@ def search_user(request):
          else:
              messages.success(request, f"No results found for '{search}'.")
 
+    search=request.session.get('search')
+    if search is not None :
+         searched=User.objects.filter(username__icontains=search)
+         return render(request,'search_user.html',{'search':search,'searched':searched})
+    #else: 
+       # return redirect('profile')
+   # messages.success(request, f"{search} and {searched}.")
     return redirect('profile')
 
 
@@ -144,6 +151,10 @@ def follow_user(request):
         following_user_id = request.POST.get('following_user')
         followed_user=User.objects.get(pk=followed_user_id)
         following_user=User.objects.get(pk=following_user_id)
+        search=request.POST.get('search')
+        request.session['search'] = search
+        
+
         if followed_user.profile.is_private:
             followed_user.profile.follow_requests.add(following_user)
             messages.success(request,'A follow request has been sent.')
@@ -168,6 +179,8 @@ def unfollow_user(request):
         unfollowing_user_id = request.POST.get('unfollowing_user')
         unfollowed_user=User.objects.get(pk=unfollowed_user_id)
         unfollowing_user=User.objects.get(pk=unfollowing_user_id)
+        search=request.POST.get('search')
+        request.session['search'] = search
         if unfollowed_user.profile.is_private:
             unfollowed_user.profile.follow_requests.remove(unfollowing_user)
             unfollowed_user.save()
