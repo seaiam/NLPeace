@@ -22,13 +22,36 @@
                             <a href="{% url 'guest' result.id %}" class="user-name">{{ result.username }}</a>
                         </div>
                         <div class="col-6">
-                            <div class="user-button">
-                                <button class="follow-button">Follow</button>
+                            <div class="user-button" >
+                                {% if request.user in result.profile.followers.all %}
+                     <form method="POST" action="{% url 'unfollow_user' %}">
+                        {% csrf_token %}
+                        <input type="hidden" name="followed_user" value="{{ result.id }}" readonly/>
+                        <input type="hidden" name="following_user" value="{{ request.user.id }}" readonly/>
+                        <button type="submit">Unfollow</button>
+                    </form>
+                    
+                    {% elif request.user in result.profile.follow_requests.all %}
+                    <form method="POST" action="{% url 'unfollow_user' %}">
+                        {% csrf_token %}
+                     <input type="hidden" name="unfollowed_user" value="{{ result.id }}" readonly/>
+                     <input type="hidden" name="unfollowing_user" value="{{ request.user.id }}" readonly/>
+                    <button type="submit">Requested</button>
+                    </form>
+                
+                {% else %}
+                    <form method="POST" action="{% url 'follow_user' %}">
+                        {% csrf_token %}
+                        <input type="hidden" name="followed_user" value="{{ result.id }}" readonly/>
+                    <input type="hidden" name="following_user" value="{{ request.user.id }}" readonly/>
+    <button type="submit">Follow</button> 
+                    </form>
+              
                             </div>
                         </div>
                     </div>
                     <hr>
-                  
+                    {% endif %}
                 {% endfor %}
             </div>
         </div>

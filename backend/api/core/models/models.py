@@ -3,11 +3,13 @@ from django.db import models
 
 class Profile(models.Model):
     user = models.OneToOneField(User, on_delete=models.RESTRICT, primary_key=True)
+    following=models.ManyToManyField(User,related_name='following',blank=True)
+    followers=models.ManyToManyField(User,related_name='followers',blank=True)
+    follow_requests = models.ManyToManyField(User, related_name='follow_requests', blank=True)
     bio = models.TextField(null=True, blank=True)
     banner = models.ImageField(upload_to='profileBanners/', null=True, blank=True)
     pic = models.ImageField(upload_to='profilePictures/', null=True, blank=True)
     forget_password_token=models.CharField(max_length=100,default='')
-
     is_private = models.BooleanField(default=True)
 
 class Post(models.Model):

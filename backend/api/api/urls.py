@@ -41,8 +41,9 @@ urlpatterns = [
     path('comment/<int:post_id>', main_pages_views.comment, name='comment'),
     path('accounts/profile/search/',profile_views.search_user,name="search_user"),
     path('guest/<int:user_id>/', main_pages_views.guest ,name="guest"),
-    
     path('report/', main_pages_views.report, name='report'),
+    path('follow/', profile_views.follow_user ,name="follow_user"),
+    path('unfollow/', profile_views.unfollow_user ,name="unfollow_user"),
 ]
 
 if settings.DEBUG:

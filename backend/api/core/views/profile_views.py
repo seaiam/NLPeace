@@ -14,6 +14,10 @@ from django.conf import settings
 from django.core.mail import send_mail
 from core.models.models import *
 from django.contrib.auth.models import User
+from django.urls import reverse
+from django.http import HttpResponseRedirect
+
+
 
 @login_required
 def profile_settings(request):
@@ -115,6 +119,7 @@ def privacy_settings_view(request, user_id):
 
 @login_required
 def search_user(request):
+    
     if request.method=="POST":
         #Grab the value of search from the form
         search=request.POST.get('search')
@@ -127,6 +132,57 @@ def search_user(request):
           return render(request,'search_user.html',{'search':search,'searched':searched})
          else:
              messages.success(request, f"No results found for '{search}'.")
-    
+
     return redirect('profile')
+
+
+
+@login_required
+def follow_user(request):
+    if request.method == 'POST':
+        followed_user_id = request.POST.get('followed_user')
+        following_user_id = request.POST.get('following_user')
+        followed_user=User.objects.get(pk=followed_user_id)
+        following_user=User.objects.get(pk=following_user_id)
+        if followed_user.profile.is_private:
+            followed_user.profile.follow_requests.add(following_user)
+            messages.success(request,'A follow request has been sent.')
+            followed_user.save()    
+        else:
+            followed_user.profile.followers.add(following_user)
+            following_user.profile.follows.add(followed_user)
+            followed_user.save()
+            following_user.save()
+            messages.success(request,f"You have started following '{followed_user}'.")
+   
+    return HttpResponseRedirect(request.META.get('HTTP_REFERER', '/'))
+   
+    
+
+    
+
+@login_required
+def unfollow_user(request):
+    if request.method == 'POST':
+        unfollowed_user_id = request.POST.get('unfollowed_user')
+        unfollowing_user_id = request.POST.get('unfollowing_user')
+        unfollowed_user=User.objects.get(pk=unfollowed_user_id)
+        unfollowing_user=User.objects.get(pk=unfollowing_user_id)
+        if unfollowed_user.profile.is_private:
+            unfollowed_user.profile.follow_requests.remove(unfollowing_user)
+            unfollowed_user.save()
+        else:
+            unfollowed_user.profile.followers.remove(unfollowing_user)
+            unfollowing_user.profile.follows.remove(unfollowed_user)
+            unfollowed_user.save()
+            unfollowing_user.save()
+        
+    return HttpResponseRedirect(request.META.get('HTTP_REFERER', '/'))
+   
+
+
+
+
+
+
 
