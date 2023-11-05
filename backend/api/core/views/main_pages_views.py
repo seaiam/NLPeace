@@ -26,18 +26,16 @@ def home(request):
     else:
         #redirect user to login page
         return redirect('login')
-    
 
 def repost(request, post_id):
     if request.user.is_authenticated:
-        if request.method == 'POST':
-            original_post = get_object_or_404(Post, id=post_id)
-            repost_content = f"Reposted from @{original_post.user.username}: {original_post.content}"
-            new_post = Post(content=repost_content, user=request.user)
-            new_post.save()
-            return redirect('home')
+        post_to_repost = Post.objects.get(id=post_id)
+        Repost.objects.create(post=post_to_repost, user=request.user)
+        return redirect('home')
     else:
         return redirect('login')
+
+
 
 @login_required
 def profile(request):
