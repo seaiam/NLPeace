@@ -25,10 +25,10 @@ class EditProfileBannerForm(forms.ModelForm):
 class PrivacySettingsForm(forms.ModelForm):
     is_private = forms.ChoiceField(
         choices=((False, 'Public'), (True, 'Private')),
-        widget=forms.Select,
+        widget=forms.Select(attrs={'class': 'form-privacy'}),
         initial=True
     )
 
     class Meta:
         model = Profile
-        fields = ['is_private']
+        fields = ['is_private'] 

@@ -74,24 +74,3 @@ $(document).ready(() => {
         }
     });
 });
-
-//Settings
-function openTab(event, tabName) {           
-    var tabcontent, tabbutton;
-
-    tabcontent = document.getElementsByClassName("tabcontent");
-    for (i = 0; i < tabcontent.length; i++) {
-        tabcontent[i].style.display = "none";
-    }
-
-    tabbutton = document.getElementsByClassName("tabbutton");
-
-    for (i = 0; i < tabbutton.length; i++) {
-        tabbutton[i].className = tabbutton[i].className.replace(" active", "");
-    }
-    document.getElementById(tabName).style.display = "block";
-    event.currentTarget.classList.add("active");
-
-}
-// opening tab 1 by default
-document.getElementById("defaultOpen").click();
