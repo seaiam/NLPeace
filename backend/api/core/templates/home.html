@@ -88,8 +88,8 @@
       {% if request.user in profile.followers.all %}
       <form method="POST" action="{% url 'unfollow_user' %}">
          {% csrf_token %}
-         <input type="hidden" name="followed_user" value="{{ profile.user.id }}" readonly/>
-         <input type="hidden" name="following_user" value="{{ request.user.id }}" readonly/>
+         <input type="hidden" name="unfollowed_user" value="{{ profile.user.id }}" readonly/>
+         <input type="hidden" name="unfollowing_user" value="{{ request.user.id }}" readonly/>
          <button type="submit">Unfollow</button>
      </form>
      

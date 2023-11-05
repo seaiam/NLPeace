@@ -161,10 +161,10 @@ def follow_user(request):
             followed_user.save()    
         else:
             followed_user.profile.followers.add(following_user)
-            following_user.profile.follows.add(followed_user)
+            following_user.profile.following.add(followed_user)
             followed_user.save()
             following_user.save()
-            messages.success(request,f"You have started following '{followed_user}'.")
+            messages.success(request,f"You have started following {followed_user}.")
    
     return HttpResponseRedirect(request.META.get('HTTP_REFERER', '/'))
    
@@ -186,7 +186,7 @@ def unfollow_user(request):
             unfollowed_user.save()
         else:
             unfollowed_user.profile.followers.remove(unfollowing_user)
-            unfollowing_user.profile.follows.remove(unfollowed_user)
+            unfollowing_user.profile.following.remove(unfollowed_user)
             unfollowed_user.save()
             unfollowing_user.save()
         
