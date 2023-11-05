@@ -125,7 +125,7 @@ def search_user(request):
         search=request.POST.get('search')
         # if the ther is searching then grab the searched user
         if search:
-         searched=User.objects.filter(username__icontains=search)
+         searched=User.objects.filter(username__icontains=search).order_by('username')
         #Display search results if searched exists
          if searched:
         
@@ -135,7 +135,7 @@ def search_user(request):
 
     search=request.session.get('search')
     if search is not None :
-         searched=User.objects.filter(username__icontains=search)
+         searched=User.objects.filter(username__icontains=search).order_by('username')
          return render(request,'search_user.html',{'search':search,'searched':searched})
     #else: 
        # return redirect('profile')
