@@ -90,7 +90,11 @@
                     <div class="feed"> <i class="fa fa-comment" aria-hidden="true"> <a href="{% url 'comment' post_id=post.id %}">Comment</a></i> </div> 
                     <form method="post" action="{% url 'repost' post.id %}">
                         {% csrf_token %}
-                        <button type="submit" class="repost-button">Repost</button>
+                        {% if post.id in reposted_post_ids %}
+                            <button type="button" class="repost-button" disabled>Reposted</button>
+                        {% else %}
+                            <button type="submit" class="repost-button">Repost</button>
+                        {% endif %}
                     </form>
                     
   
