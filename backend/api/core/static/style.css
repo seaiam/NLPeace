@@ -804,6 +804,18 @@ button:focus {
   outline: none;
 }
 
+.reposted-button{
+border: none;
+padding: 0;
+background: none;
+color: blue;
+font-style: italic;
+}
+
+.feed-reposted{
+  color:blue;
+}
+
 /* Media Queries */
 @media (max-width: 991.98px) { 
     .sidebar {
