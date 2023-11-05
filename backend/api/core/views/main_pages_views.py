@@ -3,6 +3,7 @@ from django.http import HttpResponseForbidden
 from django.contrib import messages
 from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import login_required
+from django.shortcuts import get_object_or_404
 
 from core.forms.profile_forms import *
 from core.forms.posting_forms import *
@@ -21,10 +22,28 @@ def home(request):
         #User is authenticated
         posts = Post.objects.all().order_by('-created_at')
         form = PostForm()
-        return render(request, 'index.html', {'posts': posts, 'form': form, 'reportPostForm': PostReportForm()})
+        reposted_post_ids = Repost.objects.filter(user=request.user).values_list('post_id', flat=True)
+        context =  {
+            'posts': posts, 
+            'form': form, 
+            'reportPostForm': PostReportForm(), 
+            'reposted_post_ids': reposted_post_ids
+            }
+        return render(request, 'index.html',context)
     else:
         #redirect user to login page
         return redirect('login')
+
+def repost(request, post_id):
+    if request.user.is_authenticated:
+        post_to_repost = Post.objects.get(id=post_id)
+        Repost.objects.create(post=post_to_repost, user=request.user)
+        return redirect('home')
+    else:
+        return redirect('login')
+
+
+
 @login_required
 def profile(request):
     profile = Profile.objects.get_or_create(pk=request.user.id)

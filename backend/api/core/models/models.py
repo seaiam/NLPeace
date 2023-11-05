@@ -1,5 +1,7 @@
 from django.contrib.auth.models import User
 from django.db import models
+from django.conf import settings
+
 
 class Profile(models.Model):
     user = models.OneToOneField(User, on_delete=models.RESTRICT, primary_key=True)
@@ -18,6 +20,15 @@ class Post(models.Model):
     parent_post = models.ForeignKey('self', null=True, blank=True, on_delete=models.CASCADE, related_name='replies')
     def __str__(self):
         return self.content
+
+class Repost(models.Model):
+    post = models.ForeignKey(Post, null=True, on_delete=models.CASCADE, related_name='reposts')
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f'{self.user.username} reposted {self.post.content}'
+
 
 class PostReport(models.Model):
     class Category(models.IntegerChoices):
