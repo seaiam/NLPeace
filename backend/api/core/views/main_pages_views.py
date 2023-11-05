@@ -23,8 +23,13 @@ def home(request):
         posts = Post.objects.all().order_by('-created_at')
         form = PostForm()
         reposted_post_ids = Repost.objects.filter(user=request.user).values_list('post_id', flat=True)
-    
-        return render(request, 'index.html', {'posts': posts, 'form': form, 'reportPostForm': PostReportForm(), 'reposted_post_ids': reposted_post_ids})
+        context =  {
+            'posts': posts, 
+            'form': form, 
+            'reportPostForm': PostReportForm(), 
+            'reposted_post_ids': reposted_post_ids
+            }
+        return render(request, 'index.html',context)
     else:
         #redirect user to login page
         return redirect('login')
