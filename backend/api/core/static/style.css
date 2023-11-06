@@ -868,6 +868,29 @@ button:hover {
   align-items: center;
 }
 
+.notification-close-btn {
+  position: absolute;
+  top: 0;
+  right: 10px; 
+  border: none;
+  background: transparent;
+  color: #00001c; 
+  font-size: 27px; 
+  cursor: pointer;
+  padding: 0.5rem; 
+  z-index: 2; 
+}
+
+.notification-close-btn:hover {
+  color: darkgrey; 
+}
+
+.notification-text{
+  color:#d3d3d3;
+  text-align: center;
+}
+
+
 /* Media Queries */
 @media (max-width: 991.98px) { 
     .sidebar {
