@@ -26,12 +26,12 @@
                         <div class="user-button">
                             {% if notification.type == "request"  %}
                                 <form method="POST" action="{% url 'accept_decline_invite' %}">
-                                {% csrf_token %}
-                                <input type="hidden" name="followed_user" value="{{ notification.user.id }}" readonly/>
-                                <input type="hidden" name="following_user" value="{{ notification.sent_by.id }}" readonly/>
-                                <button type="submit" class="btn post-actions__publish">Accept</button>
-                                <button type="submit" class="btn post-actions__publish">Decline</button>
-                               </form>
+                                    {% csrf_token %}
+                                    <input type="hidden" name="followed_user" value="{{ notification.user.id }}" readonly/>
+                                    <input type="hidden" name="following_user" value="{{ notification.sent_by.id }}" readonly/>
+                                    <button type="submit"  name="action" value="accept">Accept</button>
+                                    <button type="submit" name="action" value="decline">Decline</button>
+                                </form>
                             {% endif %}
                         </div>
                     </div>

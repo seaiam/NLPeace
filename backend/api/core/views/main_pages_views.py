@@ -64,7 +64,6 @@ def accept_decline_invite(request):
         following_user=User.objects.get(pk=following_user_pk)
         notification = Notifications.objects.get(user=followed_user_pk, sent_by=following_user_pk,type="request")
         action=request.POST.get('action')
-        
         if action == "accept":
             followed_user.profile.follow_requests.remove(following_user)
             followed_user.profile.followers.add(following_user)
