@@ -40,7 +40,7 @@ def login_user(request):
             login(request, user)
             return redirect('profile')
         else:
-            messages.success(request, ("There was an error logging in. Try again..."))
+            messages.error(request, ("There was an error logging in. Try again..."))
             return redirect('login')
     else:
         return render(request, 'registration/login.html', {})
@@ -61,7 +61,7 @@ def ChangePassword(request, token):
             
 
             if new_password!=confirm_password:
-                messages.success(request,"The passwords are not matching. Make sure they do.")
+                messages.error(request,"The passwords are not matching. Make sure they do.")
                 return redirect(f'/change_password/{token}/')
             user=User.objects.get(username=profile.user.username)
             user.set_password(new_password)
