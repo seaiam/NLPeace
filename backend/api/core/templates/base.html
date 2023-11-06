@@ -37,7 +37,14 @@
                 </li>
                 <li class="sidebar-item">
                     <a href="{% url 'notifications' %}">
-                        <i class="fa fa-bell"></i>
+                        <!-- user will see a red icon when the user receives a notification -->
+                        <i class="fa fa-bell icon-button">
+                            {% for notification in data %}
+                            {% if request.user.id != notification.sent_by.id %}
+                            <span class="icon-button__badge"></span>
+                            {% endif %}
+                            {%endfor%}
+                        </i>
                         Notifications
                     </a>
                 </li>
