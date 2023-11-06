@@ -44,3 +44,17 @@ class PostReport(models.Model):
 
     def __str__(self):
         return f'{self.reporter.username} -- {PostReport.Category(self.category).name} -- {self.date_reported}'
+
+class PostLike(models.Model):
+    liker = models.ForeignKey(User, on_delete=models.CASCADE)
+    post = models.ForeignKey(Post, on_delete=models.Case)
+
+    class Meta:
+        constraints = [models.UniqueConstraint(fields=['liker', 'post'], name='liker_post_unique')]
+
+class PostDislike(models.Model):
+    disliker = models.ForeignKey(User, on_delete=models.CASCADE)
+    post = models.ForeignKey(Post, on_delete=models.CASCADE)
+
+    class Meta:
+        constraints = [models.UniqueConstraint(fields=['disliker', 'post'], name='disliker_post_unique')]
