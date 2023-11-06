@@ -46,7 +46,9 @@
           </div>
           {% if request.user == profile.user or not profile.is_private %}
           <div class="col-md-3 text-md-right">
+            {% if request.user == profile.user%}
             <button id="editBtn" class="editButton">Edit Profile</button>
+            {% endif %}
             <div id="myModal" class="popup">
                 <div class="popup-content">
                     <span class="close">&times;</span>
