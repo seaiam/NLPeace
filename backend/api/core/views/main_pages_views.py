@@ -76,6 +76,37 @@ def comment(request, post_id):
     else:
         #redirect user to login page
         return redirect('login')
+    
+@login_required
+def like(request):
+    if request.user.is_authenticated:
+        if request.method == 'POST':
+            form = PostLikeForm(request.POST)
+            if form.is_valid():
+                dislike = PostDislike.objects.filter(disliker=request.user, post=form.cleaned_data['post']).first()
+                if dislike:
+                    dislike.delete()
+                like = form.save(commit=False)
+                like.liker = request.user
+                like.save()
+        return redirect('home')
+    return redirect('login')
+
+@login_required
+def dislike(request):
+    if request.user.is_authenticated:
+        if request.method == 'POST':
+            form = PostDislikeForm(request.POST)
+            if form.is_valid():
+                like = PostLike.objects.filter(liker=request.user, post=form.cleaned_data['post']).first()
+                if like:
+                    like.delete()
+                dislike = form.save(commit=False)
+                dislike.disliker = request.user
+                dislike.save()
+        return redirect('home')
+    return redirect('login')
+
 
 @login_required
 def report(request):

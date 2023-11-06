@@ -42,7 +42,8 @@ urlpatterns = [
     path('repost/<int:post_id>/', main_pages_views.repost, name='repost'),
     path('accounts/profile/search/',profile_views.search_user,name="search_user"),
     path('guest/<int:user_id>/', main_pages_views.guest ,name="guest"),
-    
+    path('like/', main_pages_views.like, name='like'),
+    path('dislike/', main_pages_views.dislike, name='dislike'),
     path('report/', main_pages_views.report, name='report'),
 ]
 
