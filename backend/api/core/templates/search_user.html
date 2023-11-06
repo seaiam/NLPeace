@@ -30,7 +30,7 @@
                                     <input type="hidden" name="unfollowed_user" value="{{ result.id }}" readonly/>
                                     <input type="hidden" name="unfollowing_user" value="{{ request.user.id }}" readonly/>
                                     <input type="hidden" name="search" value="{{ search }}" readonly/>
-                                    <button type="submit">Unfollow</button>
+                                    <button type="submit" class="btn post-actions__publish">Unfollow</button>
                                 </form>
                             {% elif request.user in result.profile.follow_requests.all %}
                                 <form method="POST" action="{% url 'unfollow_user' %}">
@@ -38,7 +38,7 @@
                                     <input type="hidden" name="unfollowed_user" value="{{ result.id }}" readonly/>
                                     <input type="hidden" name="unfollowing_user" value="{{ request.user.id }}" readonly/>
                                     <input type="hidden" name="search" value="{{ search }}" readonly/>
-                                    <button type="submit">Requested</button>
+                                    <button type="submit" class="btn post-actions__publish">Requested</button>
                                 </form>
                             {% else %}
                                 <form method="POST" action="{% url 'follow_user' %}">
@@ -46,7 +46,7 @@
                                     <input type="hidden" name="followed_user" value="{{ result.id }}" readonly/>
                                     <input type="hidden" name="following_user" value="{{ request.user.id }}" readonly/>
                                     <input type="hidden" name="search" value="{{ search }}" readonly/>
-                                    <button type="submit">Follow</button>
+                                    <button type="submit" class="btn post-actions__publish">Follow</button>
                                 </form>
                             {% endif %}
                         </div>

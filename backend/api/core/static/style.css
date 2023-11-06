@@ -683,6 +683,14 @@ input[type="file"] {
   border-color: #fff;
 }
 
+.post-actions__publish:hover {
+  color: #00001c;
+  background-color: transparent; 
+  border-color: #00001c; 
+  border-width: 2px;
+  transition: background-color 0.3s, color 0.3s, border-color 0.3s;
+}
+
 .scroller::-webkit-scrollbar {
   display: none;
 }
