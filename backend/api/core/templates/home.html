@@ -45,7 +45,8 @@
               <i class='fas fa-search'></i> <a class="following">Following</a>
           </div>
 
-          {% if request.user == profile.user or not profile.is_private %}
+          {% if request.user == profile.user or not profile.is_private or profile.user in request.user.profile.following.all|dictsort:"id" %}
+         
           <div class="col-md-3 text-md-right">
             <button id="editBtn" class="editButton">Edit Profile</button>
             <div id="myModal" class="popup">
@@ -77,11 +78,15 @@
           <a href="#" class="tab" id="mediaTab">Media</a>
           <a href="#" class="tab" id="likesTab">Likes</a>
       </div>
+      
+    
       {%else%}
+     
       <p style="color: #D9D9D9;">This account is private</p>
     
       {% endif %}
-     
+    
+      
 
       
   {% if profile.user.id != request.user.id %}

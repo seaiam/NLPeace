@@ -1,0 +1,73 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block content %}
+<div class="container">
+    <div class="d-flex align-items-center justify-content-center">
+        <div class="card" style="width: 40rem; margin: 20px 0px 20px 0px; overflow: hidden; background: linear-gradient(to right, #F9D1C4 0%, #9BBDDD 51%, #F9D1C4 100%);">
+            <div class="card-body">
+<h3>Notifications</h3>
+<span class="ajaxResponse">
+    
+{% for notification in data %}
+{% if request.user.id != notification.sent_by.id %}
+
+<ul class="list-group notif-list"></ul>
+        <li class="list-group-item">{{notification.notifications}}
+            <div class="col-6">
+                {% if notification.sent_by.profile and notification.sent_by.profile.pic %}
+                    <img src="{{ notification.sent_by.profile.pic.url }}" alt="{{ notification.sent_by.username }}'s profile picture" class="user-pic">
+                {% else %}
+                    <img src="{% static 'default.jpg' %}" class="user-pic" alt="{{ notification.sent_by.username }}'s profile picture" />
+                {% endif %}
+                <a href="{% url 'guest' notification.sent_by.id %}" class="user-name">{{ notification.sent_by.username }}</a>
+            </div>
+      {% if notification.type == "request"  %}
+       <form method="POST" action="{% url 'accept_decline_invite' %}">
+           {% csrf_token %}
+           <input type="hidden" name="followed_user" value="{{ notification.user.id }}" readonly/>
+           <input type="hidden" name="following_user" value="{{ notification.sent_by.id }}" readonly/>
+           <button type="submit"  name="action" value="accept">Accept</button>
+           <button type="submit" name="action" value="decline">Decline</button>
+          </form>
+          {% endif %}
+        
+       </li>
+    </ul>
+    
+   {% endif %}
+      {% endfor %}
+ 
+
+</span>
+</div>
+</div>
+</div>
+</div>
+<script type="text/javascript">
+    $(document).ready(function(){
+        $(".ajaxResponse").hide();
+        setInterval(function(){
+
+        },5000);
+        $.ajax({
+          url:"{% url 'notification' %}"  ,
+          dataType:'json',
+          beforeSend:function(){
+            $(".ajaxResponse").show();
+            $(".ajaxResponse").text('Loading...');
+
+          },
+          success:function(res){
+            _html='';
+            _json=$.parseJSON(res.data);
+            $.each(_json,function(index,d){
+                _html='<li class="list-group-item">'+d.fields.notifications+' <button class="btn btn-sm btn-secondary float-end" >Mark as Read</button> </li>';
+
+            });
+            $(".notif-list").html(_html);
+            $(".ajaxResponse").hide();
+          }
+        },5000);
+    })
+    </script>
+{% endblock %}

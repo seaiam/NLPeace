@@ -11,6 +11,7 @@ class Profile(models.Model):
     pic = models.ImageField(upload_to='profilePictures/', null=True, blank=True)
     forget_password_token=models.CharField(max_length=100,default='')
     is_private = models.BooleanField(default=True)
+   
 
 class Post(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
@@ -35,3 +36,14 @@ class PostReport(models.Model):
 
     def __str__(self):
         return f'{self.reporter.username} -- {PostReport.Category(self.category).name} -- {self.date_reported}'
+
+class Notifications(models.Model):
+    notifications=models.TextField()
+    user=models.ForeignKey(User,on_delete=models.CASCADE,related_name="user",null=True,blank=True)
+    status=models.BooleanField()
+    sent_by=models.ForeignKey(User,on_delete=models.CASCADE,related_name='sent_by',null=True,blank=True)
+    type=models.CharField(null=True,blank=True)
+
+    
+    def __str__(self):
+        return str(self.notifications)

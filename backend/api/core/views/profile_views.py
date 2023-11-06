@@ -154,17 +154,23 @@ def follow_user(request):
         search=request.POST.get('search')
         request.session['search'] = search
         
-
+#following a private profile
         if followed_user.profile.is_private:
             followed_user.profile.follow_requests.add(following_user)
             messages.success(request,'A follow request has been sent.')
-            followed_user.save()    
+            followed_user.save()
+            notification_message = f"{following_user.username} sent you a follow request." #message sent to private profile
+            notification = Notifications(notifications=notification_message, user=followed_user,status=False,sent_by=following_user,type="request")
+            notification.save()
         else:
-            followed_user.profile.followers.add(following_user)
+            followed_user.profile.followers.add(following_user) #following a public profile
             following_user.profile.following.add(followed_user)
             followed_user.save()
             following_user.save()
-            messages.success(request,f"You have started following {followed_user}.")
+            notification_message = f"{following_user.username} has started following you." #message sent to public profile profile to notify followed user
+            notification = Notifications(notifications=notification_message, user=followed_user,status=False,sent_by=following_user,type="")
+            notification.save()
+            messages.success(request,f"You have started following {followed_user}.") #message to following user
    
     return HttpResponseRedirect(request.META.get('HTTP_REFERER', '/'))
    
@@ -181,14 +187,27 @@ def unfollow_user(request):
         unfollowing_user=User.objects.get(pk=unfollowing_user_id)
         search=request.POST.get('search')
         request.session['search'] = search
-        if unfollowed_user.profile.is_private:
-            unfollowed_user.profile.follow_requests.remove(unfollowing_user)
-            unfollowed_user.save()
+      
+        #unfollowing a private profile
+        if unfollowed_user.profile.is_private: #remove the user from follow requests, requesting user unfollowed
+           if unfollowed_user.profile.follow_requests.filter(id=unfollowing_user_id).exists():
+              unfollowed_user.profile.follow_requests.remove(unfollowing_user)
+              unfollowed_user.save()
+              notification = Notifications.objects.get(user=unfollowed_user_id, sent_by=unfollowing_user_id,type="request")
+              notification.delete() #delete notification if user decides to remove request
+              
+           else:
+               unfollowed_user.profile.followers.remove(unfollowing_user) #remove the user from the followers, following user unfollowed
+               unfollowing_user.profile.following.remove(unfollowed_user)
+               unfollowed_user.save()
+               unfollowing_user.save()
+               messages.success(request,f"You have unfollowed {unfollowed_user}.")
         else:
-            unfollowed_user.profile.followers.remove(unfollowing_user)
+            unfollowed_user.profile.followers.remove(unfollowing_user) #unfollowing a public profile
             unfollowing_user.profile.following.remove(unfollowed_user)
             unfollowed_user.save()
             unfollowing_user.save()
+            messages.success(request,f"You have unfollowed {unfollowed_user}.")
         
     return HttpResponseRedirect(request.META.get('HTTP_REFERER', '/'))
    
