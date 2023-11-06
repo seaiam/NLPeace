@@ -160,7 +160,7 @@ def follow_user(request):
             messages.success(request,'A follow request has been sent.')
             followed_user.save()
             notification_message = f"{following_user.username} sent you a follow request." #message sent to private profile
-            notification = Notifications(notifications=notification_message, user=followed_user,status=False,sent_by=following_user,type="request")
+            notification = Notifications(notifications=notification_message, user=followed_user,sent_by=following_user,type="request")
             notification.save()
         else:
             followed_user.profile.followers.add(following_user) #following a public profile
@@ -168,7 +168,7 @@ def follow_user(request):
             followed_user.save()
             following_user.save()
             notification_message = f"{following_user.username} has started following you." #message sent to public profile profile to notify followed user
-            notification = Notifications(notifications=notification_message, user=followed_user,status=False,sent_by=following_user,type="")
+            notification = Notifications(notifications=notification_message, user=followed_user,sent_by=following_user,type="")
             notification.save()
             messages.success(request,f"You have started following {followed_user}.") #message to following user
    

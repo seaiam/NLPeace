@@ -40,7 +40,6 @@ class PostReport(models.Model):
 class Notifications(models.Model):
     notifications=models.TextField()
     user=models.ForeignKey(User,on_delete=models.CASCADE,related_name="user",null=True,blank=True)
-    status=models.BooleanField()
     sent_by=models.ForeignKey(User,on_delete=models.CASCADE,related_name='sent_by',null=True,blank=True)
     type=models.CharField(null=True,blank=True)
 

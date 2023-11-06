@@ -74,7 +74,7 @@ def accept_decline_invite(request):
             messages.success(request,f"{following_user} started following you.")
             notification.delete() #deletes the message after user accepts request
             notification_message = f"{followed_user.username} accepted your follow request." #message sent to notify following user that follow request has been accepted
-            notification2 = Notifications(notifications=notification_message, user=following_user,status=False,sent_by=followed_user,type="")
+            notification2 = Notifications(notifications=notification_message, user=following_user,sent_by=followed_user,type="")
             notification2.save()
 
 

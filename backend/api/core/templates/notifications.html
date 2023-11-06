@@ -43,31 +43,5 @@
 </div>
 </div>
 </div>
-<script type="text/javascript">
-    $(document).ready(function(){
-        $(".ajaxResponse").hide();
-        setInterval(function(){
 
-        },5000);
-        $.ajax({
-          url:"{% url 'notification' %}"  ,
-          dataType:'json',
-          beforeSend:function(){
-            $(".ajaxResponse").show();
-            $(".ajaxResponse").text('Loading...');
-
-          },
-          success:function(res){
-            _html='';
-            _json=$.parseJSON(res.data);
-            $.each(_json,function(index,d){
-                _html='<li class="list-group-item">'+d.fields.notifications+' <button class="btn btn-sm btn-secondary float-end" >Mark as Read</button> </li>';
-
-            });
-            $(".notif-list").html(_html);
-            $(".ajaxResponse").hide();
-          }
-        },5000);
-    })
-    </script>
 {% endblock %}
