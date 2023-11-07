@@ -94,6 +94,10 @@ class LikeAndDislikeTestCase(TestCase):
         likes = PostLike.objects.all()
         self.assertEqual(response.status_code, 302)
         self.assertEqual(1, likes.count())
+        self.assertEqual(1, self.post.get_number_likes())
+        self.assertEqual(0, self.post.get_number_dislikes())
+        self.assertFalse(self.post.is_likeable_by(self.user))
+        self.assertTrue(self.post.is_dislikeable_by(self.user))
 
     def test_like_post_with_previous_dislike_deletes_dislike(self):
         PostDislike.objects.create(disliker=self.user, post=self.post)
@@ -113,6 +117,10 @@ class LikeAndDislikeTestCase(TestCase):
         dislikes = PostDislike.objects.all()
         self.assertEqual(response.status_code, 302)
         self.assertEqual(1, dislikes.count())
+        self.assertEqual(0, self.post.get_number_likes())
+        self.assertEqual(1, self.post.get_number_dislikes())
+        self.assertTrue(self.post.is_likeable_by(self.user))
+        self.assertFalse(self.post.is_dislikeable_by(self.user))
     
     def test_dislike_post_with_previous_like_deletes_like(self):
         PostLike.objects.create(liker=self.user, post=self.post)

@@ -18,6 +18,19 @@ class Post(models.Model):
     image = models.ImageField(upload_to='postImages/', null=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
     parent_post = models.ForeignKey('self', null=True, blank=True, on_delete=models.CASCADE, related_name='replies')
+
+    def get_number_likes(self):
+        return self.postlike_set.all().count()
+    
+    def get_number_dislikes(self):
+        return self.postdislike_set.all().count()
+    
+    def is_likeable_by(self, user):
+        return user not in {like.liker for like in self.postlike_set.all()}
+    
+    def is_dislikeable_by(self, user):
+        return user not in {dislike.disliker for dislike in self.postdislike_set.all()}
+
     def __str__(self):
         return self.content
 
