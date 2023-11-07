@@ -23,35 +23,30 @@ def home(request):
         #User is authenticated
         posts = Post.objects.all().order_by('-created_at')
         form = PostForm()
-        return render(request, 'index.html', {'posts': posts, 'form': form, 'reportPostForm': PostReportForm()})
+        data=Notifications.objects.all().order_by('-id')
+        return render(request, 'index.html', {'posts': posts, 'form': form,'data':data ,'reportPostForm': PostReportForm()})
     else:
         #redirect user to login page
         return redirect('login')
 @login_required
 def profile(request):
     profile = Profile.objects.get_or_create(pk=request.user.id)
+    data=Notifications.objects.all().order_by('-id')
    
-   
-    return render(request, 'home.html' ,{'profile': profile[0],'form': EditBioForm(instance=profile[0])})
+    return render(request, 'home.html' ,{'profile': profile[0],'data':data,'form': EditBioForm(instance=profile[0])})
 
 @login_required
 def guest(request,user_id):
     user=User.objects.get(pk=user_id)
     profile=Profile.objects.get(user=user)
-    
-    return render(request,'home.html',{'user':user,'profile':profile,})
+    data=Notifications.objects.all().order_by('-id')
+    return render(request,'home.html',{'user':user,'data':data,'profile':profile,})
 
 @login_required
 def notifications(request):
     data=Notifications.objects.all().order_by('-id')
     return render(request,'notifications.html',{'data':data})
 
-
-@login_required
-def notification(request):
-    data=Notifications.objects.all().order_by('-id')
-    jsonData=serializers.serialize('json',data)
-    return JsonResponse({'data':jsonData})
 
 @login_required
 def accept_decline_invite(request):

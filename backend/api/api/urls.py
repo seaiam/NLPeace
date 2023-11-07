@@ -45,6 +45,7 @@ urlpatterns = [
     path('follow/', profile_views.follow_user ,name="follow_user"),
     path('unfollow/', profile_views.unfollow_user ,name="unfollow_user"),
     path('accounts/profile/notifications', main_pages_views.notifications, name='notifications'), 
+    path('accounts/profile/notifications/delete_notification', profile_views.delete_notification, name='delete_notification'), 
     path('accounts/profile/notifications/invite', main_pages_views.accept_decline_invite, name='accept_decline_invite'),
 ]
 

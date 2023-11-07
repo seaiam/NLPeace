@@ -212,9 +212,13 @@ def unfollow_user(request):
     return HttpResponseRedirect(request.META.get('HTTP_REFERER', '/'))
    
 
-
-
-
-
-
+@login_required
+def delete_notification(request):
+ if request.method == "POST":
+    clicked=request.POST.get('clicked')
+    if clicked == "exit":
+        notification_id=request.POST.get('notification')
+        notification=Notifications.objects.get(pk=notification_id)
+        notification.delete()
+ return HttpResponseRedirect(request.META.get('HTTP_REFERER', '/'))
 
