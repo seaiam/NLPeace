@@ -13,12 +13,12 @@
                     <div>
                         <form method="post" id="widget-form" class="widget-post__form" enctype="multipart/form-data" name="form" aria-label="post widget">
                             {% csrf_token %}
+                            <div class="widget-post__content">
+                            <textarea name="{{ form.content.name }}" id="post-content" class="widget-post__textarea scroller" placeholder="Start a Post...">{{ form.content.value|default:'' }}</textarea>
+                            </div>
                             <div id="preview_image" style="display: none;">
                                 <button type="button" class="close" onclick="handleOnDeletePhotoClick()" style="color: #00001c;">&times;</button>
                                 <img class="card-img-top mb-2" src="#" />
-                            </div>
-                            <div class="widget-post__content">
-                            <textarea name="{{ form.content.name }}" id="post-content" class="widget-post__textarea scroller" placeholder="Start a Post...">{{ form.content.value|default:'' }}</textarea>
                             </div>
                             <div class="widget-post__options is--hidden" id="stock-options">
                             </div>
@@ -72,7 +72,7 @@
                     </div>
                 </div>
                 {% if post.image %}
-                <img class="card-img-top mt-2" src="{{ post.image.url }}" alt="Post image" />
+                <img class="card-img-top mt-2" src="{{ post.image.url }}" alt="Post image" /><br><br>
                 {% endif %}
                 <h6 class="card-subtitle mb-2" style ="float: right;">{{ post.created_at|date:"M d, Y H:i" }}</h6>
                 <br>
