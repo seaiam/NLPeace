@@ -91,4 +91,50 @@ class FollowUserTest(TestCase):
        
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, 'You have started following testuser2.')
+    
+    
+
+    def test_unfollow_public_user(self):
+        self.client.login(username='testuser', password='testpassword123')
+        self.client.login(username='testuser2', password='testpassword123')
+      
+
+        data = {
+            'unfollowed_user': self.user2.id,
+            'unfollowing_user': self.user.id,
+            'search': 'testuser2',
+        }
+       
+        response = self.client.post(reverse('unfollow_user'), data,follow=True)
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, 'You have unfollowed testuser2.')
+
+
+    
+
+    def test_unfollow_private_user(self):
+
+        self.client.login(username='testuser', password='testpassword123')
+        self.client.login(username='testuser2', password='testpassword123')
+        
+        user2_profile = self.user2.profile
+        user2_profile.is_private = False
+        user_profile = self.user.profile
+        
+        user2_profile.followers.add(self.user)  
+        user_profile.following.add(self.user2) 
+
+        user2_profile.save()
+        user_profile.save()
+
+        data = {
+            'unfollowed_user': self.user2.id,
+            'unfollowing_user': self.user.id,
+            'search': 'testuser2',
+        }
+       
+        response = self.client.post(reverse('unfollow_user'), data,follow=True)
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, 'You have unfollowed testuser2.')
+
    
