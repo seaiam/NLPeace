@@ -1,14 +1,22 @@
 from django.test import TestCase
 from django.urls import reverse
-from django.contrib.auth.models import User
+from django.contrib.auth.models import User 
+from core.models.models import  Profile
 from django.core.files.uploadedfile import SimpleUploadedFile
 from core.models.models import Post, PostReport
 from core.forms.posting_forms import PostForm
-
+from django.core.exceptions import ObjectDoesNotExist
 class PostTestCase(TestCase):
     def setUp(self):
         self.user = User.objects.create_user(username='testuser', password='password')
         self.client.login(username='testuser', password='password')
+        
+        try:
+            self.profile = self.user.profile  # Try to access the profile
+        except ObjectDoesNotExist:
+            # Handle the case where the profile does not exist/ create a profile
+            self.profile = Profile.objects.create(user=self.user)
+            
 
     def test_post_post(self):
         # Create a post using a POST request
