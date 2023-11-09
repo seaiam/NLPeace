@@ -72,13 +72,17 @@
                 </div>
                 <!-- User replies -->
                 <hr>
-                <div class="reply-container">
+                <div class="grid-container">
                     <div class="user-profile">
                         <img src="{% static 'default.jpg' %}" class="reply-user-pic" alt="{{ post.user.username }}'s profile picture"/>
                     </div>
                     <div class="tweet-content" style="flex-grow: 1;">
-                        <h6 class="card-title">@{{ post.user.username }}</h6>
+                       <h6 class="card-title">@{{ post.user.username }}</h6>
                         <p class="card-text">{{ post.content }}</p>
+                    </div>
+                    <div class="grid-item" >
+                        <i class="far fa-thumbs-up" aria-hidden="true"></i>&nbsp;&nbsp;&nbsp;
+                        <i class="far fa-comment" aria-hidden="true"></i>
                     </div>
                 </div>
                 <hr>

@@ -846,7 +846,7 @@ hr {
   font-weight: 600;
   transition: 0.5s;
   background-size: 200% auto;
-  box-shadow: 0 0 20px #363636;
+  box-shadow: 0 0 20px #eee;
   background-image: linear-gradient(to right, #F9D1C4 0%, #9BBDDD 51%, #F9D1C4 100%);
   color: #00001c;
 }
@@ -858,8 +858,26 @@ hr {
   height: 48px;
 }
 
-.user-profile{
-  margin-right: 10px;
+img {
+  max-width:100%;
+}
+
+.user-profile {
+  border-radius:100px;
+  width:50px;
+  margin-right: 15px;
+}
+
+.grid-container { 
+  display: grid; 
+  grid-template-columns: 0fr 2fr 0.5fr; 
+} 
+
+.grid-item {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 10px; 
 }
 
 .reply-container{
