@@ -26,9 +26,11 @@ def home(request):
         posts = Post.objects.all().order_by('-created_at')
         form = PostForm()
         reposted_post_ids = Repost.objects.filter(user=request.user).values_list('post_id', flat=True)
+        data=Notifications.objects.all().order_by('-id')
         context =  {
             'posts': posts, 
             'form': form, 
+            'data' : data,
             'reportPostForm': PostReportForm(), 
             'reposted_post_ids': reposted_post_ids
             }
