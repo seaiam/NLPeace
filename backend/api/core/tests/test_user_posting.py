@@ -6,6 +6,7 @@ from django.core.files.uploadedfile import SimpleUploadedFile
 from core.models.models import Post, PostReport
 from core.forms.posting_forms import PostForm
 from core.models.models import Repost
+from django.core.exceptions import ObjectDoesNotExist
 
 class PostTestCase(TestCase):
     def setUp(self):
