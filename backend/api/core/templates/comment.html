@@ -74,7 +74,11 @@
                 <hr>
                 <div class="grid-container">
                     <div class="user-profile">
-                        <img src="{% static 'default.jpg' %}" class="reply-user-pic" alt="{{ post.user.username }}'s profile picture"/>
+                        {% if post.user.profile and post.user.profile.pic %}
+                        <img src="{{ post.user.profile.pic.url }}" class="reply-user-pic" alt="{{ post.user.username }}'s profile picture">
+                        {% else %}
+                        <img src="{% static 'default.jpg' %}" class="reply-user-pic" alt="{{ post.user.username }}'s profile picture" />
+                        {% endif %}
                     </div>
                     <div class="tweet-content" style="flex-grow: 1;">
                        <h6 class="card-title">@{{ post.user.username }}</h6>
