@@ -788,7 +788,7 @@ padding-bottom:10px;
 }
 
 .feed{
-  margin-left:20%;
+  margin-left:18%;
 }
 
 hr {
@@ -797,6 +797,37 @@ hr {
 
 .card-subtitle{
   color: #00001c;
+}
+
+/*repost button */
+.repost-button{
+  border: none;
+  padding: 0;
+  background: none;
+  color: #00001c;
+  font-weight: 800;
+  
+}
+button:focus {
+  outline: none;
+}
+
+.reposted-button{
+border: none;
+padding: 0;
+background: none;
+color: #0047ab;
+font-style: italic;
+}
+
+.feed-reposted{
+  color:#0047ab;
+}
+
+.repost-info{
+  font-weight: bold;
+  margin-bottom:10px;
+  font-size: large;
 }
 
 /* seacrh-user css*/
