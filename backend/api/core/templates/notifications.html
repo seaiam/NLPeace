@@ -1,0 +1,52 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block content %}
+<br>
+<h2 class="notification-text">Notifications</h2>
+{% for notification in data %}
+{% if request.user.id != notification.sent_by.id %}
+<div class="container">
+    <div class="d-flex align-items-center justify-content-center">
+        <div class="card" style="width: 45rem; margin: 20px 0px 20px 0px; overflow: hidden; background: linear-gradient(to right, #F9D1C4 0%, #9BBDDD 51%, #F9D1C4 100%); border-radius:15px;">
+            <div class="card-body">
+            
+            <form id="myForm" action="{% url 'delete_notification' %}" method="POST">
+                {% csrf_token %}
+                <button type="submit" name="clicked" value="exit" id="submit-button" class="notification-close-btn">&#10006;</button>
+                <input type="hidden" name="notification" value="{{ notification.id }}" readonly/>
+            </form>
+                <i class="fa fa-bell"></i><span class="notificationSentBy"> {{notification.notifications}}<br></span>
+                <div class="row">
+                    <div class="col-6">
+                        <br>
+                        {% if notification.sent_by.profile and notification.sent_by.profile.pic %}
+                        <img src="{{ notification.sent_by.profile.pic.url }}" alt="{{ notification.sent_by.username }}'s profile picture" class="user-pic">
+                        {% else %}
+                        <img src="{% static 'default.jpg' %}" class="user-pic" alt="{{ notification.sent_by.username }}'s profile picture" />
+                        {% endif %}
+                        <a href="{% url 'guest' notification.sent_by.id %}" class="user-name">{{ notification.sent_by.username }}</a>
+                    </div>
+                    <div class="col-6">
+                        <br>
+                        <div class="user-button">
+                            {% if notification.type == "request"  %}
+                                <form method="POST" action="{% url 'accept_decline_invite' %}">
+                                    {% csrf_token %}
+                                    <input type="hidden" name="followed_user" value="{{ notification.user.id }}" readonly/>
+                                    <input type="hidden" name="following_user" value="{{ notification.sent_by.id }}" readonly/>
+                                    <button type="submit"  name="action" value="accept">Accept</button>
+                                    <button type="submit" name="action" value="decline">Decline</button>
+                                </form>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+                <br>
+            </div>
+        </div>
+    </div>
+</div>
+{% endif %}
+{% endfor %}
+
+{% endblock %}

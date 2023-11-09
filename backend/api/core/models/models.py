@@ -5,12 +5,15 @@ from django.conf import settings
 
 class Profile(models.Model):
     user = models.OneToOneField(User, on_delete=models.RESTRICT, primary_key=True)
+    following=models.ManyToManyField(User,related_name='following',blank=True)
+    followers=models.ManyToManyField(User,related_name='followers',blank=True)
+    follow_requests = models.ManyToManyField(User, related_name='follow_requests', blank=True)
     bio = models.TextField(null=True, blank=True)
     banner = models.ImageField(upload_to='profileBanners/', null=True, blank=True)
     pic = models.ImageField(upload_to='profilePictures/', null=True, blank=True)
     forget_password_token=models.CharField(max_length=100,default='')
-
     is_private = models.BooleanField(default=True)
+   
 
 class Post(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
@@ -44,3 +47,13 @@ class PostReport(models.Model):
 
     def __str__(self):
         return f'{self.reporter.username} -- {PostReport.Category(self.category).name} -- {self.date_reported}'
+
+class Notifications(models.Model):
+    notifications=models.TextField()
+    user=models.ForeignKey(User,on_delete=models.CASCADE,related_name="user",null=True,blank=True)
+    sent_by=models.ForeignKey(User,on_delete=models.CASCADE,related_name='sent_by',null=True,blank=True)
+    type=models.CharField(null=True,blank=True)
+
+    
+    def __str__(self):
+        return str(self.notifications)

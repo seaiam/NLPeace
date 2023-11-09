@@ -683,6 +683,14 @@ input[type="file"] {
   border-color: #fff;
 }
 
+.post-actions__publish:hover {
+  color: #00001c;
+  background-color: transparent; 
+  border-color: #00001c; 
+  border-width: 2px;
+  transition: background-color 0.3s, color 0.3s, border-color 0.3s;
+}
+
 .scroller::-webkit-scrollbar {
   display: none;
 }
@@ -864,6 +872,56 @@ button:hover {
   text-decoration:none;
   color: #00001c;
 }
+
+/*notifcation page css*/
+.notificationSentBy{
+  font-weight: bold;
+  font-size: 18px;
+}
+
+/* Notification Icon */
+.icon-button {
+  position: relative;
+  font-size: 24px; 
+}
+
+.icon-button__badge {
+  position: absolute;
+  top: 0;
+  right: 0;
+  transform: translate(50%, -50%); 
+  width: 10px;
+  height: 10px;
+  background: red;
+  border-radius: 50%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.notification-close-btn {
+  position: absolute;
+  top: 0;
+  right: 10px; 
+  border: none;
+  background: transparent;
+  color: #00001c; 
+  font-size: 27px; 
+  cursor: pointer;
+  padding: 0.5rem; 
+  z-index: 2; 
+}
+
+.notification-close-btn:hover {
+  color: darkgrey; 
+}
+
+.notification-text{
+  color:#d3d3d3;
+  text-align: center;
+}
+
+
 /* Media Queries */
 @media (max-width: 991.98px) { 
     .sidebar {
