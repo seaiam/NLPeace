@@ -633,7 +633,7 @@ input[type="file"] {
   height: 100%;
   padding: .5em;
   border: none;
-  background-color: #fff;
+  background-color: #f2f2f2;
 }
 
 .widget-post__options {
@@ -846,11 +846,26 @@ hr {
   font-weight: 600;
   transition: 0.5s;
   background-size: 200% auto;
-  box-shadow: 0 0 20px #eee;
+  box-shadow: 0 0 20px #363636;
   background-image: linear-gradient(to right, #F9D1C4 0%, #9BBDDD 51%, #F9D1C4 100%);
   color: #00001c;
 }
 
+/* Replies Page */
+.reply-user-pic{
+  border-radius:50px;
+  width: 130px; 
+  height: 48px;
+}
+
+.user-profile{
+  margin-right: 10px;
+}
+
+.reply-container{
+  display: flex; 
+  align-items: flex-start;
+}
 
 /* Media Queries */
 @media (max-width: 991.98px) {
