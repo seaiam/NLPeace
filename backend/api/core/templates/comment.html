@@ -17,14 +17,14 @@
                         {% endif %}
                     </div>
                     <div class="col-10">
-                        <h5 class="card-title">@{{ post.user.username }}</h5>
+                        <h5 class="card-title"><strong>@{{ post.user.username }}</strong></h5>
                         <p class="card-text">{{ post.content }}</p>
                     </div>
                 </div>
                 {% if post.image %}
                 <img class="card-img-top mt-2" src="{{ post.image.url }}" alt="Post image" /><br><br>
                 {% endif %}
-                <h6 class="card-subtitle mb-2" style ="float: right;">{{ post.created_at|date:"M d, Y H:i" }}</h6>
+                <h6 class="card-subtitle mb-2" style ="float: right; margin-top:5px;">{{ post.created_at|date:"M d, Y H:i" }}</h6>
                 <br>
                 <hr>
                 <div class ="icons-list" >
@@ -74,15 +74,15 @@
                 <hr>
                 {% for reply in replies %}
                 <div class="grid-container">
-                    <div class="user-profile">
+                    <div class="user-picture">
                         {% if reply.user.profile and reply.user.profile.pic %}
-                        <img src="{{ reply.user.profile.pic.url }}" class="user-pic" alt="{{ reply.user.username }}'s profile picture">
+                        <img src="{{ reply.user.profile.pic.url }}" class="reply-user-pic" alt="{{ reply.user.username }}'s profile picture">
                         {% else %}
-                        <img src="{% static 'default.jpg' %}" class="user-pic" alt="{{ reply.user.username }}'s profile picture" />
+                        <img src="{% static 'default.jpg' %}" class="reply-user-pic" alt="{{ reply.user.username }}'s profile picture" />
                         {% endif %}
                     </div>
                     <div class="tweet-content" style="flex-grow: 1;">
-                       <h6 class="card-title">@{{ reply.user.username }}</h6>
+                        <h6 class="card-title"><strong> @{{ reply.user.username }}</strong></h6>
                         <p class="card-text">{{ reply.content }}</p>
                         {% if reply.image %}
                         <img class="card-img-top mt-2" src="{{ reply.image.url }}" alt="reply image" />
