@@ -84,6 +84,9 @@
                     <div class="tweet-content" style="flex-grow: 1;">
                        <h6 class="card-title">@{{ reply.user.username }}</h6>
                         <p class="card-text">{{ reply.content }}</p>
+                        {% if reply.image %}
+                        <img class="card-img-top mt-2" src="{{ reply.image.url }}" alt="reply image" />
+                        {% endif %}
                     </div>
                     <div class="grid-item" >
                         <i class="far fa-thumbs-up" aria-hidden="true" ></i>&nbsp;&nbsp;&nbsp;
