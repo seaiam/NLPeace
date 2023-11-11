@@ -25,7 +25,7 @@ def profile_settings(request):
         user = User.objects.get(pk=request.user.id)
         if user is None:
             return HttpResponseNotFound
-        return render(request, 'settings.html', {'user': user, 'editUsernameForm': EditUsernameForm(instance=user),'editPasswordForm': PasswordChangeForm(request.user)})
+        return render(request, 'settings.html', {'user': user, 'editUsernameForm': EditUsernameForm(instance=user),'editPasswordForm': PasswordChangeForm(request.user),'privacy_form':PrivacySettingsForm(instance=user.profile)})
     
 @login_required
 def update_username(request):
@@ -107,7 +107,7 @@ def privacy_settings_view(request, user_id):
         if form.is_valid():
             form.save()
             messages.success(request, "Privacy settings updated!")
-            return redirect('privacy_settings', user_id=user_id)
+            return redirect('profile')
     else:
         form = PrivacySettingsForm(instance=profile_instance)
 
@@ -115,7 +115,7 @@ def privacy_settings_view(request, user_id):
         'privacy_form': form
     }
     
-    return render(request, 'privacy_settings.html', context)
+    return render(request, 'settings.html', context)
 
 @login_required
 def search_user(request):
