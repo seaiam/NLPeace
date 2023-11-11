@@ -115,7 +115,7 @@ def privacy_settings_view(request, user_id):
         'privacy_form': form
     }
     
-    return render(request, 'privacy_settings.html', context)
+    return render(request, 'settings.html', context)
 
 @login_required
 def search_user(request):
