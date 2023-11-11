@@ -878,6 +878,11 @@ img {
   margin: 10px; 
 }
 
+#saveBtnPrivacy {
+  white-space: nowrap;
+  min-width: 180px;
+}
+
 
 /* Media Queries */
 @media (max-width: 991.98px) {
