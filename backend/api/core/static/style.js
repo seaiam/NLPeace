@@ -17,21 +17,39 @@ const handleOnDeletePhotoClick = () => {
     image.src = "#";
 }
 
+const handleReportClick = (target) => {
+    const modal = document.getElementById("reportModal");
+    const id = document.getElementById("id_post");
+    modal.style.display = "block";
+    id.value = $(target).siblings()[0].value;
+}
+
+const handleReportClose = () => {
+    const modal = document.getElementById("reportModal");
+    const id = document.getElementById("reportedPostId");
+    modal.style.display = "none";
+    id.value = null;
+}
+
 $(document).ready(() => {
     const upload = document.getElementById("id_image");
     const div = document.getElementById("preview_image");
     const image = div.getElementsByTagName("IMG")[0]
-    upload.addEventListener('change', e => {
-        const reader = new FileReader()
-        if (e.target.files && e.target.files[0]) {
-            reader.onload = () => {
-                image.src = reader.result;
-            };
-            reader.readAsDataURL(e.target.files[0]);
-            div.style.display = "block";
-        }
-    });
+    if (upload && div) {
+        upload.addEventListener('change', e => {
+            const reader = new FileReader()
+            if (e.target.files && e.target.files[0]) {
+                reader.onload = () => {
+                    image.src = reader.result;
+                };
+                reader.readAsDataURL(e.target.files[0]);
+                div.style.display = "block";
+            }
+        });
+    }
 });
+
+
 
 // When the user clicks on the button, open the modal
 btn.onclick = function() {

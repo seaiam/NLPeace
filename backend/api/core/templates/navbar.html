@@ -10,10 +10,26 @@
     </button>
     <div class="collapse navbar-collapse" id="navbarNavDropdown">
         <div class="ml-auto">
-            <form class="form-inline">
-                <input class="form-control mr-sm-2" type="search" placeholder="Search" aria-label="Search">
+            <!-- <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                {% if user.is_authenticated %}
+                <li class="nav-item">
+                    <a href="{% url 'profile' %}" class="nav-link">Profile</a>
+                </li>
+                <li class="nav-item">
+                    <a href="{% url 'logout_user' %}" class="nav-link">Log out</a>
+                </li>
+                {% else %}
+                <li class="nav-item">
+                    <a href="{% url 'login' %}" class="nav-link">Login</a>
+                </li>
+                {% endif %}
+            </ul> -->
+            <form class="form-inline" method="POST" action="{% url 'search_user' %}">
+                {% csrf_token %}
+                <input class="form-control mr-sm-2" type="search" placeholder="Search" aria-label="Search" name="search"  id="search-input">
                 <button class="btn btn-outline-light my-2 my-sm-0" type="submit">Search</button>
             </form>
         </div>
     </div>
 </nav>
+

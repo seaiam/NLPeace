@@ -1,14 +1,24 @@
 from django.test import TestCase
 from django.urls import reverse
-from django.contrib.auth.models import User
+from django.contrib.auth.models import User 
+from core.models.models import  Profile
 from django.core.files.uploadedfile import SimpleUploadedFile
-from core.models.models import Post
+from core.models.models import Post, PostReport
 from core.forms.posting_forms import PostForm
+from core.models.models import Repost
+from django.core.exceptions import ObjectDoesNotExist
 
 class PostTestCase(TestCase):
     def setUp(self):
         self.user = User.objects.create_user(username='testuser', password='password')
         self.client.login(username='testuser', password='password')
+        
+        try:
+            self.profile = self.user.profile  # Try to access the profile
+        except ObjectDoesNotExist:
+            # Handle the case where the profile does not exist/ create a profile
+            self.profile = Profile.objects.create(user=self.user)
+            
 
     def test_post_post(self):
         # Create a post using a POST request
@@ -79,3 +89,38 @@ class CommentTestCase(TestCase):
         comment = self.post.replies.first()
         self.assertEqual(comment.content, 'Test comment with image')
         self.assertIsNotNone(comment.image) #testing the content of the coment
+
+class RepostTestCase(TestCase):
+    def setUp(self):
+        self.user = User.objects.create_user(username='testuser', password='password')
+        self.other_user = User.objects.create_user(username='otheruser', password='password')
+        self.post = Post.objects.create(user=self.other_user, content='Test post')
+        self.client.login(username='testuser', password='password')
+
+    def test_repost_post(self):
+        response = self.client.post(reverse('repost', kwargs={'post_id': self.post.id}))
+        self.assertEqual(response.status_code, 302)  # Expect a redirect after reposting
+        self.assertEqual(Repost.objects.count(), 1) # Check that repost was created in database
+
+        repost = Repost.objects.first()
+        self.assertEqual(repost.post, self.post)
+        self.assertEqual(repost.user, self.user)
+
+    def test_repost_unauthenticated(self):
+        self.client.logout()
+        response = self.client.post(reverse('repost', kwargs={'post_id': self.post.id}))
+        self.assertEqual(response.status_code, 302)  # redirect to login
+        self.assertEqual(Repost.objects.count(), 0)  # repost not created in the database
+
+class ReportTestCase(TestCase):
+    def setUp(self):
+        self.user = User.objects.create_user(username='testuser', password='password')
+        self.client.login(username='testuser', password='password')
+        self.post = Post.objects.create(user=self.user, content='testpost')
+    
+    def test_report_post(self):
+        response = self.client.post(reverse('report'), {'post': self.post.id, 'category': 0})
+        reports = PostReport.objects.all()
+        self.assertEqual(response.status_code, 302)
+        self.assertEqual(1, reports.count())
+

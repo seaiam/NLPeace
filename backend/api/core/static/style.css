@@ -613,7 +613,7 @@ input[type="file"] {
   text-decoration: none;
 }
 
-.biolabel {
+.modalTitle {
   text-align: left;
   color: #D9D9D9;
 }
@@ -683,6 +683,14 @@ input[type="file"] {
   border-color: #fff;
 }
 
+.post-actions__publish:hover {
+  color: #00001c;
+  background-color: transparent; 
+  border-color: #00001c; 
+  border-width: 2px;
+  transition: background-color 0.3s, color 0.3s, border-color 0.3s;
+}
+
 .scroller::-webkit-scrollbar {
   display: none;
 }
@@ -746,7 +754,7 @@ img {
 }
 
 .feed{
-  margin-left:20%;
+  margin-left:18%;
 }
 
 hr {
@@ -756,6 +764,129 @@ hr {
 .card-subtitle{
   color: #00001c;
 }
+
+/*repost button */
+.repost-button{
+  border: none;
+  padding: 0;
+  background: none;
+  color: #00001c;
+  font-weight: 800;
+  
+}
+button:focus {
+  outline: none;
+}
+
+.reposted-button{
+border: none;
+padding: 0;
+background: none;
+color: #0047ab;
+font-style: italic;
+}
+
+.feed-reposted{
+  color:#0047ab;
+}
+
+.repost-info{
+  font-weight: bold;
+  margin-bottom:10px;
+  font-size: large;
+}
+
+/* seacrh-user css*/
+.search-user-text{
+  color: white;
+  text-align: center;
+}
+
+.user-button {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  /* margin-top: 20px; */
+}
+
+.follow-button {
+  background: none;
+  border: 1px solid black;
+  border-radius: 20px;
+  width: 50%;
+  padding: 10px;
+  font-weight: 600;
+  color: #00001c;
+  transition: 0.5s;
+  background-size: 200% auto;
+  box-shadow: 0 0 20px #eee;
+  background-image: linear-gradient(to right, #F9D1C4 0%, #9BBDDD 51%, #F9D1C4 100%);
+}
+
+button:hover {
+  background-position: right center;
+}
+
+.user-name{
+  /* text-decoration: none; */
+  color:#00001c;
+  font-weight: 500;
+  font-size: 150%;
+}
+
+.user-name, .user-name:visited,.user-name:hover,.user-name:active {
+  text-decoration:none;
+  color: #00001c;
+}
+
+/*notifcation page css*/
+.notificationSentBy{
+  font-weight: bold;
+  font-size: 18px;
+}
+
+/* Notification Icon */
+.icon-button {
+  position: relative;
+  font-size: 24px; 
+}
+
+.icon-button__badge {
+  position: absolute;
+  top: 0;
+  right: 0;
+  transform: translate(50%, -50%); 
+  width: 10px;
+  height: 10px;
+  background: red;
+  border-radius: 50%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.notification-close-btn {
+  position: absolute;
+  top: 0;
+  right: 10px; 
+  border: none;
+  background: transparent;
+  color: #00001c; 
+  font-size: 27px; 
+  cursor: pointer;
+  padding: 0.5rem; 
+  z-index: 2; 
+}
+
+.notification-close-btn:hover {
+  color: darkgrey; 
+}
+
+.notification-text{
+  color:#d3d3d3;
+  text-align: center;
+}
+
 
 /* Aligning Profile picture with posts*/
 .top-aligned-row {
@@ -889,15 +1020,7 @@ img {
 }
 
 
-/* Media Queries */
-@media (max-width: 991.98px) {
-  .sidebar {
-    width: 100%;
-    height: 100%;
-    position: relative;
-    top: 0;
-  }
-}
+
 
 /* Media Queries */
 @media (max-width: 991.98px) { 
