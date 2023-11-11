@@ -749,7 +749,7 @@ img {
 .icons-list{
   color: #00001c;
   display: grid;  
-  grid-template-columns: 1fr 1.5fr 1fr;  
+  grid-template-columns: 1fr 1.5fr 1.5fr 1.5fr;  
   padding-bottom:10px;
 }
 
@@ -771,7 +771,6 @@ hr {
   padding: 0;
   background: none;
   color: #00001c;
-  font-weight: 800;
   
 }
 button:focus {
@@ -791,7 +790,7 @@ font-style: italic;
 }
 
 .repost-info{
-  font-weight: bold;
+  font-style: italic;
   margin-bottom:10px;
   font-size: large;
 }
