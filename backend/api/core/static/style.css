@@ -793,6 +793,11 @@ hr {
   border: none;
   margin: 0 10px; 
   cursor: pointer; 
+  outline: none;
+}
+
+.tabbutton:focus {
+  outline: none; 
 }
 
 .tabbutton.active {
