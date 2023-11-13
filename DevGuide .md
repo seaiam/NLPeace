@@ -1,4 +1,4 @@
-# NLPEACE
+# NLPEACE Dev Guide
 
 ## Local Setup
 
@@ -8,49 +8,77 @@
 
 3. Install pipenv
 
-*  ```pip install pipenv --user```
+```
+pip install pipenv --user
+```
 
-4. Clone Repository
+#### Clone Repository
 
-* Navigate to the directory where you want to clone the repo
+Navigate to the directory where you want to clone the repo
 
-* Enter ```git clone https://github.com/seaiam/NLPeace.git```
+Enter command
 
-5. Install Virtual Environment
+```
+git clone https://github.com/seaiam/NLPeace.git
+```
 
-*  ```pipenv install```
+#### Install Virtual Environment
 
-6. Enter/Exit Virtual Environment
+```
+pipenv install
+```
 
-* To enter ```pipenv shell```
+### Enter/Exit Virtual Environment
 
-* To exit ```exit```
+##### To Enter VE 
+
+```
+pipenv shell
+```
+
+##### To exit VE
+```
+exit
+```
 
 ## Spawning Contianers
 
-1. cd ./backend
+#### Navigate to backend directory
+```
+cd ./backend
+```
 
-2. docker-compose build
+#### Build container image 
+```
+make build
+```
 
-3. docker-compose up
+#### Run the contianers 
+```
+make run
+```
 
 ## Useful Commands to Know
 
-To tear down the containers
+#### To tear down the containers
 
-* docker-compose down 
+ ```
+ docker-compose down
+  ```
 
-If you are getting weird behaviour
+#### If you are getting weird behaviour
 
-* docker-compose down -v 
+```
+docker-compose down -v
+ ```
 
-To rebuild the image without the cache
-* docker-compose build --no-cache
+#### To rebuild the image without the cache
+ ```
+ docker-compose build --no-cache
+ ```
   
-  
-  
-## Run tests from container
+## Run tests 
 
-* run this command after building the container:
-
-```docker-compose exec app python manage.py test core.tests```
+ ```
+ make test
+ ```
