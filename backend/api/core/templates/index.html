@@ -87,14 +87,14 @@
                 <div class ="icons-list" >
 
                     <div class="feed" >
-                        <a href="{% url 'like' post.id %}"><i class="like-button fa fa-thumbs-up aria-hidden=true"> Like</i></a>
+                        <a href="{% url 'like' post.id %}"><i class="comment-link far fa-thumbs-up" aria-hidden="true"> Like</i></a>
                     </div>
                     <div class="feed" >
-                        <a href="{% url 'dislike' post.id %}"><i class="like-button fa fa-thumbs-down aria-hidden=true"> Dislike</i></a>
+                        <a href="{% url 'dislike' post.id %}"><i class="comment-link far fa-thumbs-down" aria-hidden="true"> Dislike</i></a>
                     </div>
 
                     <div class="feed"> <i class="far fa-comment" aria-hidden="true"> <a class="comment-link" href="{% url 'comment' post_id=post.id %}">Comment</a></i> </div> 
-                    
+
                     <form method="post" action="{% url 'repost' post.id %}">
                         {% csrf_token %}
                         {% if post.id in reposted_post_ids %}
