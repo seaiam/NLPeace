@@ -51,9 +51,10 @@ def repost(request, post_id):
 @login_required
 def profile(request):
     profile = Profile.objects.get_or_create(pk=request.user.id)
-    data=Notifications.objects.all().order_by('-id')
+    data = Notifications.objects.all().order_by('-id')
     posts = Post.objects.filter(user = request.user)
-    reposts = Repost.objects.filter(user = request.user)
+    reposts_ids = Repost.objects.filter(user = request.user).values_list('post_id', flat=True)
+    reposts = Post.objects.filter(id__in = reposts_ids)
     #we combine all user posts and reposts to show them chronogically on the user profile
     all_Posts = list(chain(posts, reposts))
     all_Posts.sort(key=lambda item: item.created_at, reverse=True)
