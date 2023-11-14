@@ -54,6 +54,49 @@
     </div>
 </div>
 
+<div class = "container">
+    <div class="posttab-btns">      <!-- use posttabs styling-->
+        <button class = "posttabbutton" onclick="openPostTab(event, 'All')" id="defaultOpenPost">All</button>
+        <button class = "posttabbutton" onclick="openPostTab(event, 'Followers')">Followers</button>
+    </div>
+    <div id = "All" class = "posttabcontent">
+        <div class="d-flex justify-content-center align-items-center">   
+            <div class="card" style="width: 39rem; background: linear-gradient(to right, #F9D1C4 0%, #9BBDDD 51%, #F9D1C4 100%);  border-radius: 15px; margin-bottom:30px;">
+                <!--<div class="card-body">Everyones posts</div>        put all posts here-->
+            </div>
+        </div> 
+    </div>
+    <div id = "Followers" class = "posttabcontent">
+        <div class="d-flex justify-content-center align-items-center">   
+            <div class="card" style="width: 39rem; background: linear-gradient(to right, #F9D1C4 0%, #9BBDDD 51%, #F9D1C4 100%);  border-radius: 15px; margin-bottom:30px;">
+                <!--<div class="card-body">Followers posts</div>        put followers only posts in here-->
+            </div>
+        </div> 
+    </div> 
+</div>
+<script>
+    function openPostTab(event, posttabName) {           
+        var posttabcontent, posttabbutton;
+    
+        posttabcontent = document.getElementsByClassName("posttabcontent");
+        for (i = 0; i < posttabcontent.length; i++) {
+            posttabcontent[i].style.display = "none";
+        }
+    
+        posttabbutton = document.getElementsByClassName("posttabbutton");
+    
+        for (i = 0; i < posttabbutton.length; i++) {
+            posttabbutton[i].className = posttabbutton[i].className.replace(" active", "");
+        }
+        document.getElementById(posttabName).style.display = "block";
+        event.currentTarget.classList.add("active");
+    
+    }
+    // opening tab 1 by default
+    document.getElementById("defaultOpenPost").click();
+</script> 
+
+
 {% for post in posts %}
 <div class="d-flex justify-content-center align-items-center">
         <div class="card" style="width: 39rem; border-radius: 30px;margin:20px 0px 20px 0px;  overflow: hidden;background: linear-gradient(to right, #F9D1C4 0%, #9BBDDD 51%, #F9D1C4 100%);">
