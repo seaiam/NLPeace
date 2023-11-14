@@ -90,7 +90,7 @@ class LikeAndDislikeTestCase(TestCase):
         self.client.login(username='testuser', password='password')
     
     def test_like_post(self):
-        response = self.client.post(reverse('like'), {'post': self.post.id})
+        response = self.client.get(reverse('like', args=[self.post.id]))
         likes = PostLike.objects.all()
         self.assertEqual(response.status_code, 302)
         self.assertEqual(1, likes.count())
@@ -101,7 +101,7 @@ class LikeAndDislikeTestCase(TestCase):
 
     def test_like_post_with_previous_dislike_deletes_dislike(self):
         PostDislike.objects.create(disliker=self.user, post=self.post)
-        response = self.client.post(reverse('like'), {'post': self.post.id})
+        response = self.client.get(reverse('like', args=[self.post.id]))
         likes = PostLike.objects.all()
         dislikes = PostDislike.objects.all()
         self.assertEqual(response.status_code, 302)
@@ -110,10 +110,10 @@ class LikeAndDislikeTestCase(TestCase):
     
     def test_like_post_with_already_liked_is_error(self):
         PostLike.objects.create(liker=self.user, post=self.post)
-        self.assertRaises(IntegrityError, lambda: self.client.post(reverse('like'), {'post': self.post.id}))
+        self.assertRaises(IntegrityError, lambda: self.client.get(reverse('like', args=[self.post.id]),))
     
     def test_dislike_post(self):
-        response = self.client.post(reverse('dislike'), {'post': self.post.id})
+        response = self.client.get(reverse('dislike', args=[self.post.id]))
         dislikes = PostDislike.objects.all()
         self.assertEqual(response.status_code, 302)
         self.assertEqual(1, dislikes.count())
@@ -124,7 +124,7 @@ class LikeAndDislikeTestCase(TestCase):
     
     def test_dislike_post_with_previous_like_deletes_like(self):
         PostLike.objects.create(liker=self.user, post=self.post)
-        response = self.client.post(reverse('dislike'), {'post': self.post.id})
+        response = self.client.get(reverse('dislike', args=[self.post.id]))
         likes = PostLike.objects.all()
         dislikes = PostDislike.objects.all()
         self.assertEqual(response.status_code, 302)
@@ -133,7 +133,7 @@ class LikeAndDislikeTestCase(TestCase):
     
     def test_dislike_post_with_already_disliked_is_error(self):
         PostDislike.objects.create(disliker=self.user, post=self.post)
-        self.assertRaises(IntegrityError, lambda: self.client.post(reverse('dislike'), {'post': self.post.id}))
+        self.assertRaises(IntegrityError, lambda: self.client.get(reverse('dislike', args=[self.post.id])))
 
 class RepostTestCase(TestCase):
     def setUp(self):

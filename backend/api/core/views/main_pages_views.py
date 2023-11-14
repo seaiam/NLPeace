@@ -78,32 +78,24 @@ def comment(request, post_id):
         return redirect('login')
     
 @login_required
-def like(request):
+def like(request, post_id):
     if request.user.is_authenticated:
-        if request.method == 'POST':
-            form = PostLikeForm(request.POST)
-            if form.is_valid():
-                dislike = PostDislike.objects.filter(disliker=request.user, post=form.cleaned_data['post']).first()
-                if dislike:
-                    dislike.delete()
-                like = form.save(commit=False)
-                like.liker = request.user
-                like.save()
+        post = Post.objects.get(pk=post_id)
+        dislike = PostDislike.objects.filter(disliker=request.user, post=post).first()
+        if dislike:
+            dislike.delete()
+        PostLike.objects.create(liker=request.user, post=post)
         return redirect('home')
     return redirect('login')
 
 @login_required
-def dislike(request):
+def dislike(request, post_id):
     if request.user.is_authenticated:
-        if request.method == 'POST':
-            form = PostDislikeForm(request.POST)
-            if form.is_valid():
-                like = PostLike.objects.filter(liker=request.user, post=form.cleaned_data['post']).first()
-                if like:
-                    like.delete()
-                dislike = form.save(commit=False)
-                dislike.disliker = request.user
-                dislike.save()
+        post = Post.objects.get(pk=post_id)
+        like = PostLike.objects.filter(liker=request.user, post=post).first()
+        if like:
+            like.delete()
+        PostDislike.objects.create(disliker=request.user, post=post)
         return redirect('home')
     return redirect('login')
 

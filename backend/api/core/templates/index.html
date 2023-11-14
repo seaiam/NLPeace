@@ -85,18 +85,10 @@
                 <div class ="icons-list" >
 
                     <div class="feed" >
-                        <form method="post" action="{% url 'like' %}">
-                            {% csrf_token %}
-                            <div class="feed"> <i class="fa fa-thumbs-up" aria-hidden="true"> <button type="submit" class="like-button"> Like </button> </i></div>
-                            <input type="hidden" name="post_id" value="{{ post.id }}">
-                        </form>
+                        <a href="{% url 'like' post.id %}"><i class="like-button fa fa-thumbs-up aria-hidden=true"> Like</i></a>
                     </div>
                     <div class="feed" >
-                        <form method="post" action="{% url 'dislike' %}">
-                            {% csrf_token %}
-                            <div class="feed"> <i class="fa fa-thumbs-down" aria-hidden="true"> <button type="submit" class="like-button"> Dislike </button> </i></div>
-                            <input type="hidden" name="post_id" value="{{ post.id }}">
-                        </form>
+                        <a href="{% url 'dislike' post.id %}"><i class="like-button fa fa-thumbs-down aria-hidden=true"> Dislike</i></a>
                     </div>
 
                     <div class="feed"> <i class="fa fa-comment" aria-hidden="true"> <a href="{% url 'comment' post_id=post.id %}">Comment</a></i> </div> 

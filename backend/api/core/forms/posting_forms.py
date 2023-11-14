@@ -13,15 +13,3 @@ class PostReportForm(forms.ModelForm):
         model = PostReport
         fields = ['post', 'category', 'info']
         widgets = {'post': forms.HiddenInput()}
-
-class PostLikeForm(forms.ModelForm):
-    class Meta:
-        model = PostLike
-        fields = ['post']
-        widgets = {'post': forms.HiddenInput()}
-
-class PostDislikeForm(forms.ModelForm):
-    class Meta:
-        model = PostDislike
-        fields = ['post']
-        widgets = {'post': forms.HiddenInput()}
