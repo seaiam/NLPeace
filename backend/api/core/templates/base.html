@@ -2,7 +2,6 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
@@ -36,8 +35,15 @@
                     </a>
                 </li>
                 <li class="sidebar-item">
-                    <a href="#">
-                        <i class="fa fa-bell"></i>
+                    <a href="{% url 'notifications' %}">
+                        <!-- user will see a red icon when the user receives a notification -->
+                        <i class="fa fa-bell icon-button">
+                            {% for notification in data %}
+                            {% if request.user.id != notification.sent_by.id %}
+                            <span class="icon-button__badge"></span>
+                            {% endif %}
+                            {%endfor%}
+                        </i>
                         Notifications
                     </a>
                 </li>
@@ -48,7 +54,7 @@
                     </a>
                 </li>
                 <li class="sidebar-item">
-                    <a href="#">
+                    <a href="{% url 'profile_settings' %}">
                         <i class="fa fa-cog"></i>
                         Settings
                     </a>
@@ -65,7 +71,7 @@
         {% endblock %}
     </div>   
 
-    <div class="container">
+    <!-- <div class="container">
         {% if messages %}
             {% for message in messages %}
                 <div class="alert alert-warning alert-dismissible fade show"
@@ -78,7 +84,18 @@
             {% endfor %}
         
         {% endif %}
-    </div>
+    </div> -->
+            <div class="container">
+                    {% if messages %}
+                    {% for message in messages %}
+                <div class="alert alert-warning alert-dismissible fade show ">
+                    {{ message }}
+                    <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
+                    {% endfor %}
+                    
+                    {% endif %}
+                </div>
+            </div>
 
 
     <!--NEW PAGES EXTEND CONTENT BLOCK-->

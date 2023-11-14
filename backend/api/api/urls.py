@@ -19,7 +19,6 @@ from django.urls import path, include
 from core.views import authentication_views, main_pages_views, profile_views
 from django.conf import settings
 from django.conf.urls.static import static
-from django.contrib.auth import views as auth_views
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -41,6 +40,14 @@ urlpatterns = [
     path('user/<int:user_id>/privacy/', profile_views.privacy_settings_view, name='privacy_settings'),
     path('comment/<int:post_id>', main_pages_views.comment, name='comment'),
     path('repost/<int:post_id>/', main_pages_views.repost, name='repost'),
+    path('accounts/profile/search/',profile_views.search_user,name="search_user"),
+    path('guest/<int:user_id>/', main_pages_views.guest ,name="guest"),
+    path('report/', main_pages_views.report, name='report'),
+    path('follow/', profile_views.follow_user ,name="follow_user"),
+    path('unfollow/', profile_views.unfollow_user ,name="unfollow_user"),
+    path('accounts/profile/notifications', main_pages_views.notifications, name='notifications'), 
+    path('accounts/profile/notifications/delete_notification', profile_views.delete_notification, name='delete_notification'), 
+    path('accounts/profile/notifications/invite', main_pages_views.accept_decline_invite, name='accept_decline_invite'),
 ]
 
 if settings.DEBUG:

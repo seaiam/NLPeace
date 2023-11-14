@@ -102,7 +102,7 @@ class ProfilePrivacyTest(TestCase):
         storage = get_messages(response.wsgi_request)
         self.assertIn("Privacy settings updated!", [message.message for message in storage])
 
-        self.assertRedirects(response, reverse('privacy_settings', args=[self.user.id]))
+        self.assertRedirects(response, reverse('profile'))
         
         self.user.refresh_from_db()
         self.assertEqual(self.user.profile.is_private, False)

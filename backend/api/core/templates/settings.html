@@ -1,117 +1,101 @@
 {% extends "base.html" %}
+{% load static %}
 
 {% block title %}Settings Page {% endblock %}
 
-<html> 
-<body>
   {% block content %}
-  <div class="collapse d-lg-block" id="sidebarMenu">
-      <div class="sidebar">
-          <ul>
-              <li class="sidebar-item">
-                  <a href="#">
-                      <i class="fa fa-user-circle"></i>
-                      Profile
-                  </a>
-              </li>
-              <li class="sidebar-item">
-                  <a href="#">
-                      <i class="fa fa-home"></i>
-                      Home
-                  </a>
-              </li>
-              <li class="sidebar-item">
-                  <a href="#">
-                      <i class="fas fa-comment-dots"></i>
-                      Messages
-                  </a>
-              </li>
-              <li class="sidebar-item">
-                  <a href="#">
-                      <i class="fa fa-bell"></i>
-                      Notifications
-                  </a>
-              </li>
-              <li class="sidebar-item">
-                  <a href="#">
-                      <i class="fa fa-bookmark"></i>
-                      Bookmarks
-                  </a>
-              </li>
-              <li class="sidebar-item">
-                  <a href="{% url 'profile_settings' %}">
-                      <i class="fa fa-cog"></i>
-                      Settings
-                  </a>
-              </li>
-          </ul>
-      </div>
-  </div>   
-
+ 
+ <div class = "container">
   <div class="tab-btns">
     <button class="tabbutton" onclick="openTab(event, 'Account')" id="defaultOpen">Account</button>
     <button class="tabbutton" onclick="openTab(event, 'Password')">Password</button>
+    <button class="tabbutton" onclick="openTab(event, 'Privacy')">Privacy</button>
   </div>
 
+
+
 <div id="Account" class="tabcontent">
-    <div class="container">    
-        <form action={% url 'update_username' %} method="post" name="editUsernameForm">
-            {% csrf_token %}
-            <div class="editPassword-box">
-                <div class="text-left">Change your Username</div>
-                    <div class="form-group">
-                        {{ editUsernameForm.username }}
-                    </div>
-                    <div class="signup-button">
-                        <button type="submit" class="button2">Save Changes</button>
-                    </div>  
-                </div>                              
-            </div>
-        </form>         
-    </div>
-        
-    <div id="Password" class="tabcontent1 d-flex justify-content-center">
-        <div class="container"> 
-            <form action={% url 'update_password' %} method="post" name="editPasswordForm">
-                {% csrf_token %}
-                <div class="editPassword-box">
-                    <div class="text-left">Change your Password</div>
-                        <div class = "form-group">          
-                            {{editPasswordForm}}              
-                            {% comment %} <input type="password" placeholder="Enter your new Password" class="settings-textbox" required>                       
-                            <input type="password" placeholder="Confirm new Password" class="settings-textbox" required> {% endcomment %}
-                        </div>
-                    </div>
-                    <div class="signup-button">
-                        <button type="submit" class="button2">Save Changes</button>                    
-                    </div>                                        
-                </div>
-            </form>              
-        </div>
+    <div class = "d-flex align-items-center justify-content-center">
+        <div class="card" style="width: 40rem; border-radius: 30px; margin:50px; overflow: hidden;background: linear-gradient(to right, #F9D1C4 0%, #9BBDDD 51%, #F9D1C4 100%);">
+            <div class="card-body">
+                <form action={% url 'update_username' %} method="post" name="editUsernameForm">
+                    {% csrf_token %}
+                        <div class="text-left">Change your Username</div>
+                            <div class="card-text">
+                                {{ editUsernameForm.username }}
+                            </div>
+                            <div class="username-button">
+                                <button type="submit" class="btn post-actions__publish">Save Changes</button>
+                        </div>  
+                </form>     
+            </div>  
+         </div>
     </div>
 </div>
 
-    <script>
+<div id="Password" class="tabcontent">
+    <div class = "d-flex align-items-center justify-content-center">
+        <div class="card" style="width: 50rem; border-radius: 30px; margin:50px; overflow: hidden;background: linear-gradient(to right, #F9D1C4 0%, #9BBDDD 51%, #F9D1C4 100%);">
+            <div class="card-body">
+                <form action={% url 'update_password' %} method="post" name="editPasswordForm">
+                    {% csrf_token %}
+                        <div class="text-left">Change your Password</div>
+                            <div class = "edit-inputs">          
+                                {{editPasswordForm}}  
+                                {% comment %}
+                               
+                                {% endcomment %}
+                            </div>
+                        <div class="username-button">
+                            <button type="submit" class="btn post-actions__publish">Save Changes</button>                    
+                        </div>                                        
+                </form>   
+            </div>  
+         </div>
+    </div>
+</div>
+
+<div id="Privacy" class="tabcontent">
+    <div class = "d-flex align-items-center justify-content-center">
+        <div class="card" style="width: 30rem; border-radius: 30px; margin:50px; overflow: hidden;background: linear-gradient(to right, #F9D1C4 0%, #9BBDDD 51%, #F9D1C4 100%);">
+            <div class="card-body">
+                <form action={% url 'privacy_settings' user_id=request.user.id %} method="POST" name="privacy_form" >
+                    {% csrf_token %}
+                        <div class="text-left">Edit Privacy Settings</div>
+                        {{ privacy_form.is_private }}
+                            <div class = "privacy-button">
+                                <button id="saveBtnPrivacy" class="btn post-actions__publish">Save Privacy Settings</button>
+                            </div>
+                </form>
+            </div>
+        </div>
+      
+    </div> 
+</div>
+
+ 
+</div>
+
+
+<script>
         function openTab(event, tabName) {           
             var tabcontent, tabbutton;
-
+        
             tabcontent = document.getElementsByClassName("tabcontent");
             for (i = 0; i < tabcontent.length; i++) {
                 tabcontent[i].style.display = "none";
             }
-
+        
             tabbutton = document.getElementsByClassName("tabbutton");
-
+        
             for (i = 0; i < tabbutton.length; i++) {
                 tabbutton[i].className = tabbutton[i].className.replace(" active", "");
             }
             document.getElementById(tabName).style.display = "block";
             event.currentTarget.classList.add("active");
-
+        
         }
         // opening tab 1 by default
         document.getElementById("defaultOpen").click();
     </script>
 {% endblock %}
-</body>
-</html>
