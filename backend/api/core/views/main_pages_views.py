@@ -27,12 +27,15 @@ def home(request):
         form = PostForm()
         reposted_post_ids = Repost.objects.filter(user=request.user).values_list('post_id', flat=True)
         data=Notifications.objects.all().order_by('-id')
+        following_users = request.user.profile.following.all()
+        following_posts = Post.objects.filter(user__in=following_users).order_by('-created_at')
         context =  {
             'posts': posts, 
             'form': form, 
             'data' : data,
             'reportPostForm': PostReportForm(), 
-            'reposted_post_ids': reposted_post_ids
+            'reposted_post_ids': reposted_post_ids,
+            'followPost' : following_posts
             }
         return render(request, 'index.html',context)
     else:
@@ -100,7 +103,6 @@ def accept_decline_invite(request):
 
     return render(request,'notifications.html',{'data':data})
 
-
 def comment(request, post_id):
     if request.user.is_authenticated:
         if request.method == 'POST':
@@ -120,7 +122,7 @@ def comment(request, post_id):
     else:
         #redirect user to login page
         return redirect('login')
-
+    
 @login_required
 def report(request):
     if request.user.is_authenticated:
