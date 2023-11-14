@@ -21,9 +21,14 @@ def home(request):
                 post.user = request.user
                 post.save()
                 return redirect('home')
-    
         #User is authenticated
-        posts = Post.objects.all().order_by('-created_at')
+        user_ids_following = request.user.profile.following.values_list('id', flat=True)
+
+        posts = Post.objects.filter(
+            Q(user__profile__is_private=False) | 
+            Q(user__in=user_ids_following) |  
+            Q(user=request.user) 
+        ).distinct().order_by('-created_at')
         form = PostForm()
         reposted_post_ids = Repost.objects.filter(user=request.user).values_list('post_id', flat=True)
         data=Notifications.objects.all().order_by('-id')
