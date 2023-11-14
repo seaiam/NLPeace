@@ -24,11 +24,15 @@ def home(request):
     
         #User is authenticated
         posts = Post.objects.all().order_by('-created_at')
+        likes = [post for post in posts if post.is_likeable_by(request.user)]
+        dislikes = [post for post in posts if post.is_dislikeable_by(request.user)]
         form = PostForm()
         reposted_post_ids = Repost.objects.filter(user=request.user).values_list('post_id', flat=True)
         data=Notifications.objects.all().order_by('-id')
         context =  {
             'posts': posts, 
+            'likes': likes,
+            'dislikes': dislikes,
             'form': form, 
             'data' : data,
             'reportPostForm': PostReportForm(), 
