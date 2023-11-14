@@ -121,9 +121,9 @@ def report(request):
         return redirect('home')
     return redirect('login')
 
-
 def error_404(request):
     return render(request, '404.html', status=404)
 
 def error_500(request):
     raise ValueError("Error 500, Server error")
+

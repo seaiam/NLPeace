@@ -775,7 +775,7 @@ img {
 .icons-list{
 color: #00001c;
 display: grid;  
-grid-template-columns: 1fr 1fr 1fr 1fr;  
+grid-template-columns: 1fr 1fr 1fr 1fr 1fr;  
 padding-bottom:10px;
 }
 
@@ -820,6 +820,19 @@ font-style: italic;
   font-weight: bold;
   margin-bottom:10px;
   font-size: large;
+}
+
+/*like button */
+.like-button{
+  border: none;
+  padding: 0;
+  background: none;
+  color: #00001c;
+  font-weight: 800;
+  
+}
+button:focus {
+  outline: none;
 }
 
 /* seacrh-user css*/
