@@ -3,7 +3,8 @@ from django.urls import reverse
 from django.contrib.auth.models import User 
 from core.models.models import  Profile
 from django.core.files.uploadedfile import SimpleUploadedFile
-from core.models.models import Post, PostReport
+from django.db.utils import IntegrityError
+from core.models.models import Post, PostDislike, PostLike, PostReport
 from core.forms.posting_forms import PostForm
 from core.models.models import Repost
 from django.core.exceptions import ObjectDoesNotExist
@@ -89,6 +90,59 @@ class CommentTestCase(TestCase):
         comment = self.post.replies.first()
         self.assertEqual(comment.content, 'Test comment with image')
         self.assertIsNotNone(comment.image) #testing the content of the coment
+
+class LikeAndDislikeTestCase(TestCase):
+    def setUp(self):
+        self.user = User.objects.create_user(username='testuser', password='password')
+        self.other_user = User.objects.create_user(username='otheruser', password='password')
+        self.post = Post.objects.create(user=self.other_user, content='Test post')
+        self.client.login(username='testuser', password='password')
+    
+    def test_like_post(self):
+        response = self.client.get(reverse('like', args=[self.post.id]))
+        likes = PostLike.objects.all()
+        self.assertEqual(response.status_code, 302)
+        self.assertEqual(1, likes.count())
+        self.assertEqual(1, self.post.get_number_likes())
+        self.assertEqual(0, self.post.get_number_dislikes())
+        self.assertFalse(self.post.is_likeable_by(self.user))
+        self.assertTrue(self.post.is_dislikeable_by(self.user))
+
+    def test_like_post_with_previous_dislike_deletes_dislike(self):
+        PostDislike.objects.create(disliker=self.user, post=self.post)
+        response = self.client.get(reverse('like', args=[self.post.id]))
+        likes = PostLike.objects.all()
+        dislikes = PostDislike.objects.all()
+        self.assertEqual(response.status_code, 302)
+        self.assertEqual(1, likes.count())
+        self.assertEqual(0, dislikes.count())
+    
+    def test_like_post_with_already_liked_is_error(self):
+        PostLike.objects.create(liker=self.user, post=self.post)
+        self.assertRaises(IntegrityError, lambda: self.client.get(reverse('like', args=[self.post.id]),))
+    
+    def test_dislike_post(self):
+        response = self.client.get(reverse('dislike', args=[self.post.id]))
+        dislikes = PostDislike.objects.all()
+        self.assertEqual(response.status_code, 302)
+        self.assertEqual(1, dislikes.count())
+        self.assertEqual(0, self.post.get_number_likes())
+        self.assertEqual(1, self.post.get_number_dislikes())
+        self.assertTrue(self.post.is_likeable_by(self.user))
+        self.assertFalse(self.post.is_dislikeable_by(self.user))
+    
+    def test_dislike_post_with_previous_like_deletes_like(self):
+        PostLike.objects.create(liker=self.user, post=self.post)
+        response = self.client.get(reverse('dislike', args=[self.post.id]))
+        likes = PostLike.objects.all()
+        dislikes = PostDislike.objects.all()
+        self.assertEqual(response.status_code, 302)
+        self.assertEqual(0, likes.count())
+        self.assertEqual(1, dislikes.count())
+    
+    def test_dislike_post_with_already_disliked_is_error(self):
+        PostDislike.objects.create(disliker=self.user, post=self.post)
+        self.assertRaises(IntegrityError, lambda: self.client.get(reverse('dislike', args=[self.post.id])))
 
 class RepostTestCase(TestCase):
     def setUp(self):

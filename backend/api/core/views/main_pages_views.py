@@ -24,12 +24,14 @@ def home(request):
                 return redirect('home')
         #User is authenticated
         user_ids_following = request.user.profile.following.values_list('id', flat=True)
-
         posts = Post.objects.filter(
             Q(user__profile__is_private=False) | 
             Q(user__in=user_ids_following) |  
             Q(user=request.user) 
         ).distinct().order_by('-created_at')
+        likes = [post for post in posts if post.is_likeable_by(request.user)]
+        dislikes = [post for post in posts if post.is_dislikeable_by(request.user)]
+        
         form = PostForm()
         reposted_post_ids = Repost.objects.filter(user=request.user).values_list('post_id', flat=True)
         data=Notifications.objects.all().order_by('-id')
@@ -37,6 +39,8 @@ def home(request):
         following_posts = Post.objects.filter(user__in=following_users).order_by('-created_at')
         context =  {
             'posts': posts, 
+            'likes': likes,
+            'dislikes': dislikes,
             'form': form, 
             'data' : data,
             'reportPostForm': PostReportForm(), 
@@ -137,6 +141,29 @@ def comment(request, post_id):
         return redirect('login')
     
 @login_required
+def like(request, post_id):
+    if request.user.is_authenticated:
+        post = Post.objects.get(pk=post_id)
+        dislike = PostDislike.objects.filter(disliker=request.user, post=post).first()
+        if dislike:
+            dislike.delete()
+        PostLike.objects.create(liker=request.user, post=post)
+        return redirect('home')
+    return redirect('login')
+
+@login_required
+def dislike(request, post_id):
+    if request.user.is_authenticated:
+        post = Post.objects.get(pk=post_id)
+        like = PostLike.objects.filter(liker=request.user, post=post).first()
+        if like:
+            like.delete()
+        PostDislike.objects.create(disliker=request.user, post=post)
+        return redirect('home')
+    return redirect('login')
+
+
+@login_required
 def report(request):
     if request.user.is_authenticated:
         if request.method == 'POST':
@@ -149,9 +176,9 @@ def report(request):
         return redirect('home')
     return redirect('login')
 
-
 def error_404(request):
     return render(request, '404.html', status=404)
 
 def error_500(request):
     raise ValueError("Error 500, Server error")
+

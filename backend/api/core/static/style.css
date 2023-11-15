@@ -774,7 +774,7 @@ img {
 .icons-list{
   color: #00001c;
   display: grid;  
-  grid-template-columns: 1fr 1.5fr 1.5fr 1.5fr;  
+  grid-template-columns: 1fr 1fr 1fr 1fr 1fr;  
   padding-bottom:10px;
 }
 
@@ -818,6 +818,10 @@ font-style: italic;
   font-style: italic;
   margin-bottom:10px;
   font-size: large;
+}
+
+button:focus {
+  outline: none;
 }
 
 /* seacrh-user css*/
@@ -923,7 +927,7 @@ button:hover {
   margin-top: 0;
 }
 
-
+/* TODO we might want to rename this since it's used for links other than comment. */
 .comment-link{
   text-decoration: none !important;
   color: #00001c;
