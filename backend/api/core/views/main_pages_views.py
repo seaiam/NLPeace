@@ -23,15 +23,15 @@ def home(request):
                 post.save()
                 return redirect('home')
         #User is authenticated
-        likes = [post for post in posts if post.is_likeable_by(request.user)]
-        dislikes = [post for post in posts if post.is_dislikeable_by(request.user)]
         user_ids_following = request.user.profile.following.values_list('id', flat=True)
-
         posts = Post.objects.filter(
             Q(user__profile__is_private=False) | 
             Q(user__in=user_ids_following) |  
             Q(user=request.user) 
         ).distinct().order_by('-created_at')
+        likes = [post for post in posts if post.is_likeable_by(request.user)]
+        dislikes = [post for post in posts if post.is_dislikeable_by(request.user)]
+        
         form = PostForm()
         reposted_post_ids = Repost.objects.filter(user=request.user).values_list('post_id', flat=True)
         data=Notifications.objects.all().order_by('-id')
