@@ -7,6 +7,7 @@ from django.core import serializers
 from django.http import JsonResponse
 from django.db.models import Q
 from django.shortcuts import get_object_or_404
+from itertools import chain
 
 from core.forms.profile_forms import *
 from core.forms.posting_forms import *
@@ -21,14 +22,21 @@ def home(request):
                 post.user = request.user
                 post.save()
                 return redirect('home')
-    
         #User is authenticated
-        posts = Post.objects.all().order_by('-created_at')
         likes = [post for post in posts if post.is_likeable_by(request.user)]
         dislikes = [post for post in posts if post.is_dislikeable_by(request.user)]
+        user_ids_following = request.user.profile.following.values_list('id', flat=True)
+
+        posts = Post.objects.filter(
+            Q(user__profile__is_private=False) | 
+            Q(user__in=user_ids_following) |  
+            Q(user=request.user) 
+        ).distinct().order_by('-created_at')
         form = PostForm()
         reposted_post_ids = Repost.objects.filter(user=request.user).values_list('post_id', flat=True)
         data=Notifications.objects.all().order_by('-id')
+        following_users = request.user.profile.following.all()
+        following_posts = Post.objects.filter(user__in=following_users).order_by('-created_at')
         context =  {
             'posts': posts, 
             'likes': likes,
@@ -36,7 +44,8 @@ def home(request):
             'form': form, 
             'data' : data,
             'reportPostForm': PostReportForm(), 
-            'reposted_post_ids': reposted_post_ids
+            'reposted_post_ids': reposted_post_ids,
+            'followPost' : following_posts
             }
         return render(request, 'index.html',context)
     else:
@@ -51,14 +60,22 @@ def repost(request, post_id):
     else:
         return redirect('login')
 
-
-
 @login_required
 def profile(request):
     profile = Profile.objects.get_or_create(pk=request.user.id)
-    data=Notifications.objects.all().order_by('-id')
-   
-    return render(request, 'home.html' ,{'profile': profile[0],'data':data,'form': EditBioForm(instance=profile[0])})
+    data = Notifications.objects.all().order_by('-id')
+    posts = Post.objects.filter(user = request.user)
+    reposts_ids = Repost.objects.filter(user = request.user).values_list('post_id', flat=True)
+    reposts = Post.objects.filter(id__in = reposts_ids)
+    #we combine all user posts and reposts to show them chronogically on the user profile
+    all_Posts = list(chain(posts, reposts))
+    all_Posts.sort(key=lambda item: item.created_at, reverse=True)
+    context = {
+        'profile': profile[0], 
+        'form': EditBioForm(instance=profile[0]),
+        'posts': all_Posts
+        }
+    return render(request, 'home.html', context)
 
 @login_required
 def guest(request,user_id):
@@ -101,9 +118,7 @@ def accept_decline_invite(request):
             followed_user.profile.follow_requests.remove(following_user)
             notification.delete() 
 
-
     return render(request,'notifications.html',{'data':data})
-
 
 def comment(request, post_id):
     if request.user.is_authenticated:

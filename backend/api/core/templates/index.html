@@ -54,28 +54,59 @@
     </div>
 </div>
 
-{% for post in posts %}
-<div class="d-flex justify-content-center align-items-center">
-        <div class="card" style="width: 39rem; border-radius: 30px;margin:20px 0px 20px 0px;  overflow: hidden;background: linear-gradient(to right, #F9D1C4 0%, #9BBDDD 51%, #F9D1C4 100%);">
-            <div class="card-body">
-                    {% if post.reposts.all %}
-                    {% for repost in post.reposts.all %}
-                        <div class="repost-info">
-                            Reposted by @{{ repost.user.username }}
-                        </div>
-                    {% endfor %}
-                    {% endif %}
-                <div class = "row top-aligned-row">
-                    <div class = "col-2">
-                        {% if post.user.profile and post.user.profile.pic %}
-                            <img src="{{ post.user.profile.pic.url }}" alt="{{ post.user.username }}'s profile picture" class="user-pic">
-                        {% else %}
-                            <img src="{% static 'default.jpg' %}" class="user-pic" alt="{{ post.user.username }}'s profile picture" />
+<div class="container">
+    <div class="posttab-btns">
+        <button class="posttabbutton" onclick="openPostTab(event, 'All')" id="defaultOpenPost">All</button>
+        <button class="posttabbutton" onclick="openPostTab(event, 'Followers')">Following</button>
+    </div>
+    <div id="All" class="posttabcontent">
+        <!-- All Posts -->
+        {% for post in posts %}
+            <div class="d-flex justify-content-center align-items-center">
+                <div class="card" style="width: 39rem; border-radius: 30px;margin:20px 0px 20px 0px;  overflow: hidden;background: linear-gradient(to right, #F9D1C4 0%, #9BBDDD 51%, #F9D1C4 100%);">
+                    <div class="card-body">
+                        {% if post.reposts.all %}
+                            {% for repost in post.reposts.all %}
+                                <div class="repost-info">
+                                    Reposted by @{{ repost.user.username }}
+                                </div>
+                            {% endfor %}
                         {% endif %}
-                    </div>
-                    <div class="col-10">
-                        <h5 class="card-title"><strong>@{{ post.user.username }}</strong></h5>
-                        <p class="card-text">{{ post.content }}</p>
+                        <div class="row top-aligned-row">
+                            <div class="col-2">
+                                {% if post.user.profile and post.user.profile.pic %}
+                                    <img src="{{ post.user.profile.pic.url }}" alt="{{ post.user.username }}'s profile picture" class="user-pic">
+                                {% else %}
+                                    <img src="{% static 'default.jpg' %}" class="user-pic" alt="{{ post.user.username }}'s profile picture" />
+                                {% endif %}
+                            </div>
+                            <div class="col-10">
+                                <h5 class="card-title"><strong>@{{ post.user.username }}</strong></h5>
+                                <p class="card-text">{{ post.content }}</p>
+                            </div>
+                        </div>
+                        {% if post.image %}
+                            <img class="card-img-top mt-2" src="{{ post.image.url }}" alt="Post image" /><br><br>
+                        {% endif %}
+                        <h6 class="card-subtitle mb-2" style="float: right; margin-top:5px;">{{ post.created_at|date:"M d, Y H:i" }}</h6>
+                        <br>
+                        <hr>
+                        <div class="icons-list">
+                            <div class="feed"><i class="far fa-thumbs-up" aria-hidden="true"> Likes</i></div>
+                            <div class="feed"><i class="far fa-comment" aria-hidden="true"> <a class="comment-link" href="{% url 'comment' post_id=post.id %}">Comment</a></i></div>
+                            <form method="post" action="{% url 'repost' post.id %}">
+                                {% csrf_token %}
+                                {% if post.id in reposted_post_ids %}
+                                    <div class="feed-reposted"><i class="fa fa-retweet" aria-hidden="true">  <button type="button" class="reposted-button" disabled>Reposted</button></i></div>
+                                {% else %}
+                                    <div class="feed"><i class="fa fa-retweet" aria-hidden="true">  <button type="submit" class="repost-button">Repost</button></i></div>
+                                {% endif %}
+                            </form>
+                            <div class="feed post-actions__label">
+                                <i class="far fa-flag" onclick="handleReportClick(this)" aria-hidden="true"> Report</i>
+                                <input type="hidden" value="{{ post.id }}" />
+                            </div>
+                        </div>
                     </div>
                 </div>
                 {% if post.image %}
@@ -128,14 +159,88 @@
                    
                     
             </div>
-        </div>
+        {% empty %}
+            <li>No posts available.</li>
+        {% endfor %}
+    </div>
+
+    <div id="Followers" class="posttabcontent">
+        <!-- Follower Posts -->
+        {% for post in followPost %}
+            <div class="d-flex justify-content-center align-items-center">
+                <div class="card" style="width: 39rem; border-radius: 30px;margin:20px 0px 20px 0px;  overflow: hidden;background: linear-gradient(to right, #F9D1C4 0%, #9BBDDD 51%, #F9D1C4 100%);">
+                    <div class="card-body">
+                        {% if post.reposts.all %}
+                            {% for repost in post.reposts.all %}
+                                <div class="repost-info">
+                                    Reposted by @{{ repost.user.username }}
+                                </div>
+                            {% endfor %}
+                        {% endif %}
+                        <div class="row top-aligned-row">
+                            <div class="col-2">
+                                {% if post.user.profile and post.user.profile.pic %}
+                                    <img src="{{ post.user.profile.pic.url }}" alt="{{ post.user.username }}'s profile picture" class="user-pic">
+                                {% else %}
+                                    <img src="{% static 'default.jpg' %}" class="user-pic" alt="{{ post.user.username }}'s profile picture" />
+                                {% endif %}
+                            </div>
+                            <div class="col-10">
+                                <h5 class="card-title"><strong>@{{ post.user.username }}</strong></h5>
+                                <p class="card-text">{{ post.content }}</p>
+                            </div>
+                        </div>
+                        {% if post.image %}
+                            <img class="card-img-top mt-2" src="{{ post.image.url }}" alt="Post image" /><br><br>
+                        {% endif %}
+                        <h6 class="card-subtitle mb-2" style="float: right; margin-top:5px;">{{ post.created_at|date:"M d, Y H:i" }}</h6>
+                        <br>
+                        <hr>
+                        <div class="icons-list">
+                            <div class="feed"><i class="far fa-thumbs-up" aria-hidden="true"> Likes</i></div>
+                            <div class="feed"><i class="far fa-comment" aria-hidden="true"> <a class="comment-link" href="{% url 'comment' post_id=post.id %}">Comment</a></i></div>
+                            <form method="post" action="{% url 'repost' post.id %}">
+                                {% csrf_token %}
+                                {% if post.id in reposted_post_ids %}
+                                    <div class="feed-reposted"><i class="fa fa-retweet" aria-hidden="true">  <button type="button" class="reposted-button" disabled>Reposted</button></i></div>
+                                {% else %}
+                                    <div class="feed"><i class="fa fa-retweet" aria-hidden="true">  <button type="submit" class="repost-button">Repost</button></i></div>
+                                {% endif %}
+                            </form>
+                            <div class="feed post-actions__label">
+                                <i class="far fa-flag" onclick="handleReportClick(this)" aria-hidden="true"> Report</i>
+                                <input type="hidden" value="{{ post.id }}" />
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        {% empty %}
+            <li>No follower posts available.</li>
+        {% endfor %}
     </div>
 </div>
 
+<script>
+    function openPostTab(event, posttabName) {
+        var posttabcontent, posttabbutton;
 
-{% empty %}
-<li>No posts available. </li>
-{% endfor %}
+        posttabcontent = document.getElementsByClassName("posttabcontent");
+        for (i = 0; i < posttabcontent.length; i++) {
+            posttabcontent[i].style.display = "none";
+        }
+
+        posttabbutton = document.getElementsByClassName("posttabbutton");
+
+        for (i = 0; i < posttabbutton.length; i++) {
+            posttabbutton[i].className = posttabbutton[i].className.replace(" active", "");
+        }
+        document.getElementById(posttabName).style.display = "block";
+        event.currentTarget.classList.add("active");
+    }
+    // opening tab 1 by default
+    document.getElementById("defaultOpenPost").click();
+</script>
 
 <div id="reportModal" class="popup">
     <div class="popup-content">
