@@ -21,11 +21,12 @@ from django.http import HttpResponseRedirect
 
 @login_required
 def profile_settings(request):
+    data=Notifications.objects.filter(user=request.user).order_by('-id')
     if request.method == 'GET':
         user = User.objects.get(pk=request.user.id)
         if user is None:
             return HttpResponseNotFound
-        return render(request, 'settings.html', {'user': user, 'editUsernameForm': EditUsernameForm(instance=user),'editPasswordForm': PasswordChangeForm(request.user),'privacy_form':PrivacySettingsForm(instance=user.profile)})
+        return render(request, 'settings.html', {'user': user,'data' : data, 'editUsernameForm': EditUsernameForm(instance=user),'editPasswordForm': PasswordChangeForm(request.user),'privacy_form':PrivacySettingsForm(instance=user.profile)})
     
 @login_required
 def update_username(request):
