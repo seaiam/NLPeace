@@ -112,7 +112,27 @@
                 <br>
                 <hr>
                 <div class ="icons-list" >
-                    <div class="feed" ><i class="far fa-thumbs-up" aria-hidden="true"> Likes</i></div>
+                    <div class="feed" >
+                        {% if post in likes %}
+                        <a href="{% url 'like' post.id %}" class="comment-link"><i class="far fa-thumbs-up" aria-hidden="true"></i> Like </a>
+                                {% else %}
+                                <span class="reposted-button">
+                                    <i class="far fa-thumbs-up" aria-hidden="true"></i> Liked
+                                </span>
+                                
+                        {% endif %}
+                        <span class="like-count">{{ post.get_number_likes }}</span>
+                    </div>
+                    <div class="feed" >
+                        {% if post in dislikes  %}
+                        <a href="{% url 'dislike' post.id %}" class="comment-link"><i class="far fa-thumbs-down" aria-hidden="true"></i> Dislike </a>
+                                {% else %}
+                                <span class="reposted-button">
+                                    <i class="far fa-thumbs-down" aria-hidden="true"></i> Disliked
+                                </span>
+                        {% endif %}
+                        <span class="dislike-count">{{ post.get_number_dislikes }}</span>
+                    </div>
                     <div class="feed"> <i class="far fa-comment" aria-hidden="true"> <a class="comment-link" href="{% url 'comment' post_id=post.id %}">Comment</a></i> </div> 
                     <form method="post" action="{% url 'repost' post.id %}">
                         {% csrf_token %}

@@ -1024,20 +1024,6 @@ button:hover {
   margin-top:10px;
 }
 
-
-.btn-default {
-  background: none;
-  border: 1px solid black;
-  border-radius: 20px;
-  padding: 10px;
-  font-weight: 600;
-  transition: 0.5s;
-  background-size: 200% auto;
-  box-shadow: 0 0 20px #eee;
-  background-image: linear-gradient(to right, #F9D1C4 0%, #9BBDDD 51%, #F9D1C4 100%);
-  color: #00001c;
-}
-
 /* Replies Page */
 .reply-user-pic{
   border-radius:50px;
