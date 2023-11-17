@@ -96,9 +96,9 @@
 
                     <div class="feed" >
                         {% if post in likes %}
-                        <a href="{% url 'like' post.id %}" class="comment-link"><i class="far fa-thumbs-up" aria-hidden="true"></i> Like </a>
+                        <a href="{% url 'like' post.id %}" class="like-link"><i class="far fa-thumbs-up" aria-hidden="true"></i> Like </a>
                                 {% else %}
-                                <span class="reposted-button">
+                                <span class="post-liked">
                                     <i class="far fa-thumbs-up" aria-hidden="true"></i> Liked
                                 </span>
                                 
@@ -107,9 +107,9 @@
                     </div>
                     <div class="feed" >
                         {% if post in dislikes  %}
-                        <a href="{% url 'dislike' post.id %}" class="comment-link"><i class="far fa-thumbs-down" aria-hidden="true"></i> Dislike </a>
+                        <a href="{% url 'dislike' post.id %}" class="like-link"><i class="far fa-thumbs-down" aria-hidden="true"></i> Dislike </a>
                                 {% else %}
-                                <span class="reposted-button">
+                                <span class="post-disliked">
                                     <i class="far fa-thumbs-down" aria-hidden="true"></i> Disliked
                                 </span>
                         {% endif %}
@@ -177,9 +177,9 @@
                         <div class="icons-list">
                             <div class="feed" >
                                 {% if post in likes %}
-                                <a href="{% url 'like' post.id %}" class="comment-link"><i class="far fa-thumbs-up" aria-hidden="true"></i> Like </a>
+                                <a href="{% url 'like' post.id %}" class="like-link"><i class="far fa-thumbs-up" aria-hidden="true"></i> Like </a>
                                         {% else %}
-                                        <span class="reposted-button">
+                                        <span class="post-liked">
                                             <i class="far fa-thumbs-up" aria-hidden="true"></i> Liked
                                         </span>
                                         
@@ -188,9 +188,9 @@
                             </div>
                             <div class="feed" >
                                 {% if post in dislikes  %}
-                                <a href="{% url 'dislike' post.id %}" class="comment-link"><i class="far fa-thumbs-down" aria-hidden="true"></i> Dislike </a>
+                                <a href="{% url 'dislike' post.id %}" class="like-link"><i class="far fa-thumbs-down" aria-hidden="true"></i> Dislike </a>
                                         {% else %}
-                                        <span class="reposted-button">
+                                        <span class="post-disliked">
                                             <i class="far fa-thumbs-down" aria-hidden="true"></i> Disliked
                                         </span>
                                 {% endif %}

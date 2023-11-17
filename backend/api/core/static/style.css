@@ -937,6 +937,23 @@ button:hover {
   color: #00001c;
 }
 
+.like-link{
+  text-decoration: none !important;
+  color: #00001c;
+}
+
+.like-link:hover{
+  color: #00001c;
+}
+
+.post-liked, .post-disliked{
+  border: none;
+  padding: 0;
+  background: none;
+  color: #0047ab;
+  font-style: italic;
+  }
+
 /* settings CSS */
 .tab-btns {
   font-size: 1.3em;
