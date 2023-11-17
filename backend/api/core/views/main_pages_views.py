@@ -34,7 +34,7 @@ def home(request):
         
         form = PostForm()
         reposted_post_ids = Repost.objects.filter(user=request.user).values_list('post_id', flat=True)
-        data=Notifications.objects.all().order_by('-id')
+        data=Notifications.objects.filter(user=request.user).order_by('-id')
         following_users = request.user.profile.following.all()
         following_posts = Post.objects.filter(user__in=following_users).order_by('-created_at')
         context =  {
@@ -63,7 +63,7 @@ def repost(request, post_id):
 @login_required
 def profile(request):
     profile = Profile.objects.get_or_create(pk=request.user.id)
-    data = Notifications.objects.all().order_by('-id')
+    data=Notifications.objects.filter(user=request.user).order_by('-id')
     posts = Post.objects.filter(user = request.user)
     reposts_ids = Repost.objects.filter(user = request.user).values_list('post_id', flat=True)
     reposts = Post.objects.filter(id__in = reposts_ids)
@@ -73,7 +73,8 @@ def profile(request):
     context = {
         'profile': profile[0], 
         'form': EditBioForm(instance=profile[0]),
-        'posts': all_Posts
+        'posts': all_Posts,
+        'data' : data
         }
     return render(request, 'home.html', context)
 
@@ -81,18 +82,18 @@ def profile(request):
 def guest(request,user_id):
     user=User.objects.get(pk=user_id)
     profile=Profile.objects.get(user=user)
-    data=Notifications.objects.all().order_by('-id')
+    data=Notifications.objects.filter(user=request.user).order_by('-id')
     return render(request,'home.html',{'user':user,'data':data,'profile':profile,})
 
 @login_required
 def notifications(request):
-    data=Notifications.objects.all().order_by('-id')
+    data=Notifications.objects.filter(user=request.user).order_by('-id')  
     return render(request,'notifications.html',{'data':data})
 
 
 @login_required
 def accept_decline_invite(request):
-    data=Notifications.objects.all().order_by('-id')
+    data=Notifications.objects.filter(user=request.user).order_by('-id')
   
     if request.method == 'POST':  
         followed_user_pk = request.POST.get('followed_user')
