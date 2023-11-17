@@ -10,11 +10,13 @@
         <div class="card" style="width: 45rem; margin: 20px 0px 20px 0px; overflow: hidden; background: linear-gradient(to right, #F9D1C4 0%, #9BBDDD 51%, #F9D1C4 100%); border-radius:15px;">
             <div class="card-body">
             
+                {% if notification.type != "request" %}
             <form id="myForm" action="{% url 'delete_notification' %}" method="POST">
                 {% csrf_token %}
                 <button type="submit" name="clicked" value="exit" id="submit-button" class="notification-close-btn">&#10006;</button>
                 <input type="hidden" name="notification" value="{{ notification.id }}" readonly/>
             </form>
+            {% endif %}
                 <i class="fa fa-bell"></i><span class="notificationSentBy"> {{notification.notifications}}<br></span>
                 <div class="row">
                     <div class="col-6">
