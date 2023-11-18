@@ -41,7 +41,7 @@
                     <i class="fas fa-ellipsis-v"></i>
                 </a>
                 <ul class="dropdown-menu">
-                  <li><a class="dropdown-item" href="#"> <i class="far fa-flag"></i> Report User</a></li>
+                  <li><a class="dropdown-item" href="#" onclick="handleReportClick(this)"> <i class="far fa-flag"></i> Report User</a></li>
                   <li><a class="dropdown-item" href="#">Another action</a></li>
                 </ul>
               </div>
@@ -209,5 +209,23 @@
     </div>
 </div>
      
+<div id="reportModal" class="popup">
+    <div class="popup-content">
+        <span class="close" onclick="handleReportClose()">&times;</span>
+        <p class="modalTitle">Report</p>
+        <form action="report/" method="POST">
+            {% csrf_token %}
+            {{ reportPostForm.post }}
+            <label for="{{ reportPostForm.category.id_for_label }}" class="form-outline mb-4" style="font-size:20px;">Category</label>
+            {{ reportPostForm.category }}
+            <br>
+            <label for="{{ reportPostForm.info.id_for_label }}" class="form-outline mb-4" style="font-size:20px;">Additional information</label>
+            {{ reportPostForm.info }}
+            <div class="text-md-right">
+                <button class="saveButton">Report</button>
+            </div>
+        </form>
+    </div>
+</div>
 
 {% endblock %}
