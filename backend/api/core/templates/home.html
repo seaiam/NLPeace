@@ -20,7 +20,7 @@
           {% endif %}
         </div>
           <div class="row">
-              <div class="col-md-5">
+              <div class="col-md-6">
               <!-- profile picture upload -->
               <div class="circle">
               {% if profile.pic %}
@@ -35,6 +35,17 @@
               </a> 
               {% endif %}     
               </div>
+              <div class="col-md-6">
+              <div class="dropdown" style="float:right;">
+                <a class="hidden-arrow" type="button" data-toggle="dropdown" aria-expanded="false">
+                    <i class="fas fa-ellipsis-v"></i>
+                </a>
+                <ul class="dropdown-menu">
+                  <li><a class="dropdown-item" href="#"> <i class="far fa-flag"></i> Report User</a></li>
+                  <li><a class="dropdown-item" href="#">Another action</a></li>
+                </ul>
+              </div>
+            </div>
           </div>            
         <div class="row">
           <div class="col-md-4">
