@@ -45,6 +45,36 @@
               <i class='fas fa-search'></i> <a class="following">Following</a>
           </div>
 
+          {% if profile.user.id != request.user.id %}
+          <div class="col-md-3 text-md-right">
+                {% if request.user in profile.followers.all %}
+                <form method="POST" action="{% url 'unfollow_user' %}">
+                    {% csrf_token %}
+                    <input type="hidden" name="unfollowed_user" value="{{ profile.user.id }}" readonly/>
+                    <input type="hidden" name="unfollowing_user" value="{{ request.user.id }}" readonly/>
+                    <button type="submit" class="statusButton">Unfollow</button>
+                </form>
+                    
+                {% elif request.user in profile.follow_requests.all %}
+                <form method="POST" action="{% url 'unfollow_user' %}">
+                    {% csrf_token %}
+                <input type="hidden" name="unfollowed_user" value="{{ profile.user.id }}" readonly/>
+                <input type="hidden" name="unfollowing_user" value="{{ request.user.id }}" readonly/>
+                <button type="submit" class="statusButton">Requested</button>
+                </form>
+            
+            {% else %}
+                <form method="POST" action="{% url 'follow_user'  %}">
+                    {% csrf_token %}
+                    <input type="hidden" name="followed_user" value="{{ profile.user.id }}" readonly/>
+                <input type="hidden" name="following_user" value="{{ request.user.id }}" readonly/>
+                    <button type="submit" class="statusButton">Follow</button>
+                </form>
+            
+                {% endif %}
+            </div>
+        {% endif %}
+
           {% if request.user == profile.user or not profile.is_private or profile.user in request.user.profile.following.all|dictsort:"id" %}
          
           <div class="col-md-3 text-md-right">
@@ -112,7 +142,27 @@
                 <br>
                 <hr>
                 <div class ="icons-list" >
-                    <div class="feed" ><i class="far fa-thumbs-up" aria-hidden="true"> Likes</i></div>
+                    <div class="feed" >
+                        {% if post in likes %}
+                        <a href="{% url 'like' post.id %}" class="like-link"><i class="far fa-thumbs-up" aria-hidden="true"></i> Like </a>
+                                {% else %}
+                                <span class="post-liked">
+                                    <i class="far fa-thumbs-up" aria-hidden="true"></i> Liked
+                                </span>
+                                
+                        {% endif %}
+                        <span class="like-count">{{ post.get_number_likes }}</span>
+                    </div>
+                    <div class="feed" >
+                        {% if post in dislikes  %}
+                        <a href="{% url 'dislike' post.id %}" class="like-link"><i class="far fa-thumbs-down" aria-hidden="true"></i> Dislike </a>
+                                {% else %}
+                                <span class="post-disliked">
+                                    <i class="far fa-thumbs-down" aria-hidden="true"></i> Disliked
+                                </span>
+                        {% endif %}
+                        <span class="dislike-count">{{ post.get_number_dislikes }}</span>
+                    </div>
                     <div class="feed"> <i class="far fa-comment" aria-hidden="true"> <a class="comment-link" href="{% url 'comment' post_id=post.id %}">Comment</a></i> </div> 
                     <form method="post" action="{% url 'repost' post.id %}">
                         {% csrf_token %}
@@ -132,50 +182,18 @@
             </div>
         </div>
     </div>
-
     {% empty %}
-<li>No posts available. </li>
-{% endfor %}
-      {%else%}
-     
-      <p style="color: #D9D9D9;">This account is private</p>
-    
-      {% endif %}
+    <div class="no-post">No posts available. </div>
+    {% endfor %}
+          {%else%}
+         
+          <div class="account-private">This account is private</div>
+        
+          {% endif %}
+   
 </div>
 
 
-    
-      
-
-      
-  {% if profile.user.id != request.user.id %}
-      {% if request.user in profile.followers.all %}
-      <form method="POST" action="{% url 'unfollow_user' %}">
-         {% csrf_token %}
-         <input type="hidden" name="unfollowed_user" value="{{ profile.user.id }}" readonly/>
-         <input type="hidden" name="unfollowing_user" value="{{ request.user.id }}" readonly/>
-         <button type="submit">Unfollow</button>
-     </form>
-     
-     {% elif request.user in profile.follow_requests.all %}
-     <form method="POST" action="{% url 'unfollow_user' %}">
-         {% csrf_token %}
-      <input type="hidden" name="unfollowed_user" value="{{ profile.user.id }}" readonly/>
-      <input type="hidden" name="unfollowing_user" value="{{ request.user.id }}" readonly/>
-     <button type="submit">Requested</button>
-     </form>
- 
- {% else %}
-     <form method="POST" action="{% url 'follow_user'  %}">
-         {% csrf_token %}
-         <input type="hidden" name="followed_user" value="{{ profile.user.id }}" readonly/>
-     <input type="hidden" name="following_user" value="{{ request.user.id }}" readonly/>
-         <button type="submit">Follow</button>
-     </form>
-
-          
-     {% endif %}
-{% endif %}
 
     </div>
 </div>
