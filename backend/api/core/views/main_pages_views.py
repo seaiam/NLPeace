@@ -153,7 +153,8 @@ def like(request, post_id):
         if dislike:
             dislike.delete()
         PostLike.objects.create(liker=request.user, post=post)
-        if 'profile' in request.META['HTTP_REFERER'].lower():
+        referer = request.META.get('HTTP_REFERER')
+        if referer and 'profile' in referer.lower():
             return redirect('profile')
         return redirect('home')
     return redirect('login')
@@ -166,7 +167,8 @@ def dislike(request, post_id):
         if like:
             like.delete()
         PostDislike.objects.create(disliker=request.user, post=post)
-        if 'profile' in request.META['HTTP_REFERER'].lower():
+        referer = request.META.get('HTTP_REFERER')
+        if referer and 'profile' in referer.lower():
             return redirect('profile')
         return redirect('home')
     return redirect('login')
