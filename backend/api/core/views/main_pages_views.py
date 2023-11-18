@@ -70,11 +70,15 @@ def profile(request):
     #we combine all user posts and reposts to show them chronogically on the user profile
     all_Posts = list(chain(posts, reposts))
     all_Posts.sort(key=lambda item: item.created_at, reverse=True)
+    likes = [post for post in all_Posts if post.is_likeable_by(request.user)]
+    dislikes = [post for post in all_Posts if post.is_dislikeable_by(request.user)]
     context = {
         'profile': profile[0], 
         'form': EditBioForm(instance=profile[0]),
         'posts': all_Posts,
-        'data' : data
+        'likes': likes,
+        'dislikes': dislikes,
+        'data' : data,
         }
     return render(request, 'home.html', context)
 
@@ -149,6 +153,8 @@ def like(request, post_id):
         if dislike:
             dislike.delete()
         PostLike.objects.create(liker=request.user, post=post)
+        if 'profile' in request.META['HTTP_REFERER'].lower():
+            return redirect('profile')
         return redirect('home')
     return redirect('login')
 
@@ -160,6 +166,8 @@ def dislike(request, post_id):
         if like:
             like.delete()
         PostDislike.objects.create(disliker=request.user, post=post)
+        if 'profile' in request.META['HTTP_REFERER'].lower():
+            return redirect('profile')
         return redirect('home')
     return redirect('login')
 

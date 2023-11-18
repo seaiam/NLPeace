@@ -9,12 +9,8 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth.forms import PasswordChangeForm
 
 from core.forms.profile_forms import *
-import uuid 
-from django.conf import settings
-from django.core.mail import send_mail
 from core.models.models import *
 from django.contrib.auth.models import User
-from django.urls import reverse
 from django.http import HttpResponseRedirect
 
 
