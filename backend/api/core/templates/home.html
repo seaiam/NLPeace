@@ -182,17 +182,17 @@
             </div>
         </div>
     </div>
-
+    {% empty %}
+    <div class="no-post">No posts available. </div>
+    {% endfor %}
+          {%else%}
+         
+          <div class="account-private">This account is private</div>
+        
+          {% endif %}
    
 </div>
-{% empty %}
-<div class="no-post">No posts available. </div>
-{% endfor %}
-      {%else%}
-     
-      <div class="account-private">This account is private</div>
-    
-      {% endif %}
+
 
 
     </div>
