@@ -12,6 +12,7 @@ from itertools import chain
 from core.forms.profile_forms import *
 from core.forms.posting_forms import *
 from core.models.models import *
+from django.http import HttpResponseRedirect
 
 def home(request):
     if request.user.is_authenticated:
@@ -85,9 +86,27 @@ def profile(request):
 @login_required
 def guest(request,user_id):
     user=User.objects.get(pk=user_id)
-    profile=Profile.objects.get(user=user)
+    profile=Profile.objects.get_or_create(user=user)
     data=Notifications.objects.filter(user=request.user).order_by('-id')
-    return render(request,'home.html',{'user':user,'data':data,'profile':profile,})
+    posts = Post.objects.filter(user = user)
+    reposts_ids = Repost.objects.filter(user = user).values_list('post_id', flat=True)
+    reposts = Post.objects.filter(id__in = reposts_ids)
+    #we combine all user posts and reposts to show them chronogically on the user profile
+    all_Posts = list(chain(posts, reposts))
+    all_Posts.sort(key=lambda item: item.created_at, reverse=True)
+    likes = [post for post in all_Posts if post.is_likeable_by(user)]
+    dislikes = [post for post in all_Posts if post.is_dislikeable_by(user)]
+    context = {
+        'user':user,
+        'data':data,
+        'profile': profile[0], 
+        'form': EditBioForm(instance=profile[0]),
+        'posts': all_Posts,
+        'likes': likes,
+        'dislikes': dislikes,
+        
+        }
+    return render(request,'home.html',context)
 
 @login_required
 def notifications(request):
@@ -156,7 +175,8 @@ def like(request, post_id):
         referer = request.META.get('HTTP_REFERER')
         if referer and 'profile' in referer.lower():
             return redirect('profile')
-        return redirect('home')
+        #return redirect('home')
+        return HttpResponseRedirect(request.META.get('HTTP_REFERER', '/'))
     return redirect('login')
 
 @login_required
@@ -170,7 +190,8 @@ def dislike(request, post_id):
         referer = request.META.get('HTTP_REFERER')
         if referer and 'profile' in referer.lower():
             return redirect('profile')
-        return redirect('home')
+        #return redirect('home')
+        return HttpResponseRedirect(request.META.get('HTTP_REFERER', '/'))
     return redirect('login')
 
 
