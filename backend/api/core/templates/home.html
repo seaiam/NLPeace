@@ -106,17 +106,17 @@
   
   
 <div class="container">
-    <div class="posttab-btns">
-        <button class="posttabbutton" onclick="openPostTab(event, 'Posts')" id="defaultOpenPost">Posts</button>
-        <button class="posttabbutton" onclick="">Replies</button>
-        <button class="posttabbutton" onclick="openPostTab(event, 'Media')">Media</button>
-        <button class="posttabbutton" onclick="">Likes</button>
+    <div class="profiletab-btns">
+        <button class="profiletabbutton" onclick="openPostTab(event, 'Posts')" id="defaultOpenPost">Posts</button>
+        <button class="profiletabbutton" onclick="">Replies</button>
+        <button class="profiletabbutton" onclick="openPostTab(event, 'Media')">Media</button>
+        <button class="profiletabbutton" onclick="">Likes</button>
     </div>
 
 
     <div id="Posts" class="posttabcontent">
       {% for post in posts %}
-<div class="d-flex justify-content-center align-items-center">
+      <div class="d-flex justify-content-center align-items-center">
         <div class="card" style="width: 39rem; border-radius: 30px;margin:20px 0px 20px 0px;  overflow: hidden;background: linear-gradient(to right, #F9D1C4 0%, #9BBDDD 51%, #F9D1C4 100%);">
             <div class="card-body">
                     {% if post.reposts.all %}
@@ -181,8 +181,6 @@
                         <input type="hidden" value="{{ post.id }}" />
                     </div>
                 </div>
-                   
-                    
             </div>
         </div>
     </div>
@@ -195,7 +193,7 @@
     <div id="Media" class="posttabcontent">
         {% for post in posts %}
         {% if post.image %}
-  <div class="d-flex justify-content-center align-items-center">
+        <div class="d-flex justify-content-center align-items-center">
           <div class="card" style="width: 39rem; border-radius: 30px;margin:20px 0px 20px 0px;  overflow: hidden;background: linear-gradient(to right, #F9D1C4 0%, #9BBDDD 51%, #F9D1C4 100%);">
               <div class="card-body">
                       {% if post.reposts.all %}
@@ -259,9 +257,7 @@
                           <i class="far fa-flag" onclick="handleReportClick(this)" aria-hidden="true"> Report</i>
                           <input type="hidden" value="{{ post.id }}" />
                       </div>
-                  </div>
-                     
-                      
+                  </div>  
               </div>
           </div>
       </div>
@@ -279,25 +275,23 @@
    
 </div>
 
-
-
     </div>
 </div>
      
 
 <script>
     function openPostTab(event, posttabName) {
-        var posttabcontent, posttabbutton;
+        var posttabcontent, profiletabbutton;
 
         posttabcontent = document.getElementsByClassName("posttabcontent");
         for (i = 0; i < posttabcontent.length; i++) {
             posttabcontent[i].style.display = "none";
         }
 
-        posttabbutton = document.getElementsByClassName("posttabbutton");
+        profiletabbutton = document.getElementsByClassName("profiletabbutton");
 
-        for (i = 0; i < posttabbutton.length; i++) {
-            posttabbutton[i].className = posttabbutton[i].className.replace(" active", "");
+        for (i = 0; i < profiletabbutton.length; i++) {
+            profiletabbutton[i].className = profiletabbutton[i].className.replace(" active", "");
         }
         document.getElementById(posttabName).style.display = "block";
         event.currentTarget.classList.add("active");
