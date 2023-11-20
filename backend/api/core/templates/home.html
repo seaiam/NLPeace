@@ -41,7 +41,8 @@
                     <i class="fas fa-ellipsis-v"></i>
                 </a>
                 <ul class="dropdown-menu">
-                  <li><a class="dropdown-item" href="#" onclick="handleReportClick(this)"> <i class="far fa-flag"></i> Report User</a></li>
+                  <li>
+                    <a class="dropdown-item" href="#" onclick="handleReportClick(this)"> <i class="far fa-flag"></i> Report User</a></li>
                   <li><a class="dropdown-item" href="#">Another action</a></li>
                 </ul>
               </div>
@@ -185,7 +186,6 @@
                     </form>
                     <div class="feed post-actions__label">
                         <i class="far fa-flag" onclick="handleReportClick(this)" aria-hidden="true"> Report</i>
-                        <input type="hidden" value="{{ post.id }}" />
                     </div>
                 </div>
                    
@@ -212,15 +212,14 @@
 <div id="reportModal" class="popup">
     <div class="popup-content">
         <span class="close" onclick="handleReportClose()">&times;</span>
-        <p class="modalTitle">Report</p>
-        <form action="report/" method="POST">
+        <p class="modalTitle">Report user</p>
+        <form action="reportUser/" method="POST">
             {% csrf_token %}
-            {{ reportPostForm.post }}
-            <label for="{{ reportPostForm.category.id_for_label }}" class="form-outline mb-4" style="font-size:20px;">Category</label>
-            {{ reportPostForm.category }}
+            <label for="{{ reportUserForm.category.id_for_label }}" class="form-outline mb-4" style="font-size:20px;">Reason</label>
+            {{ reportUserForm.reason }}
             <br>
-            <label for="{{ reportPostForm.info.id_for_label }}" class="form-outline mb-4" style="font-size:20px;">Additional information</label>
-            {{ reportPostForm.info }}
+            <label for="{{ reportUserForm.info.id_for_label }}" class="form-outline mb-4" style="font-size:20px;">Additional information</label>
+            {{ reportUserForm.info }}
             <div class="text-md-right">
                 <button class="saveButton">Report</button>
             </div>
