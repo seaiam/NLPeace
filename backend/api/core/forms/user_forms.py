@@ -1,7 +1,7 @@
 from django.contrib.auth.forms import UserCreationForm
 from django.core.exceptions import ValidationError
 from django import forms
-from core.models.models import User
+from core.models.models import User , UserReport
 
 class UserRegistrationForm(UserCreationForm):
     username = forms.CharField(label='Username',widget=forms.TextInput(attrs={'class': 'form-login'}), min_length=4, max_length=50)
@@ -40,3 +40,8 @@ class UserRegistrationForm(UserCreationForm):
             self.cleaned_data['password1'],
         )  
         return user
+
+class UserReportForm(forms.ModelForm):
+    class Meta:
+        model = UserReport
+        fields = ['reason', 'info']
