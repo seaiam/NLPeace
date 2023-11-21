@@ -145,7 +145,7 @@
       </div>
 
       <div id="Likes" class="posttabcontent">
-        {% for post in posts %}
+        {% for post in liked_posts %}
            {% include "posts.html" %}
             {% empty %}
             <div class="no-post">No Liked Posts available. </div>

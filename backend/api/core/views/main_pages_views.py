@@ -33,7 +33,7 @@ def home(request):
         ).distinct().order_by('-created_at')
         likes = [post for post in posts if post.is_likeable_by(request.user)]
         dislikes = [post for post in posts if post.is_dislikeable_by(request.user)]
-
+        
         form = PostForm()
         reposted_post_ids = Repost.objects.filter(user=request.user).values_list('post_id', flat=True)
         data=Notifications.objects.filter(user=request.user).order_by('-id')
@@ -76,6 +76,8 @@ def profile(request):
     image_posts = [post for post in posts if post.image]
     likes = [post for post in all_Posts if post.is_likeable_by(request.user)]
     dislikes = [post for post in all_Posts if post.is_dislikeable_by(request.user)]
+    liked_posts = Post.objects.filter(postlike__liker=request.user).distinct().order_by('-created_at')
+        
     context = {
         'profile': profile[0], 
         'form': EditBioForm(instance=profile[0]),
@@ -83,6 +85,7 @@ def profile(request):
         'media_posts':image_posts,
         'likes': likes,
         'dislikes': dislikes,
+        'liked_posts': liked_posts,
         'data' : data,
         'reportUserForm': UserReportForm(),
         }
