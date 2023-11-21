@@ -9,6 +9,7 @@ from django.db.models import Q
 from django.shortcuts import get_object_or_404
 from itertools import chain
 
+from core.forms.user_forms import UserReportForm
 from core.forms.profile_forms import *
 from core.forms.posting_forms import *
 from core.models.models import *
@@ -80,6 +81,7 @@ def profile(request):
         'likes': likes,
         'dislikes': dislikes,
         'data' : data,
+        'reportUserForm': UserReportForm(),
         }
     return render(request, 'home.html', context)
 
@@ -104,7 +106,7 @@ def guest(request,user_id):
         'posts': all_Posts,
         'likes': likes,
         'dislikes': dislikes,
-        
+        'reportUserForm': UserReportForm(),
         }
     return render(request,'home.html',context)
 
@@ -208,6 +210,25 @@ def report(request):
         return redirect('home')
     return redirect('login')
 
+@login_required
+def report_user(request, reported_id):
+    if request.user.is_authenticated:
+        if request.method == 'POST':
+            form = UserReportForm(request.POST)
+            print(form)
+            print(form.errors)
+            if form.is_valid():
+                report = form.save(commit=False)
+                report.reporter = request.user
+                reported = User.objects.get(id=reported_id)
+                report.reported = reported
+                report.save()
+                messages.success(request, 'User successfully reported.')
+            else:
+                messages.error(request, 'User not reported.')
+        return redirect('guest', reported_id)
+    return redirect('login')
+    
 def error_404(request):
     return render(request, '404.html', status=404)
 
