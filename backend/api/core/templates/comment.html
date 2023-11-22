@@ -8,6 +8,15 @@
 <div class="d-flex justify-content-center align-items-center">
     <div class="card" style="width: 39rem; border-radius: 30px;margin:20px 0px 20px 0px;  overflow: hidden;background: linear-gradient(to right, #F9D1C4 0%, #9BBDDD 51%, #F9D1C4 100%);">
         <div class="card-body">
+                <div class="dropdown-delete" style="position: absolute; top: 1px; right: 20px; z-index: 1000;">
+                    <a class="hidden-arrow" type="button" data-toggle="dropdown" aria-expanded="false">
+                        <i class="fas fa-ellipsis-h mt-4"></i>
+                    </a>
+                    <ul class="dropdown-menu delete-menu dropdown-menu-right delete-dropdown">
+                        <li><a class="dropdown-item" href="#"><i class="bi bi-trash"></i> Delete</a></li>
+                        <li><a class="dropdown-item" href="#"><i class="bi bi-pin"></i>Pin to your profile</a></li>
+                    </ul>
+                </div>
                 <div class = "row top-aligned-row">
                     <div class = "col-2">
                         {% if post.user.profile and post.user.profile.pic %}
