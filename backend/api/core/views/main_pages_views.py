@@ -215,8 +215,6 @@ def report_user(request, reported_id):
     if request.user.is_authenticated:
         if request.method == 'POST':
             form = UserReportForm(request.POST)
-            print(form)
-            print(form.errors)
             if form.is_valid():
                 report = form.save(commit=False)
                 report.reporter = request.user
