@@ -34,8 +34,8 @@ const handleReportClose = () => {
 $(document).ready(() => {
     const upload = document.getElementById("id_image");
     const div = document.getElementById("preview_image");
-    const image = div.getElementsByTagName("IMG")[0]
     if (upload && div) {
+        const image = div.getElementsByTagName("IMG")[0]
         upload.addEventListener('change', e => {
             const reader = new FileReader()
             if (e.target.files && e.target.files[0]) {
