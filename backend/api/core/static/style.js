@@ -17,18 +17,13 @@ const handleOnDeletePhotoClick = () => {
     image.src = "#";
 }
 
-const handleReportClick = (target) => {
-    const modal = document.getElementById("reportModal");
-    const id = document.getElementById("id_post");
-    modal.style.display = "block";
-    id.value = $(target).siblings()[0].value;
-}
-
-const handleReportClose = () => {
-    const modal = document.getElementById("reportModal");
-    const id = document.getElementById("reportedPostId");
-    modal.style.display = "none";
-    id.value = null;
+const toggleModal = (id) => {
+    const modal = document.getElementById(id);
+    if (modal.style.display === "" || modal.style.display === "none") {
+        modal.style.display = "block";
+    } else {
+        modal.style.display = "none";
+    }
 }
 
 $(document).ready(() => {
