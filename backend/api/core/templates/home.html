@@ -41,8 +41,8 @@
               <h4 style="color:#D9D9D9;">{{ user.username }}</h4>
           </div>
           <div class="col-md-5">
-              <i class='fas fa-user-friends'></i> <a class="followers">Followers</a> &nbsp;&nbsp;
-              <i class='fas fa-search'></i> <a class="following">Following</a>
+              <i class='fas fa-user-friends'></i> <a class="followers" href="{% url 'followers' %}" >Followers</a> &nbsp;&nbsp;
+              <i class='fas fa-search'></i> <a class="following" href="{% url 'following' %}">Following</a>
           </div>
 
           {% if profile.user.id != request.user.id %}

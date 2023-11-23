@@ -1,0 +1,31 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block content %}
+
+<h3 class="search-user-text">Following:</h3>
+
+{% if following %}
+<div class="container">
+    <div class="d-flex align-items-center justify-content-center">
+        <div class="card" style="width: 40rem; margin: 20px 0px 20px 0px; overflow: hidden; background: linear-gradient(to right, #F9D1C4 0%, #9BBDDD 51%, #F9D1C4 100%);">
+            <div class="card-body">
+                {% for result in following %}
+                <div class="row">
+                    <div class="col-6">
+                        {% if result.profile and result.profile.pic %}
+                            <img src="{{ result.profile.pic.url }}" alt="{{ result.username }}'s profile picture" class="user-pic">
+                        {% else %}
+                            <img src="{% static 'default.jpg' %}" class="user-pic" alt="{{ result.username }}'s profile picture" />
+                        {% endif %}
+                        <a href="{% url 'guest' result.id %}" class="user-name">{{ result.username }}</a>
+                    </div>                    
+                </div>
+                <hr>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endif %}
+
+{% endblock %}

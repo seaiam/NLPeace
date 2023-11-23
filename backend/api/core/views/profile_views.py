@@ -219,3 +219,14 @@ def delete_notification(request):
         notification.delete()
  return HttpResponseRedirect(request.META.get('HTTP_REFERER', '/'))
 
+def followers(request):
+    user = request.user
+    followers = Profile.objects.get(user=user).followers.all()
+
+    return render(request, 'followers.html', {'followers': followers})
+
+def following(request):
+    user = request.user
+    following = Profile.objects.get(user=user).following.all()
+
+    return render(request, 'following.html', {'following': following})
