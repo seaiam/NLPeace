@@ -36,7 +36,8 @@ def login_user(request):
         username = request.POST['username']
         password = request.POST['password']
         user = authenticate(request, username=username, password=password)
-        if user is not None and not Profile.objects.get(user=user).is_banned:
+        profile = Profile.objects.filter(user=user).first()
+        if user is not None and (profile is None or not profile.is_banned):
             login(request, user)
             return redirect('profile')
         else:
