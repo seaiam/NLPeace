@@ -30,6 +30,11 @@ class UserAdmin(admin.ModelAdmin):
     )
     def is_banned(self, obj):
         return self.profile(obj).is_banned
+    
+    def note_or_default(self, warning):
+        if (warning.note is None):
+            return ''
+        return warning.note
 
     def save_formset(self, request, form, formset, change):
         instances = formset.save(commit=False)
@@ -39,7 +44,10 @@ class UserAdmin(admin.ModelAdmin):
             if isinstance(instance, ProfileWarning):
                 instance.issuer = request.user
                 Notifications.objects.create(
-                    notifications=instance.note, user=instance.offender, sent_by=request.user, type='')
+                    notifications=self.note_or_default(instance),
+                    user=instance.offender,
+                    sent_by=request.user,
+                    type='')
             instance.save()
         formset.save_m2m()
 
