@@ -1,9 +1,7 @@
-from typing import Any, Iterator, Optional
 from django.contrib import admin
 from django.contrib.auth.models import User
-from django.http.request import HttpRequest
 
-from core.models.models import Post, PostReport, Profile, ProfileWarning, UserReport
+from core.models.models import Notifications, Post, PostReport, Profile, ProfileWarning, UserReport
 
 class ProfileInline(admin.TabularInline):
     model = Profile
@@ -40,6 +38,8 @@ class UserAdmin(admin.ModelAdmin):
         for instance in instances:
             if isinstance(instance, ProfileWarning):
                 instance.issuer = request.user
+                Notifications.objects.create(
+                    notifications=instance.note, user=instance.offender, sent_by=request.user, type='')
             instance.save()
         formset.save_m2m()
 
