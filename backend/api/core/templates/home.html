@@ -42,7 +42,7 @@
                 </a>
                 <ul class="dropdown-menu">
                   <li>
-                    <a class="dropdown-item" href="#" onclick="handleReportClick(this)"> <i class="far fa-flag"></i> Report User</a></li>
+                    <a class="dropdown-item" href="#" onclick="toggleModal('reportModal')"> <i class="far fa-flag"></i> Report User</a></li>
                   <li><a class="dropdown-item" href="#">Another action</a></li>
                 </ul>
               </div>
@@ -163,9 +163,9 @@
      
 <div id="reportModal" class="popup">
     <div class="popup-content">
-        <span class="close" onclick="handleReportClose()">&times;</span>
+        <span class="close" onclick="toggleModal('reportModal')">&times;</span>
         <p class="modalTitle">Report user</p>
-        <form action="reportUser/" method="POST">
+        <form action="{% url 'report_user' profile.user.id %}" method="POST">
             {% csrf_token %}
             <label for="{{ reportUserForm.category.id_for_label }}" class="form-outline mb-4" style="font-size:20px;">Reason</label>
             {{ reportUserForm.reason }}
