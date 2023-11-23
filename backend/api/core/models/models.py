@@ -84,3 +84,18 @@ class Notifications(models.Model):
     
     def __str__(self):
         return str(self.notifications)
+
+class UserReport(models.Model):
+    class Reason(models.IntegerChoices):
+        HATE_SPEECH = 0, 'Hate'
+        ABUSE_AND_HARASSMENT = 1, 'Abuse and harassment'
+        IMPOSTER = 2, 'User is pretending to be someone else'
+
+    reporter = models.ForeignKey(User, on_delete=models.DO_NOTHING,  related_name='reporter')
+    reported = models.ForeignKey(User, on_delete=models.CASCADE,  related_name='reported')
+    reason = models.IntegerField(choices=Reason.choices)
+    info = models.TextField(null=True, blank=True)
+    date_reported = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f'{self.reporter.username} -- {UserReport.Reason(self.reason).name} -- {self.date_reported}'
