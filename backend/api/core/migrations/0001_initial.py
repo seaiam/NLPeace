@@ -11,8 +11,8 @@ class Migration(migrations.Migration):
     initial = True
 
     dependencies = [
-        ('auth', '0012_alter_user_first_name_max_length'),
         migrations.swappable_dependency(settings.AUTH_USER_MODEL),
+        ('auth', '0012_alter_user_first_name_max_length'),
     ]
 
     operations = [
@@ -48,6 +48,16 @@ class Migration(migrations.Migration):
             ],
         ),
         migrations.CreateModel(
+            name='ProfileWarning',
+            fields=[
+                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
+                ('issued_at', models.DateTimeField(auto_now_add=True)),
+                ('note', models.TextField(blank=True, null=True)),
+                ('issuer', models.OneToOneField(on_delete=django.db.models.deletion.DO_NOTHING, to=settings.AUTH_USER_MODEL)),
+                ('offender', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='offender', to=settings.AUTH_USER_MODEL)),
+            ],
+        ),
+        migrations.CreateModel(
             name='Profile',
             fields=[
                 ('user', models.OneToOneField(on_delete=django.db.models.deletion.RESTRICT, primary_key=True, serialize=False, to=settings.AUTH_USER_MODEL)),
@@ -56,6 +66,7 @@ class Migration(migrations.Migration):
                 ('pic', models.ImageField(blank=True, null=True, upload_to='profilePictures/')),
                 ('forget_password_token', models.CharField(default='', max_length=100)),
                 ('is_private', models.BooleanField(default=True)),
+                ('is_banned', models.BooleanField(default=False)),
                 ('follow_requests', models.ManyToManyField(blank=True, related_name='follow_requests', to=settings.AUTH_USER_MODEL)),
                 ('followers', models.ManyToManyField(blank=True, related_name='followers', to=settings.AUTH_USER_MODEL)),
                 ('following', models.ManyToManyField(blank=True, related_name='following', to=settings.AUTH_USER_MODEL)),
