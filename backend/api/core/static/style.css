@@ -1169,3 +1169,16 @@ img {
         margin-top: 10px;
     }
 }
+
+@media screen and (max-width: 768px) {
+  .profiletab-btns {
+      overflow-x: auto; 
+      white-space: nowrap; 
+      font-size: 0.8em; 
+  }
+  .profiletabbutton {
+      padding: 5px 10px;
+      margin: 0 5px; 
+  }
+}
+
