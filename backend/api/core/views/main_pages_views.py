@@ -87,6 +87,7 @@ def profile(request):
         'dislikes': dislikes,
         'liked_posts': liked_posts,
         'data' : data,
+        'reportPostForm': PostReportForm(),
         'reportUserForm': UserReportForm(),
         }
     return render(request, 'home.html', context)
@@ -207,13 +208,14 @@ def dislike(request, post_id):
 
 
 @login_required
-def report(request):
+def report(request, post_id):
     if request.user.is_authenticated:
         if request.method == 'POST':
             form = PostReportForm(request.POST)
             if form.is_valid():
                 report = form.save(commit=False)
                 report.reporter = request.user
+                report.post = Post.objects.get(pk=post_id)
                 report.save()
                 messages.success(request, 'Post successfully reported.')
         return redirect('home')
@@ -224,8 +226,6 @@ def report_user(request, reported_id):
     if request.user.is_authenticated:
         if request.method == 'POST':
             form = UserReportForm(request.POST)
-            print(form)
-            print(form.errors)
             if form.is_valid():
                 report = form.save(commit=False)
                 report.reporter = request.user
