@@ -2,7 +2,7 @@
 {% load static %}
 {% block content %}
 
-<h3 class="search-user-text">Following:</h3>
+<h3 class="search-user-text">Following: {{ following.count }}</h3>
 
 {% if following %}
 <div class="container">
