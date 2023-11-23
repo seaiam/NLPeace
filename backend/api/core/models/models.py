@@ -13,7 +13,16 @@ class Profile(models.Model):
     pic = models.ImageField(upload_to='profilePictures/', null=True, blank=True)
     forget_password_token=models.CharField(max_length=100,default='')
     is_private = models.BooleanField(default=True)
-   
+
+class ProfileWarning(models.Model):
+    offender = models.ForeignKey(User, related_name='offender', on_delete=models.CASCADE)
+    issuer = models.OneToOneField(User, on_delete=models.DO_NOTHING)
+    issued_at = models.DateTimeField(auto_now_add=True)
+    note = models.TextField(null=True, blank=True)
+
+    def __str__(self):
+        return str(self.issued_at)
+
 
 class Post(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
