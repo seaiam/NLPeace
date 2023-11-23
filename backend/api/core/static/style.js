@@ -89,3 +89,23 @@ $(document).ready(() => {
         });
     }
 });
+
+// Script for opening tabs on Profile page
+function openPostTab(event, posttabName) {
+    var posttabcontent, profiletabbutton;
+
+    posttabcontent = document.getElementsByClassName("posttabcontent");
+    for (i = 0; i < posttabcontent.length; i++) {
+        posttabcontent[i].style.display = "none";
+    }
+
+    profiletabbutton = document.getElementsByClassName("profiletabbutton");
+
+    for (i = 0; i < profiletabbutton.length; i++) {
+        profiletabbutton[i].className = profiletabbutton[i].className.replace(" active", "");
+    }
+    document.getElementById(posttabName).style.display = "block";
+    event.currentTarget.classList.add("active");
+}
+// opening tab 1 by default
+document.getElementById("defaultOpenPost").click();
