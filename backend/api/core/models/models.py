@@ -1,7 +1,5 @@
 from django.contrib.auth.models import User
 from django.db import models
-from django.conf import settings
-
 
 class Profile(models.Model):
     user = models.OneToOneField(User, on_delete=models.RESTRICT, primary_key=True)
@@ -13,6 +11,7 @@ class Profile(models.Model):
     pic = models.ImageField(upload_to='profilePictures/', null=True, blank=True)
     forget_password_token=models.CharField(max_length=100,default='')
     is_private = models.BooleanField(default=True)
+    is_banned = models.BooleanField(default=False)
 
 class ProfileWarning(models.Model):
     offender = models.ForeignKey(User, related_name='offender', on_delete=models.CASCADE)

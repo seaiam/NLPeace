@@ -7,7 +7,7 @@ from core.models.models import Post, PostReport, Profile, ProfileWarning, UserRe
 
 class ProfileInline(admin.TabularInline):
     model = Profile
-    fields = ['bio', 'banner', 'pic', 'is_private']
+    fields = ['bio', 'banner', 'pic', 'is_private', 'is_banned']
 
 class ProfileWarningInline(admin.StackedInline):
     model = ProfileWarning
@@ -20,6 +20,18 @@ class ProfileWarningInline(admin.StackedInline):
 class UserAdmin(admin.ModelAdmin):
     model = User
     inlines = [ProfileInline, ProfileWarningInline]
+    list_display = ['username', 'is_banned']
+    list_filter = ['profile__is_banned']
+
+    def profile(self, obj):
+        return Profile.objects.get(user=obj.id)
+    
+    @admin.display(
+        boolean=True,
+        description='Banned'
+    )
+    def is_banned(self, obj):
+        return self.profile(obj).is_banned
 
     def save_formset(self, request, form, formset, change):
         instances = formset.save(commit=False)

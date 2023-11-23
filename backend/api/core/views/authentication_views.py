@@ -36,11 +36,11 @@ def login_user(request):
         username = request.POST['username']
         password = request.POST['password']
         user = authenticate(request, username=username, password=password)
-        if user is not None:
+        if user is not None and not Profile.objects.get(user=user).is_banned:
             login(request, user)
             return redirect('profile')
         else:
-            messages.error(request, ("There was an error logging in. Try again..."))
+            messages.error(request, ('There was an error logging in. Try again...'))
             return redirect('login')
     else:
         return render(request, 'registration/login.html', {})
