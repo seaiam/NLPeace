@@ -135,7 +135,7 @@
     </div>
     
 
-    <div id="Media" class="posttabcontent">
+    <div id="Media" class="posttabcontent" style="display:none;">
         {% for post in media_posts %}
         {% include "posts.html" %}
       
@@ -144,7 +144,7 @@
       {% endfor %}
       </div>
 
-      <div id="Likes" class="posttabcontent">
+      <div id="Likes" class="posttabcontent" style="display:none;">
         {% for post in liked_posts %}
            {% include "posts.html" %}
             {% empty %}
