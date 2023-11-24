@@ -26,10 +26,12 @@ def home(request):
                 return redirect('home')
         #User is authenticated
         user_ids_following = request.user.profile.following.values_list('id', flat=True)
+        blocked = request.user.profile.blocked_users('id', flat=True)
         posts = Post.objects.filter(
             Q(user__profile__is_private=False) | 
             Q(user__in=user_ids_following) |  
-            Q(user=request.user) 
+            Q(user=request.user) |
+            ~Q(user__in=blocked)
         ).distinct().order_by('-created_at')
         likes = [post for post in posts if post.is_likeable_by(request.user)]
         dislikes = [post for post in posts if post.is_dislikeable_by(request.user)]

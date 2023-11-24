@@ -7,6 +7,7 @@ class Profile(models.Model):
     user = models.OneToOneField(User, on_delete=models.RESTRICT, primary_key=True)
     following=models.ManyToManyField(User,related_name='following',blank=True)
     followers=models.ManyToManyField(User,related_name='followers',blank=True)
+    blocked_users=models.ManyToManyField(User,related_name='blocked_users',blank=True)
     follow_requests = models.ManyToManyField(User, related_name='follow_requests', blank=True)
     bio = models.TextField(null=True, blank=True)
     banner = models.ImageField(upload_to='profileBanners/', null=True, blank=True)
