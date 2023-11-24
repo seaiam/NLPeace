@@ -71,7 +71,8 @@ class PostReport(models.Model):
 
 class PostLike(models.Model):
     liker = models.ForeignKey(User, on_delete=models.CASCADE)
-    post = models.ForeignKey(Post, on_delete=models.Case)
+    #post = models.ForeignKey(Post, on_delete=models.Case)
+    post = models.ForeignKey(Post, on_delete=models.CASCADE)  
 
     class Meta:
         constraints = [models.UniqueConstraint(fields=['liker', 'post'], name='liker_post_unique')]
