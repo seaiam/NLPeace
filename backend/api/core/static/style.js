@@ -60,10 +60,6 @@ $(document).ready(() => {
 
 
 // When the user clicks on the button, open the modal
-btn.onclick = function() {
-    modal.style.display = "block";
-}
-
 btnFollower.onclick = function(target) {
     modalFollower.style.display = "block";
 }
