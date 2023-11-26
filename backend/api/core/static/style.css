@@ -339,7 +339,7 @@ hr{
 
 .profile-page .box {
   margin-top: -31px;
-  margin-bottom: 26px;
+  margin-bottom: 15px;
 }
 
 .box {
@@ -347,7 +347,7 @@ hr{
   z-index: 1;
   background: #00001c;
   border-radius: 15px;
-  max-width: 620px;
+  max-width: 650px;
   margin: 0 auto 100px;
   padding: 35px;
 }
@@ -1056,6 +1056,31 @@ button:hover {
   border-bottom: 2px solid #fff;
 }
 
+.profiletab-btns {
+  font-size: 1.1em;
+  display:flex;
+  justify-content: center;
+  align-items: center;
+  margin-top: 10px;
+}
+
+.profiletabbutton {
+  background-color: transparent;
+  color: #fff;
+  border: none;
+  margin: 0 35px; 
+  cursor: pointer; 
+  outline: none;
+}
+
+.profiletabbutton:focus {
+  outline: none; 
+}
+
+.profiletabbutton.active {
+  border-bottom: 2px solid #fff;
+}
+
 
 .text-left{
   font-weight: 900;
@@ -1181,3 +1206,16 @@ img {
         margin-top: 10px;
     }
 }
+
+@media screen and (max-width: 768px) {
+  .profiletab-btns {
+      overflow-x: auto; 
+      white-space: nowrap; 
+      font-size: 0.8em; 
+  }
+  .profiletabbutton {
+      padding: 5px 10px;
+      margin: 0 5px; 
+  }
+}
+
