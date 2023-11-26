@@ -53,10 +53,29 @@
               <h4 style="color:#D9D9D9;">{{ user.username }}</h4>
           </div>
           <div class="col-md-5">
-              <i class='fas fa-user-friends'></i> <a class="followers" href="{% url 'followers' %}" >Followers</a> &nbsp;&nbsp;
-              <i class='fas fa-search'></i> <a class="following" href="{% url 'following' %}">Following</a>
-          </div>
 
+                <i class='fas fa-user-friends'></i>
+
+                <button class="editFollowButton" id="editFollowerButton">Followers</button>
+                    <div id="followerModal" class="popup">
+                        <div class="followModal-content">
+                            <span class="close" id="spanFollower">&times;</span>
+                            <p class="modalTitle">Followers list</p>
+                        </div>
+                    </div>
+
+                <i class='fas fa-search'></i>
+
+                    <button class="editFollowButton" id="editFollowingButton">Following</button>
+                        <div id="followingModal" class="popup">
+                            <div class="followModal-content">
+                                <span class="close" id="spanFollowing">&times;</span>
+                                <p class="modalTitle">Following list</p>
+                            </div>
+                        </div>
+                    
+          </div>
+          
           {% if profile.user.id != request.user.id %}
           <div class="col-md-3 text-md-right">
                 {% if request.user in profile.followers.all %}
