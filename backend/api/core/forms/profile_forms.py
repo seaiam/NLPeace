@@ -16,11 +16,13 @@ class EditProfilePicForm(forms.ModelForm):
     class Meta:
         model = Profile
         fields = ['pic']
+        widgets = {'pic': forms.FileInput(attrs={'style': 'display:none'})}
 
 class EditProfileBannerForm(forms.ModelForm):
     class Meta:
         model = Profile
         fields = ['banner']
+        widgets = {'banner': forms.FileInput(attrs={'style': 'display:none'})}
 
 class PrivacySettingsForm(forms.ModelForm):
     is_private = forms.ChoiceField(

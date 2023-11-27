@@ -3,18 +3,17 @@ var modal = document.getElementById("myModal");
 var btn = document.getElementById("editBtn");
 var span = document.getElementsByClassName("close")[0];
 
-const handleOnPhotoClick = () => {
-    const upload = document.getElementById("id_image");
-    upload.click();
+const addFormSubmitListener = (formid, inputid) => {
+    const input = document.getElementById(inputid);
+    input.addEventListener("change", () => {
+        const form = document.getElementById(formid);
+        form.submit();
+    });
 }
 
-const handleOnDeletePhotoClick = () => {
-    const upload = document.getElementById("id_image");
-    const div = document.getElementById("preview_image");
-    const image = div.getElementsByTagName('IMG')[0];
-    upload.value = null;
-    div.style.display = "none"; 
-    image.src = "#";
+const showFilePicker = (id) => {
+    const upload = document.getElementById(id);
+    upload.click();
 }
 
 const toggleModal = (id) => {
@@ -24,6 +23,15 @@ const toggleModal = (id) => {
     } else {
         modal.style.display = "none";
     }
+}
+
+const handleDeletePostImage = () => {
+    const upload = document.getElementById("id_image");
+    const div = document.getElementById("preview_image");
+    const image = div.getElementsByTagName('IMG')[0];
+    upload.value = null;
+    div.style.display = "none"; 
+    image.src = "#";
 }
 
 $(document).ready(() => {
@@ -43,8 +51,6 @@ $(document).ready(() => {
         });
     }
 });
-
-
 
 // When the user clicks on the button, open the modal
 btn.onclick = function() {

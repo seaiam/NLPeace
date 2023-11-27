@@ -17,7 +17,7 @@ class EditProfilePicFormTest(TestCase):
         self.client.login(username='testuser', password='testpassword123')
         
         response = self.client.get(reverse('edit_pic'))
-        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.status_code, 302)
         
                 
         files={
@@ -43,7 +43,7 @@ class EditProfileBannerFormTest(TestCase):
         self.client.login(username='testuser', password='testpassword123')
         
         response = self.client.get(reverse('edit_banner'))
-        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.status_code, 302)
         
         files={
             "banner": SimpleUploadedFile("../static/testBannerPic.jpg", b"file_content"

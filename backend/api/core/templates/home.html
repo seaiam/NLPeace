@@ -14,9 +14,13 @@
           <img src="{{profile.banner.url}}" class="banner" alt="Banner">
           {% endif %}
           {% if profile.user.id == request.user.id %}
-          <a href="{% url 'edit_banner' %}">
-          <i class="fa fa-pencil-alt edit-icon"></i>
-          </a>
+          <label class="clickable-label" onclick="openFilePicker('{{ editBannerForm.banner.id_for_label }}')">
+            <i class="fa fa-pencil-alt edit-icon"></i>
+            <form id="profile-edit-banner-form" action="{% url 'edit_banner' %}" method="POST" enctype="multipart/form-data">
+              {% csrf_token %}
+              {{ editBannerForm.banner }}
+            </form>
+          </label>
           {% endif %}
         </div>
           <div class="row">
@@ -30,9 +34,13 @@
               {% endif %}
               </div>
               {% if profile.user.id == request.user.id %}
-              <a href="{% url 'edit_pic' %}">
-                  <i class='fa fa-camera upload-button'></i>
-              </a> 
+              <label class="clickable-label" onclick="openFilePicker('{{ editPicForm.pic.id_for_label }}')">
+                <i class='fa fa-camera upload-button'></i>
+                <form id="profile-edit-pic-form" action="{% url 'edit_pic' %}" method="POST" enctype="multipart/form-data">
+                  {% csrf_token %}
+                  {{ editPicForm.pic }}
+                </form>
+              </label>
               {% endif %}     
               </div>
               <div class="col-md-6">
@@ -99,7 +107,7 @@
                     <p class="modalTitle">Update Bio</p>
                     <form action="updateBio/" method="POST" name="myform" class="bio-form">
                         {% csrf_token %}
-                        {{ form.bio }}
+                        {{ editBioForm.bio }}
                         <br>
                         <button id="saveBtn" class="saveButton">Save</button>
                     </form>
@@ -180,3 +188,4 @@
 </div>
 
 {% endblock %}
+

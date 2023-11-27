@@ -109,5 +109,12 @@
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
     <script src="{% static 'style.js' %}" type="text/javascript"></script>
 
+    <script>
+        $(document).ready(() => {
+            addFormSubmitListener('profile-edit-pic-form', '{{ editPicForm.pic.id_for_label }}');
+            addFormSubmitListener('profile-edit-banner-form', '{{ editBannerForm.banner.id_for_label }}');
+        })
+    </script>
+
 </body>
 </html>
