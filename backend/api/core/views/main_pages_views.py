@@ -79,7 +79,9 @@ def profile(request):
     # Create a list of posts with images
     image_posts = [post for post in posts if post.image]
     likes = [post for post in all_Posts if post.is_likeable_by(request.user)]
-    dislikes = [post for post in all_Posts if post.is_dislikeable_by(request.user)]
+    dislikes = [post for post in all_Posts if post.is_dislikeable_by(request.user)]    
+    followers = Profile.objects.get(user=request.user).followers.all()
+    following = Profile.objects.get(user=request.user).following.all()
     liked_posts = Post.objects.filter(postlike__liker=request.user).distinct().order_by('-created_at')
         
     context = {
@@ -93,6 +95,8 @@ def profile(request):
         'data' : data,
         'reportPostForm': PostReportForm(),
         'reportUserForm': UserReportForm(),
+        'followers' : followers,
+        'following' : following,
         }
     return render(request, 'home.html', context)
 
@@ -111,6 +115,9 @@ def guest(request,user_id):
     image_posts = [post for post in posts if post.image]
     likes = [post for post in all_Posts if post.is_likeable_by(user)]
     dislikes = [post for post in all_Posts if post.is_dislikeable_by(user)]
+    followers = Profile.objects.get(user=user).followers.all()
+    following = Profile.objects.get(user=user).following.all()
+
     context = {
         'user':user,
         'data':data,
@@ -121,6 +128,8 @@ def guest(request,user_id):
         'likes': likes,
         'dislikes': dislikes,
         'reportUserForm': UserReportForm(),
+        'followers' : followers,
+        'following' : following,
         }
     return render(request,'home.html',context)
 

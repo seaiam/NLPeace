@@ -1,7 +1,15 @@
 // Get the modal
 var modal = document.getElementById("myModal");
 var btn = document.getElementById("editBtn");
-var span = document.getElementsByClassName("close")[0];
+var span = document.getElementsByClassName("close")[2];
+
+var modalFollower = document.getElementById("followerModal");
+var btnFollower = document.getElementById("editFollowerButton");
+var spanFollower = document.getElementsByClassName("close")[0];
+
+var modalFollowing = document.getElementById("followingModal");
+var btnFollowing = document.getElementById("editFollowingButton");
+var spanFollowing = document.getElementsByClassName("close")[1];
 
 const handleOnPhotoClick = () => {
     const upload = document.getElementById("id_image");
@@ -47,13 +55,25 @@ $(document).ready(() => {
 
 
 // When the user clicks on the button, open the modal
-btn.onclick = function() {
-    modal.style.display = "block";
+btnFollower.onclick = function(target) {
+    modalFollower.style.display = "block";
 }
 
-// When the user closes the modal
+btnFollowing.onclick = function(target) {
+    modalFollowing.style.display = "block";
+}
+
+//When the user closes the modal
 span.onclick = function() {
     modal.style.display = "none";
+}
+
+spanFollower.onclick = function() {
+    modalFollower.style.display = "none";
+}
+
+spanFollowing.onclick = function() {
+    modalFollowing.style.display = "none";
 }
 
 // Closing model when the user clicks outside of the modal
@@ -61,7 +81,13 @@ window.onclick = function(event) {
     if (event.target == modal) {
         modal.style.display = "none";
     }
-}
+    if (event.target == modalFollower) {
+        modalFollower.style.display = "none";
+    }
+    if (event.target == modalFollowing) {
+        modalFollowing.style.display = "none";
+    }
+};
 
 // Saving the bio when the save button is clicked.
 var saveBtn = document.getElementById("saveBtn");
