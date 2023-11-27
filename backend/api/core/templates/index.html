@@ -18,14 +18,14 @@
                             <textarea name="{{ form.content.name }}" id="post-content" class="widget-post__textarea scroller" placeholder="Start a Post...">{{ form.content.value|default:'' }}</textarea>
                             </div>
                             <div id="preview_image" style="display: none;">
-                                <button type="button" class="close" onclick="handleOnDeletePhotoClick()" style="color: #00001c;">&times;</button>
+                                <button type="button" class="close" onclick="handleDeletePostImage()" style="color: #00001c;">&times;</button>
                                 <img class="card-img-top mb-2" src="#" />
                             </div>
                             <div class="widget-post__options is--hidden" id="stock-options">
                             </div>
                             <div class="widget-post__actions post--actions">
                                 <div class="post-actions__attachments">
-                                    <label for="upload-image" class="post-actions__label" onclick="handleOnPhotoClick()">
+                                    <label for="upload-image" class="post-actions__label" onclick="showFilePicker('{{ form.image.id_for_label }}')">
                                     <i class="fa fa-camera" sty aria-hidden="true"></i> 
                                     Photo
                                     </label>
