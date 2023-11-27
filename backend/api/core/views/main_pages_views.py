@@ -8,6 +8,7 @@ from django.http import JsonResponse
 from django.db.models import Q
 from django.shortcuts import get_object_or_404
 from itertools import chain
+from django.http import *
 
 from core.forms.user_forms import UserReportForm
 from core.forms.profile_forms import *
@@ -26,7 +27,8 @@ def home(request):
                 return redirect('home')
         #User is authenticated
         user_ids_following = request.user.profile.following.values_list('id', flat=True)
-        blocked = request.user.profile.blocked_users('id', flat=True)
+        profile=Profile.objects.get(user=request.user)
+        blocked=profile.blocked.all()
         posts = Post.objects.filter(
             Q(user__profile__is_private=False) | 
             Q(user__in=user_ids_following) |  
