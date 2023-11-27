@@ -4,11 +4,15 @@ var btn = document.getElementById("editBtn");
 var span = document.getElementsByClassName("close")[0];
 
 const addFormSubmitListener = (formid, inputid) => {
-    const input = document.getElementById(inputid);
-    input.addEventListener("change", () => {
-        const form = document.getElementById(formid);
-        form.submit();
-    });
+    if (inputid) {
+        const input = document.getElementById(inputid);
+        if (input) {
+            input.addEventListener("change", () => {
+                const form = document.getElementById(formid);
+                form.submit();
+            });
+        }
+    }
 }
 
 const showFilePicker = (id) => {
