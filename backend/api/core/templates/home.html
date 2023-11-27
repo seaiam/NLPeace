@@ -36,16 +36,17 @@
               {% endif %}     
               </div>
               <div class="col-md-6">
+                {% if profile.user.id != request.user.id %}
               <div class="dropdown" style="float:right;">
                 <a class="hidden-arrow" type="button" data-toggle="dropdown" aria-expanded="false">
                     <i class="fas fa-ellipsis-v mt-4"></i>
                 </a>
                 <ul class="dropdown-menu">
-                  <li>
-                    <a class="dropdown-item" href="#" onclick="toggleModal('reportModal')"> <i class="far fa-flag"></i> Report User</a></li>
-                  <li><a class="dropdown-item" href="#">Another action</a></li>
+                  <li><a class="dropdown-item" href="#" onclick="toggleModal('reportModal')"> <i class="far fa-flag"></i> Report User</a></li>
+                  <li><a class="dropdown-item" href="{% url 'add_block' profile.user.id %}"><i class="fa fa-ban"></i> Block User</a></li>
                 </ul>
               </div>
+              {% endif %}   
             </div>
           </div>            
         <div class="row">

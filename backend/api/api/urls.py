@@ -28,6 +28,7 @@ urlpatterns = [
     path('register_user', authentication_views.register_user, name='register_user'),
     path('', main_pages_views.home, name='home'),
     path('accounts/profile/', main_pages_views.profile, name='profile'),
+    path('accounts/profile/<int:blocked_id>/', profile_views.add_block, name='add_block'),
     path('accounts/profile/updateBio/', profile_views.updateBio, name='edit_bio'),
     path('accounts/profile/updateBanner/', profile_views.updateProfileBanner, name='edit_banner'),
     path('accounts/profile/updatePic/', profile_views.updateProfilePicture, name='edit_pic'),

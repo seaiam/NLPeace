@@ -1,6 +1,4 @@
-from django.http import HttpResponseServerError
-from django.http import HttpResponseNotFound
-from django.http import HttpResponseForbidden
+from django.http import *
 from api.logger_config import configure_logger # TODO add logging statements
 from django.contrib.auth import update_session_auth_hash
 from django.shortcuts import render, redirect
@@ -13,6 +11,17 @@ from core.models.models import *
 from django.contrib.auth.models import User
 from django.http import HttpResponseRedirect
 
+
+
+@login_required
+def add_block(request,blocked_id):
+        updated_user=Profile.objects.get(pk=request.user.id)
+        blocked_user=User.objects.get(pk=blocked_id)
+
+        updated_user.blocked.add(blocked_user)
+        updated_user.save()
+        messages.error(request,"User Blocked Successfully.")      
+        return redirect('profile')
 
 
 @login_required
