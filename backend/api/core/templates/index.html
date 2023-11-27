@@ -138,8 +138,28 @@
 
 
                     <div class="feed post-actions__label">
-                        <i class="far fa-flag" onclick="handleReportClick(this)" aria-hidden="true"> Report</i>
-                        <input type="hidden" value="{{ post.id }}" />
+                        {% with counter=forloop.counter|stringformat:"s" %}
+                        {% with id="report-"|add:counter %}
+                        <i class="far fa-flag" onclick="toggleModal('{{ id }}')" aria-hidden="true"> Report</i>
+                        <div id="{{ id }}" class="popup">
+                            <div class="popup-content">
+                                <span class="close" onclick="toggleModal('{{ id }}')">&times;</span>
+                                <p class="modalTitle">Report</p>
+                                <form action="{% url 'report' post.id %}" method="POST">
+                                    {% csrf_token %}
+                                    <label for="{{ reportPostForm.category.id_for_label }}" class="form-outline mb-4" style="font-size:20px;">Category</label>
+                                    {{ reportPostForm.category }}
+                                    <br>
+                                    <label for="{{ reportPostForm.info.id_for_label }}" class="form-outline mb-4" style="font-size:20px;">Additional information</label>
+                                    {{ reportPostForm.info }}
+                                    <div class="text-md-right">
+                                        <button class="saveButton">Report</button>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                        {% endwith %}
+                        {% endwith %}
                     </div>
                 </div>
                    
@@ -215,8 +235,28 @@
                                 {% endif %}
                             </form>
                             <div class="feed post-actions__label">
-                                <i class="far fa-flag" onclick="handleReportClick(this)" aria-hidden="true"> Report</i>
-                                <input type="hidden" value="{{ post.id }}" />
+                                {% with counter=forloop.counter|stringformat:"s" %}
+                                {% with id="report-following-"|add:counter %}
+                                <i class="far fa-flag" onclick="toggleModal('{{id}}')" aria-hidden="true"> Report</i>
+                                <div id="{{ id }}" class="popup">
+                                    <div class="popup-content">
+                                        <span class="close" onclick="toggleModal('{{ id }}')">&times;</span>
+                                        <p class="modalTitle">Report</p>
+                                        <form action="report/" method="POST">
+                                            {% csrf_token %}
+                                            <label for="{{ reportPostForm.category.id_for_label }}" class="form-outline mb-4" style="font-size:20px;">Category</label>
+                                            {{ reportPostForm.category }}
+                                            <br>
+                                            <label for="{{ reportPostForm.info.id_for_label }}" class="form-outline mb-4" style="font-size:20px;">Additional information</label>
+                                            {{ reportPostForm.info }}
+                                            <div class="text-md-right">
+                                                <button class="saveButton">Report</button>
+                                            </div>
+                                        </form>
+                                    </div>
+                                </div>
+                                {% endwith %}
+                                {% endwith %}
                             </div>
                         </div>
                     </div>
@@ -248,24 +288,5 @@
     // opening tab 1 by default
     document.getElementById("defaultOpenPost").click();
 </script>
-
-<div id="reportModal" class="popup">
-    <div class="popup-content">
-        <span class="close" onclick="handleReportClose()">&times;</span>
-        <p class="modalTitle">Report</p>
-        <form action="report/" method="POST">
-            {% csrf_token %}
-            {{ reportPostForm.post }}
-            <label for="{{ reportPostForm.category.id_for_label }}" class="form-outline mb-4" style="font-size:20px;">Category</label>
-            {{ reportPostForm.category }}
-            <br>
-            <label for="{{ reportPostForm.info.id_for_label }}" class="form-outline mb-4" style="font-size:20px;">Additional information</label>
-            {{ reportPostForm.info }}
-            <div class="text-md-right">
-                <button class="saveButton">Report</button>
-            </div>
-        </form>
-    </div>
-</div>
 
 {% endblock %}

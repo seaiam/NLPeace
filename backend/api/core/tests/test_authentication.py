@@ -49,6 +49,11 @@ class UserLoginTest(TestCase):
 
         # Check if the response redirects to the desired page after login
         self.assertRedirects(response, '/accounts/profile/')
+    
+    def test_login_fails_if_user_is_banned(self):
+        Profile.objects.create(user=self.user, is_banned=True)
+        response = self.client.post(reverse('login'), {'username': 'testuser', 'password': 'testpassword123'})
+        self.assertRedirects(response, reverse('login'))
 
 
 class ForgetPasswordTest(TestCase):
