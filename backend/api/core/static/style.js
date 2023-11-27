@@ -17,25 +17,20 @@ const handleOnDeletePhotoClick = () => {
     image.src = "#";
 }
 
-const handleReportClick = (target) => {
-    const modal = document.getElementById("reportModal");
-    const id = document.getElementById("id_post");
-    modal.style.display = "block";
-    id.value = $(target).siblings()[0].value;
-}
-
-const handleReportClose = () => {
-    const modal = document.getElementById("reportModal");
-    const id = document.getElementById("reportedPostId");
-    modal.style.display = "none";
-    id.value = null;
+const toggleModal = (id) => {
+    const modal = document.getElementById(id);
+    if (modal.style.display === "" || modal.style.display === "none") {
+        modal.style.display = "block";
+    } else {
+        modal.style.display = "none";
+    }
 }
 
 $(document).ready(() => {
     const upload = document.getElementById("id_image");
     const div = document.getElementById("preview_image");
-    const image = div.getElementsByTagName("IMG")[0]
     if (upload && div) {
+        const image = div.getElementsByTagName("IMG")[0]
         upload.addEventListener('change', e => {
             const reader = new FileReader()
             if (e.target.files && e.target.files[0]) {
@@ -80,15 +75,37 @@ saveBtn.onclick = function() {
 $(document).ready(() => {
     const upload = document.getElementById("id_image");
     const div = document.getElementById("preview_image");
-    const image = div.getElementsByTagName("IMG")[0]
-    upload.addEventListener('change', e => {
-        const reader = new FileReader()
-        if (e.target.files && e.target.files[0]) {
-            reader.onload = () => {
-                image.src = reader.result;
-            };
-            reader.readAsDataURL(e.target.files[0]);
-            div.style.display = "block";
-        }
-    });
+    if (upload && div) {
+        const image = div.getElementsByTagName("IMG")[0]
+        upload.addEventListener('change', e => {
+            const reader = new FileReader()
+            if (e.target.files && e.target.files[0]) {
+                reader.onload = () => {
+                    image.src = reader.result;
+                };
+                reader.readAsDataURL(e.target.files[0]);
+                div.style.display = "block";
+            }
+        });
+    }
 });
+
+// Script for opening tabs on Profile page
+function openPostTab(event, posttabName) {
+    var posttabcontent, profiletabbutton;
+
+    posttabcontent = document.getElementsByClassName("posttabcontent");
+    for (i = 0; i < posttabcontent.length; i++) {
+        posttabcontent[i].style.display = "none";
+    }
+
+    profiletabbutton = document.getElementsByClassName("profiletabbutton");
+
+    for (i = 0; i < profiletabbutton.length; i++) {
+        profiletabbutton[i].className = profiletabbutton[i].className.replace(" active", "");
+    }
+    document.getElementById(posttabName).style.display = "block";
+    event.currentTarget.classList.add("active");
+}
+// opening tab 1 by default
+document.getElementById("defaultOpenPost").click();

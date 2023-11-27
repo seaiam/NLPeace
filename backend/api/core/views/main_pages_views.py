@@ -76,15 +76,22 @@ def profile(request):
     #we combine all user posts and reposts to show them chronogically on the user profile
     all_Posts = list(chain(posts, reposts))
     all_Posts.sort(key=lambda item: item.created_at, reverse=True)
+    # Create a list of posts with images
+    image_posts = [post for post in posts if post.image]
     likes = [post for post in all_Posts if post.is_likeable_by(request.user)]
     dislikes = [post for post in all_Posts if post.is_dislikeable_by(request.user)]
+    liked_posts = Post.objects.filter(postlike__liker=request.user).distinct().order_by('-created_at')
+        
     context = {
         'profile': profile[0], 
         'form': EditBioForm(instance=profile[0]),
         'posts': all_Posts,
+        'media_posts':image_posts,
         'likes': likes,
         'dislikes': dislikes,
+        'liked_posts': liked_posts,
         'data' : data,
+        'reportPostForm': PostReportForm(),
         'reportUserForm': UserReportForm(),
         }
     return render(request, 'home.html', context)
@@ -100,6 +107,8 @@ def guest(request,user_id):
     #we combine all user posts and reposts to show them chronogically on the user profile
     all_Posts = list(chain(posts, reposts))
     all_Posts.sort(key=lambda item: item.created_at, reverse=True)
+     # Create a list of posts with images
+    image_posts = [post for post in posts if post.image]
     likes = [post for post in all_Posts if post.is_likeable_by(user)]
     dislikes = [post for post in all_Posts if post.is_dislikeable_by(user)]
     context = {
@@ -108,6 +117,7 @@ def guest(request,user_id):
         'profile': profile[0], 
         'form': EditBioForm(instance=profile[0]),
         'posts': all_Posts,
+        'media_posts':image_posts,
         'likes': likes,
         'dislikes': dislikes,
         'reportUserForm': UserReportForm(),
@@ -202,13 +212,14 @@ def dislike(request, post_id):
 
 
 @login_required
-def report(request):
+def report(request, post_id):
     if request.user.is_authenticated:
         if request.method == 'POST':
             form = PostReportForm(request.POST)
             if form.is_valid():
                 report = form.save(commit=False)
                 report.reporter = request.user
+                report.post = Post.objects.get(pk=post_id)
                 report.save()
                 messages.success(request, 'Post successfully reported.')
         return redirect('home')
@@ -219,8 +230,6 @@ def report_user(request, reported_id):
     if request.user.is_authenticated:
         if request.method == 'POST':
             form = UserReportForm(request.POST)
-            print(form)
-            print(form.errors)
             if form.is_valid():
                 report = form.save(commit=False)
                 report.reporter = request.user
