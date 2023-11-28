@@ -56,6 +56,26 @@ class PostTestCase(TestCase):
         self.assertIsNotNone(post)
         self.assertIsNotNone(post.image)
 
+    def test_delete_post_as_poster(self):
+        new_post = Post.objects.create(user=self.user,content='test post')
+        post_id = new_post.id
+        response = self.client.post(reverse('delete_post'),  {'post_id': post_id}) 
+        post_count = Post.objects.filter(id=post_id).count()
+        self.assertEquals(post_count, 0)
+    
+    def test_delete_post_not_as_poster(self):
+        new_post = Post.objects.create(user=self.user,content='test post')
+        post_id = new_post.id
+        self.client.logout()
+        user1 = User.objects.create_user(username='testuser1', password='password')
+        Profile.objects.create(user=user1)
+        self.client.login(username='testuser1', password='password')
+        response = self.client.post(reverse('delete_post'), {'post_id': post_id}) 
+        post_count = Post.objects.filter(id=post_id).count()
+        self.assertEquals(post_count, 1)
+        redirected = self.client.get(response.url)
+        self.assertContains(redirected, 'You may not delete this post')
+
 class CommentTestCase(TestCase):
 
     def setUp(self):

@@ -52,6 +52,7 @@
                 <ul class="dropdown-menu">
                   <li><a class="dropdown-item" href="#" onclick="toggleModal('reportModal')"> <i class="far fa-flag"></i> Report User</a></li>
                   <li><a class="dropdown-item" href="{% url 'add_block' profile.user.id %}"><i class="fa fa-ban"></i> Block User</a></li>
+                  <li><a class="dropdown-item" href="#"><i class="far fa-paper-plane"></i>Share Profile</a></li>
                 </ul>
               </div>
               {% endif %}   
@@ -215,7 +216,7 @@
       {% include "posts.html" %}
         {% empty %}
         <div class="no-post">No posts available. </div>
-        {% endfor %}
+    {% endfor %}
     </div>
     
 
@@ -234,7 +235,7 @@
             {% empty %}
             <div class="no-post">No Liked Posts available. </div>
             {% endfor %}
-        </div>
+     </div>
 
           {%else%}
           <div class="account-private">This account is private</div>

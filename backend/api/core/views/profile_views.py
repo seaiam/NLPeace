@@ -207,7 +207,6 @@ def unfollow_user(request):
         
     return HttpResponseRedirect(request.META.get('HTTP_REFERER', '/'))
    
-
 @login_required
 def delete_notification(request):
  if request.method == "POST":
@@ -216,5 +215,17 @@ def delete_notification(request):
         notification_id=request.POST.get('notification')
         notification=Notifications.objects.get(pk=notification_id)
         notification.delete()
+ return HttpResponseRedirect(request.META.get('HTTP_REFERER', '/'))
+
+@login_required
+def delete_post(request):
+ if request.method == "POST":
+        post_id = request.POST.get('post_id')
+        post = Post.objects.get(pk=post_id)
+        post_user = post.user
+        if request.user == post_user:
+            post.delete()
+        else:
+            messages.error(request,"You may not delete this post")
  return HttpResponseRedirect(request.META.get('HTTP_REFERER', '/'))
 
