@@ -70,10 +70,18 @@
                             <a class="hidden-arrow" type="button" data-toggle="dropdown" aria-expanded="false">
                                 <i class="fas fa-ellipsis-h mt-4"></i>
                             </a>
+                            {% if post.user.id == request.user.id %}
                             <ul class="dropdown-menu delete-menu dropdown-menu-right delete-dropdown">
-                                <li><a class="dropdown-item" href="#"><i class="bi bi-trash"></i> Delete</a></li>
+                                <li>
+                                <form id="delPostForm" action="{% url 'delete_post' %}" method="POST">
+                                    {% csrf_token %}
+                                    <button type="submit" id="submit-button" class="bi bi-trash"> Delete</button>
+                                    <input type="hidden" name="post_id" value="{{ post.id }}" readonly/>
+                                </form>
+                                </li>
                                 <li><a class="dropdown-item" href="#"><i class="bi bi-pin"></i>Pin to your profile</a></li>
                             </ul>
+                            {% endif %}
                         </div>
                         {% if post.reposts.all %}
                             {% for repost in post.reposts.all %}
