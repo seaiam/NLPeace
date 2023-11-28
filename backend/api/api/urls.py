@@ -53,7 +53,6 @@ urlpatterns = [
     path('accounts/profile/notifications/invite', main_pages_views.accept_decline_invite, name='accept_decline_invite'),   
     path('guest/<int:reported_id>/reportUser/', main_pages_views.report_user, name='report_user'),
     path('delete_post/', profile_views.delete_post, name='delete_post'),
-    path('accounts/profile/delete_post/', profile_views.delete_post, name='delete_post'),
 ]
 
 if settings.DEBUG:
