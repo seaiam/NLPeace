@@ -68,12 +68,7 @@ def updateProfileBanner(request):
         if form.is_valid():
             form.save()
         return redirect('profile')
-    else:
-        form = EditProfileBannerForm()
-    context = {
-        'form': form,
-    }
-    return render(request, 'newBanner.html', context)
+    return redirect('error_500')
 
 @login_required
 def updateBio(request):
@@ -83,7 +78,7 @@ def updateBio(request):
         if form.is_valid():
             form.save()
         return redirect('profile')
-    # TODO render 500
+    return redirect('error_500')
 
 @login_required
 def updateProfilePicture(request):
@@ -93,12 +88,7 @@ def updateProfilePicture(request):
         if form.is_valid():
             form.save()
         return redirect('profile')
-    else:
-        form = EditProfilePicForm()
-    context = {
-        'form': form
-    }
-    return render(request, 'newProfilepic.html', context)
+    return redirect('error_500')
 
 @login_required
 def privacy_settings_view(request, user_id):

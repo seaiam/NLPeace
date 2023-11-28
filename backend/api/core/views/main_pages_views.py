@@ -68,7 +68,7 @@ def repost(request, post_id):
 
 @login_required
 def profile(request):
-    profile = Profile.objects.get_or_create(pk=request.user.id)
+    profile = Profile.objects.get_or_create(pk=request.user.id)[0]
     data=Notifications.objects.filter(user=request.user).order_by('-id')
     posts = Post.objects.filter(user = request.user)
     reposts_ids = Repost.objects.filter(user = request.user).values_list('post_id', flat=True)
@@ -85,14 +85,16 @@ def profile(request):
     liked_posts = Post.objects.filter(postlike__liker=request.user).distinct().order_by('-created_at')
         
     context = {
-        'profile': profile[0], 
-        'form': EditBioForm(instance=profile[0]),
+        'profile': profile,
         'posts': all_Posts,
         'media_posts':image_posts,
         'likes': likes,
         'dislikes': dislikes,
         'liked_posts': liked_posts,
         'data' : data,
+        'editBannerForm': EditProfileBannerForm(instance=profile),
+        'editPicForm': EditProfilePicForm(instance=profile),
+        'editBioForm': EditBioForm(instance=profile),
         'reportPostForm': PostReportForm(),
         'reportUserForm': UserReportForm(),
         'followers' : followers,

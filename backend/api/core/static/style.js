@@ -11,18 +11,21 @@ var modalFollowing = document.getElementById("followingModal");
 var btnFollowing = document.getElementById("editFollowingButton");
 var spanFollowing = document.getElementsByClassName("close")[1];
 
-const handleOnPhotoClick = () => {
-    const upload = document.getElementById("id_image");
-    upload.click();
+const addFormSubmitListener = (formid, inputid) => {
+    if (inputid) {
+        const input = document.getElementById(inputid);
+        if (input) {
+            input.addEventListener("change", () => {
+                const form = document.getElementById(formid);
+                form.submit();
+            });
+        }
+    }
 }
 
-const handleOnDeletePhotoClick = () => {
-    const upload = document.getElementById("id_image");
-    const div = document.getElementById("preview_image");
-    const image = div.getElementsByTagName('IMG')[0];
-    upload.value = null;
-    div.style.display = "none"; 
-    image.src = "#";
+const showFilePicker = (id) => {
+    const upload = document.getElementById(id);
+    upload.click();
 }
 
 const toggleModal = (id) => {
@@ -32,6 +35,15 @@ const toggleModal = (id) => {
     } else {
         modal.style.display = "none";
     }
+}
+
+const handleDeletePostImage = () => {
+    const upload = document.getElementById("id_image");
+    const div = document.getElementById("preview_image");
+    const image = div.getElementsByTagName('IMG')[0];
+    upload.value = null;
+    div.style.display = "none"; 
+    image.src = "#";
 }
 
 $(document).ready(() => {
@@ -51,8 +63,6 @@ $(document).ready(() => {
         });
     }
 });
-
-
 
 // When the user clicks on the button, open the modal
 btnFollower.onclick = function(target) {
