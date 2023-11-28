@@ -1175,11 +1175,12 @@ img {
   white-space: nowrap; 
 }
 
+/* Delete Item Adjusment*/
 .delete-button  {
   display: flex; 
   align-items: center; 
   white-space: nowrap; 
-  color: #000; /* Example text color, adjust as needed */
+  color: #000; 
   margin-right: 8px; 
   text-decoration: none;
   background-color: transparent;
@@ -1193,13 +1194,14 @@ img {
   box-shadow: none;
 }
 
+/* Delete Icon Adjusment */
 .icon-spacing{
   margin-right: 8px; 
   margin-left: 18px; 
 }
 
 .delete-button:hover {
-  background-color: #f0f0f0; /* Example hover color, adjust as needed */
+  background-color: #f0f0f0; 
 }
 
 .dropdown-item i {
