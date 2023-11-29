@@ -146,6 +146,11 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/4.2/howto/static-files/
 
 STATIC_URL = '/static/'
+STATICFILES_STORAGE = 'whitenoise.storage.CompressedStaticFilesStorage'
+WHITENOISE_MAX_AGE = 31536000  # 1 year in seconds
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
+WHITENOISE_MANIFEST_STRICT = False
+
 STATICFILES_DIR=[
     os.path.join(BASE_DIR,'static')
     #os.path.join(BASE_DIR, 'chat/static')

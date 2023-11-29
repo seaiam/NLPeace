@@ -12,3 +12,5 @@ coverage
 pytest
 daphne
 redis
+whitenoise
+dj_database_url
