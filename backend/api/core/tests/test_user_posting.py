@@ -18,8 +18,7 @@ class PostTestCase(TestCase):
             self.profile = self.user.profile  # Try to access the profile
         except ObjectDoesNotExist:
             # Handle the case where the profile does not exist/ create a profile
-            self.profile = Profile.objects.create(user=self.user)
-            
+            self.profile = Profile.objects.create(user=self.user)          
 
     def test_post_post(self):
         # Create a post using a POST request
@@ -75,6 +74,20 @@ class PostTestCase(TestCase):
         self.assertEquals(post_count, 1)
         redirected = self.client.get(response.url)
         self.assertContains(redirected, 'You may not delete this post')
+   
+    def test_post_added_to_profile(self):
+        #create a second user
+        user2 = User.objects.create_user(username='testuser2', password='password')
+        otherId = user2.id
+        #make a post from first user
+        self.client.post(reverse('home'), {'content': 'Post on profile'})
+        #assert post is shown on user's profile
+        profile = self.client.get(reverse('profile'))
+        self.assertContains(profile, 'Post on profile')
+        #assert post is NOT shown on another user's profile
+        otherProfile = self.client.get(reverse('guest',kwargs = {'user_id': otherId}))
+        self.assertNotContains(otherProfile, 'Post on profile')
+    
 
 class CommentTestCase(TestCase):
 
