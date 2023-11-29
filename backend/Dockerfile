@@ -24,7 +24,9 @@
 FROM python:3.10.13-alpine3.18
 LABEL maintainer="SOEN490"
 
+ENV PYTHONDONTWRITEBYTECODE 1
 ENV PYTHONUNBUFFERED 1
+ENV DEBUG 0
 
 
 
@@ -33,7 +35,7 @@ ENV PYTHONUNBUFFERED 1
 COPY ./requirements.txt /tmp/requirements.txt
 COPY ./api /api
 WORKDIR /api
-EXPOSE 8000
+#EXPOSE 8000
 
 
 
@@ -54,3 +56,6 @@ RUN apk add --update --no-cache bind-tools
 ENV PATH="/py/bin:$PATH"
 
 USER django-user
+
+
+CMD gunicorn api.wsgi:application --bind 0.0.0.0:$PORT

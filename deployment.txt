@@ -1,0 +1,12 @@
+docker-compose build
+heroku container:push web --app nlpeace
+heroku container:release web --app nlpeace
+heroku open -a nlpeace
+
+
+
+docker-compose build
+heroku container:push web --app nlpeace
+heroku container:release web --app nlpeace
+heroku run python manage.py collectstatic --noinput -c -a nlpeace
+heroku open -a nlpeace
