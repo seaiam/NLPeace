@@ -159,6 +159,17 @@ venv.bak/
 # mkdocs documentation
 /site
 
+#ignore data files
+data/
+NLP/data/
+/data/
+data
+.csv
+*.csv
+venv
+/venv
+venv/
+
 # mypy
 .mypy_cache/
 .dmypy.json

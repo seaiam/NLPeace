@@ -9,6 +9,7 @@ from django.db.models import Q
 from django.shortcuts import get_object_or_404
 from itertools import chain
 from django.http import *
+import requests
 
 from core.forms.user_forms import UserReportForm
 from core.forms.profile_forms import *
@@ -21,10 +22,24 @@ def home(request):
         if request.method == 'POST':
             form = PostForm(request.POST, request.FILES)
             if form.is_valid():
-                post = form.save(commit=False)
-                post.user = request.user
-                post.save()
-                return redirect('home')
+                #extract tweet from form
+                tweet_text = form.cleaned_data['content']
+                #pass tweet to nlp classifier
+                result = classify_tweet(tweet_text)
+
+                if result["prediction"][0] == 2: #Post is appropriate
+                    post = form.save(commit=False)
+                    post.user = request.user
+                    post.save()
+                    return redirect('home')
+                if result["prediction"][0] == 1: #Post is offensive
+                    messages.error(request, f'This post contains offensive language and is not allowed on our platform.')
+                    return redirect('home')
+
+                if result["prediction"][0] == 0: #Post is hate speech:
+                    messages.error(request, f'This post contains hateful language and is not allowed on our platform.')
+                    return redirect('home')
+
         #User is authenticated
         user_ids_following = request.user.profile.following.values_list('id', flat=True)
         profile=Profile.objects.get(user=request.user)
@@ -176,6 +191,25 @@ def comment(request, post_id):
         if request.method == 'POST':
             form = PostForm(request.POST, request.FILES)
             if form.is_valid():
+                #extract text from comment
+                comment_text = form.cleaned_data['content']
+                #pass comment to nlp classifier
+                result = classify_tweet(comment_text)
+
+                if result["prediction"][0] == 2: #Comment is appropriate
+                    post = form.save(commit=False)
+                    post.user = request.user
+                    post.parent_post = Post.objects.get(pk=post_id)
+                    post.save()
+                    return redirect('comment', post_id = post_id)
+                if result["prediction"][0] == 1: #Comment is offensive
+                    messages.error(request, f'This comment contains offensive language and is not allowed on our platform.')
+                    return redirect('comment', post_id = post_id)
+
+                if result["prediction"][0] == 0: #Comment is hate speech:
+                    messages.error(request, f'This comment contains hateful language and is not allowed on our platform.')
+                    return redirect('comment', post_id = post_id)
+
                 post = form.save(commit=False)
                 post.user = request.user
                 post.parent_post = Post.objects.get(pk=post_id)
@@ -259,3 +293,16 @@ def error_404(request):
 def error_500(request):
     raise ValueError("Error 500, Server error")
 
+def classify_tweet(tweet_text):
+    url = 'https://nlpeace-api-2e54e3d268ac.herokuapp.com/classify/'
+    payload = {'text': tweet_text}
+    try:
+        response = requests.post(url, json=payload)
+        if response.status_code == 200:
+            return response.json()
+        else:
+            # Handle response error
+            return {'error': 'Failed to get prediction', 'status_code': response.status_code}
+    except requests.exceptions.RequestException as e:
+        # Handle request exception
+        return {'error': str(e)}
