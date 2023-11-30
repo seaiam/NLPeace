@@ -1,0 +1,15 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<h2 class="notification-text"> Bookmarked Posts </h2>
+<div>
+    {% for post in bookmarked_posts %}
+        <div class="container">
+            <h3>{{ post.content }}</h3>
+        </div>
+    {% empty %}
+        <p class="notification-text">You have no bookmarked posts.</p>
+    {% endfor %}
+</div>
+{% endblock %}

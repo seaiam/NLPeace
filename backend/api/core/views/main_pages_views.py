@@ -31,8 +31,12 @@ def home(request):
             Q(user__in=user_ids_following) |  
             Q(user=request.user) 
         ).distinct().order_by('-created_at')
+
         likes = [post for post in posts if post.is_likeable_by(request.user)]
         dislikes = [post for post in posts if post.is_dislikeable_by(request.user)]
+
+        saved_post_ids = [post.id for post in posts if not post.is_saveable_by(request.user)]
+ #ADDED THIS
         
         form = PostForm()
         reposted_post_ids = Repost.objects.filter(user=request.user).values_list('post_id', flat=True)
@@ -43,6 +47,7 @@ def home(request):
             'posts': posts, 
             'likes': likes,
             'dislikes': dislikes,
+            'saved_post_ids': saved_post_ids,  # ADDED THIS
             'form': form, 
             'data' : data,
             'reportPostForm': PostReportForm(), 
@@ -77,7 +82,9 @@ def profile(request):
     likes = [post for post in all_Posts if post.is_likeable_by(request.user)]
     dislikes = [post for post in all_Posts if post.is_dislikeable_by(request.user)]
     liked_posts = Post.objects.filter(postlike__liker=request.user).distinct().order_by('-created_at')
-        
+    saved_post_ids = [post.id for post in posts if not post.is_saveable_by(request.user)] # ADDED THIS
+      
+
     context = {
         'profile': profile[0], 
         'form': EditBioForm(instance=profile[0]),
@@ -85,6 +92,7 @@ def profile(request):
         'media_posts':image_posts,
         'likes': likes,
         'dislikes': dislikes,
+        'saved_post_ids': saved_post_ids, # ADDED THIS
         'liked_posts': liked_posts,
         'data' : data,
         'reportPostForm': PostReportForm(),
@@ -107,6 +115,7 @@ def guest(request,user_id):
     image_posts = [post for post in posts if post.image]
     likes = [post for post in all_Posts if post.is_likeable_by(user)]
     dislikes = [post for post in all_Posts if post.is_dislikeable_by(user)]
+    
     context = {
         'user':user,
         'data':data,
@@ -243,4 +252,46 @@ def error_404(request):
 
 def error_500(request):
     raise ValueError("Error 500, Server error")
+
+# @login_required
+# def save_post(request, post_id):
+#     if request.user.is_authenticated:
+#         if request.method == 'POST':
+#             post = get_object_or_404(Post, pk=post_id)
+#             # Check if the post is already saved by the user
+#             if not PostSave.objects.filter(saver=request.user, post=post).exists():
+#                 PostSave.objects.create(saver=request.user, post=post)
+#                 messages.success(request, 'Post saved successfully.')
+
+#         return HttpResponseRedirect(request.META.get('HTTP_REFERER', '/'))
+#     return redirect('login')
+
+@login_required
+def save_post(request, post_id):
+    # Only allow POST requests for saving a post.
+    if request.method == 'POST':
+        post = get_object_or_404(Post, pk=post_id)
+        # Check if the post is already saved by the user.
+        post_save, created = PostSave.objects.get_or_create(saver=request.user, post=post)
+        if created:
+            # The post was not saved before and now is saved.
+            messages.success(request, 'Post saved successfully.')
+        else:
+            # The post was already saved; you might want to inform the user.
+            messages.info(request, 'Post already saved.')
+        return HttpResponseRedirect(request.META.get('HTTP_REFERER', '/'))
+    else:
+        # If it's not a POST request, do not allow the operation.
+        return HttpResponseForbidden('Invalid request method.')
+
+
+@login_required
+def bookmarked_posts(request):
+    saved_posts = PostSave.objects.filter(saver=request.user).select_related('post').order_by('-post__created_at')
+    posts = [save.post for save in saved_posts]
+    print("Bookmarked posts:", posts)
+    context = {'bookmarked_posts': posts}
+    return render(request, 'bookmark.html', context)
+
+
 
