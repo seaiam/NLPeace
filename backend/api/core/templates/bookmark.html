@@ -1,15 +1,125 @@
 {% extends 'base.html' %}
+{% load static %}
 
 {% block content %}
 
-<h2 class="notification-text"> Bookmarked Posts </h2>
-<div>
-    {% for post in bookmarked_posts %}
-        <div class="container">
-            <h3>{{ post.content }}</h3>
-        </div>
-    {% empty %}
-        <p class="notification-text">You have no bookmarked posts.</p>
-    {% endfor %}
+<div class="container">
+    <div class="posttab-btns">
+        <button class="posttabbutton" onclick="openPostTab(event, 'All')" id="defaultOpenPost">All</button>
+        <button class="posttabbutton" onclick="openPostTab(event, 'Followers')">Following</button>
+    </div>
+    <div id="All" class="posttabcontent">
+        <!-- All Posts -->
+        {% for post in bookmarked_posts %}
+            <div class="d-flex justify-content-center align-items-center">
+                <div class="card" style="width: 39rem; border-radius: 30px;margin:20px 0px 20px 0px;  overflow: hidden;background: linear-gradient(to right, #F9D1C4 0%, #9BBDDD 51%, #F9D1C4 100%);">
+                    <div class="card-body">
+                        {% if post.reposts.all %}
+                            {% for repost in post.reposts.all %}
+                                <div class="repost-info">
+                                    Reposted by @{{ repost.user.username }}
+                                </div>
+                            {% endfor %}
+                        {% endif %}
+                        <div class="row top-aligned-row">
+                            <div class="col-2">
+                                {% if post.user.profile and post.user.profile.pic %}
+                                    <img src="{{ post.user.profile.pic.url }}" alt="{{ post.user.username }}'s profile picture" class="user-pic">
+                                {% else %}
+                                    <img src="{% static 'default.jpg' %}" class="user-pic" alt="{{ post.user.username }}'s profile picture" />
+                                {% endif %}
+                            </div>
+                            <div class="col-10">
+                                <h5 class="card-title"><strong>@{{ post.user.username }}</strong></h5>
+                                <p class="card-text">{{ post.content }}</p>
+                            </div>
+                        </div>
+                {% if post.image %}
+                <img class="card-img-top mt-2" src="{{ post.image.url }}" alt="Post image" /><br><br>
+                {% endif %}
+                <h6 class="card-subtitle mb-2" style ="float: right; margin-top:5px;">{{ post.created_at|date:"M d, Y H:i" }}</h6>
+                <br>
+                <hr>
+                <div class ="icons-list" >
+
+                    <div class="feed" >
+                        {% if post in s %}
+                        <a href="{% url 'like' post.id %}" class="like-link"><i class="far fa-thumbs-up" aria-hidden="true"></i> Like </a>
+                                {% else %}
+                                <span class="post-liked">
+                                    <i class="far fa-thumbs-up" aria-hidden="true"></i> Liked
+                                </span>
+                                
+                        {% endif %}
+                        <span class="like-count">{{ post.get_number_likes }}</span>
+                    </div>
+                    <div class="feed" >
+                        {% if post in dislikes  %}
+                        <a href="{% url 'dislike' post.id %}" class="like-link"><i class="far fa-thumbs-down" aria-hidden="true"></i> Dislike </a>
+                                {% else %}
+                                <span class="post-disliked">
+                                    <i class="far fa-thumbs-down" aria-hidden="true"></i> Disliked
+                                </span>
+                        {% endif %} 
+                        <span class="dislike-count">{{ post.get_number_dislikes }}</span>
+                    </div>
+
+                    <div class="feed"> <i class="far fa-comment" aria-hidden="true"> <a class="comment-link" href="{% url 'comment' post_id=post.id %}">Comment</a></i> </div> 
+
+                   <!-- <div class="post"> <i class="far fa-bookmark" aria-hidden="true"> <a class="comment-link" href="{% url 'save_post' post_id=post.id %}">Bookmark</a></i> </div> -->
+
+                    <form method="post" action="{% url 'save_post' post.id %}">
+                        {% csrf_token %}
+                        {% if post.id in saved_post_ids %}
+                            <div class="feed-reposted"><i class="fa fa-bookmark" aria-hidden="true">  <button type="button" class = "reposted-button" disabled> Saved </button></i> </div>
+                        {% else %}
+                            <div class="feed"><i class="fa fa-bookmark" aria-hidden="true">  <button type="submit" class = "repost-button">Bookmark</button></i> </div>
+                        {% endif %}
+                    </form>
+
+                    <form method="post" action="{% url 'repost' post.id %}">
+                        {% csrf_token %}
+                        {% if post.id in reposted_post_ids %}
+                            <div class="feed-reposted"><i class="fa fa-retweet" aria-hidden="true">  <button type="button" class = "reposted-button" disabled>Reposted</button></i> </div>
+                        {% else %}
+                        <div class="feed"><i class="fa fa-retweet" aria-hidden="true">  <button type="submit" class = "repost-button">Repost</button></i> </div>
+                        {% endif %}
+                    </form>
+
+
+                    <div class="feed post-actions__label">
+                        {% with counter=forloop.counter|stringformat:"s" %}
+                        {% with id="report-"|add:counter %}
+                        <i class="far fa-flag" onclick="toggleModal('{{ id }}')" aria-hidden="true"> Report</i>
+                        <div id="{{ id }}" class="popup">
+                            <div class="popup-content">
+                                <span class="close" onclick="toggleModal('{{ id }}')">&times;</span>
+                                <p class="modalTitle">Report</p>
+                                <form action="{% url 'report' post.id %}" method="POST">
+                                    {% csrf_token %}
+                                    <label for="{{ reportPostForm.category.id_for_label }}" class="form-outline mb-4" style="font-size:20px;">Category</label>
+                                    {{ reportPostForm.category }}
+                                    <br>
+                                    <label for="{{ reportPostForm.info.id_for_label }}" class="form-outline mb-4" style="font-size:20px;">Additional information</label>
+                                    {{ reportPostForm.info }}
+                                    <div class="text-md-right">
+                                        <button class="saveButton">Report</button>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                        {% endwith %}
+                        {% endwith %}
+                    </div>
+                </div>
+                   
+            </div>
+           </div>      
+            </div>
+        {% empty %}
+            <li>No posts available.</li>
+        {% endfor %}
+    </div>
 </div>
+
 {% endblock %}
