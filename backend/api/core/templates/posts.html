@@ -50,6 +50,17 @@
                     {% endif %}
                     <span class="dislike-count">{{ post.get_number_dislikes }}</span>
                 </div>
+
+                <form method="post" action="{% url 'save_post' post.id %}">
+                    {% csrf_token %}
+                    {% if post.id in saved_post_ids %}
+                        <div class="feed-reposted"><i class="fa fa-bookmark" aria-hidden="true">  <button type="submit" class = "repost-button"> Saved </button></i> </div>
+                    {% else %}
+                        <div class="feed"><i class="fa fa-bookmark" aria-hidden="true">  <button type="submit" class = "repost-button">Bookmark</button></i> </div>
+                    {% endif %}
+                </form>
+
+                
                 <div class="feed"> <i class="far fa-comment" aria-hidden="true"> <a class="comment-link" href="{% url 'comment' post_id=post.id %}">Comment</a></i> </div> 
                 <form method="post" action="{% url 'repost' post.id %}">
                     {% csrf_token %}
