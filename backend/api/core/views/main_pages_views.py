@@ -8,6 +8,8 @@ from django.http import JsonResponse
 from django.db.models import Q
 from django.shortcuts import get_object_or_404
 from itertools import chain
+from django.http import *
+import requests
 
 from core.forms.user_forms import UserReportForm
 from core.forms.profile_forms import *
@@ -20,16 +22,33 @@ def home(request):
         if request.method == 'POST':
             form = PostForm(request.POST, request.FILES)
             if form.is_valid():
-                post = form.save(commit=False)
-                post.user = request.user
-                post.save()
-                return redirect('home')
+                #extract tweet from form
+                tweet_text = form.cleaned_data['content']
+                #pass tweet to nlp classifier
+                result = classify_tweet(tweet_text)
+
+                if result["prediction"][0] == 2: #Post is appropriate
+                    post = form.save(commit=False)
+                    post.user = request.user
+                    post.save()
+                    return redirect('home')
+                if result["prediction"][0] == 1: #Post is offensive
+                    messages.error(request, f'This post contains offensive language and is not allowed on our platform.')
+                    return redirect('home')
+
+                if result["prediction"][0] == 0: #Post is hate speech:
+                    messages.error(request, f'This post contains hateful language and is not allowed on our platform.')
+                    return redirect('home')
+
         #User is authenticated
         user_ids_following = request.user.profile.following.values_list('id', flat=True)
+        profile=Profile.objects.get(user=request.user)
+        blocked=profile.blocked.all()
         posts = Post.objects.filter(
             Q(user__profile__is_private=False) | 
             Q(user__in=user_ids_following) |  
-            Q(user=request.user) 
+            Q(user=request.user) |
+            ~Q(user__in=blocked)
         ).distinct().order_by('-created_at')
 
         likes = [post for post in posts if post.is_likeable_by(request.user)]
@@ -67,7 +86,7 @@ def repost(request, post_id):
 
 @login_required
 def profile(request):
-    profile = Profile.objects.get_or_create(pk=request.user.id)
+    profile = Profile.objects.get_or_create(pk=request.user.id)[0]
     data=Notifications.objects.filter(user=request.user).order_by('-id')
     posts = Post.objects.filter(user = request.user)
     reposts_ids = Repost.objects.filter(user = request.user).values_list('post_id', flat=True)
@@ -78,14 +97,15 @@ def profile(request):
     # Create a list of posts with images
     image_posts = [post for post in posts if post.image]
     likes = [post for post in all_Posts if post.is_likeable_by(request.user)]
-    dislikes = [post for post in all_Posts if post.is_dislikeable_by(request.user)]
+    dislikes = [post for post in all_Posts if post.is_dislikeable_by(request.user)]    
+    followers = Profile.objects.get(user=request.user).followers.all()
+    following = Profile.objects.get(user=request.user).following.all()
     liked_posts = Post.objects.filter(postlike__liker=request.user).distinct().order_by('-created_at')
     saved_post_ids = [post.id for post in posts if not post.is_saveable_by(request.user)] # ADDED THIS
       
 
     context = {
-        'profile': profile[0], 
-        'form': EditBioForm(instance=profile[0]),
+        'profile': profile,
         'posts': all_Posts,
         'media_posts':image_posts,
         'likes': likes,
@@ -93,8 +113,13 @@ def profile(request):
         'saved_post_ids': saved_post_ids, # ADDED THIS
         'liked_posts': liked_posts,
         'data' : data,
+        'editBannerForm': EditProfileBannerForm(instance=profile),
+        'editPicForm': EditProfilePicForm(instance=profile),
+        'editBioForm': EditBioForm(instance=profile),
         'reportPostForm': PostReportForm(),
         'reportUserForm': UserReportForm(),
+        'followers' : followers,
+        'following' : following,
         }
     return render(request, 'home.html', context)
 
@@ -113,7 +138,9 @@ def guest(request,user_id):
     image_posts = [post for post in posts if post.image]
     likes = [post for post in all_Posts if post.is_likeable_by(user)]
     dislikes = [post for post in all_Posts if post.is_dislikeable_by(user)]
-    
+    followers = Profile.objects.get(user=user).followers.all()
+    following = Profile.objects.get(user=user).following.all()
+
     context = {
         'user':user,
         'data':data,
@@ -124,6 +151,8 @@ def guest(request,user_id):
         'likes': likes,
         'dislikes': dislikes,
         'reportUserForm': UserReportForm(),
+        'followers' : followers,
+        'following' : following,
         }
     return render(request,'home.html',context)
 
@@ -168,6 +197,25 @@ def comment(request, post_id):
         if request.method == 'POST':
             form = PostForm(request.POST, request.FILES)
             if form.is_valid():
+                #extract text from comment
+                comment_text = form.cleaned_data['content']
+                #pass comment to nlp classifier
+                result = classify_tweet(comment_text)
+
+                if result["prediction"][0] == 2: #Comment is appropriate
+                    post = form.save(commit=False)
+                    post.user = request.user
+                    post.parent_post = Post.objects.get(pk=post_id)
+                    post.save()
+                    return redirect('comment', post_id = post_id)
+                if result["prediction"][0] == 1: #Comment is offensive
+                    messages.error(request, f'This comment contains offensive language and is not allowed on our platform.')
+                    return redirect('comment', post_id = post_id)
+
+                if result["prediction"][0] == 0: #Comment is hate speech:
+                    messages.error(request, f'This comment contains hateful language and is not allowed on our platform.')
+                    return redirect('comment', post_id = post_id)
+
                 post = form.save(commit=False)
                 post.user = request.user
                 post.parent_post = Post.objects.get(pk=post_id)
@@ -303,3 +351,16 @@ def bookmarked_posts(request):
 
 
 
+def classify_tweet(tweet_text):
+    url = 'https://nlpeace-api-2e54e3d268ac.herokuapp.com/classify/'
+    payload = {'text': tweet_text}
+    try:
+        response = requests.post(url, json=payload)
+        if response.status_code == 200:
+            return response.json()
+        else:
+            # Handle response error
+            return {'error': 'Failed to get prediction', 'status_code': response.status_code}
+    except requests.exceptions.RequestException as e:
+        # Handle request exception
+        return {'error': str(e)}

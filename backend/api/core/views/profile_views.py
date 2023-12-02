@@ -1,6 +1,4 @@
-from django.http import HttpResponseServerError
-from django.http import HttpResponseNotFound
-from django.http import HttpResponseForbidden
+from django.http import *
 from api.logger_config import configure_logger # TODO add logging statements
 from django.contrib.auth import update_session_auth_hash
 from django.shortcuts import render, redirect
@@ -13,6 +11,17 @@ from core.models.models import *
 from django.contrib.auth.models import User
 from django.http import HttpResponseRedirect
 
+
+
+@login_required
+def add_block(request,blocked_id):
+        updated_user=Profile.objects.get(pk=request.user.id)
+        blocked_user=User.objects.get(pk=blocked_id)
+
+        updated_user.blocked.add(blocked_user)
+        updated_user.save()
+        messages.error(request,"User Blocked Successfully.")      
+        return redirect('profile')
 
 
 @login_required
@@ -59,12 +68,7 @@ def updateProfileBanner(request):
         if form.is_valid():
             form.save()
         return redirect('profile')
-    else:
-        form = EditProfileBannerForm()
-    context = {
-        'form': form,
-    }
-    return render(request, 'newBanner.html', context)
+    return redirect('error_500')
 
 @login_required
 def updateBio(request):
@@ -74,7 +78,7 @@ def updateBio(request):
         if form.is_valid():
             form.save()
         return redirect('profile')
-    # TODO render 500
+    return redirect('error_500')
 
 @login_required
 def updateProfilePicture(request):
@@ -84,12 +88,7 @@ def updateProfilePicture(request):
         if form.is_valid():
             form.save()
         return redirect('profile')
-    else:
-        form = EditProfilePicForm()
-    context = {
-        'form': form
-    }
-    return render(request, 'newProfilepic.html', context)
+    return redirect('error_500')
 
 @login_required
 def privacy_settings_view(request, user_id):
@@ -208,7 +207,6 @@ def unfollow_user(request):
         
     return HttpResponseRedirect(request.META.get('HTTP_REFERER', '/'))
    
-
 @login_required
 def delete_notification(request):
  if request.method == "POST":
@@ -217,5 +215,17 @@ def delete_notification(request):
         notification_id=request.POST.get('notification')
         notification=Notifications.objects.get(pk=notification_id)
         notification.delete()
+ return HttpResponseRedirect(request.META.get('HTTP_REFERER', '/'))
+
+@login_required
+def delete_post(request):
+ if request.method == "POST":
+        post_id = request.POST.get('post_id')
+        post = Post.objects.get(pk=post_id)
+        post_user = post.user
+        if request.user == post_user:
+            post.delete()
+        else:
+            messages.error(request,"You may not delete this post")
  return HttpResponseRedirect(request.META.get('HTTP_REFERER', '/'))
 

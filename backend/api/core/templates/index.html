@@ -18,14 +18,14 @@
                             <textarea name="{{ form.content.name }}" id="post-content" class="widget-post__textarea scroller" placeholder="Start a Post...">{{ form.content.value|default:'' }}</textarea>
                             </div>
                             <div id="preview_image" style="display: none;">
-                                <button type="button" class="close" onclick="handleOnDeletePhotoClick()" style="color: #00001c;">&times;</button>
+                                <button type="button" class="close" onclick="handleDeletePostImage()" style="color: #00001c;">&times;</button>
                                 <img class="card-img-top mb-2" src="#" />
                             </div>
                             <div class="widget-post__options is--hidden" id="stock-options">
                             </div>
                             <div class="widget-post__actions post--actions">
                                 <div class="post-actions__attachments">
-                                    <label for="upload-image" class="post-actions__label" onclick="handleOnPhotoClick()">
+                                    <label for="upload-image" class="post-actions__label" onclick="showFilePicker('{{ form.image.id_for_label }}')">
                                     <i class="fa fa-camera" sty aria-hidden="true"></i> 
                                     Photo
                                     </label>
@@ -66,6 +66,25 @@
             <div class="d-flex justify-content-center align-items-center">
                 <div class="card" style="width: 39rem; border-radius: 30px;margin:20px 0px 20px 0px;  overflow: hidden;background: linear-gradient(to right, #F9D1C4 0%, #9BBDDD 51%, #F9D1C4 100%);">
                     <div class="card-body">
+                        {% if post.user.id == request.user.id %}
+                        <div class="dropdown-delete" style="position: absolute; top: 1px; right: 20px; z-index: 1000;">
+                            <a class="hidden-arrow" type="button" data-toggle="dropdown" aria-expanded="false">
+                                <i class="fas fa-ellipsis-h mt-4"></i>
+                            </a>
+                            <ul class="dropdown-menu delete-menu dropdown-menu-right delete-dropdown">
+                                <li>
+                                <form id="delPostForm" action="{% url 'delete_post' %}" method="POST">
+                                    {% csrf_token %}
+                                    <button type="submit" class="delete-button">
+                                        <i class="bi bi-trash icon-spacing"></i> Delete
+                                    </button>
+                                    <input type="hidden" name="post_id" value="{{ post.id }}" readonly/>
+                                </form>
+                                </li>
+                                <li><a class="dropdown-item" href="#"><i class="bi bi-pin"></i>Pin to your profile</a></li>
+                            </ul>
+                        </div>
+                        {% endif %}
                         {% if post.reposts.all %}
                             {% for repost in post.reposts.all %}
                                 <div class="repost-info">
@@ -82,7 +101,9 @@
                                 {% endif %}
                             </div>
                             <div class="col-10">
-                                <h5 class="card-title"><strong>@{{ post.user.username }}</strong></h5>
+                                <h5 class="card-title">
+                                    <strong><a href="{% url 'guest' post.user.id %}" class="username-link">@{{ post.user.username }}</a></strong>
+                                </h5>
                                 <p class="card-text">{{ post.content }}</p>
                             </div>
                         </div>
@@ -193,7 +214,9 @@
                                 {% endif %}
                             </div>
                             <div class="col-10">
-                                <h5 class="card-title"><strong>@{{ post.user.username }}</strong></h5>
+                                <h5 class="card-title">
+                                    <strong><a href="{% url 'guest' post.user.id %}" class="username-link">@{{ post.user.username }}</a></strong>
+                                </h5>
                                 <p class="card-text">{{ post.content }}</p>
                             </div>
                         </div>

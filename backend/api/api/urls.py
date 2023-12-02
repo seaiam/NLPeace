@@ -28,6 +28,7 @@ urlpatterns = [
     path('register_user', authentication_views.register_user, name='register_user'),
     path('', main_pages_views.home, name='home'),
     path('accounts/profile/', main_pages_views.profile, name='profile'),
+    path('accounts/profile/<int:blocked_id>/', profile_views.add_block, name='add_block'),
     path('accounts/profile/updateBio/', profile_views.updateBio, name='edit_bio'),
     path('accounts/profile/updateBanner/', profile_views.updateProfileBanner, name='edit_banner'),
     path('accounts/profile/updatePic/', profile_views.updateProfilePicture, name='edit_pic'),
@@ -49,10 +50,11 @@ urlpatterns = [
     path('unfollow/', profile_views.unfollow_user ,name="unfollow_user"),
     path('accounts/profile/notifications', main_pages_views.notifications, name='notifications'), 
     path('accounts/profile/notifications/delete_notification', profile_views.delete_notification, name='delete_notification'), 
-    path('accounts/profile/notifications/invite', main_pages_views.accept_decline_invite, name='accept_decline_invite'),
+    path('accounts/profile/notifications/invite', main_pages_views.accept_decline_invite, name='accept_decline_invite'),   
     path('guest/<int:reported_id>/reportUser/', main_pages_views.report_user, name='report_user'),
     path('save_post/<int:post_id>/', main_pages_views.save_post, name='save_post'),
     path('bookmarks/', main_pages_views.bookmarked_posts, name='bookmarked_posts'),
+    path('delete_post/', profile_views.delete_post, name='delete_post'),
 ]
 
 if settings.DEBUG:

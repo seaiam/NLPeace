@@ -18,8 +18,7 @@ class PostTestCase(TestCase):
             self.profile = self.user.profile  # Try to access the profile
         except ObjectDoesNotExist:
             # Handle the case where the profile does not exist/ create a profile
-            self.profile = Profile.objects.create(user=self.user)
-            
+            self.profile = Profile.objects.create(user=self.user)          
 
     def test_post_post(self):
         # Create a post using a POST request
@@ -55,6 +54,40 @@ class PostTestCase(TestCase):
         post = Post.objects.first()
         self.assertIsNotNone(post)
         self.assertIsNotNone(post.image)
+
+    def test_delete_post_as_poster(self):
+        new_post = Post.objects.create(user=self.user,content='test post')
+        post_id = new_post.id
+        response = self.client.post(reverse('delete_post'),  {'post_id': post_id}) 
+        post_count = Post.objects.filter(id=post_id).count()
+        self.assertEquals(post_count, 0)
+    
+    def test_delete_post_not_as_poster(self):
+        new_post = Post.objects.create(user=self.user,content='test post')
+        post_id = new_post.id
+        self.client.logout()
+        user1 = User.objects.create_user(username='testuser1', password='password')
+        Profile.objects.create(user=user1)
+        self.client.login(username='testuser1', password='password')
+        response = self.client.post(reverse('delete_post'), {'post_id': post_id}) 
+        post_count = Post.objects.filter(id=post_id).count()
+        self.assertEquals(post_count, 1)
+        redirected = self.client.get(response.url)
+        self.assertContains(redirected, 'You may not delete this post')
+   
+    def test_post_added_to_profile(self):
+        #create a second user
+        user2 = User.objects.create_user(username='testuser2', password='password')
+        otherId = user2.id
+        #make a post from first user
+        self.client.post(reverse('home'), {'content': 'Post on profile'})
+        #assert post is shown on user's profile
+        profile = self.client.get(reverse('profile'))
+        self.assertContains(profile, 'Post on profile')
+        #assert post is NOT shown on another user's profile
+        otherProfile = self.client.get(reverse('guest',kwargs = {'user_id': otherId}))
+        self.assertNotContains(otherProfile, 'Post on profile')
+    
 
 class CommentTestCase(TestCase):
 

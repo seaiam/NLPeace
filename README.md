@@ -37,6 +37,7 @@ respectful environment, all written posts undergo automatic moderation to preven
 | 8   | Mira Aji     | 40041473    | miraaji    |
 | 9   | Nelly Bozorgzad      | 40189770    | nellyb4    |
 | 10   | Adam Qamar     | 40175980    | aqa02    |
+| 11   | Andrew Chan     | 40133396    | AofSpade5    |
 
 ## Group Meeting Details
 
