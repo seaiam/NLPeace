@@ -52,6 +52,8 @@ urlpatterns = [
     path('accounts/profile/notifications/delete_notification', profile_views.delete_notification, name='delete_notification'), 
     path('accounts/profile/notifications/invite', main_pages_views.accept_decline_invite, name='accept_decline_invite'),   
     path('guest/<int:reported_id>/reportUser/', main_pages_views.report_user, name='report_user'),
+    path('save_post/<int:post_id>/', main_pages_views.save_post, name='save_post'),
+    path('bookmarks/', main_pages_views.bookmarked_posts, name='bookmarked_posts'),
     path('delete_post/', profile_views.delete_post, name='delete_post'),
 ]
 

@@ -46,6 +46,13 @@ class Post(models.Model):
     def __str__(self):
         return self.content
 
+    def get_number_saves(self):
+        return self.postsave_set.all().count()
+
+    def is_saveable_by(self, user):
+        return user not in {save.saver for save in self.postsave_set.all()}
+
+
 class Repost(models.Model):
     post = models.ForeignKey(Post, null=True, on_delete=models.CASCADE, related_name='reposts')
     user = models.ForeignKey(User, on_delete=models.CASCADE)
@@ -109,3 +116,16 @@ class UserReport(models.Model):
 
     def __str__(self):
         return f'{self.reporter.username} -- {UserReport.Reason(self.reason).name} -- {self.date_reported}'
+    
+
+class PostSave(models.Model):
+    saver = models.ForeignKey(User, on_delete=models.CASCADE)
+    post = models.ForeignKey(Post, on_delete=models.CASCADE)
+
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(fields=['saver', 'post'], name='saver_post_unique')
+        ]
+
+    def __str__(self):
+        return f'{self.saver.username} saved {self.post.content}'
