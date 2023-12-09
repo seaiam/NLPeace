@@ -829,7 +829,7 @@ img {
 .icons-list{
   color: #00001c;
   display: grid;  
-  grid-template-columns: 1fr 1fr 1fr 1fr 1fr;  
+  grid-template-columns: 1fr 1fr 1fr 1fr 1fr 1fr;  
   padding-bottom:10px;
 }
 
@@ -862,7 +862,6 @@ border: none;
 padding: 0;
 background: none;
 color: #0047ab;
-font-style: italic;
 }
 
 .feed-reposted{
@@ -877,6 +876,29 @@ font-style: italic;
 
 button:focus {
   outline: none;
+}
+
+/*bookmarks button */
+.bookmark-button{
+  border: none;
+  padding: 0;
+  background: none;
+  color: #00001c;
+  
+}
+button:focus {
+  outline: none;
+}
+
+.bookmarked-button{
+border: none;
+padding: 0;
+background: none;
+color: #0047ab;
+}
+
+.feed-bookmark{
+  color:#0047ab;
 }
 
 /* seacrh-user css*/
@@ -1006,7 +1028,6 @@ button:hover {
   padding: 0;
   background: none;
   color: #0047ab;
-  font-style: italic;
   }
 
 /* settings CSS */
