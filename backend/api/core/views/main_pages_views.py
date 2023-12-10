@@ -150,6 +150,7 @@ def guest(request,user_id):
         'media_posts':image_posts,
         'likes': likes,
         'dislikes': dislikes,
+        'reportPostForm': PostReportForm(),
         'reportUserForm': UserReportForm(),
         'followers' : followers,
         'following' : following,
