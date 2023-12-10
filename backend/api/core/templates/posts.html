@@ -51,6 +51,7 @@
             <hr>
             <div class ="icons-list" >
                 <div class="feed" >
+                    <span class="like-count">{{ post.get_number_likes }}</span>
                     {% if post in likes %}
                     <a href="{% url 'like' post.id %}" class="like-link"><i class="far fa-thumbs-up" aria-hidden="true"></i></a>
                             {% else %}
@@ -58,9 +59,9 @@
                                 <i class="far fa-thumbs-up" aria-hidden="true"></i>
                             </span> 
                     {% endif %}
-                    <span class="like-count">{{ post.get_number_likes }}</span>
                 </div>
                 <div class="feed" >
+                    <span class="dislike-count">{{ post.get_number_dislikes }}</span>
                     {% if post in dislikes  %}
                     <a href="{% url 'dislike' post.id %}" class="like-link"><i class="far fa-thumbs-down" aria-hidden="true"></i></a>
                             {% else %}
@@ -68,7 +69,6 @@
                                 <i class="far fa-thumbs-down" aria-hidden="true"></i> 
                             </span>
                     {% endif %}
-                    <span class="dislike-count">{{ post.get_number_dislikes }}</span>
                 </div>
                 
                 <div class="feed"> 
