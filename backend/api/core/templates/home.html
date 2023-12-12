@@ -66,11 +66,11 @@
 
                 <i class='fas fa-user-friends'></i>
 
-                <button class="editFollowButton" id="editFollowerButton">Followers</button>
+                <button class="editFollowButton" onclick="toggleModal('home-follower-modal')">Followers</button>
                 {% if request.user == profile.user or not profile.is_private or profile.user in request.user.profile.following.all|dictsort:"id" %}
-                    <div id="followerModal" class="popup">
+                    <div id="home-follower-modal" class="popup">
                         <div class="followModal-content">
-                            <span class="close" id="spanFollower">&times;</span>
+                            <span class="close" onclick="toggleModal('home-follower-modal')">&times;</span>
                                 {% if followers.count == 1 %}
                                     <p class="modalTitle">Followers list : ({{ followers.count }} follower)</p>
                                 {% else %}
@@ -108,11 +108,11 @@
 
                 <i class='fas fa-search'></i>
 
-                    <button class="editFollowButton" id="editFollowingButton">Following</button>
+                    <button class="editFollowButton" onclick="toggleModal('home-following-modal')">Following</button>
                     {% if request.user == profile.user or not profile.is_private or profile.user in request.user.profile.following.all|dictsort:"id" %}
-                        <div id="followingModal" class="popup">
+                        <div id="home-following-modal" class="popup">
                             <div class="followModal-content">
-                                <span class="close" id="spanFollowing">&times;</span>
+                                <span class="close" onclick="toggleModal('home-following-modal')">&times;</span>
                                 <p class="modalTitle">Following list : ({{ following.count }} following)</p>
                                 {% if following %}
                                 <div class="container">
@@ -176,11 +176,11 @@
          
           <div class="col-md-3 text-md-right">
             {% if request.user == profile.user%}
-            <button id="editBtn" class="editButton">Edit Profile</button>
+            <button class="editButton" onclick="toggleModal('home-edit-bio-modal')">Edit Profile</button>
             {% endif %}
-            <div id="myModal" class="popup">
+            <div id="home-edit-bio-modal" class="popup">
                 <div class="popup-content">
-                    <span class="close">&times;</span>
+                    <span class="close" onclick="toggleModal('home-edit-bio-modal')">&times;</span>
                     <p class="modalTitle">Update Bio</p>
                     <form action="updateBio/" method="POST" name="myform" class="bio-form">
                         {% csrf_token %}
