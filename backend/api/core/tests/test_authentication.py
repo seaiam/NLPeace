@@ -71,7 +71,7 @@ class ForgetPasswordTest(TestCase):
         except ObjectDoesNotExist:
             # Handle the case where the profile does not exist/ create a profile
             self.profile = Profile.objects.create(user=self.user)
-            
+
             #Try a user email that exists
     def test_forget_password_correct_email(self):
         reset_password_data = {
@@ -81,7 +81,7 @@ class ForgetPasswordTest(TestCase):
 
         self.assertEqual(response.status_code, 200)
         
-        self.assertContains(response, "An email has been sent.")
+        self.assertContains(response, "An email will be sent if a user with this email exists.")
         #check if a token has been created for the user
         user = User.objects.get(email=self.email)
         profile = Profile.objects.get(user=user)
@@ -96,12 +96,14 @@ class ForgetPasswordTest(TestCase):
         response = self.client.post(reverse('forget_password'), reset_password_data,follow=True)
 
         self.assertEqual(response.status_code, 200)
-        
+        user = User.objects.get(email=self.email)
+        profile = Profile.objects.get(user=user)
+        self.assertEqual(profile.forget_password_token, '') 
         #check to see if response shows the desired message
-        self.assertContains(response, "No user found with this email.")
-        self.assertRedirects(response, '/forget_password/')
+        self.assertContains(response, "An email will be sent if a user with this email exists.")
+        self.assertRedirects(response, '/accounts/login/')
 
-       
+
 class ChangePasswordTest(TestCase):
 
     def setUp(self):
