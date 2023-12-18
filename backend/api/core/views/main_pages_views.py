@@ -96,6 +96,7 @@ def profile(request):
     all_Posts.sort(key=lambda item: item.created_at, reverse=True)
     # Create a list of posts with images
     image_posts = [post for post in posts if post.image]
+    image_posts.sort(key=lambda item: item.created_at, reverse=True)
     likes = [post for post in all_Posts if post.is_likeable_by(request.user)]
     dislikes = [post for post in all_Posts if post.is_dislikeable_by(request.user)]    
     followers = Profile.objects.get(user=request.user).followers.all()
@@ -136,6 +137,7 @@ def guest(request,user_id):
     all_Posts.sort(key=lambda item: item.created_at, reverse=True)
      # Create a list of posts with images
     image_posts = [post for post in posts if post.image]
+    image_posts.sort(key=lambda item: item.created_at, reverse=True)
     likes = [post for post in all_Posts if post.is_likeable_by(user)]
     dislikes = [post for post in all_Posts if post.is_dislikeable_by(user)]
     followers = Profile.objects.get(user=user).followers.all()
