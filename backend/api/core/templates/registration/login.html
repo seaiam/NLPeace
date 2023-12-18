@@ -16,7 +16,7 @@
 <div class="container"></div>
 {% if messages %}
   {% for message in messages %}
-    <div class="alert {% if message.tags == 'error' %}alert-danger{% elif message.tags == 'success' %}alert-success{% else %}alert-info{% endif %} fade show">
+    <div class="alert {% if message.tags == 'error' %}alert-danger{% elif message.tags == 'success' %}alert-warning{% else %}alert-info{% endif %} fade show">
       {{ message }}
       <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
     </div>
