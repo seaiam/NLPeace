@@ -151,65 +151,36 @@ def comment(request, post_id):
     
 @login_required
 def like(request, post_id):
-    if request.user.is_authenticated:
-        post = Post.objects.get(pk=post_id)
-        dislike = PostDislike.objects.filter(disliker=request.user, post=post).first()
-        if dislike:
-            dislike.delete()
-        PostLike.objects.create(liker=request.user, post=post)
-        referer = request.META.get('HTTP_REFERER')
-        if referer and 'profile' in referer.lower():
-            return redirect('profile')
-        #return redirect('home')
-        return HttpResponseRedirect(request.META.get('HTTP_REFERER', '/'))
-    return redirect('login')
+    if request.method == 'POST':
+        handle_like(request.user, post_id)
+    return HttpResponseRedirect(request.META.get('HTTP_REFERER', 'home'))
 
 @login_required
 def dislike(request, post_id):
-    if request.user.is_authenticated:
-        post = Post.objects.get(pk=post_id)
-        like = PostLike.objects.filter(liker=request.user, post=post).first()
-        if like:
-            like.delete()
-        PostDislike.objects.create(disliker=request.user, post=post)
-        referer = request.META.get('HTTP_REFERER')
-        if referer and 'profile' in referer.lower():
-            return redirect('profile')
-        #return redirect('home')
-        return HttpResponseRedirect(request.META.get('HTTP_REFERER', '/'))
-    return redirect('login')
+    if request.method == 'POST':
+        handle_dislike(request.user, post_id)
+    return HttpResponseRedirect(request.META.get('HTTP_REFERER', 'home'))
 
 
 @login_required
 def report(request, post_id):
-    if request.user.is_authenticated:
-        if request.method == 'POST':
-            form = PostReportForm(request.POST)
-            if form.is_valid():
-                report = form.save(commit=False)
-                report.reporter = request.user
-                report.post = Post.objects.get(pk=post_id)
-                report.save()
-                messages.success(request, 'Post successfully reported.')
+    if request.method == 'POST':
+        form = PostReportForm(request.POST)
+        if form.is_valid():
+            report_post(request.user, post_id, request.POST)
+            messages.success(request, 'Post successfully reported.')
         return redirect('home')
-    return redirect('login')
 
 @login_required
 def report_user(request, reported_id):
-    if request.user.is_authenticated:
-        if request.method == 'POST':
-            form = UserReportForm(request.POST)
-            if form.is_valid():
-                report = form.save(commit=False)
-                report.reporter = request.user
-                reported = User.objects.get(id=reported_id)
-                report.reported = reported
-                report.save()
-                messages.success(request, 'User successfully reported.')
-            else:
-                messages.error(request, 'User not reported.')
+    if request.method == 'POST':
+        form = UserReportForm(request.POST)
+        if form.is_valid():
+            report_user(request.user, reported_id, request.POST)
+            messages.success(request, 'User successfully reported.')
+        else:
+            messages.error(request, 'User not reported.')
         return redirect('guest', reported_id)
-    return redirect('login')
     
 def error_404(request):
     return render(request, '404.html', status=404)

@@ -124,3 +124,30 @@ def process_comment_form(request, form, post_id):
             comment.save()
             return comment
     return None
+
+def handle_like(user, post_id):
+    post = get_object_or_404(Post, id=post_id)
+    dislike = PostDislike.objects.filter(disliker=user, post=post).first()
+    if dislike:
+        dislike.delete()
+    PostLike.objects.create(liker=user, post=post)
+
+def handle_dislike(user, post_id):
+    post = get_object_or_404(Post, id=post_id)
+    like = PostLike.objects.filter(liker=user, post=post).first()
+    if like:
+        like.delete()
+    PostDislike.objects.create(disliker=user, post=post)
+
+def report_post(user, post_id, form_data):
+    report = PostReportForm(form_data).save(commit=False)
+    report.reporter = user
+    report.post = get_object_or_404(Post, pk=post_id)
+    report.save()
+
+def report_user(user, reported_id, form_data):
+    report = UserReportForm(form_data).save(commit=False)
+    report.reporter = user
+    report.reported = get_object_or_404(User, id=reported_id)
+    report.save()
+
