@@ -17,64 +17,40 @@ from core.forms.posting_forms import *
 from core.models.models import *
 from django.http import HttpResponseRedirect
 
+from .services import *
+
 def home(request):
-    if request.user.is_authenticated:
-        if request.method == 'POST':
-            form = PostForm(request.POST, request.FILES)
-            if form.is_valid():
-                #extract tweet from form
-                tweet_text = form.cleaned_data['content']
-                #pass tweet to nlp classifier
-                result = classify_tweet(tweet_text)
-
-                if result["prediction"][0] == 2: #Post is appropriate
-                    post = form.save(commit=False)
-                    post.user = request.user
-                    post.save()
-                    return redirect('home')
-                if result["prediction"][0] == 1: #Post is offensive
-                    messages.error(request, f'This post contains offensive language and is not allowed on our platform.')
-                    return redirect('home')
-
-                if result["prediction"][0] == 0: #Post is hate speech:
-                    messages.error(request, f'This post contains hateful language and is not allowed on our platform.')
-                    return redirect('home')
-
-        #User is authenticated
-        user_ids_following = request.user.profile.following.values_list('id', flat=True)
-        profile=Profile.objects.get(user=request.user)
-        blocked=profile.blocked.all()
-        posts = Post.objects.filter(
-            Q(user__profile__is_private=False) | 
-            Q(user__in=user_ids_following) |  
-            Q(user=request.user) |
-            ~Q(user__in=blocked)
-        ).distinct().order_by('-created_at')
-
-        likes = [post for post in posts if post.is_likeable_by(request.user)]
-        dislikes = [post for post in posts if post.is_dislikeable_by(request.user)]
-        saved_post_ids = [post.id for post in posts if not post.is_saveable_by(request.user)] 
-        form = PostForm()
-        reposted_post_ids = Repost.objects.filter(user=request.user).values_list('post_id', flat=True)
-        data=Notifications.objects.filter(user=request.user).order_by('-id')
-        following_users = request.user.profile.following.all()
-        following_posts = Post.objects.filter(user__in=following_users).order_by('-created_at')
-
-        context =  {
-            'posts': posts, 
-            'likes': likes,
-            'dislikes': dislikes,
-            'saved_post_ids': saved_post_ids,  
-            'form': form, 
-            'data' : data,
-            'reportPostForm': PostReportForm(), 
-            'reposted_post_ids': reposted_post_ids,
-            'followPost' : following_posts
-            }
-        return render(request, 'index.html',context)
-    else:
-        #redirect user to login page
+    if not request.user.is_authenticated:
         return redirect('login')
+
+    if request.method == 'POST':
+        form = PostForm(request.POST, request.FILES)
+        post = process_post_form(request, form)
+        if post:
+            return redirect('home')
+
+    posts = get_user_posts(request.user)
+    likes = [post for post in posts if post.is_likeable_by(request.user)]
+    dislikes = [post for post in posts if post.is_dislikeable_by(request.user)]
+    saved_post_ids = [post.id for post in posts if not post.is_saveable_by(request.user)]
+    reposted_post_ids = Repost.objects.filter(user=request.user).values_list('post_id', flat=True)
+    data = Notifications.objects.filter(user=request.user).order_by('-id')
+    following_users = request.user.profile.following.all()
+    following_posts = Post.objects.filter(user__in=following_users).order_by('-created_at')
+
+    context = {
+        'posts': posts,
+        'likes': likes,
+        'dislikes': dislikes,
+        'saved_post_ids': saved_post_ids,
+        'form': PostForm(),
+        'data': data,
+        'reportPostForm': PostReportForm(),
+        'reposted_post_ids': reposted_post_ids,
+        'followPost': following_posts
+    }
+    return render(request, 'index.html', context)
+
 
 def repost(request, post_id):
     if request.user.is_authenticated:
@@ -348,21 +324,3 @@ def bookmarked_posts(request):
         'followPost' : following_posts
         }
     return render(request, 'bookmark.html', context)
-
-    
-
-
-
-def classify_tweet(tweet_text):
-    url = 'https://nlpeace-api-2e54e3d268ac.herokuapp.com/classify/'
-    payload = {'text': tweet_text}
-    try:
-        response = requests.post(url, json=payload)
-        if response.status_code == 200:
-            return response.json()
-        else:
-            # Handle response error
-            return {'error': 'Failed to get prediction', 'status_code': response.status_code}
-    except requests.exceptions.RequestException as e:
-        # Handle request exception
-        return {'error': str(e)}
