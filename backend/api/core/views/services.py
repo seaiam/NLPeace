@@ -151,3 +151,16 @@ def report_user(user, reported_id, form_data):
     report.reported = get_object_or_404(User, id=reported_id)
     report.save()
 
+def save_or_unsave_post(user, post_id):
+    post = get_object_or_404(Post, pk=post_id)
+    post_save, created = PostSave.objects.get_or_create(saver=user, post=post)
+    if created:
+        message = 'Post saved successfully.'
+    else:
+        post_save.delete()
+        message = 'Post unsaved.'
+    return message
+
+def get_bookmarked_posts(user):
+    saved_posts = PostSave.objects.filter(saver=user).select_related('post').order_by('-post__created_at')
+    return [save.post for save in saved_posts]

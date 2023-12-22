@@ -190,48 +190,33 @@ def error_500(request):
 
 @login_required
 def save_post(request, post_id):
-    # Only allow POST requests for saving a post. Better to keep, I ran into this issue wasted time because no message telling me it wasn't POST
-    if request.user.is_authenticated:
-        if request.method == 'POST':
-            post = get_object_or_404(Post, pk=post_id)
-            # Check if the post is already saved by the user.
-            post_save, created = PostSave.objects.get_or_create(saver=request.user, post=post)
-            if created:
-                # The post was not saved before and now is saved.
-                messages.success(request, 'Post saved successfully.')
-            else:
-                post_save.delete()
-                messages.info(request, 'Post unsaved.')
-            return HttpResponseRedirect(request.META.get('HTTP_REFERER', '/'))
-        else:
-        # If it's not a POST request, do not allow the operation.
-            return HttpResponseForbidden('Invalid request method.')
-    return redirect('home')
+    if request.method == 'POST':
+        message = save_or_unsave_post(request.user, post_id)
+        messages.info(request, message)
+        return HttpResponseRedirect(request.META.get('HTTP_REFERER', '/'))
+    return HttpResponseForbidden('Invalid request method.')
+
 
 @login_required
 def bookmarked_posts(request):
-    saved_posts = PostSave.objects.filter(saver=request.user).select_related('post').order_by('-post__created_at') #orders the results by the creation date of the posts in descending order (newest first).
-    posts = [save.post for save in saved_posts]
-
+    posts = get_bookmarked_posts(request.user)
     likes = [post for post in posts if post.is_likeable_by(request.user)]
     dislikes = [post for post in posts if post.is_dislikeable_by(request.user)]
-    saved_post_ids = [post.id for post in posts if not post.is_saveable_by(request.user)] 
-    form = PostForm()
+    saved_post_ids = [post.id for post in posts if not post.is_saveable_by(request.user)]
     reposted_post_ids = Repost.objects.filter(user=request.user).values_list('post_id', flat=True)
-    data=Notifications.objects.filter(user=request.user).order_by('-id')
+    data = Notifications.objects.filter(user=request.user).order_by('-id')
     following_users = request.user.profile.following.all()
     following_posts = Post.objects.filter(user__in=following_users).order_by('-created_at')
 
-    context =  {
+    context = {
         'bookmarked_posts': posts,
-        'posts': posts, 
         'likes': likes,
         'dislikes': dislikes,
-        'saved_post_ids': saved_post_ids,  
-        'form': form, 
-        'data' : data,
-        'reportPostForm': PostReportForm(), 
+        'saved_post_ids': saved_post_ids,
+        'form': PostForm(),
+        'data': data,
+        'reportPostForm': PostReportForm(),
         'reposted_post_ids': reposted_post_ids,
-        'followPost' : following_posts
-        }
+        'followPost': following_posts
+    }
     return render(request, 'bookmark.html', context)
