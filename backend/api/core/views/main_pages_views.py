@@ -53,12 +53,8 @@ def home(request):
 
 
 def repost(request, post_id):
-    if request.user.is_authenticated:
-        post_to_repost = Post.objects.get(id=post_id)
-        Repost.objects.create(post=post_to_repost, user=request.user)
-        return redirect('home')
-    else:
-        return redirect('login')
+    create_repost(request.user, post_id)
+    return redirect('home')
 
 @login_required
 def profile(request):
