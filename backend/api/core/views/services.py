@@ -210,3 +210,57 @@ def update_privacy_settings(user_id, form_data):
 
 def search_for_users(search_query):
     return User.objects.filter(username__icontains=search_query).order_by('username')
+
+
+def handle_follow_request(followed_user_id, following_user_id):
+    followed_user = User.objects.get(pk=followed_user_id)
+    following_user = User.objects.get(pk=following_user_id)
+    
+    is_private = followed_user.profile.is_private
+    followed_username = followed_user.username
+
+    if is_private:
+        # Handle follow request for a private profile
+        followed_user.profile.follow_requests.add(following_user)
+        notification_message = f"{following_user.username} sent you a follow request."
+    else:
+        # Handle immediate following for a public profile
+        followed_user.profile.followers.add(following_user)
+        following_user.profile.following.add(followed_user)
+        notification_message = f"{following_user.username} has started following you."
+
+    Notifications.objects.create(
+        notifications=notification_message, 
+        user=followed_user, 
+        sent_by=following_user, 
+        type="request" if is_private else ""
+    )
+
+    return is_private, followed_username
+
+def handle_unfollow_request(unfollowed_user_id, unfollowing_user_id):
+    unfollowed_user = User.objects.get(pk=unfollowed_user_id)
+    unfollowing_user = User.objects.get(pk=unfollowing_user_id)
+
+    if unfollowed_user.profile.is_private:
+        if unfollowed_user.profile.follow_requests.filter(id=unfollowing_user_id).exists():
+            unfollowed_user.profile.follow_requests.remove(unfollowing_user)
+            # Delete follow request notification if exists
+            Notifications.objects.filter(user=unfollowed_user_id, sent_by=unfollowing_user_id, type="request").delete()
+        else:
+            unfollowed_user.profile.followers.remove(unfollowing_user)
+            unfollowing_user.profile.following.remove(unfollowed_user)
+    else:
+        unfollowed_user.profile.followers.remove(unfollowing_user)
+        unfollowing_user.profile.following.remove(unfollowed_user)
+
+def delete_user_notification(notification_id):
+    notification = Notifications.objects.get(pk=notification_id)
+    notification.delete()
+
+def delete_user_post(user_id, post_id):
+    post = Post.objects.get(pk=post_id)
+    if user_id == post.user.id:
+        post.delete()
+        return True
+    return False
