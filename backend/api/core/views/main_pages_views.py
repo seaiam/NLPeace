@@ -58,77 +58,59 @@ def repost(request, post_id):
 
 @login_required
 def profile(request):
-    profile = Profile.objects.get_or_create(pk=request.user.id)[0]
-    data=Notifications.objects.filter(user=request.user).order_by('-id')
-    posts = Post.objects.filter(user = request.user)
-    reposts_ids = Repost.objects.filter(user = request.user).values_list('post_id', flat=True)
-    reposts = Post.objects.filter(id__in = reposts_ids)
-    #we combine all user posts and reposts to show them chronogically on the user profile
-    all_Posts = list(chain(posts, reposts))
-    all_Posts.sort(key=lambda item: item.created_at, reverse=True)
-    # Create a list of posts with images
-    image_posts = [post for post in posts if post.image]
-    image_posts.sort(key=lambda item: item.created_at, reverse=True)
-    likes = [post for post in all_Posts if post.is_likeable_by(request.user)]
-    dislikes = [post for post in all_Posts if post.is_dislikeable_by(request.user)]    
-    followers = Profile.objects.get(user=request.user).followers.all()
-    following = Profile.objects.get(user=request.user).following.all()
+    profile = get_user_profile(request.user)
+    all_posts = get_user_posts_and_reposts(request.user)
+    image_posts = get_image_posts(all_posts)
+    likes, dislikes, saved_post_ids = get_post_interactions(request.user, all_posts)
+    followers = profile.followers.all()
+    following = profile.following.all()
     liked_posts = Post.objects.filter(postlike__liker=request.user).distinct().order_by('-created_at')
-    saved_post_ids = [post.id for post in posts if not post.is_saveable_by(request.user)] # ADDED THIS
-      
+    data = Notifications.objects.filter(user=request.user).order_by('-id')
 
     context = {
         'profile': profile,
-        'posts': all_Posts,
-        'media_posts':image_posts,
+        'posts': all_posts,
+        'media_posts': image_posts,
         'likes': likes,
         'dislikes': dislikes,
-        'saved_post_ids': saved_post_ids, # ADDED THIS
+        'saved_post_ids': saved_post_ids,
         'liked_posts': liked_posts,
-        'data' : data,
+        'data': data,
         'editBannerForm': EditProfileBannerForm(instance=profile),
         'editPicForm': EditProfilePicForm(instance=profile),
         'editBioForm': EditBioForm(instance=profile),
         'reportPostForm': PostReportForm(),
         'reportUserForm': UserReportForm(),
-        'followers' : followers,
-        'following' : following,
-        }
+        'followers': followers,
+        'following': following,
+    }
     return render(request, 'home.html', context)
 
 @login_required
-def guest(request,user_id):
-    user=User.objects.get(pk=user_id)
-    profile=Profile.objects.get_or_create(user=user)
-    data=Notifications.objects.filter(user=request.user).order_by('-id')
-    posts = Post.objects.filter(user = user)
-    reposts_ids = Repost.objects.filter(user = user).values_list('post_id', flat=True)
-    reposts = Post.objects.filter(id__in = reposts_ids)
-    #we combine all user posts and reposts to show them chronogically on the user profile
-    all_Posts = list(chain(posts, reposts))
-    all_Posts.sort(key=lambda item: item.created_at, reverse=True)
-     # Create a list of posts with images
-    image_posts = [post for post in posts if post.image]
-    image_posts.sort(key=lambda item: item.created_at, reverse=True)
-    likes = [post for post in all_Posts if post.is_likeable_by(user)]
-    dislikes = [post for post in all_Posts if post.is_dislikeable_by(user)]
-    followers = Profile.objects.get(user=user).followers.all()
-    following = Profile.objects.get(user=user).following.all()
+def guest(request, user_id):
+    guest_user = get_user_by_id(user_id)
+    profile = get_user_profile(guest_user)
+    data = Notifications.objects.filter(user=request.user).order_by('-id')
+    all_posts = get_user_posts_and_reposts(guest_user)
+    image_posts = get_image_posts(all_posts)
+    likes, dislikes, _ = get_post_interactions(guest_user, all_posts)
+    followers = profile.followers.all()
+    following = profile.following.all()
 
     context = {
-        'user':user,
-        'data':data,
-        'profile': profile[0], 
-        'form': EditBioForm(instance=profile[0]),
-        'posts': all_Posts,
-        'media_posts':image_posts,
+        'user': guest_user,
+        'data': data,
+        'profile': profile,
+        'form': EditBioForm(instance=profile),
+        'posts': all_posts,
+        'media_posts': image_posts,
         'likes': likes,
         'dislikes': dislikes,
         'reportUserForm': UserReportForm(),
-        'followers' : followers,
-        'following' : following,
-        }
-    return render(request,'home.html',context)
+        'followers': followers,
+        'following': following,
+    }
+    return render(request, 'home.html', context)
 
 @login_required
 def notifications(request):

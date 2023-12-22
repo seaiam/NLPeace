@@ -65,4 +65,27 @@ def get_user_posts(user):
 def create_repost(user, post_id):
     post_to_repost = get_object_or_404(Post, id=post_id)
     Repost.objects.create(post=post_to_repost, user=user)
+
+def get_user_profile(user):
+    profile, _ = Profile.objects.get_or_create(user=user)
+    return profile
+
+def get_user_posts_and_reposts(user):
+    posts = Post.objects.filter(user=user)
+    reposts_ids = Repost.objects.filter(user=user).values_list('post_id', flat=True)
+    reposts = Post.objects.filter(id__in=reposts_ids)
+    all_posts = sorted(chain(posts, reposts), key=lambda post: post.created_at, reverse=True)
+    return all_posts
+
+def get_image_posts(posts):
+    return sorted([post for post in posts if post.image], key=lambda post: post.created_at, reverse=True)
+
+def get_post_interactions(user, posts):
+    likes = [post for post in posts if post.is_likeable_by(user)]
+    dislikes = [post for post in posts if post.is_dislikeable_by(user)]
+    saved_post_ids = [post.id for post in posts if not post.is_saveable_by(user)]
+    return likes, dislikes, saved_post_ids
+
+def get_user_by_id(user_id):
+    return User.objects.get(pk=user_id)
     
