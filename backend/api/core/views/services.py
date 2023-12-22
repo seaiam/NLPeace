@@ -88,4 +88,22 @@ def get_post_interactions(user, posts):
 
 def get_user_by_id(user_id):
     return User.objects.get(pk=user_id)
+
+def get_user_notifications(user):
+    return Notifications.objects.filter(user=user).order_by('-id')
     
+def handle_invitation(followed_user_pk, following_user_pk, action):
+    followed_user = User.objects.get(pk=followed_user_pk)
+    following_user = User.objects.get(pk=following_user_pk)
+    notification = Notifications.objects.get(user=followed_user_pk, sent_by=following_user_pk, type="request")
+
+    if action == "accept":
+        followed_user.profile.follow_requests.remove(following_user)
+        followed_user.profile.followers.add(following_user)
+        following_user.profile.following.add(followed_user)
+        notification_message = f"{followed_user.username} accepted your follow request."
+        Notifications.objects.create(notifications=notification_message, user=following_user, sent_by=followed_user, type="")
+    else:
+        followed_user.profile.follow_requests.remove(following_user)
+
+    notification.delete()

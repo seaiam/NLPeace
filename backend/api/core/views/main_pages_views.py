@@ -114,39 +114,25 @@ def guest(request, user_id):
 
 @login_required
 def notifications(request):
-    data=Notifications.objects.filter(user=request.user).order_by('-id')  
-    return render(request,'notifications.html',{'data':data})
+    data = get_user_notifications(request.user)
+    return render(request, 'notifications.html', {'data': data})
 
 
 @login_required
 def accept_decline_invite(request):
-    data=Notifications.objects.filter(user=request.user).order_by('-id')
+    data = get_user_notifications(request.user)
   
-    if request.method == 'POST':  
+    if request.method == 'POST':
         followed_user_pk = request.POST.get('followed_user')
-        following_user_pk=request.POST.get('following_user')
-        followed_user=User.objects.get(pk=followed_user_pk)
-        following_user=User.objects.get(pk=following_user_pk)
-        notification = Notifications.objects.get(user=followed_user_pk, sent_by=following_user_pk,type="request")
-        action=request.POST.get('action')
+        following_user_pk = request.POST.get('following_user')
+        action = request.POST.get('action')
+        handle_invitation(followed_user_pk, following_user_pk, action)
         if action == "accept":
-            followed_user.profile.follow_requests.remove(following_user)
-            followed_user.profile.followers.add(following_user)
-            following_user.profile.following.add(followed_user)
-            followed_user.save()
-            following_user.save()
-            messages.success(request,f"{following_user} started following you.")
-            notification.delete() #deletes the message after user accepts request
-            notification_message = f"{followed_user.username} accepted your follow request." #message sent to notify following user that follow request has been accepted
-            notification2 = Notifications(notifications=notification_message, user=following_user,sent_by=followed_user,type="")
-            notification2.save()
-
-
+            messages.success(request, f"Follow request accepted.")
         else:
-            followed_user.profile.follow_requests.remove(following_user)
-            notification.delete() 
+            messages.info(request, "Follow request declined.")
 
-    return render(request,'notifications.html',{'data':data})
+    return render(request, 'notifications.html', {'data': data})
 
 def comment(request, post_id):
     if request.user.is_authenticated:
