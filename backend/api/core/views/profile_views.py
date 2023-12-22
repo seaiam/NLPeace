@@ -10,134 +10,90 @@ from core.forms.profile_forms import *
 from core.models.models import *
 from django.contrib.auth.models import User
 from django.http import HttpResponseRedirect
-
-
+from .services import *
 
 @login_required
-def add_block(request,blocked_id):
-        updated_user=Profile.objects.get(pk=request.user.id)
-        blocked_user=User.objects.get(pk=blocked_id)
-
-        updated_user.blocked.add(blocked_user)
-        updated_user.save()
-        messages.error(request,"User Blocked Successfully.")      
-        return redirect('profile')
+def add_block(request, blocked_id):
+    block_user(request.user.id, blocked_id)
+    messages.error(request, "User Blocked Successfully.")
+    return redirect('profile')
 
 
 @login_required
 def profile_settings(request):
-    data=Notifications.objects.filter(user=request.user).order_by('-id')
-    if request.method == 'GET':
-        user = User.objects.get(pk=request.user.id)
-        if user is None:
-            return HttpResponseNotFound
-        return render(request, 'settings.html', {'user': user,'data' : data, 'editUsernameForm': EditUsernameForm(instance=user),'editPasswordForm': PasswordChangeForm(request.user),'privacy_form':PrivacySettingsForm(instance=user.profile)})
-    
+    data = get_user_notifications(request.user)
+    user = get_user_by_id(request.user.id)
+    if not user:
+        return HttpResponseNotFound()
+    return render(request, 'settings.html', {
+        'user': user,
+        'data': data,
+        'editUsernameForm': EditUsernameForm(instance=user),
+        'editPasswordForm': PasswordChangeForm(request.user),
+        'privacy_form': PrivacySettingsForm(instance=user.profile)
+    })
+
+
 @login_required
 def update_username(request):
     if request.method == 'POST':
-        new_user = User.objects.get(pk=request.user.id)
-        if new_user is None:
-            return HttpResponseNotFound
-        
-        form = EditUsernameForm(request.POST, instance=new_user)
-        if form.is_valid():
-            form.save()
-            return redirect('profile')
-    return HttpResponseServerError
+        update_user_username(request.user.id, request.POST)
+        return redirect('profile')
+    return HttpResponseServerError()
+
 
 @login_required
 def update_password(request):
     if request.method == 'POST':
-        new_user = User.objects.get(pk=request.user.id)
-        if new_user is None:
-            return HttpResponseNotFound
-        
-        form = PasswordChangeForm(request.user, request.POST)
-        if form.is_valid():
-            user=form.save()
-            update_session_auth_hash(request, user)
-            return redirect('profile')
-    return HttpResponseServerError
+        update_user_password(request.user, request.POST)
+        return redirect('profile')
+    return HttpResponseServerError()
+
 
 @login_required
 def updateProfileBanner(request):
     if request.method == 'POST':
-        profile = Profile.objects.get_or_create(pk=request.user.id)
-        form = EditProfileBannerForm(request.POST, request.FILES, instance=profile[0])
-        if form.is_valid():
-            form.save()
+        update_user_profile_banner(request.user.id, request.POST, request.FILES)
         return redirect('profile')
     return redirect('error_500')
+
 
 @login_required
 def updateBio(request):
     if request.method == 'POST':
-        profile = Profile.objects.get_or_create(pk=request.user.id)
-        form = EditBioForm(request.POST, instance=profile[0])
-        if form.is_valid():
-            form.save()
+        update_user_bio(request.user.id, request.POST)
         return redirect('profile')
     return redirect('error_500')
+
 
 @login_required
 def updateProfilePicture(request):
     if request.method == 'POST':
-        profile = Profile.objects.get_or_create(pk=request.user.id)
-        form = EditProfilePicForm(request.POST, request.FILES, instance=profile[0])
-        if form.is_valid():
-            form.save()
+        update_user_profile_picture(request.user.id, request.POST, request.FILES)
         return redirect('profile')
     return redirect('error_500')
 
 @login_required
 def privacy_settings_view(request, user_id):
-    user = User.objects.get(pk=user_id)
-    profile_instance = user.profile
-
-    if request.user != user:  # Ensure users can only edit their own privacy settings
+    if request.user.id != user_id:
         return HttpResponseForbidden("You don't have permission to edit this user's settings.")
-
     if request.method == "POST":
-        form = PrivacySettingsForm(request.POST, instance=profile_instance)
-        if form.is_valid():
-            form.save()
+        if update_privacy_settings(user_id, request.POST):
             messages.success(request, "Privacy settings updated!")
             return redirect('profile')
     else:
-        form = PrivacySettingsForm(instance=profile_instance)
+        form = PrivacySettingsForm(instance=request.user.profile)
 
-    context = {
-        'privacy_form': form
-    }
-    
-    return render(request, 'settings.html', context)
+    return render(request, 'settings.html', {'privacy_form': form})
+
 
 @login_required
 def search_user(request):
-    
-    if request.method=="POST":
-        #Grab the value of search from the form
-        search=request.POST.get('search')
-        # if the ther is searching then grab the searched user
-        if search:
-         searched=User.objects.filter(username__icontains=search).order_by('username')
-        #Display search results if searched exists
-         if searched:
-        
-          return render(request,'search_user.html',{'search':search,'searched':searched})
-         else:
-             messages.success(request, f"No results found for '{search}'.")
-
-    search=request.session.get('search')
-    if search is not None :
-         searched=User.objects.filter(username__icontains=search).order_by('username')
-         return render(request,'search_user.html',{'search':search,'searched':searched})
-    #else: 
-       # return redirect('profile')
-   # messages.success(request, f"{search} and {searched}.")
+    if request.method == "POST":
+        search = request.POST.get('search')
+        searched = search_for_users(search) if search else None
+        return render(request, 'search_user.html', {'search': search, 'searched': searched})
     return redirect('profile')
-
 
 
 @login_required

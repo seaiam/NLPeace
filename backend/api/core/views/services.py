@@ -15,9 +15,8 @@ from core.forms.user_forms import UserReportForm
 from core.forms.profile_forms import *
 from core.forms.posting_forms import *
 from core.models.models import *
-from django.http import HttpResponseRedirect
-
-
+from django.contrib.auth.forms import PasswordChangeForm
+from django.contrib.auth import update_session_auth_hash
 
 
 def process_post_form(request, form):
@@ -164,3 +163,50 @@ def save_or_unsave_post(user, post_id):
 def get_bookmarked_posts(user):
     saved_posts = PostSave.objects.filter(saver=user).select_related('post').order_by('-post__created_at')
     return [save.post for save in saved_posts]
+
+def block_user(request_user_id, blocked_user_id):
+    updated_user = Profile.objects.get(pk=request_user_id)
+    blocked_user = User.objects.get(pk=blocked_user_id)
+    updated_user.blocked.add(blocked_user)
+    updated_user.save()
+
+def update_user_username(request_user_id, form_data):
+    user = User.objects.get(pk=request_user_id)
+    form = EditUsernameForm(form_data, instance=user)
+    if form.is_valid():
+        form.save()
+
+def update_user_password(user, form_data):
+    form = PasswordChangeForm(user, form_data)
+    if form.is_valid():
+        updated_user = form.save()
+        update_session_auth_hash(user, updated_user)
+
+def update_user_profile_banner(request_user_id, form_data, files_data):
+    profile, _ = Profile.objects.get_or_create(pk=request_user_id)
+    form = EditProfileBannerForm(form_data, files_data, instance=profile)
+    if form.is_valid():
+        form.save()
+
+def update_user_bio(request_user_id, form_data):
+    profile, _ = Profile.objects.get_or_create(pk=request_user_id)
+    form = EditBioForm(form_data, instance=profile)
+    if form.is_valid():
+        form.save()
+
+def update_user_profile_picture(request_user_id, form_data, files_data):
+    profile, _ = Profile.objects.get_or_create(pk=request_user_id)
+    form = EditProfilePicForm(form_data, files_data, instance=profile)
+    if form.is_valid():
+        form.save()
+
+def update_privacy_settings(user_id, form_data):
+    user = User.objects.get(pk=user_id)
+    form = PrivacySettingsForm(form_data, instance=user.profile)
+    if form.is_valid():
+        form.save()
+        return True
+    return False
+
+def search_for_users(search_query):
+    return User.objects.filter(username__icontains=search_query).order_by('username')
