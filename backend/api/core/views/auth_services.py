@@ -1,9 +1,5 @@
 from api.logger_config import configure_logger # TODO add logging statements
-from django.contrib import messages
 from django.contrib.auth import login, authenticate, logout
-from django.shortcuts import render, redirect
-from django.contrib.auth.decorators import login_required
-from django.contrib.auth.forms import PasswordChangeForm
 
 from core.forms.user_forms import UserRegistrationForm
 import uuid 

@@ -1,20 +1,13 @@
 from api.logger_config import configure_logger # TODO add logging statements
 from django.contrib import messages
-from django.contrib.auth import login, authenticate, logout
 from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import login_required
-from django.contrib.auth.forms import PasswordChangeForm
 
 from core.forms.user_forms import UserRegistrationForm
-import uuid 
-from django.conf import settings
-from django.core.mail import send_mail
-from core.models.models import Profile, User
 
 #import BLL auth_services
 from .auth_services import *
 
-@login_required
 def register_user(request):
     if request.method == 'POST':
         if register_new_user(request, request.POST):

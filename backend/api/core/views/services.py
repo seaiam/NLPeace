@@ -183,8 +183,8 @@ def update_user_password(user, form_data):
         update_session_auth_hash(user, updated_user)
 
 def update_user_profile_banner(request_user_id, form_data, files_data):
-    profile, _ = Profile.objects.get_or_create(pk=request_user_id)
-    form = EditProfileBannerForm(form_data, files_data, instance=profile)
+    profile = Profile.objects.get_or_create(pk=request_user_id)
+    form = EditProfileBannerForm(form_data, files_data, instance=profile[0])
     if form.is_valid():
         form.save()
 
