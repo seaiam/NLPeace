@@ -107,3 +107,20 @@ def handle_invitation(followed_user_pk, following_user_pk, action):
         followed_user.profile.follow_requests.remove(following_user)
 
     notification.delete()
+
+def process_comment_form(request, form, post_id):
+    if form.is_valid():
+        comment_text = form.cleaned_data['content']
+        result = classify_tweet(comment_text)
+
+        if result["prediction"][0] in [1, 0]:  # Offensive or hate speech
+            message = 'This comment contains offensive language and is not allowed on our platform.' if result["prediction"][0] == 1 else 'This comment contains hateful language and is not allowed on our platform.'
+            messages.error(request, message)
+            return None
+        elif result["prediction"][0] == 2:  # Appropriate
+            comment = form.save(commit=False)
+            comment.user = request.user
+            comment.parent_post = Post.objects.get(pk=post_id)
+            comment.save()
+            return comment
+    return None

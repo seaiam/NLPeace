@@ -134,44 +134,20 @@ def accept_decline_invite(request):
 
     return render(request, 'notifications.html', {'data': data})
 
+@login_required
 def comment(request, post_id):
-    if request.user.is_authenticated:
-        if request.method == 'POST':
-            form = PostForm(request.POST, request.FILES)
-            if form.is_valid():
-                #extract text from comment
-                comment_text = form.cleaned_data['content']
-                #pass comment to nlp classifier
-                result = classify_tweet(comment_text)
+    post = Post.objects.get(pk=post_id)
+    replies = Post.objects.filter(parent_post=post_id)
 
-                if result["prediction"][0] == 2: #Comment is appropriate
-                    post = form.save(commit=False)
-                    post.user = request.user
-                    post.parent_post = Post.objects.get(pk=post_id)
-                    post.save()
-                    return redirect('comment', post_id = post_id)
-                if result["prediction"][0] == 1: #Comment is offensive
-                    messages.error(request, f'This comment contains offensive language and is not allowed on our platform.')
-                    return redirect('comment', post_id = post_id)
-
-                if result["prediction"][0] == 0: #Comment is hate speech:
-                    messages.error(request, f'This comment contains hateful language and is not allowed on our platform.')
-                    return redirect('comment', post_id = post_id)
-
-                post = form.save(commit=False)
-                post.user = request.user
-                post.parent_post = Post.objects.get(pk=post_id)
-                post.save()
-                return redirect('comment', post_id = post_id)
-        #User is authenticated
-        post = Post.objects.get(pk=post_id)
-        replies = Post.objects.filter(parent_post=post_id)
-        form = PostForm()
-        context = {'post': post, 'form': form, 'replies':replies}
-        return render(request, 'comment.html', context)
-    else:
-        #redirect user to login page
-        return redirect('login')
+    if request.method == 'POST':
+        form = PostForm(request.POST, request.FILES)
+        processed_comment = process_comment_form(request, form, post_id)
+        if processed_comment:
+            return redirect('comment', post_id=post_id)
+    
+    form = PostForm()
+    context = {'post': post, 'form': form, 'replies': replies}
+    return render(request, 'comment.html', context)
     
 @login_required
 def like(request, post_id):
