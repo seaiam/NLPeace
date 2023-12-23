@@ -1,4 +1,5 @@
 <!-- chat/templates/chat/room.html -->
+{%load static%}
 <!DOCTYPE html>
 <html>
 <head>
@@ -6,14 +7,16 @@
     <title>Chat Room</title>
 </head>
 <body>
+    <script src="{% static 'reconnecting-websocket.js' %}"></script>
     <textarea id="chat-log" cols="100" rows="20"></textarea><br>
     <input id="chat-message-input" type="text" size="100"><br>
     <input id="chat-message-submit" type="button" value="Send">
     {{ room_name|json_script:"room-name" }}
     <script>
-        const roomName = JSON.parse(document.getElementById('room-name').textContent);
-
-        const chatSocket = new WebSocket(
+        var roomName = JSON.parse(document.getElementById('room-name').textContent);
+        var roomName={{room_name_json}};
+        var username={{username}}
+        var chatSocket = new ReconnectingWebSocket(
             'ws://'
             + window.location.host
             + '/ws/chat/'
@@ -22,7 +25,21 @@
         );
 
         chatSocket.onmessage = function(e) {
-            const data = JSON.parse(e.data);
+            var data=JSON.parse(e.data);
+            var message=data['message'];
+            var author = message['author'];
+            var msgListTag=document.createElement('li');
+            var imgTag=document.createElement('img');
+            var pTag =document.createElement('p');
+            pTag.textContent=message.content
+            
+            if (author===username){
+                msgListTag.className='sent';
+            }else{
+                msgListTag.className='replies';
+            }
+            msgListTag.appendChild(imgTag);
+            msgListTag.appendChild(pTag);
             document.querySelector('#chat-log').value += (data.message + '\n');
         };
 
@@ -41,7 +58,9 @@
             const messageInputDom = document.querySelector('#chat-message-input');
             const message = messageInputDom.value;
             chatSocket.send(JSON.stringify({
-                'message': message
+                'command':'new_message',
+                'message': message,
+                'from':username
             }));
             messageInputDom.value = '';
         };
