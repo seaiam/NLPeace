@@ -226,7 +226,7 @@ def comment(request, post_id):
         post = Post.objects.get(pk=post_id)
         replies = Post.objects.filter(parent_post=post_id)
         form = PostForm()
-        context = {'post': post, 'form': form, 'replies':replies}
+        context = {'post': post, 'form': form, 'replies':replies, 'reportPostForm': PostReportForm()}
         return render(request, 'comment.html', context)
     else:
         #redirect user to login page
