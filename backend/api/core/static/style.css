@@ -833,6 +833,13 @@ img {
   padding-bottom:10px;
 }
 
+.icons-list1{
+  color: #00001c;
+  display: grid;  
+  grid-template-columns: 1fr 1fr 1fr 1fr 1fr;  
+  padding-bottom:10px;
+}
+
 .feed{
   margin-left:18%;
 }
