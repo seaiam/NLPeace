@@ -59,8 +59,6 @@ def get_user_posts(user):
     ).distinct().order_by('-created_at')
     return posts
 
-
-@login_required
 def create_repost(user, post_id):
     post_to_repost = get_object_or_404(Post, id=post_id)
     Repost.objects.create(post=post_to_repost, user=user)
@@ -125,7 +123,7 @@ def process_comment_form(request, form, post_id):
     return None
 
 def handle_like(user, post_id):
-    post = get_object_or_404(Post, id=post_id)
+    post = Post.objects.get(pk=post_id)
     dislike = PostDislike.objects.filter(disliker=user, post=post).first()
     if dislike:
         dislike.delete()

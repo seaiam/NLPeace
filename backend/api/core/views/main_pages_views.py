@@ -51,7 +51,7 @@ def home(request):
     }
     return render(request, 'index.html', context)
 
-
+@login_required
 def repost(request, post_id):
     create_repost(request.user, post_id)
     return redirect('home')
@@ -153,7 +153,11 @@ def comment(request, post_id):
 def like(request, post_id):
     if request.method == 'POST':
         handle_like(request.user, post_id)
-    return HttpResponseRedirect(request.META.get('HTTP_REFERER', 'home'))
+
+    referer = request.META.get('HTTP_REFERER')
+    if referer and 'profile' in referer.lower():
+        return redirect('profile')
+    return HttpResponseRedirect(request.META.get('HTTP_REFERER', '/'))
 
 @login_required
 def dislike(request, post_id):
