@@ -13,7 +13,7 @@
     <input id="chat-message-submit" type="button" value="Send">
     {{ room_name|json_script:"room-name" }}
     <script>
-        var roomName = JSON.parse(document.getElementById('room-name').textContent);
+        {% comment %} var roomName = JSON.parse(document.getElementById('room-name').textContent); {% endcomment %}
         var roomName={{room_name_json}};
         var username={{username}}
         var chatSocket = new ReconnectingWebSocket(
@@ -24,15 +24,34 @@
             + '/'
         );
 
-        chatSocket.onmessage = function(e) {
-            var data=JSON.parse(e.data);
-            var message=data['message'];
+        chatSocket.onopen = function(e) {
+                var m = fetchMessages()
+                console.log(e)
+        } 
+
+        chatSocket.onerror = function(e){
+            console.log(e)
+        }
+
+         chatSocket.onmessage = function(e){
+            var data = JSON.parse(e.data);
+            if (data['command']==='messages'){
+                for (let i=0; i<data['messages'].length;i++){
+                    createMessage(data['messages'][i]);
+                }
+            } else if (data['command']==='new_message'){
+                createMessage(data['message']);
+            }
+        }    
+        createMessage= function(message) {
+            //var data=JSON.parse(e.data);
+            //console.log('data',data)
+            //var message=data['message'];
             var author = message['author'];
             var msgListTag=document.createElement('li');
             var imgTag=document.createElement('img');
             var pTag =document.createElement('p');
-            pTag.textContent=message.content
-            
+            pTag.textContent=message.content;
             if (author===username){
                 msgListTag.className='sent';
             }else{
@@ -40,7 +59,7 @@
             }
             msgListTag.appendChild(imgTag);
             msgListTag.appendChild(pTag);
-            document.querySelector('#chat-log').value += (data.message + '\n');
+            document.querySelector('#chat-log').value += (message.content + '\n');
         };
 
         chatSocket.onclose = function(e) {
@@ -64,6 +83,9 @@
             }));
             messageInputDom.value = '';
         };
+        function fetchMessages() {
+            chatSocket.send(JSON.stringify({'command':'fetch_messages'}));
+        } 
     </script>
 </body>
 </html>

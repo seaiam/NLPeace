@@ -11,8 +11,10 @@ class ChatConsumer(WebsocketConsumer):
     def fetch_messages(self,data):
         messages=Message.last_10_messages()
         content={
+            'command': 'messages',
             'messages':self.messages_to_json(messages)
         }
+        print(content)
         self.send_message(content)
     
     def messages_to_json(self,messages):
@@ -33,7 +35,7 @@ class ChatConsumer(WebsocketConsumer):
         author_user= User.objects.filter(username=author)[0]
         message=Message.objects.create(author=author_user,content=data['message'])
         content={
-            'command':'mew_message',
+            'command':'new_message',
             'message':self.message_to_json(message)
         }
         return self.send_chat_message(content)
@@ -70,7 +72,7 @@ class ChatConsumer(WebsocketConsumer):
             self.room_group_name, {"type": "chat.message", "message": message}
         )
     def send_message(self,message):
-        self.send(text_data=json.dumps({message}))
+        self.send(text_data=json.dumps(message))
         
     # Receive message from room group
     def chat_message(self, event):
@@ -78,4 +80,4 @@ class ChatConsumer(WebsocketConsumer):
 
         # Send message to WebSocket
        
-        self.send(text_data=json.dumps({message}))
+        self.send(text_data=json.dumps(message))
