@@ -128,30 +128,6 @@
                                 </div>
                                 <div class="message-container">
                                     <ul class="message-box messageContainerScroll"  id="chat-log">
-                                        <!-- <li class="message-left">
-                                            <div class="message-pic">
-                                                {% if reply.user.profile and reply.user.profile.pic %}
-                                                <img src="{{ reply.user.profile.pic.url }}" class="reply-user-pic" alt="{{ reply.user.username }}'s profile picture">
-                                                {% else %}
-                                                <img src="{% static 'default.jpg' %}" class="reply-user-pic" alt="{{ reply.user.username }}'s profile picture" />
-                                                {% endif %}
-                                                <div class="message-name">Gerald</div>
-                                            </div>
-                                            <p class="message-text">Hi, how are you?</p> 
-                                            <div class="message-time"></div>
-                                        </li> -->
-                                        <!-- <li class="message-right">
-                                            <div class="message-time"></div>
-                                            <p class="message-text"></p>
-                                            <div class="message-pic">
-                                                {% if reply.user.profile and reply.user.profile.pic %}
-                                                <img src="{{ reply.user.profile.pic.url }}" class="reply-user-pic" alt="{{ reply.user.username }}'s profile picture">
-                                                {% else %}
-                                                <img src="{% static 'default.jpg' %}" class="reply-user-pic" alt="{{ reply.user.username }}'s profile picture" />
-                                                {% endif %}
-                                            <div class="message-name">Tim</div>
-                                            </div>
-                                        </li> -->
                                     </ul>
                                 </div>
                                 <form method="post" id="message-form" class="widget-post__form" enctype="multipart/form-data" name="form" aria-label="post widget">
@@ -197,7 +173,7 @@
     <script src="{% static 'reconnecting-websocket.js' %}"></script>
     <script type="text/javascript">
         var defaultPic = "{% static 'default.jpg' %}";
-        var uploadedPic = "{{ reply.user.profile.pic.url }}";
+        var uploadedPic = "{{profile.pic.url}}";
     </script>
     
     {{ room_name|json_script:"room-name" }}
@@ -310,8 +286,6 @@
                 document.querySelector('#chat-message-submit').click();
             }
         };
-
-
 
         document.querySelector('#chat-message-submit').onclick = function(e) {
             const messageInputDom = document.querySelector('#chat-message-input');

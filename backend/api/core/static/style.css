@@ -1157,7 +1157,7 @@ img {
 
 /* report user css */
 
-.fa-ellipsis-v{
+.fa-ellipsis-v, .fa-comment-dots{
   color: #D9D9D9;
 }
 
