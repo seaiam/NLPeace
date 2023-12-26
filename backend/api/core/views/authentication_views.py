@@ -87,15 +87,15 @@ def ForgetPassword(request):
         if request.method=="POST":
             email=request.POST.get('email')
             if not User.objects.filter(email=email).first():
-                messages.warning(request,'No user found with this email.')
-                return redirect('forget_password')
+                messages.success(request,'An email will be sent if a user with this email exists.')
+                return redirect('/accounts/login/')
             user_obj=User.objects.get(email=email)
             profile=Profile.objects.get(user=user_obj)
             token=str(uuid.uuid4())
             profile.forget_password_token=token
             profile.save()
             send_forget_password_mail(email,token)
-            messages.success(request,"An email has been sent.")
+            messages.success(request,"An email will be sent if a user with this email exists.")
             return redirect('/accounts/login/')
     except Exception as e:
      print(e)
