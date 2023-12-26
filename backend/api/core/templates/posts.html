@@ -21,13 +21,21 @@
                     </ul>
             </div>
             {% endif %}
-                {% if post.reposts.all %}
-                {% for repost in post.reposts.all %}
-                    <div class="repost-info">
-                        Reposted by @{{ repost.user.username }}
-                    </div>
-                {% endfor %}
-                {% endif %}
+            {% if post.reposts.all %}
+            {% if post.reposts.all|length == 1%}
+                <div class="repost-info">
+                    Reposted by @{{ post.reposts.all.0.user.username }}
+                </div>
+            {% elif post.reposts.all|length == 2%}
+                <div class="repost-info">
+                    Reposted by @{{ post.reposts.all.0.user.username }} and @{{ post.reposts.all.1.user.username }}
+                </div>
+            {% else %}
+                <div class="repost-info">
+                    Reposted by @{{ post.reposts.all.0.user.username }}, @{{ post.reposts.all.1.user.username }} , and {{post.reposts.all|length|add:"-2"}} others
+                </div>
+            {% endif %}
+        {% endif %}
             <div class = "row top-aligned-row">
                 <div class = "col-2">
                     {% if post.user.profile and post.user.profile.pic %}
