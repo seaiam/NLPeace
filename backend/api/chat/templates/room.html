@@ -171,10 +171,6 @@
     </div>
 
     <script src="{% static 'reconnecting-websocket.js' %}"></script>
-    <script type="text/javascript">
-        var defaultPic = "{% static 'default.jpg' %}";
-        var uploadedPic = "{{profile.pic.url}}";
-    </script>
     
     {{ room_name|json_script:"room-name" }}
     <script>
@@ -219,46 +215,24 @@
             msgListTag.className= 'message-right';
             messageDiv.className = 'message-pic';
             pTag.className = 'message-text';
-            nameDiv.className= 'message-name';
             timeDiv.className= 'message-time';
-            imgTag.className = 'reply-user-pic';
 
             pTag.textContent = message.content;
             timeDiv.textContent = new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
-            nameDiv.textContent = author;
-        
-            if (message['reply-user-pic']) {
-                imgTag.src = message['reply-user-pic'];
-            } else {
-                imgTag.src = defaultPic;
-            }
 
             msgListTag.appendChild(timeDiv);
             msgListTag.appendChild(pTag);
             msgListTag.appendChild(messageDiv);
-            messageDiv.appendChild(imgTag);
-            messageDiv.appendChild(nameDiv);
         }
         else {
             msgListTag.className ='message-left';
             messageDiv.className = 'message-pic';
             pTag.className = 'message-text';
-            nameDiv.className= 'message-name';
             timeDiv.className= 'message-time';
-            imgTag.className = 'reply-user-pic';
             
             pTag.textContent = message.content;
             timeDiv.textContent = new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
-            nameDiv.textContent = author;
-            
-            if (message['reply-user-pic']) {
-                imgTag.src = message['reply-user-pic'];
-            } else {
-                imgTag.src = defaultPic;
-            }
 
-            messageDiv.appendChild(imgTag);
-            messageDiv.appendChild(nameDiv);
             msgListTag.appendChild(messageDiv);
             msgListTag.appendChild(pTag);
             msgListTag.appendChild(timeDiv);

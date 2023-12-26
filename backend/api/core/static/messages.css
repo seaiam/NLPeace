@@ -181,10 +181,17 @@
     padding: .4rem 1rem;
     margin-bottom: 20px;
     border-radius: 4px;
-    background: #ffffff;
     font-weight: 300;
     line-height: 150%;
     position: relative;
+}
+
+.message-container li.message-left .message-text {
+    background: #e5efe5;
+}
+
+.message-container li.message-right .message-text {
+    background: #ffffff;
 }
 
 .message-container li .message-text:before {
@@ -195,7 +202,7 @@
     top: 10px;
     left: -20px;
     border: 10px solid;
-    border-color: transparent #ffffff transparent transparent;
+    border-color: transparent #e5efe5 transparent transparent;
 }
 
 .message-container li.message-right > .message-text {
