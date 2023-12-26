@@ -219,7 +219,7 @@
 
     <div id="Posts" class="posttabcontent">
     {% for post in posts %}
-      {% include "posts.html" %}
+      {% include "posts.html" with tab="posts" %}
         {% empty %}
         <div class="no-post">No posts available. </div>
     {% endfor %}
@@ -228,7 +228,7 @@
 
     <div id="Media" class="posttabcontent" style="display:none;">
         {% for post in media_posts %}
-        {% include "posts.html" %}
+        {% include "posts.html" with tab="media" %}
       
       {% empty %}
       <div class="no-post">No media available. </div>
@@ -237,7 +237,7 @@
 
       <div id="Likes" class="posttabcontent" style="display:none;">
         {% for post in liked_posts %}
-           {% include "posts.html" %}
+           {% include "posts.html" with tab="likes" %}
             {% empty %}
             <div class="no-post">No Liked Posts available. </div>
             {% endfor %}

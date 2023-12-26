@@ -6,3 +6,4 @@ factory_boy
 faker
 requests
 channels_redis
+coverage
