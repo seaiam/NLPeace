@@ -116,7 +116,7 @@
                                                 {% endif %}
                                             </div>
                                             <p class="message-list">
-                                                <span class="name">Gerald</span>
+                                                <span class="name">{{username}}</span>
                                             </p>
                                         </li>
                                     </ul>
@@ -124,11 +124,11 @@
                             </div>
                             <div class="col-xl-8 col-lg-8 col-md-8 col-sm-9 col-9">
                                 <div class="opened-user-message">
-                                    <span class="name">Gerald</span>
+                                    <span class="name">{{username}}</span>
                                 </div>
                                 <div class="message-container">
                                     <ul class="message-box messageContainerScroll"  id="chat-log">
-                                        <li class="message-left">
+                                        <!-- <li class="message-left">
                                             <div class="message-pic">
                                                 {% if reply.user.profile and reply.user.profile.pic %}
                                                 <img src="{{ reply.user.profile.pic.url }}" class="reply-user-pic" alt="{{ reply.user.username }}'s profile picture">
@@ -139,7 +139,7 @@
                                             </div>
                                             <p class="message-text">Hi, how are you?</p> 
                                             <div class="message-time"></div>
-                                        </li>
+                                        </li> -->
                                         <!-- <li class="message-right">
                                             <div class="message-time"></div>
                                             <p class="message-text"></p>
@@ -197,6 +197,7 @@
     <script src="{% static 'reconnecting-websocket.js' %}"></script>
     <script type="text/javascript">
         var defaultPic = "{% static 'default.jpg' %}";
+        var uploadedPic = "{{ reply.user.profile.pic.url }}";
     </script>
     
     {{ room_name|json_script:"room-name" }}
@@ -221,13 +222,13 @@
             var data = JSON.parse(e.data);
             if (data['command']==='messages'){
                 for (let i=0; i<data['messages'].length;i++){
-                    createMessage(data['messages'][i]);
+                    createMessage(data['messages'][i], roomName);
                 }
             } else if (data['command']==='new_message'){
-                createMessage(data['message']);
+                createMessage(data['message'], roomName);
             }
         }    
-        createMessage= function(message) {
+        createMessage= function(message, roomName) {
           
         var author = message['author'];
         var msgListTag = document.createElement('li');
@@ -238,26 +239,61 @@
         var timeDiv = document.createElement('div');
 
     
-        msgListTag.className = (author === username) ? 'message-right' : 'message-left';
-        messageDiv.className = 'message-pic';
-        pTag.className = 'message-text';
-        nameDiv.className= 'message-name';
-        timeDiv.className= 'message-time';
-        
-        pTag.textContent = message.content;
-        timeDiv.textContent = new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
-        nameDiv.textContent = author;
-        
-        imgTag.src = (author === username) ? defaultPic : defaultPic;
+        if (author === username){
+            msgListTag.className= 'message-right';
+            messageDiv.className = 'message-pic';
+            pTag.className = 'message-text';
+            nameDiv.className= 'message-name';
+            timeDiv.className= 'message-time';
+            imgTag.className = 'reply-user-pic';
 
+            pTag.textContent = message.content;
+            timeDiv.textContent = new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+            nameDiv.textContent = author;
         
-        msgListTag.appendChild(timeDiv);
-        msgListTag.appendChild(pTag);
-        msgListTag.appendChild(messageDiv);
-        messageDiv.appendChild(imgTag);
-        messageDiv.appendChild(nameDiv);
-          
+            if (message['reply-user-pic']) {
+                imgTag.src = message['reply-user-pic'];
+            } else {
+                imgTag.src = defaultPic;
+            }
 
+            msgListTag.appendChild(timeDiv);
+            msgListTag.appendChild(pTag);
+            msgListTag.appendChild(messageDiv);
+            messageDiv.appendChild(imgTag);
+            messageDiv.appendChild(nameDiv);
+        }
+        else {
+            msgListTag.className ='message-left';
+            messageDiv.className = 'message-pic';
+            pTag.className = 'message-text';
+            nameDiv.className= 'message-name';
+            timeDiv.className= 'message-time';
+            imgTag.className = 'reply-user-pic';
+            
+            pTag.textContent = message.content;
+            timeDiv.textContent = new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+            nameDiv.textContent = author;
+            
+            if (message['reply-user-pic']) {
+                imgTag.src = message['reply-user-pic'];
+            } else {
+                imgTag.src = defaultPic;
+            }
+
+            messageDiv.appendChild(imgTag);
+            messageDiv.appendChild(nameDiv);
+            msgListTag.appendChild(messageDiv);
+            msgListTag.appendChild(pTag);
+            msgListTag.appendChild(timeDiv);
+    }
+   
+        var openedUserMessage = document.querySelector('.opened-user-message');
+        openedUserMessage.textContent = roomName;
+
+        var messageList = document.querySelector('.message-list');
+        messageList.textContent = roomName;
+        
         var chatLog = document.querySelector('.messageContainerScroll');
         chatLog.appendChild(msgListTag);
 
@@ -274,6 +310,8 @@
                 document.querySelector('#chat-message-submit').click();
             }
         };
+
+
 
         document.querySelector('#chat-message-submit').onclick = function(e) {
             const messageInputDom = document.querySelector('#chat-message-input');
