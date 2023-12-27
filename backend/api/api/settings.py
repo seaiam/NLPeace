@@ -32,6 +32,7 @@ ALLOWED_HOSTS = []
 # Application definition
 
 INSTALLED_APPS = [
+    'daphne',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -40,7 +41,8 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'core',
     'core.tests',
-    'api'
+    'api',
+    'chat'
 ]
 
 MIDDLEWARE = [
@@ -74,6 +76,7 @@ TEMPLATES = [
 ]
 
 WSGI_APPLICATION = 'api.wsgi.application'
+# ASGI_APPLICATION = "api.asgi.application"
 MESSAGE_STORAGE = 'django.contrib.messages.storage.session.SessionStorage'
 
 
@@ -131,6 +134,9 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/4.2/howto/static-files/
 
 STATIC_URL = 'static/'
+STATICFILES_DIR=[
+    os.path.join(BASE_DIR,'static')
+]
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field
@@ -148,5 +154,19 @@ EMAIL_PORT=587
 EMAIL_USE_TLS=True
 EMAIL_HOST_USER='nlpeaceinfo@gmail.com'
 EMAIL_HOST_PASSWORD='rvzc loct ymft eklm'
+
+#redis stuff
+REDIS_HOST = "redis" #os.environ.get('REDIS_HOST', 'localhost')
+REDIS_PORT =  "6379" #os.environ.get('REDIS_PORT', 6379)
 #EMAIL_BACKEND = "django.core.mail.backends.filebased.EmailBackend"
 #EMAIL_FILE_PATH = BASE_DIR / "sent_emails"
+# Channels
+ASGI_APPLICATION = "api.asgi.application"
+CHANNEL_LAYERS = {
+    "default": {
+        "BACKEND": "channels_redis.core.RedisChannelLayer",
+        "CONFIG": {
+            "hosts": [(REDIS_HOST, int(REDIS_PORT))],#"hosts": [("127.0.0.1", 6379)],
+        },
+    },
+}

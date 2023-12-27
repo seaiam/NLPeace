@@ -47,6 +47,7 @@
                 {% if profile.user.id != request.user.id %}
               <div class="dropdown" style="float:right;">
                 <a class="hidden-arrow" type="button" data-toggle="dropdown" aria-expanded="false">
+                    &nbsp; &nbsp;
                     <i class="fas fa-ellipsis-v mt-4"></i>
                 </a>
                 <ul class="dropdown-menu">
@@ -54,6 +55,11 @@
                   <li><a class="dropdown-item" href="{% url 'add_block' profile.user.id %}"><i class="fa fa-ban"></i> Block User</a></li>
                   <li><a class="dropdown-item" href="#"><i class="far fa-paper-plane"></i>Share Profile</a></li>
                 </ul>
+              </div>
+              <div style="float:right;">
+                <a href="#" class="hidden-arrow" type="button" aria-expanded="false">
+                    <i class="fas fa-comment-dots mt-4"></i>
+                </a>
               </div>
               {% endif %}   
             </div>

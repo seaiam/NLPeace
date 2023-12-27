@@ -20,6 +20,7 @@ from core.views import authentication_views, main_pages_views, profile_views
 from django.conf import settings
 from django.conf.urls.static import static
 
+
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('auth/', include("django.contrib.auth.urls")),
@@ -55,6 +56,8 @@ urlpatterns = [
     path('save_post/<int:post_id>/', main_pages_views.save_post, name='save_post'),
     path('bookmarks/', main_pages_views.bookmarked_posts, name='bookmarked_posts'),
     path('delete_post/', profile_views.delete_post, name='delete_post'),
+    path('accounts/profile/messages', main_pages_views.directMessages, name='messages'),
+    path("chat/", include("chat.urls"))
 ]
 
 if settings.DEBUG:

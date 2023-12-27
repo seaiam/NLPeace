@@ -371,3 +371,8 @@ def classify_tweet(tweet_text):
     except requests.exceptions.RequestException as e:
         # Handle request exception
         return {'error': str(e)}
+
+@login_required
+def directMessages(request):
+    data=Notifications.objects.filter(user=request.user).order_by('-id')  
+    return render(request,'messages.html',{'data':data})
