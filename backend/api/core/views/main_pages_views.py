@@ -78,8 +78,13 @@ def home(request):
 
 def repost(request, post_id):
     if request.user.is_authenticated:
-        post_to_repost = Post.objects.get(id=post_id)
-        Repost.objects.create(post=post_to_repost, user=request.user)
+        if request.method == 'POST':
+            post_to_repost = Post.objects.get(id=post_id)
+            repostedExists = Repost.objects.filter(post=post_to_repost, user=request.user).exists()
+            if repostedExists:
+                Repost.objects.filter(post=post_to_repost, user=request.user).delete()
+            else:
+                Repost.objects.create(post=post_to_repost, user=request.user)
         return redirect('home')
     else:
         return redirect('login')
@@ -240,7 +245,10 @@ def like(request, post_id):
         dislike = PostDislike.objects.filter(disliker=request.user, post=post).first()
         if dislike:
             dislike.delete()
-        PostLike.objects.create(liker=request.user, post=post)
+        if PostLike.objects.filter(liker=request.user, post=post).exists():
+            PostLike.objects.filter(liker=request.user, post=post).delete()
+        else:
+             PostLike.objects.create(liker=request.user, post=post)
         referer = request.META.get('HTTP_REFERER')
         if referer and 'profile' in referer.lower():
             return redirect('profile')
@@ -255,7 +263,11 @@ def dislike(request, post_id):
         like = PostLike.objects.filter(liker=request.user, post=post).first()
         if like:
             like.delete()
-        PostDislike.objects.create(disliker=request.user, post=post)
+        if PostDislike.objects.filter(disliker=request.user, post=post).exists():
+            PostDislike.objects.filter(disliker=request.user, post=post).delete()
+        else:
+             PostDislike.objects.create(disliker=request.user, post=post)
+             
         referer = request.META.get('HTTP_REFERER')
         if referer and 'profile' in referer.lower():
             return redirect('profile')
