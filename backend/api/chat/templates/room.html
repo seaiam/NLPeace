@@ -15,6 +15,10 @@
     <title>Chat Room</title>
 </head>
 <body>
+    {% csrf_token %}
+    <script type="text/javascript">
+        var csrfToken = '{{ csrf_token }}';
+    </script>
     {% include "navbar.html" %}
     <!-- Sidebar menu -->
     <div class="collapse d-lg-block" id="sidebarMenu">
@@ -153,13 +157,15 @@
                                             </label>
                                             &nbsp; 
             
-                                            <label for="upload-image" class="post-actions__label">
-                                                <i class="bi bi-filetype-gif" aria-hidden="true"></i> 
+                                            <input type="file" id="gif-upload" accept="image/gif" style="display: none;">
+                                            <label for="gif-upload" class="post-actions__label">
+                                                <i class="bi bi-filetype-gif" aria-hidden="true"></i>
                                             </label>
                                         </div>
                                         <div class="post-actions__widget">
                                             <button id="chat-message-submit" type="submit" class="btn post-actions__publish">Send</button>
                                         </div>
+                                       
                                     </div>
                                 </form>
                             </div>
@@ -173,10 +179,15 @@
     <script src="{% static 'reconnecting-websocket.js' %}"></script>
     
     {{ room_name|json_script:"room-name" }}
+    <script type="text/javascript">
+        var csrfToken = '{{ csrf_token }}';
+    </script>
+    
     <script>
         // {% comment %} var roomName = JSON.parse(document.getElementById('room-name').textContent); {% endcomment %}
         var roomName={{room_name_json}};
         var username={{username}};
+        
         var chatSocket = new ReconnectingWebSocket(
             'ws://' + window.location.host + '/ws/chat/' + roomName + '/'
         );
@@ -209,6 +220,19 @@
         var imgTag = document.createElement('img');
         var nameDiv = document.createElement('div');
         var timeDiv = document.createElement('div');
+        var msgListTag = document.createElement('li');
+    
+        if (message.gif_url) {
+        var gifImg = document.createElement('img');
+        gifImg.src = message.gif_url;
+        gifImg.className = 'chat-gif'; //need to add a class for styling the GIF image
+
+        gifImg.onerror = function() {
+            gifImg.src = 'media/profilePictures/banner.jpg'; //placeholder image
+        };
+
+         msgListTag.appendChild(gifImg);
+    }
 
     
         if (author === username){
@@ -217,11 +241,15 @@
             pTag.className = 'message-text';
             timeDiv.className= 'message-time';
 
-            pTag.textContent = message.content;
+            if (message.content) { 
+                pTag.textContent = message.content;
+                msgListTag.appendChild(pTag); 
+            }
+            // pTag.textContent = message.content;
             timeDiv.textContent = new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
 
             msgListTag.appendChild(timeDiv);
-            msgListTag.appendChild(pTag);
+            // msgListTag.appendChild(pTag);
             msgListTag.appendChild(messageDiv);
         }
         else {
@@ -237,7 +265,7 @@
             msgListTag.appendChild(pTag);
             msgListTag.appendChild(timeDiv);
     }
-   
+        
         var openedUserMessage = document.querySelector('.opened-user-message');
         openedUserMessage.textContent = roomName;
 
@@ -246,7 +274,7 @@
         
         var chatLog = document.querySelector('.messageContainerScroll');
         chatLog.appendChild(msgListTag);
-
+    
         chatLog.scrollTop = chatLog.scrollHeight;
         };
 
@@ -274,6 +302,41 @@
         function fetchMessages() {
             chatSocket.send(JSON.stringify({'command':'fetch_messages'}));
         } 
+        document.getElementById('gif-upload').addEventListener('change', function(event) {
+            if (event.target.files.length > 0) {
+                var gifFile = event.target.files[0];
+                uploadGif(gifFile);
+            }
+        });
+
+        
+        function uploadGif(gifFile) {
+            console.log("Uploading GIF", gifFile); // debugging
+
+            var formData = new FormData();
+            formData.append('gif', gifFile);
+            formData.append('csrfmiddlewaretoken', csrfToken);  // Include CSRF token
+
+            fetch('/chat/upload_gif/', {
+                method: 'POST',
+                body: formData,
+            })
+            .then(response => response.json())
+            .then(data => {
+                console.log("Server response:", data);
+                if (data.gif_url) {
+                    console.log("Sending GIF URL over WebSocket", data.gif_url); //debuging
+                    chatSocket.send(JSON.stringify({
+                        'command': 'new_message',
+                        'message': '', 
+                        'gif_url': data.gif_url,
+                        'from': username
+                    }));
+                }
+            })
+            .catch(error => console.error('Error uploading GIF:', error));
+        }
+
     </script>
 </body>
 </html>

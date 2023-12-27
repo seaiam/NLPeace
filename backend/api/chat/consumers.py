@@ -27,13 +27,23 @@ class ChatConsumer(WebsocketConsumer):
         return {
             'author':message.author.username,
             'content':message.content,
+            'gif_url': message.gif_url,  
             'timestamp':str(message.timestamp),
         }
     
     def new_message(self,data):
         author=data['from']
-        author_user= User.objects.filter(username=author)[0]
-        message=Message.objects.create(author=author_user,content=data['message'])
+        # author_user= User.objects.filter(username=author)[0]
+        author_user = User.objects.filter(username=author).first()
+        if author_user is None:
+            return
+
+        #message=Message.objects.create(author=author_user,content=data['message'])
+        message = Message.objects.create(
+            author=author_user,
+            content=data.get('message', ''),
+             gif_url=data.get('gif_url', None)
+        )
         content={
             'command':'new_message',
             'message':self.message_to_json(message)
@@ -45,7 +55,7 @@ class ChatConsumer(WebsocketConsumer):
         'new_message':new_message,
         
     }
-    
+
     def connect(self):
         self.room_name = self.scope["url_route"]["kwargs"]["room_name"]
         self.room_group_name = f"chat_{self.room_name}"
@@ -60,9 +70,20 @@ class ChatConsumer(WebsocketConsumer):
         async_to_sync(self.channel_layer.group_discard)(self.room_group_name, self.channel_name)
 
     # Receive message from WebSocket
-    def receive(self, text_data):
-        data = json.loads(text_data)
-        self.commands[data['command']](self,data)
+    # def receive(self, text_data):
+    #     data = json.loads(text_data)
+    #     self.commands[data['command']](self,data)
+
+    def receive(self, text_data=None, bytes_data=None):
+        if text_data:
+            try:
+                data = json.loads(text_data)
+                self.commands[data['command']](self, data)
+            except json.JSONDecodeError as e:
+                self.send(text_data=json.dumps({'error': 'Invalid JSON'}))
+        elif bytes_data:
+            pass
+
         
     def send_chat_message(self,message):
         # message = data["message"]
