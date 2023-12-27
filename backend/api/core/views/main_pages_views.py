@@ -373,6 +373,6 @@ def classify_tweet(tweet_text):
         return {'error': str(e)}
 
 @login_required
-def messages(request):
+def directMessages(request):
     data=Notifications.objects.filter(user=request.user).order_by('-id')  
     return render(request,'messages.html',{'data':data})
