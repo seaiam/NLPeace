@@ -18,11 +18,9 @@ def index(request):
 def room(request,target_user_id):
     target_user = User.objects.filter(id = target_user_id).first()
     chat_room = getChatRoom(request.user, target_user)
-    users = User.objects.all()
+    
     context = {
         'room_name_json':mark_safe(json.dumps(chat_room.room_name)),
-        'username':mark_safe(json.dumps(request.user.username)),
-        'users' : users,
-        'receiver' : target_user
+        'username':mark_safe(json.dumps(request.user.username))
     }
     return render(request, "room.html", context)

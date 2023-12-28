@@ -107,28 +107,24 @@
                                         </div>
                                     </div>
                                     <ul class="users">
-                                        {% for user in users%}
-                                            <a href="{% url 'room' target_user_id=user.id %}">
-                                                <li class="person" >
-                                                    <div class="user">
-                                                        {% if user.profile and user.profile.pic %}
-                                                        <img src="{{ user.profile.pic.url }}" class="reply-user-pic" alt="{{ user.username }}'s profile picture">
-                                                        {% else %}
-                                                        <img src="{% static 'default.jpg' %}" class="reply-user-pic" alt="{{ user.username }}'s profile picture" />
-                                                        {% endif %}
-                                                    </div>
-                                                    <p class="message-list">
-                                                        <span class="name">{{user.username}}</span>
-                                                    </p>
-                                                </li>
-                                            </a>
-                                        {% endfor %}
-                                        </ul>
+                                        <li class="person" >
+                                            <div class="user">
+                                                {% if reply.user.profile and reply.user.profile.pic %}
+                                                <img src="{{ reply.user.profile.pic.url }}" class="reply-user-pic" alt="{{ reply.user.username }}'s profile picture">
+                                                {% else %}
+                                                <img src="{% static 'default.jpg' %}" class="reply-user-pic" alt="{{ reply.user.username }}'s profile picture" />
+                                                {% endif %}
+                                            </div>
+                                            <p class="message-list">
+                                                <span class="name">{{username}}</span>
+                                            </p>
+                                        </li>
+                                    </ul>
                                 </div>
                             </div>
                             <div class="col-xl-8 col-lg-8 col-md-8 col-sm-9 col-9">
-                                <div class="user_to_dm">
-                                    <span class="name">{{receiver.username}}</span>
+                                <div class="opened-user-message">
+                                    <span class="name">{{username}}</span>
                                 </div>
                                 <div class="message-container">
                                     <ul class="message-box messageContainerScroll"  id="chat-log">
