@@ -128,7 +128,7 @@
                                 </div>
                                 <div class="message-container">
                                     <ul class="message-box messageContainerScroll"  id="chat-log">
-                                        {% if target_user.profile.messaging_is_private and  request.user not in target_user.profile.followers.all %}
+                                        {% if target_user.profile.messaging_is_private and  request.user not in target_user.profile.followers.all and request.user != target_user %}
                                         <h1 style="display: flex; justify-content: center; align-items: center;">
                                             This user only allows messages from their followers </br>
                                         </h1>
@@ -139,7 +139,7 @@
                                     </ul>
                                 </div>
                                 
-                                {% if not target_user.profile.messaging_is_private or request.user in target_user.profile.followers.all %}
+                                {% if not target_user.profile.messaging_is_private or request.user in target_user.profile.followers.all or target_user == request.user %}
                                     <form method="post" id="message-form" class="widget-post__form" enctype="multipart/form-data" name="form" aria-label="post widget">
                                         {% csrf_token %}
                                         <div class="widget-post__content">
