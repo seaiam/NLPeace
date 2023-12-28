@@ -4,13 +4,173 @@
 <html>
 <head>
     <meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.5.0/css/all.css" integrity="sha384-B4dIYHKNBt8Bc12p+WXckhzcICo0wtJAoU8YZTY5qE0Id1GSseTk6S+L3BlXeVIU" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.5.0/font/bootstrap-icons.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.2/font/bootstrap-icons.min.css">
+    <link rel="stylesheet"  type="text/css" href="{% static 'messages.css' %}">
+    <link rel="stylesheet" type="text/css" href="{% static 'style.css' %}">
     <title>Chat Room</title>
 </head>
 <body>
+    {% include "navbar.html" %}
+    <!-- Sidebar menu -->
+    <div class="collapse d-lg-block" id="sidebarMenu">
+        {% block sidebar %}
+        <div class="sidebar">
+            <ul>
+                {% if user.is_authenticated %}
+                <li class="sidebar-item">
+                    <a href="{% url 'profile' %}">
+                        <i class="fa fa-user-circle"></i>
+                        Profile
+                    </a>
+                </li>
+                <li class="sidebar-item">
+                    <a href="{% url 'home' %}">
+                        <i class="fa fa-home"></i>
+                        Home
+                    </a>
+                </li>
+                <li class="sidebar-item">
+                    <a href="{% url 'messages' %}">
+                        <i class="fas fa-comment-dots"></i>
+                        Messages
+                    </a>
+                </li>
+                <li class="sidebar-item">
+                    <a href="{% url 'notifications' %}">
+                        <!-- user will see a red icon when the user receives a notification -->
+                        <i class="fa fa-bell icon-button">
+                            {% for notification in data %}
+                            {% if request.user.id != notification.sent_by.id %}
+                            <span class="icon-button__badge"></span>
+                            {% endif %}
+                            {%endfor%}
+                        </i>
+                        Notifications
+                    </a>
+                </li>
+                <li class="sidebar-item">
+                    <a href="{% url 'bookmarked_posts' %}">
+                        <i class="fa fa-bookmark"></i>
+                        Bookmarks
+                    </a>
+                </li>
+                <li class="sidebar-item">
+                    <a href="{% url 'profile_settings' %}">
+                        <i class="fa fa-cog"></i>
+                        Settings
+                    </a>
+                </li>
+                <li class="sidebar-item">
+                    <a href="{% url 'logout_user' %}">
+                        <i class="fas fa-sign-out-alt"></i>
+                        Log out
+                    </a>
+                </li>
+                {% endif %}
+            </ul>
+        </div>
+        {% endblock %}
+    </div>   
+            <div class="container">
+                    {% if messages %}
+                    {% for message in messages %}
+                <div class="alert alert-warning alert-dismissible fade show ">
+                    {{ message }}
+                    <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
+                    {% endfor %}
+                    {% endif %}
+                </div>
+            </div>
+
+     <!-- Messaging Container -->
+     <div class="container">
+        <div class="content-wrapper">
+            <div class="row gutters">
+                <div class="col-xl-10 col-lg-12 col-md-12 col-sm-12 col-12">
+                    <div class="card m-0">
+                        <div class="row no-gutters">
+                            <div class="col-xl-4 col-lg-4 col-md-4 col-sm-3 col-3">
+                                <div class="users-container">
+                                    <div class="message-search-box">
+                                        <div class="input-group">
+                                            <input class="form-control" placeholder="Search">
+                                            <div class="input-group-btn">
+                                                <button type="button" class="btn btn-info">
+                                                    <i class="fa fa-search"></i>
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <ul class="users">
+                                        <li class="person" >
+                                            <div class="user">
+                                                {% if reply.user.profile and reply.user.profile.pic %}
+                                                <img src="{{ reply.user.profile.pic.url }}" class="reply-user-pic" alt="{{ reply.user.username }}'s profile picture">
+                                                {% else %}
+                                                <img src="{% static 'default.jpg' %}" class="reply-user-pic" alt="{{ reply.user.username }}'s profile picture" />
+                                                {% endif %}
+                                            </div>
+                                            <p class="message-list">
+                                                <span class="name">{{username}}</span>
+                                            </p>
+                                        </li>
+                                    </ul>
+                                </div>
+                            </div>
+                            <div class="col-xl-8 col-lg-8 col-md-8 col-sm-9 col-9">
+                                <div class="opened-user-message">
+                                    <span class="name">{{username}}</span>
+                                </div>
+                                <div class="message-container">
+                                    <ul class="message-box messageContainerScroll"  id="chat-log">
+                                    </ul>
+                                </div>
+                                <form method="post" id="message-form" class="widget-post__form" enctype="multipart/form-data" name="form" aria-label="post widget">
+                                    {% csrf_token %}
+                                    <div class="widget-post__content">
+                                        <textarea name="" id="chat-message-input" class="widget-post__textarea scroller" placeholder="Start a Post..."></textarea>
+                                    </div>
+                                    <div id="preview_image" style="display: none;">
+                                        <button type="button" class="close" onclick="" style="color: #00001c;">&times;</button>
+                                        <img class="card-img-top mb-2" src="#" />
+                                    </div>
+                                    <div class="widget-post__options is--hidden" id="stock-options">
+                                    </div>
+                                    <div class="widget-post__actions post--actions">
+                                        <div class="post-actions__attachments">
+                                            <label for="upload-image" class="post-actions__label" onclick="">
+                                            <i class="bi bi-camera" sty aria-hidden="true"></i> 
+                                            </label>
+                                            &nbsp;
+            
+                                            <label for="upload-image" class="post-actions__label">
+                                                <i class="bi bi-paperclip" aria-hidden="true"></i> 
+                                            </label>
+                                            &nbsp; 
+            
+                                            <label for="upload-image" class="post-actions__label">
+                                                <i class="bi bi-filetype-gif" aria-hidden="true"></i> 
+                                            </label>
+                                        </div>
+                                        <div class="post-actions__widget">
+                                            <button id="chat-message-submit" type="submit" class="btn post-actions__publish">Send</button>
+                                        </div>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <script src="{% static 'reconnecting-websocket.js' %}"></script>
-    <ul id="chat-log" ></ul></div>
-    <input id="chat-message-input" type="text" size="100"><br>
-    <input id="chat-message-submit" type="button" value="Send">
     <form action="{% url 'upload' room_name  %}" enctype="multipart/form-data" method="POST">
         {% csrf_token %}
         {{ upload.file }}
@@ -18,14 +178,11 @@
     </form>
     {{ room_name|json_script:"room-name" }}
     <script>
+        // {% comment %} var roomName = JSON.parse(document.getElementById('room-name').textContent); {% endcomment %}
         var roomName={{room_name_json}};
-        var username={{username}}
+        var username={{username}};
         var chatSocket = new ReconnectingWebSocket(
-            'ws://'
-            + window.location.host
-            + '/ws/chat/'
-            + roomName
-            + '/'
+            'ws://' + window.location.host + '/ws/chat/' + roomName + '/'
         );
 
         chatSocket.onopen = function(e) {
@@ -40,12 +197,11 @@
             var data = JSON.parse(e.data);
             if (data['command']==='messages'){
                 for (let i=0; i<data['messages'].length;i++){
-                    createMessage(data['messages'][i]);
+                    createMessage(data['messages'][i], roomName);
                 }
             } else if (data['command']==='new_message'){
-                createMessage(data['message']);
+                createMessage(data['message'], roomName);
             }
-        }
 
         function getContent(message) {
             let element = null;
@@ -58,20 +214,55 @@
             element.textContent = message.content;
             return element
         }
+        
+        createMessage= function(message, roomName) {
+          
+        var author = message['author'];
+        var msgListTag = document.createElement('li');
+        var messageDiv = document.createElement('div');
+        var pTag = getContent(message);
+        var imgTag = document.createElement('img');
+        var nameDiv = document.createElement('div');
+        var timeDiv = document.createElement('div');
 
-        createMessage= function(message) {
-            var author = message['author'];
-            var msgListTag=document.createElement('li');
-            var imgTag=document.createElement('img');
-            var content = getContent(message);
-            if (author===username){
-                msgListTag.className='sent';
-            }else{
-                msgListTag.className='replies';
-            }
-            msgListTag.appendChild(imgTag);
-            msgListTag.appendChild(content);
-            document.querySelector('#chat-log').appendChild(msgListTag);
+    
+        if (author === username){
+            msgListTag.className= 'message-right';
+            messageDiv.className = 'message-pic';
+            pTag.className = 'message-text';
+            timeDiv.className= 'message-time';
+
+            pTag.textContent = message.content;
+            timeDiv.textContent = new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+
+            msgListTag.appendChild(timeDiv);
+            msgListTag.appendChild(pTag);
+            msgListTag.appendChild(messageDiv);
+        }
+        else {
+            msgListTag.className ='message-left';
+            messageDiv.className = 'message-pic';
+            pTag.className = 'message-text';
+            timeDiv.className= 'message-time';
+            
+            pTag.textContent = message.content;
+            timeDiv.textContent = new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+
+            msgListTag.appendChild(messageDiv);
+            msgListTag.appendChild(pTag);
+            msgListTag.appendChild(timeDiv);
+    }
+   
+        var openedUserMessage = document.querySelector('.opened-user-message');
+        openedUserMessage.textContent = roomName;
+
+        var messageList = document.querySelector('.message-list');
+        messageList.textContent = roomName;
+        
+        var chatLog = document.querySelector('.messageContainerScroll');
+        chatLog.appendChild(msgListTag);
+
+        chatLog.scrollTop = chatLog.scrollHeight;
         };
 
         chatSocket.onclose = function(e) {
@@ -80,7 +271,7 @@
 
         document.querySelector('#chat-message-input').focus();
         document.querySelector('#chat-message-input').onkeyup = function(e) {
-            if (e.key === 'Enter') {  // enter, return
+            if (e.key === 'Enter') {  
                 document.querySelector('#chat-message-submit').click();
             }
         };

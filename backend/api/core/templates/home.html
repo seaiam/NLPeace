@@ -47,6 +47,7 @@
                 {% if profile.user.id != request.user.id %}
               <div class="dropdown" style="float:right;">
                 <a class="hidden-arrow" type="button" data-toggle="dropdown" aria-expanded="false">
+                    &nbsp; &nbsp;
                     <i class="fas fa-ellipsis-v mt-4"></i>
                 </a>
                 <ul class="dropdown-menu">
@@ -54,6 +55,11 @@
                   <li><a class="dropdown-item" href="{% url 'add_block' profile.user.id %}"><i class="fa fa-ban"></i> Block User</a></li>
                   <li><a class="dropdown-item" href="#"><i class="far fa-paper-plane"></i>Share Profile</a></li>
                 </ul>
+              </div>
+              <div style="float:right;">
+                <a href="#" class="hidden-arrow" type="button" aria-expanded="false">
+                    <i class="fas fa-comment-dots mt-4"></i>
+                </a>
               </div>
               {% endif %}   
             </div>
@@ -213,7 +219,7 @@
 
     <div id="Posts" class="posttabcontent">
     {% for post in posts %}
-      {% include "posts.html" %}
+      {% include "posts.html" with tab="posts" %}
         {% empty %}
         <div class="no-post">No posts available. </div>
     {% endfor %}
@@ -222,7 +228,7 @@
 
     <div id="Media" class="posttabcontent" style="display:none;">
         {% for post in media_posts %}
-        {% include "posts.html" %}
+        {% include "posts.html" with tab="media" %}
       
       {% empty %}
       <div class="no-post">No media available. </div>
@@ -231,7 +237,7 @@
 
       <div id="Likes" class="posttabcontent" style="display:none;">
         {% for post in liked_posts %}
-           {% include "posts.html" %}
+           {% include "posts.html" with tab="likes" %}
             {% empty %}
             <div class="no-post">No Liked Posts available. </div>
             {% endfor %}

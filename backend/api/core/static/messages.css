@@ -31,14 +31,13 @@
 }
 
 .users-container {
+    height: 500px; 
+    overflow-y: auto; 
     position: relative;
     border-right: 1px solid #e6ecf3;
-    height: 100%;
-    display: -ms-flexbox;
     display: flex;
-    -ms-flex-direction: column;
     flex-direction: column;
-    padding-bottom:280px;
+    margin-bottom:100px;
 }
 
 .users {
@@ -91,11 +90,12 @@
 .opened-user-message {
     width: 100%;
     padding: 0 15px;
-    min-height: 64px;
-    line-height: 64px;
+    min-height: 50px;
+    line-height: 50px;
     border-bottom: 1px solid #e6ecf3;
     -webkit-border-radius: 0 3px 0 0;
     border-radius: 0 3px 0 0;
+    margin-top:50px;
 }
 
 .opened-user-message span {
@@ -104,11 +104,43 @@
 
 .opened-user-message span.name {
     font-weight: 700;
+    font-size:larger;
+}
+
+#chat-message-input{
+    border: 1px solid  #808080;
+}
+
+.btn-info{
+    border: 1px solid  #00001c;
+    background-color:#00001c; 
+}
+
+.btn-info:hover{
+    border: 1px solid  #00001c;
 }
 
 .message-container {
     position: relative;
     padding: 1rem;
+    overflow-y: auto;
+    height:500px;
+}
+
+.message-box::-webkit-scrollbar {
+    width: 10px;
+}
+
+.message-box::-webkit-scrollbar-track {
+    background: #f1f1f1;
+}
+
+.message-box::-webkit-scrollbar-thumb {
+    background: #888;
+}
+
+.message-box::-webkit-scrollbar-thumb:hover {
+    background: #555;
 }
 
 .message-container li.message-left,
@@ -149,10 +181,17 @@
     padding: .4rem 1rem;
     margin-bottom: 20px;
     border-radius: 4px;
-    background: #ffffff;
     font-weight: 300;
     line-height: 150%;
     position: relative;
+}
+
+.message-container li.message-left .message-text {
+    background: #e5efe5;
+}
+
+.message-container li.message-right .message-text {
+    background: #ffffff;
 }
 
 .message-container li .message-text:before {
@@ -163,7 +202,7 @@
     top: 10px;
     left: -20px;
     border: 10px solid;
-    border-color: transparent #ffffff transparent transparent;
+    border-color: transparent #e5efe5 transparent transparent;
 }
 
 .message-container li.message-right > .message-text {
@@ -203,10 +242,6 @@ ul {
     border-radius: 15px;
     margin-bottom: 2rem;
     box-shadow: none;
-}
-
-.btn-info{
-    background-color:#00001c; 
 }
 
 .bi-camera, .bi-filetype-gif, .bi-paperclip{

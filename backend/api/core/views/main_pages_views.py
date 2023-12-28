@@ -142,6 +142,8 @@ def guest(request,user_id):
     dislikes = [post for post in all_Posts if post.is_dislikeable_by(user)]
     followers = Profile.objects.get(user=user).followers.all()
     following = Profile.objects.get(user=user).following.all()
+    liked_posts = Post.objects.filter(postlike__liker=user).distinct().order_by('-created_at')
+    saved_post_ids = [post.id for post in posts if not post.is_saveable_by(user)] 
 
     context = {
         'user':user,
@@ -152,6 +154,9 @@ def guest(request,user_id):
         'media_posts':image_posts,
         'likes': likes,
         'dislikes': dislikes,
+        'liked_posts': liked_posts,
+        'saved_post_ids': saved_post_ids,
+        'reportPostForm': PostReportForm(),
         'reportUserForm': UserReportForm(),
         'followers' : followers,
         'following' : following,
@@ -227,7 +232,7 @@ def comment(request, post_id):
         post = Post.objects.get(pk=post_id)
         replies = Post.objects.filter(parent_post=post_id)
         form = PostForm()
-        context = {'post': post, 'form': form, 'replies':replies}
+        context = {'post': post, 'form': form, 'replies':replies, 'reportPostForm': PostReportForm()}
         return render(request, 'comment.html', context)
     else:
         #redirect user to login page
@@ -368,6 +373,6 @@ def classify_tweet(tweet_text):
         return {'error': str(e)}
 
 @login_required
-def messages(request):
+def directMessages(request):
     data=Notifications.objects.filter(user=request.user).order_by('-id')  
     return render(request,'messages.html',{'data':data})
