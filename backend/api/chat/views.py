@@ -1,8 +1,9 @@
-from django.contrib.auth.decorators import login_required
+from django.contrib.auth import get_user_model
 from django.http import HttpResponse
-from django.shortcuts import render, redirect
-from django.urls import reverse
+from django.shortcuts import render
 from django.utils.safestring import mark_safe
+from django.urls import reverse
+from .chat_service import getChatRoom
 from .forms import UploadForm
 from .models import Message
 import json
@@ -11,22 +12,26 @@ import re
 
 FILE_PATH_PATTERN = r'^.*/messageFiles/(?P<filename>.+)$'
 
+User = get_user_model()
+
 def index(request):
-    return render(request, "test.html")
+    users = User.objects.all()
+    
+    context = {
+        'users' : users
+    }
+    return render(request, "messages.html", context)
+            
+def room(request,target_user_id):
+    target_user = User.objects.filter(id = target_user_id).first()
+    chat_room = getChatRoom(request.user, target_user)
+    
+    context = {
+        'room_name_json':mark_safe(json.dumps(chat_room.room_name)),
+        'username':mark_safe(json.dumps(request.user.username))
+    }
+    return render(request, "room.html", context)
 
-# def room(request, room_name):
-#     return render(request, "room.html", {"room_name": room_name})
-@login_required
-def room(request,room_name):
-    return render(request, "room.html",{
-        'room_name': room_name,
-        'room_name_json':mark_safe(json.dumps(room_name)),
-        'username':mark_safe(json.dumps(request.user.username)),
-        'upload': UploadForm()
-
-                                                                   })
-
-@login_required
 def upload(request, room_name):
     if request.user.is_authenticated:
         if request.method == "POST":
@@ -37,7 +42,6 @@ def upload(request, room_name):
                 Message.objects.create(author=request.user, content=match.group("filename"), is_file_download=True)
     return redirect(reverse("room", args=[room_name]))
 
-@login_required
 def download(request, room_name, path):
     if request.user.is_authenticated:
         with open(f'api/core/media/messageFiles/{path}', 'rb') as f:
