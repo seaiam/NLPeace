@@ -108,7 +108,7 @@
                                     </div>
                                     <ul class="users">
                                     {% for user in users%}
-                                        <a href="{% url 'room' target_user_id=user.id %}">
+                                        <a href="{% url 'room' target_user_id=user.id %}" style = "color:#00001c; text-decoration: none;">
                                             <li class="person" >
                                                 <div class="user">
                                                     {% if user.profile and user.profile.pic %}
