@@ -2,7 +2,7 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth import get_user_model
 from django.shortcuts import render
 from django.utils.safestring import mark_safe
-from .chatService import getChatRoom
+from .chat_service import getChatRoom
 import json
 User = get_user_model()
 

@@ -39,6 +39,14 @@ respectful environment, all written posts undergo automatic moderation to preven
 | 10   | Adam Qamar     | 40175980    | aqa02    |
 | 11   | Andrew Chan     | 40133396    | AofSpade5    |
 
+## Docker Setup
+
+The following manual [DockerReadme](https://github.com/seaiam/NLPeace/blob/main/DockerReadme.md) provides setup instructions for Docker.
+
+## How to Run the Project
+
+The step-by-step instructions on how to run the project are provided in this [DevGuide](https://github.com/seaiam/NLPeace/blob/main/DevGuide%20.md)
+
 ## Group Meeting Details
 
 See the [Meetings Minutes](https://github.com/seaiam/NLPeace/wiki) section for more details on our recurring meetings. 
