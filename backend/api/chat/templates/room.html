@@ -128,47 +128,51 @@
                                 </div>
                                 <div class="message-container">
                                     <ul class="message-box messageContainerScroll"  id="chat-log">
+                                        {% if target_user.profile.messaging_is_private and  request.user not in target_user.profile.followers.all %}
+                                        <h1 style="display: flex; justify-content: center; align-items: center;">
+                                            This user only allows messages from their followers </br>
+                                        </h1>
+                                        <p style="display: flex; justify-content: center; align-items: center;" >
+                                             <a href="{% url 'guest' target_user.id %}"> Follow them on their profile</a>
+                                        </p>    
+                                        {% endif %}
                                     </ul>
                                 </div>
                                 
-                    {% if not target_user.profile.messaging_is_private or request.user in target_user.profile.followers.all %}
-                                 <form method="post" id="message-form" class="widget-post__form" enctype="multipart/form-data" name="form" aria-label="post widget">
-                                    {% csrf_token %}
-                                    <div class="widget-post__content">
-                                        <textarea name="" id="chat-message-input" class="widget-post__textarea scroller" placeholder="Start a Post..."></textarea>
-                                    </div>
-                                    <div id="preview_image" style="display: none;">
-                                        <button type="button" class="close" onclick="" style="color: #00001c;">&times;</button>
-                                        <img class="card-img-top mb-2" src="#" />
-                                    </div>
-                                    <div class="widget-post__options is--hidden" id="stock-options">
-                                    </div>
-                                    <div class="widget-post__actions post--actions">
-                                        <div class="post-actions__attachments">
-                                            <label for="upload-image" class="post-actions__label" onclick="">
-                                            <i class="bi bi-camera" sty aria-hidden="true"></i> 
-                                            </label>
-                                            &nbsp;
-            
-                                            <label for="upload-image" class="post-actions__label">
-                                                <i class="bi bi-paperclip" aria-hidden="true"></i> 
-                                            </label>
-                                            &nbsp; 
-            
-                                            <label for="upload-image" class="post-actions__label">
-                                                <i class="bi bi-filetype-gif" aria-hidden="true"></i> 
-                                            </label>
+                                {% if not target_user.profile.messaging_is_private or request.user in target_user.profile.followers.all %}
+                                    <form method="post" id="message-form" class="widget-post__form" enctype="multipart/form-data" name="form" aria-label="post widget">
+                                        {% csrf_token %}
+                                        <div class="widget-post__content">
+                                            <textarea name="" id="chat-message-input" class="widget-post__textarea scroller" placeholder="Start a Post..."></textarea>
                                         </div>
-                                        <div class="post-actions__widget">
-                                            <button id="chat-message-submit" type="submit" class="btn post-actions__publish">Send</button>
+                                        <div id="preview_image" style="display: none;">
+                                            <button type="button" class="close" onclick="" style="color: #00001c;">&times;</button>
+                                            <img class="card-img-top mb-2" src="#" />
                                         </div>
-                                    </div>
-                                </form>
-                                {% else %}
-                                <p>This user only allows messaging from followers</p>
-                                <p>{{ reply.user.profile.messaging_is_private }}</p>
-                     
-                       {% endif %} 
+                                        <div class="widget-post__options is--hidden" id="stock-options">
+                                        </div>
+                                        <div class="widget-post__actions post--actions">
+                                            <div class="post-actions__attachments">
+                                                <label for="upload-image" class="post-actions__label" onclick="">
+                                                <i class="bi bi-camera" sty aria-hidden="true"></i> 
+                                                </label>
+                                                &nbsp;
+                
+                                                <label for="upload-image" class="post-actions__label">
+                                                    <i class="bi bi-paperclip" aria-hidden="true"></i> 
+                                                </label>
+                                                &nbsp; 
+                
+                                                <label for="upload-image" class="post-actions__label">
+                                                    <i class="bi bi-filetype-gif" aria-hidden="true"></i> 
+                                                </label>
+                                            </div>
+                                            <div class="post-actions__widget">
+                                                <button id="chat-message-submit" type="submit" class="btn post-actions__publish">Send</button>
+                                            </div>
+                                        </div>
+                                    </form>
+                                {% endif %} 
                          
                             </div>
                         </div>
