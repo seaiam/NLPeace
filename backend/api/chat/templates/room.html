@@ -130,7 +130,9 @@
                                     <ul class="message-box messageContainerScroll"  id="chat-log">
                                     </ul>
                                 </div>
-                                <form method="post" id="message-form" class="widget-post__form" enctype="multipart/form-data" name="form" aria-label="post widget">
+                                
+                    {% if reply.user.profile.messaging_is_private and request.user in reply.user.profile.followers.all and reply.user == request.user  %}
+                                 <form method="post" id="message-form" class="widget-post__form" enctype="multipart/form-data" name="form" aria-label="post widget">
                                     {% csrf_token %}
                                     <div class="widget-post__content">
                                         <textarea name="" id="chat-message-input" class="widget-post__textarea scroller" placeholder="Start a Post..."></textarea>
@@ -162,6 +164,12 @@
                                         </div>
                                     </div>
                                 </form>
+                                {% else %}
+                                <p>This user only allows messaging from followers</p>
+                                <p>{{ reply.user.profile.messaging_is_private }}</p>
+                     
+                       {% endif %} 
+                         
                             </div>
                         </div>
                     </div>
