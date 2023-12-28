@@ -45,9 +45,9 @@ def home(request):
         profile=Profile.objects.get(user=request.user)
         blocked=profile.blocked.all()
         posts = Post.objects.filter(
-            Q(user__profile__is_private=False) | 
+            (Q(user__profile__is_private=False) | 
             Q(user__in=user_ids_following) |  
-            Q(user=request.user) |
+            Q(user=request.user)) &
             ~Q(user__in=blocked)
         ).distinct().order_by('-created_at')
 
