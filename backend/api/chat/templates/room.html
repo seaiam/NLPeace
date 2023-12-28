@@ -172,9 +172,7 @@
 
     <script src="{% static 'reconnecting-websocket.js' %}"></script>
     
-    {{ room_name|json_script:"room-name" }}
     <script>
-        // {% comment %} var roomName = JSON.parse(document.getElementById('room-name').textContent); {% endcomment %}
         var roomName={{room_name_json}};
         var username={{username}};
         var chatSocket = new ReconnectingWebSocket(
@@ -190,7 +188,7 @@
             console.log(e)
         }
 
-         chatSocket.onmessage = function(e){
+        chatSocket.onmessage = function(e){
             var data = JSON.parse(e.data);
             if (data['command']==='messages'){
                 for (let i=0; i<data['messages'].length;i++){
@@ -267,13 +265,18 @@
             chatSocket.send(JSON.stringify({
                 'command':'new_message',
                 'message': message,
-                'from':username
+                'from':username,
+                'room_name': roomName
             }));
             messageInputDom.value = '';
         };
+        
         function fetchMessages() {
-            chatSocket.send(JSON.stringify({'command':'fetch_messages'}));
-        } 
+            chatSocket.send(JSON.stringify({
+                'command': 'fetch_messages',
+                'room_id': roomName  
+            }));
+        }
     </script>
 </body>
 </html>
