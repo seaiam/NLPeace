@@ -131,7 +131,7 @@
                                     </ul>
                                 </div>
                                 
-                    {% if receiver.profile.messaging_is_private and request.user in receiver.profile.followers.all   %}
+                    {% if target_user.profile.messaging_is_private and request.user in target_user.profile.followers.all   %}
                                  <form method="post" id="message-form" class="widget-post__form" enctype="multipart/form-data" name="form" aria-label="post widget">
                                     {% csrf_token %}
                                     <div class="widget-post__content">
