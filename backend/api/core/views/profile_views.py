@@ -31,7 +31,15 @@ def profile_settings(request):
         user = User.objects.get(pk=request.user.id)
         if user is None:
             return HttpResponseNotFound
-        return render(request, 'settings.html', {'user': user,'data' : data, 'editUsernameForm': EditUsernameForm(instance=user),'editPasswordForm': PasswordChangeForm(request.user),'privacy_form':PrivacySettingsForm(instance=user.profile),'messaging_form':MessagingSettingsForm(instance=user.profile)})
+        context = {
+            'user': user,
+            'data' : data, 
+            'editUsernameForm': EditUsernameForm(instance=user),
+            'editPasswordForm': PasswordChangeForm(request.user),
+            'privacy_form':PrivacySettingsForm(instance=user.profile),
+            'messaging_form':MessagingSettingsForm(instance=user.profile)
+        }
+        return render(request, 'settings.html', context)
     
 @login_required
 def update_username(request):
