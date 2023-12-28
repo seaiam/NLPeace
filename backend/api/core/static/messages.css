@@ -87,7 +87,7 @@
     color: #00001c;
 }
 
-.opened-user-message {
+.user_to_dm {
     width: 100%;
     padding: 0 15px;
     min-height: 50px;
@@ -98,11 +98,11 @@
     margin-top:50px;
 }
 
-.opened-user-message span {
+.user_to_dm span {
     line-height: 100%;
 }
 
-.opened-user-message span.name {
+.user_to_dm span.name {
     font-weight: 700;
     font-size:larger;
 }
