@@ -8,12 +8,16 @@
 </head>
 <body>
     <script src="{% static 'reconnecting-websocket.js' %}"></script>
-    <textarea id="chat-log" cols="100" rows="20"></textarea><br>
+    <ul id="chat-log" ></ul></div>
     <input id="chat-message-input" type="text" size="100"><br>
     <input id="chat-message-submit" type="button" value="Send">
+    <form action="{% url 'upload' room_name  %}" enctype="multipart/form-data" method="POST">
+        {% csrf_token %}
+        {{ upload.file }}
+        <button type="submit">Upload</button>
+    </form>
     {{ room_name|json_script:"room-name" }}
     <script>
-        {% comment %} var roomName = JSON.parse(document.getElementById('room-name').textContent); {% endcomment %}
         var roomName={{room_name_json}};
         var username={{username}}
         var chatSocket = new ReconnectingWebSocket(
@@ -25,14 +29,13 @@
         );
 
         chatSocket.onopen = function(e) {
-                var m = fetchMessages()
-                console.log(e)
-        } 
-
-        chatSocket.onerror = function(e){
-            console.log(e)
+            fetchMessages()
         }
 
+        function fetchMessages() {
+            chatSocket.send(JSON.stringify({'command':'fetch_messages'}));
+        }
+        
          chatSocket.onmessage = function(e){
             var data = JSON.parse(e.data);
             if (data['command']==='messages'){
@@ -42,24 +45,33 @@
             } else if (data['command']==='new_message'){
                 createMessage(data['message']);
             }
-        }    
+        }
+
+        function getContent(message) {
+            let element = null;
+            if (Boolean(message.is_file_download)) {
+                element = document.createElement('a');
+                element.href = `download/${message.content}`;
+            } else {
+                element = document.createElement('p');
+            }
+            element.textContent = message.content;
+            return element
+        }
+
         createMessage= function(message) {
-            //var data=JSON.parse(e.data);
-            //console.log('data',data)
-            //var message=data['message'];
             var author = message['author'];
             var msgListTag=document.createElement('li');
             var imgTag=document.createElement('img');
-            var pTag =document.createElement('p');
-            pTag.textContent=message.content;
+            var content = getContent(message);
             if (author===username){
                 msgListTag.className='sent';
             }else{
                 msgListTag.className='replies';
             }
             msgListTag.appendChild(imgTag);
-            msgListTag.appendChild(pTag);
-            document.querySelector('#chat-log').value += (message.content + '\n');
+            msgListTag.appendChild(content);
+            document.querySelector('#chat-log').appendChild(msgListTag);
         };
 
         chatSocket.onclose = function(e) {
@@ -83,9 +95,7 @@
             }));
             messageInputDom.value = '';
         };
-        function fetchMessages() {
-            chatSocket.send(JSON.stringify({'command':'fetch_messages'}));
-        } 
+
     </script>
 </body>
 </html>

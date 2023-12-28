@@ -14,7 +14,6 @@ class ChatConsumer(WebsocketConsumer):
             'command': 'messages',
             'messages':self.messages_to_json(messages)
         }
-        print(content)
         self.send_message(content)
     
     def messages_to_json(self,messages):
@@ -28,6 +27,7 @@ class ChatConsumer(WebsocketConsumer):
             'author':message.author.username,
             'content':message.content,
             'timestamp':str(message.timestamp),
+            'is_file_download': str(message.is_file_download)
         }
     
     def new_message(self,data):
@@ -43,7 +43,6 @@ class ChatConsumer(WebsocketConsumer):
     commands={
         'fetch_messages':fetch_messages,
         'new_message':new_message,
-        
     }
     
     def connect(self):
