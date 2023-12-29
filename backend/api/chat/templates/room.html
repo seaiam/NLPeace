@@ -109,14 +109,14 @@
                                     <ul class="users">
                                         <li class="person" >
                                             <div class="user">
-                                                {% if reply.user.profile and reply.user.profile.pic %}
-                                                <img src="{{ reply.user.profile.pic.url }}" class="reply-user-pic" alt="{{ reply.user.username }}'s profile picture">
+                                                {% if target_user.profile and target_user.profile.pic %}
+                                                <img src="{{ target_user.user.profile.pic.url }}" class="target_user-pic" alt="{{ target_user.username }}'s profile picture">
                                                 {% else %}
-                                                <img src="{% static 'default.jpg' %}" class="reply-user-pic" alt="{{ reply.user.username }}'s profile picture" />
+                                                <img src="{% static 'default.jpg' %}" class="reply-user-pic" alt="{{ target_user.username }}'s profile picture" />
                                                 {% endif %}
                                             </div>
                                             <p class="message-list">
-                                                <span class="name">{{username}}</span>
+                                                <span class="name">{{target_user.username}}</span>
                                             </p>
                                         </li>
                                     </ul>
@@ -124,21 +124,23 @@
                             </div>
                             <div class="col-xl-8 col-lg-8 col-md-8 col-sm-9 col-9">
                                 <div class="opened-user-message">
-                                    <span class="name">{{username}}</span>
+                                    <span class="name">{{target_user.username}}</span>
                                 </div>
                                 <div class="message-container">
-                                    <ul class="message-box messageContainerScroll"  id="chat-log">
-                                        {% if target_user.profile.messaging_is_private and  request.user not in target_user.profile.followers.all and request.user != target_user %}
+                                    {% if target_user.profile.messaging_is_private and not request.user in target_user.profile.followers.all and request.user != target_user %}
+                                    <ul class="message-box messageContainerScroll" >
                                         <h1 style="display: flex; justify-content: center; align-items: center;">
                                             This user only allows messages from their followers </br>
                                         </h1>
                                         <p style="display: flex; justify-content: center; align-items: center;" >
                                              <a href="{% url 'guest' target_user.id %}"> Follow them on their profile</a>
                                         </p>    
-                                        {% endif %}
                                     </ul>
+                                    {% else %}
+                                    <ul class="message-box messageContainerScroll" id = "chat-log" >
+                                    </ul>
+                                    {% endif %}
                                 </div>
-                                
                                 {% if not target_user.profile.messaging_is_private or request.user in target_user.profile.followers.all or target_user == request.user %}
                                     <form method="post" id="message-form" class="widget-post__form" enctype="multipart/form-data" name="form" aria-label="post widget">
                                         {% csrf_token %}
@@ -172,6 +174,8 @@
                                             </div>
                                         </div>
                                     </form>
+                                {%else%}
+                                wagwan
                                 {% endif %} 
                          
                             </div>
@@ -248,11 +252,6 @@
             msgListTag.appendChild(timeDiv);
     }
    
-        var openedUserMessage = document.querySelector('.opened-user-message');
-        openedUserMessage.textContent = roomName;
-
-        var messageList = document.querySelector('.message-list');
-        messageList.textContent = roomName;
         
         var chatLog = document.querySelector('.messageContainerScroll');
         chatLog.appendChild(msgListTag);
