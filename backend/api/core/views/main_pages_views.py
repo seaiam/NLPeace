@@ -25,7 +25,7 @@ def home(request):
                 #extract tweet from form
                 tweet_text = form.cleaned_data['content']
                 #pass tweet to nlp classifier
-                result = classify_tweet(tweet_text)
+                result = classify_text(tweet_text)
 
                 if result["prediction"][0] == 2: #Post is appropriate
                     post = form.save(commit=False)
@@ -207,7 +207,7 @@ def comment(request, post_id):
                 #extract text from comment
                 comment_text = form.cleaned_data['content']
                 #pass comment to nlp classifier
-                result = classify_tweet(comment_text)
+                result = classify_text(comment_text)
 
                 if result["prediction"][0] == 2: #Comment is appropriate
                     post = form.save(commit=False)
@@ -358,9 +358,9 @@ def bookmarked_posts(request):
 
 
 
-def classify_tweet(tweet_text):
+def classify_text(text):
     url = 'https://nlpeace-api-2e54e3d268ac.herokuapp.com/classify/'
-    payload = {'text': tweet_text}
+    payload = {'text': text}
     try:
         response = requests.post(url, json=payload)
         if response.status_code == 200:

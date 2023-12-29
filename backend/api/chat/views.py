@@ -34,6 +34,7 @@ def room(request,target_user_id):
         'room_name_json':mark_safe(json.dumps(chat_room.room_name)),
         'username':mark_safe(json.dumps(request.user.username)),
         'upload': UploadForm(),
+        'target_user': target_user
     }
     return render(request, "room.html", context)
 

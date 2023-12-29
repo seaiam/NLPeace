@@ -31,7 +31,15 @@ def profile_settings(request):
         user = User.objects.get(pk=request.user.id)
         if user is None:
             return HttpResponseNotFound
-        return render(request, 'settings.html', {'user': user,'data' : data, 'editUsernameForm': EditUsernameForm(instance=user),'editPasswordForm': PasswordChangeForm(request.user),'privacy_form':PrivacySettingsForm(instance=user.profile)})
+        context = {
+            'user': user,
+            'data' : data, 
+            'editUsernameForm': EditUsernameForm(instance=user),
+            'editPasswordForm': PasswordChangeForm(request.user),
+            'privacy_form':PrivacySettingsForm(instance=user.profile),
+            'messaging_form':MessagingSettingsForm(instance=user.profile)
+        }
+        return render(request, 'settings.html', context)
     
 @login_required
 def update_username(request):
@@ -109,6 +117,29 @@ def privacy_settings_view(request, user_id):
 
     context = {
         'privacy_form': form
+    }
+    
+    return render(request, 'settings.html', context)
+
+@login_required
+def messaging_settings_view(request, user_id):
+    user = User.objects.get(pk=user_id)
+    profile_instance = user.profile
+
+    if request.user != user:  
+        return HttpResponseForbidden("You don't have permission to edit this user's settings.")
+
+    if request.method == "POST":
+        form = MessagingSettingsForm(request.POST, instance=profile_instance)
+        if form.is_valid():
+            form.save()
+            messages.success(request, "Messaging settings updated!")
+            return redirect('profile')
+    else:
+        form = MessagingSettingsForm(instance=profile_instance)
+
+    context = {
+        'messaging_form': form
     }
     
     return render(request, 'settings.html', context)

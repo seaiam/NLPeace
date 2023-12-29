@@ -115,14 +115,14 @@
                                     <ul class="users">
                                         <li class="person" >
                                             <div class="user">
-                                                {% if reply.user.profile and reply.user.profile.pic %}
-                                                <img src="{{ reply.user.profile.pic.url }}" class="reply-user-pic" alt="{{ reply.user.username }}'s profile picture">
+                                                {% if target_user.profile and target_user.profile.pic %}
+                                                <img src="{{ target_user.profile.pic.url }}" class="target_user-pic" alt="{{ target_user.username }}'s profile picture">
                                                 {% else %}
-                                                <img src="{% static 'default.jpg' %}" class="reply-user-pic" alt="{{ reply.user.username }}'s profile picture" />
+                                                <img src="{% static 'default.jpg' %}" class="reply-user-pic" alt="{{ target_user.username }}'s profile picture" />
                                                 {% endif %}
                                             </div>
                                             <p class="message-list">
-                                                <span class="name">{{username}}</span>
+                                                <span class="name">{{target_user.username}}</span>
                                             </p>
                                         </li>
                                     </ul>
@@ -130,11 +130,22 @@
                             </div>
                             <div class="col-xl-8 col-lg-8 col-md-8 col-sm-9 col-9">
                                 <div class="opened-user-message">
-                                    <span class="name">{{username}}</span>
+                                    <span class="name">{{target_user.username}}</span>
                                 </div>
                                 <div class="message-container">
-                                    <ul class="message-box messageContainerScroll"  id="chat-log">
+                                    {% if target_user.profile.messaging_is_private and not request.user in target_user.profile.followers.all and request.user != target_user %}
+                                    <ul class="message-box messageContainerScroll" >
+                                        <h3 style="display: flex; justify-content: center; align-items: center; margin-top:10px">
+                                            This user only allows messages from their followers
+                                        </h3><br>
+                                        <p style="display: flex; justify-content: center; align-items: center;" >
+                                             <a href="{% url 'guest' target_user.id %}"> Follow them on their profile</a>
+                                        </p>    
                                     </ul>
+                                    {% else %}
+                                    <ul class="message-box messageContainerScroll" id = "chat-log" >
+                                    </ul>
+                                    {% endif %}
                                 </div>
                                 <form method="post" id="message-form" class="widget-post__form" enctype="multipart/form-data" name="form" aria-label="post widget">
                                     {% csrf_token %}
@@ -162,12 +173,42 @@
                                             <label for="upload-image" class="post-actions__label">
                                                 <i class="bi bi-filetype-gif" aria-hidden="true"></i> 
                                             </label>
+                                {% if not target_user.profile.messaging_is_private or request.user in target_user.profile.followers.all or target_user == request.user %}
+                                    <form method="post" id="message-form" class="widget-post__form" enctype="multipart/form-data" name="form" aria-label="post widget">
+                                        {% csrf_token %}
+                                        <div class="widget-post__content">
+                                            <textarea name="" id="chat-message-input" class="widget-post__textarea scroller" placeholder="Start a Post..."></textarea>
                                         </div>
-                                        <div class="post-actions__widget">
-                                            <button id="chat-message-submit" type="submit" class="btn post-actions__publish">Send</button>
+                                        <div id="preview_image" style="display: none;">
+                                            <button type="button" class="close" onclick="" style="color: #00001c;">&times;</button>
+                                            <img class="card-img-top mb-2" src="#" />
                                         </div>
-                                    </div>
-                                </form>
+                                        <div class="widget-post__options is--hidden" id="stock-options">
+                                        </div>
+                                        <div class="widget-post__actions post--actions">
+                                            <div class="post-actions__attachments">
+                                                <label for="upload-image" class="post-actions__label" onclick="">
+                                                <i class="bi bi-camera" sty aria-hidden="true"></i> 
+                                                </label>
+                                                &nbsp;
+                
+                                                <label for="upload-image" class="post-actions__label">
+                                                    <i class="bi bi-paperclip" aria-hidden="true"></i> 
+                                                </label>
+                                                &nbsp; 
+                
+                                                <label for="upload-image" class="post-actions__label">
+                                                    <i class="bi bi-filetype-gif" aria-hidden="true"></i> 
+                                                </label>
+                                            </div>
+                                            <div class="post-actions__widget">
+                                                <button id="chat-message-submit" type="submit" class="btn post-actions__publish">Send</button>
+                                            </div>
+                                        </div>
+                                    </form>
+                                {%else%}
+                                {% endif %} 
+                         
                             </div>
                         </div>
                     </div>
@@ -235,6 +276,34 @@
             var nameDiv = document.createElement('div');
             var timeDiv = document.createElement('div');
 
+    
+        if (author === username){
+            msgListTag.className= 'message-right';
+            messageDiv.className = 'message-pic';
+            pTag.className = 'message-text';
+            timeDiv.className= 'message-time';
+
+            pTag.textContent = message.content;
+            timeDiv.textContent = new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+
+            msgListTag.appendChild(timeDiv);
+            msgListTag.appendChild(pTag);
+            msgListTag.appendChild(messageDiv);
+        }
+        else {
+            msgListTag.className ='message-left';
+            messageDiv.className = 'message-pic';
+            pTag.className = 'message-text';
+            timeDiv.className= 'message-time';
+            
+            pTag.textContent = message.content;
+            timeDiv.textContent = new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+
+            msgListTag.appendChild(messageDiv);
+            msgListTag.appendChild(pTag);
+            msgListTag.appendChild(timeDiv);
+    }
+   
         
             if (author === username){
                 msgListTag.className= 'message-right';
