@@ -7,6 +7,6 @@ from . import views
 urlpatterns = [
     path("", views.index, name="messages"),
     path("<int:target_user_id>", views.room, name="room"),
-    path("<str:room_name>/upload/", views.upload, name="upload"),
-    path("<str:room_name>/download/<str:path>", views.download, name="download"),
+    path("<int:target_user_id>/upload/", views.upload, name="upload"),
+    path("download/<str:path>", views.download, name="download"),
 ]
