@@ -110,7 +110,7 @@
                                         <li class="person" >
                                             <div class="user">
                                                 {% if target_user.profile and target_user.profile.pic %}
-                                                <img src="{{ target_user.user.profile.pic.url }}" class="target_user-pic" alt="{{ target_user.username }}'s profile picture">
+                                                <img src="{{ target_user.profile.pic.url }}" class="target_user-pic" alt="{{ target_user.username }}'s profile picture">
                                                 {% else %}
                                                 <img src="{% static 'default.jpg' %}" class="reply-user-pic" alt="{{ target_user.username }}'s profile picture" />
                                                 {% endif %}
