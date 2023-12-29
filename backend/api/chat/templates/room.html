@@ -161,6 +161,8 @@
                                             <label for="gif-upload" class="post-actions__label">
                                                 <i class="bi bi-filetype-gif" aria-hidden="true"></i>
                                             </label>
+                                            
+
                                         </div>
                                         <div class="post-actions__widget">
                                             <button id="chat-message-submit" type="submit" class="btn post-actions__publish">Send</button>
@@ -168,6 +170,15 @@
                                        
                                     </div>
                                 </form>
+                                <!-- giffy -->
+                                <button id="gif-search-button" class="btn btn-primary">Search GIFs</button>
+
+                                <div id="gif-search-modal" style="display:none;">
+                                    <input type="text" id="gif-search-input" placeholder="Search GIFs">
+                                    <button id="gif-search-submit" class="btn btn-info">Search</button>
+                                    <div id="gif-search-results"></div>
+                                </div>
+
                             </div>
                         </div>
                     </div>
@@ -336,6 +347,61 @@
             })
             .catch(error => console.error('Error uploading GIF:', error));
         }
+
+    document.addEventListener('DOMContentLoaded', function() {
+        console.log("DOMContentLoaded event fired");
+    document.getElementById('gif-search-button').addEventListener('click', function(event) {
+    console.log("Modal button clicked"); // debuging
+    event.preventDefault(); 
+    
+    document.getElementById('gif-search-modal').style.display = 'block';
+    });
+
+    document.getElementById('gif-search-submit').addEventListener('click', function(event) {
+        console.log("Search button clicked")
+        event.preventDefault(); 
+        var query = document.getElementById('gif-search-input').value;
+        // fetch(`/search-giphy/?query=${query}`)
+        fetch(`/chat/search-giphy/?query=${query}`)
+
+        .then(response => response.json())
+        .then(data => {
+            displayGifResults(data);
+        })
+        .catch(error => console.error('Error searching GIFs:', error));
+    });
+        function displayGifResults(data) {
+            console.log(data)
+            var resultsContainer = document.getElementById('gif-search-results');
+            resultsContainer.innerHTML = '';
+
+            
+            data.data.forEach(gif => {
+                var img = document.createElement('img');
+                img.src = gif.images.fixed_height.url; 
+                img.style.cursor = 'pointer';
+                img.style.width = '100px'; 
+                img.style.height = '100px';
+                img.style.margin = '5px';
+
+                img.addEventListener('click', function() {
+                    sendGifMessage(gif.images.fixed_height.url); 
+                    document.getElementById('gif-search-modal').style.display = 'none'; 
+                });
+
+                resultsContainer.appendChild(img);
+            });
+        }
+
+        function sendGifMessage(gifUrl) {
+            chatSocket.send(JSON.stringify({
+                'command': 'new_message',
+                'message': '', 
+                'gif_url': gifUrl,
+                'from': username
+            }));
+        }
+    });
 
     </script>
 </body>

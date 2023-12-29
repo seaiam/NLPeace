@@ -174,3 +174,4 @@ CHANNEL_LAYERS = {
 
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 MEDIA_URL = '/media/'
+GIPHY_API_KEY = '9a6zGfy6TBTv459CNi2y3KtOWkB69vOx'
