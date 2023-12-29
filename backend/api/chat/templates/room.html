@@ -129,9 +129,9 @@
                                 <div class="message-container">
                                     {% if target_user.profile.messaging_is_private and not request.user in target_user.profile.followers.all and request.user != target_user %}
                                     <ul class="message-box messageContainerScroll" >
-                                        <h1 style="display: flex; justify-content: center; align-items: center;">
-                                            This user only allows messages from their followers </br>
-                                        </h1>
+                                        <h3 style="display: flex; justify-content: center; align-items: center; margin-top:10px">
+                                            This user only allows messages from their followers
+                                        </h3><br>
                                         <p style="display: flex; justify-content: center; align-items: center;" >
                                              <a href="{% url 'guest' target_user.id %}"> Follow them on their profile</a>
                                         </p>    
@@ -175,7 +175,6 @@
                                         </div>
                                     </form>
                                 {%else%}
-                                wagwan
                                 {% endif %} 
                          
                             </div>
