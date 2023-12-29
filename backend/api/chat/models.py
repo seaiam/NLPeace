@@ -23,3 +23,4 @@ class Message(models.Model):
 
 class FileUpload(models.Model):
     file = models.FileField(upload_to='messageFiles/')
+    message = models.ForeignKey(Message, on_delete=models.CASCADE, default=None)
