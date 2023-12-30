@@ -10,25 +10,13 @@ from core.forms.profile_forms import *
 from core.models.models import *
 from django.contrib.auth.models import User
 from django.http import HttpResponseRedirect
-
+from .services import *
 
 
 @login_required
-def add_block(request,blocked_id):
-    updated_user=Profile.objects.get(pk=request.user.id)
-    blocked_user=User.objects.get(pk=blocked_id)
-    blocked_user_profile = Profile.objects.get(user_id=blocked_id)
-
-    updated_user.blocked.add(blocked_user)
-    updated_user.following.remove(blocked_user)
-    updated_user.followers.remove(blocked_user)
-    updated_user.save()
-
-    blocked_user_profile.followers.remove(updated_user.user)
-    blocked_user_profile.following.remove(updated_user.user)
-    blocked_user_profile.save()
-    
-    messages.error(request,"User Blocked Successfully.")      
+def add_block(request, blocked_id):
+    block_user(request.user.id, blocked_id)
+    messages.error(request, "User Blocked Successfully.")
     return redirect('profile')
 
 @login_required
