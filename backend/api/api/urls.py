@@ -45,7 +45,6 @@ urlpatterns = [
     path('guest/<int:user_id>/', main_pages_views.guest ,name="guest"),
     path('like/<int:post_id>/', main_pages_views.like, name='like'),
     path('dislike/<int:post_id>/', main_pages_views.dislike, name='dislike'),
-    path('report/<int:post_id>', main_pages_views.report, name='report'),
     path('follow/', profile_views.follow_user ,name="follow_user"),
     path('unfollow/', profile_views.unfollow_user ,name="unfollow_user"),
     path('accounts/profile/notifications', main_pages_views.notifications, name='notifications'), 
@@ -55,6 +54,8 @@ urlpatterns = [
     path('save_post/<int:post_id>/', main_pages_views.save_post, name='save_post'),
     path('bookmarks/', main_pages_views.bookmarked_posts, name='bookmarked_posts'),
     path('delete_post/', profile_views.delete_post, name='delete_post'),
+    path('report/<int:post_id>/', main_pages_views.report, name='report'),
+    path('report_post/<int:post_id>/', main_pages_views.report_post, name='report_post')
 ]
 
 if settings.DEBUG:

@@ -161,7 +161,7 @@
                     <div class="feed post-actions__label">
                         {% with counter=forloop.counter|stringformat:"s" %}
                         {% with id="report-"|add:counter %}
-                        <i class="far fa-flag" onclick="toggleModal('{{ id }}')" aria-hidden="true"> Report</i>
+                        <i class="far fa-flag" onclick="toggleModal('{{ id }}')" aria-hidden="true">Report</i>
                         <div id="{{ id }}" class="popup">
                             <div class="popup-content">
                                 <span class="close" onclick="toggleModal('{{ id }}')">&times;</span>

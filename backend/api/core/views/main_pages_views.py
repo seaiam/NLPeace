@@ -48,7 +48,7 @@ def home(request):
             Q(user__profile__is_private=False) | 
             Q(user__in=user_ids_following) |  
             Q(user=request.user) |
-            ~Q(user__in=blocked)
+            Q(user__in=blocked)
         ).distinct().order_by('-created_at')
 
         likes = [post for post in posts if post.is_likeable_by(request.user)]
@@ -337,7 +337,7 @@ def save_post(request, post_id):
 def bookmarked_posts(request):
     saved_posts = PostSave.objects.filter(saver=request.user).select_related('post').order_by('-post__created_at') #orders the results by the creation date of the posts in descending order (newest first).
     posts = [save.post for save in saved_posts]
-
+    reported_posts = [post for post in posts if not post.is_reportable_by(request.user)]
     likes = [post for post in posts if post.is_likeable_by(request.user)]
     dislikes = [post for post in posts if post.is_dislikeable_by(request.user)]
     saved_post_ids = [post.id for post in posts if not post.is_saveable_by(request.user)] 
@@ -357,12 +357,26 @@ def bookmarked_posts(request):
         'data' : data,
         'reportPostForm': PostReportForm(), 
         'reposted_post_ids': reposted_post_ids,
-        'followPost' : following_posts
+        'followPost' : following_posts,
+        'reported_posts' : reported_posts
         }
     return render(request, 'bookmark.html', context)
 
     
-
+@login_required
+def report_post(request, post_id):
+    # Only allow POST requests for saving a post. Better to keep, I ran into this issue wasted time because no message telling me it wasn't POST
+    if request.user.is_authenticated:
+        if request.method == 'POST':
+            post_to_report = Post.objects.get(id=post_id)
+            reportedExists = PostReport.objects.filter(post=post_to_report, reporter=request.user).exists()
+            print('========')
+            print(PostReport.objects.filter(post=post_to_report))
+            if reportedExists:
+                PostReport.objects.filter(post=post_to_report, reporter=request.user).delete()
+            else:
+                PostReport.objects.create(post=post_to_report, reporter=request.user)
+            return redirect('home')
 
 
 def classify_tweet(tweet_text):

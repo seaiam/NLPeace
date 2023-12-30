@@ -35,7 +35,8 @@ COPY ./api /api
 WORKDIR /api
 EXPOSE 8000
 
-
+# Install libffi-dev 
+RUN apk add --update --no-cache libffi-dev
 
 RUN python -m venv /py && \
     /py/bin/pip install --upgrade pip && \
