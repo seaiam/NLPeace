@@ -56,7 +56,7 @@ urlpatterns = [
     path('save_post/<int:post_id>/', main_pages_views.save_post, name='save_post'),
     path('bookmarks/', main_pages_views.bookmarked_posts, name='bookmarked_posts'),
     path('delete_post/', profile_views.delete_post, name='delete_post'),
-    path('accounts/profile/messages/', include("chat.urls"))
+    path('accounts/profile/messages/', include("chat.urls")),
     path('report/<int:post_id>/', main_pages_views.report, name='report'),
     path('report_post/<int:post_id>/', main_pages_views.report_post, name='report_post')
 ]

@@ -127,23 +127,24 @@
                     <div class="feed" >
                         <span class="like-count">{{ post.get_number_likes }}</span>
                         {% if post in likes %}
-                        <a href="{% url 'like' post.id %}" class="like-link"><i class="far fa-thumbs-up" aria-hidden="true"></i> </a>
-                                {% else %}
-                                
-                        <a href="{% url 'like' post.id %}" class="like-link"><i class="far fa-thumbs-up" aria-hidden="true"></i> Liked </a>
-                                
-                                
+                            <a href="{% url 'like' post.id %}" class="like-link">
+                                <i class="far fa-thumbs-up" aria-hidden="true"></i> 
+                            </a>
+                        {% else %}
+                            <a href="{% url 'like' post.id %}" class="post-liked like-link">
+                                <i class="far fa-thumbs-up" aria-hidden="true"></i> 
+                            </a>  
                         {% endif %}
                     </div>
                     <div class="feed" >
                         <span class="dislike-count">{{ post.get_number_dislikes }}</span>
                         {% if post in dislikes  %}
-                        <a href="{% url 'dislike' post.id %}" class="like-link"><i class="far fa-thumbs-down" aria-hidden="true"></i> </a>
-                                {% else %}
-                                
-                        <a href="{% url 'dislike' post.id %}" class="like-link"><i class="far fa-thumbs-down" aria-hidden="true"></i> Disliked</a>
-                                
-                        {% endif %} 
+                            <a href="{% url 'dislike' post.id %}" class="like-link"><i class="far fa-thumbs-down" aria-hidden="true"></i> </a>
+                        {% else %}
+                            <a href="{% url 'dislike' post.id %}" class="post-disliked like-link">
+                                <i class="far fa-thumbs-down" aria-hidden="true"></i> 
+                            </a>
+                        {% endif %}  
                     </div>
 
                     <div class="feed">

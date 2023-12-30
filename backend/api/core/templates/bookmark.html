@@ -122,48 +122,7 @@
                             {% endif %}
                         </form>
 
-                    <div class="feed">
-                        
-                    {% if post in reported_posts %}
-                        
-                    <form method="post" action="{% url 'report_post' post.id %}">
-                        {% csrf_token %}
-                        <div class="feed-reposted"><i class="fa fa-flag" aria-hidden="true">  <button type="submit" class = "reposted-button">Reported</button></i> </div>
-
-                    </form>
-                    {% else %}
                     
-                    <div class="feed post-actions__label">
-                        {% with counter=forloop.counter|stringformat:"s" %}
-                        {% with id="report-following-"|add:counter %}
-                        
-                        <i class="far fa-flag" onclick="toggleModal('{{id}}')" aria-hidden="true"> Report</i>
-                        <div id="{{ id }}" class="popup">
-                            <div class="popup-content">
-                                <span class="close" onclick="toggleModal('{{ id }}')">&times;</span>
-                                <p class="modalTitle">Report</p>
-                                <form action= "{% url 'report' post.id %}" method="POST">
-                                    {% csrf_token %}
-                                    
-                                    <label for="{{ reportPostForm.category.id_for_label }}" class="form-outline mb-4" style="font-size:20px;">Category</label>
-                                    {{ reportPostForm.category }}
-                                    <br>
-                                    <label for="{{ reportPostForm.info.id_for_label }}" class="form-outline mb-4" style="font-size:20px;">Additional information</label>
-                                    {{ reportPostForm.info }}
-                                    <div class="text-md-right">
-                                        <button type="submit" class="saveButton" onclick="reportPost('{{ post.id }}')">Report</button>
-                                    </div>
-                                    
-                                </form>
-                            </div>
-                        </div>
-                        {% endwith %}
-                        {% endwith %}
-                    </div>
-                    
-                    {% endif %}
-                    
-                </div>
                 
                     </div>
 
@@ -173,21 +132,21 @@
                     <div class="feed" >
                         <span class="like-count">{{ post.get_number_likes }}</span>
                         {% if post in likes %}
-                        <a href="{% url 'like' post.id %}" class="like-link"><i class="far fa-thumbs-up" aria-hidden="true"></i> </a>
-                                {% else %}
-                                <span class="post-liked">
-                                    <i class="far fa-thumbs-up" aria-hidden="true"></i>
-                                </span>    
+                            <a href="{% url 'like' post.id %}" class="like-link"><i class="far fa-thumbs-up" aria-hidden="true"></i> </a>
+                        {% else %}
+                            <a href="{% url 'like' post.id %}" class="post-liked like-link">
+                                <i class="far fa-thumbs-up" aria-hidden="true"></i> 
+                            </a>  
                         {% endif %}
                     </div>
                     <div class="feed" >
                         <span class="dislike-count">{{ post.get_number_dislikes }}</span>
                         {% if post in dislikes  %}
-                        <a href="{% url 'dislike' post.id %}" class="like-link"><i class="far fa-thumbs-down" aria-hidden="true"></i> </a>
-                                {% else %}
-                                <span class="post-disliked">
-                                    <i class="far fa-thumbs-down" aria-hidden="true"></i>
-                                </span>
+                            <a href="{% url 'dislike' post.id %}" class="like-link"><i class="far fa-thumbs-down" aria-hidden="true"></i> </a>
+                        {% else %}
+                            <a href="{% url 'dislike' post.id %}" class="post-disliked like-link">
+                                <i class="far fa-thumbs-down" aria-hidden="true"></i> 
+                            </a>
                         {% endif %} 
                     </div>
 
@@ -211,14 +170,48 @@
                     <form method="post" action="{% url 'repost' post.id %}">
                         {% csrf_token %}
                         {% if post.id in reposted_post_ids %}
-                            <div class="feed-reposted"><i class="fa fa-retweet" aria-hidden="true">  <button type="button" class = "reposted-button" disabled></button></i> </div>
+                            <div class="feed-reposted"><i class="fa fa-retweet" aria-hidden="true">  <button type="submit" class = "reposted-button" ></button></i> </div>
                         {% else %}
-                        <div class="feed">
-                            <button type="submit" class = "repost-button"><i class="fa fa-retweet" aria-hidden="true"></i> </button>
-                        </div>
+                        <div class="feed"> <i class="fa fa-retweet" aria-hidden="true"> <button type="submit" class = "repost-button"> </button> </i> </div>
                         {% endif %}
                     </form>
-                 
+
+                    {% if post in reported_posts %}
+                        <form method="post" action="{% url 'report_post' post.id %}">
+                            {% csrf_token %}
+                            <div class="feed-reposted"><i class="fa fa-flag" aria-hidden="true">  <button type="submit" class = "reposted-button">Reported</button></i> </div>
+                        </form>
+                    {% else %}
+                        
+                        <div class="feed post-actions__label">
+                            {% with counter=forloop.counter|stringformat:"s" %}
+                            {% with id="report-following-"|add:counter %}
+                            
+                            <i class="far fa-flag" onclick="toggleModal('{{id}}')" aria-hidden="true"> Report</i>
+                            <div id="{{ id }}" class="popup">
+                                <div class="popup-content">
+                                    <span class="close" onclick="toggleModal('{{ id }}')">&times;</span>
+                                    <p class="modalTitle">Report</p>
+                                    <form action= "{% url 'report' post.id %}" method="POST">
+                                        {% csrf_token %}
+                                        
+                                        <label for="{{ reportPostForm.category.id_for_label }}" class="form-outline mb-4" style="font-size:20px;">Category</label>
+                                        {{ reportPostForm.category }}
+                                        <br>
+                                        <label for="{{ reportPostForm.info.id_for_label }}" class="form-outline mb-4" style="font-size:20px;">Additional information</label>
+                                        {{ reportPostForm.info }}
+                                        <div class="text-md-right">
+                                            <button type="submit" class="saveButton" onclick="reportPost('{{ post.id }}')">Report</button>
+                                        </div>
+                                        
+                                    </form>
+                                </div>
+                            </div>
+                            {% endwith %}
+                            {% endwith %}
+                        </div>
+                        
+                    {% endif %}
                 </div>
                 {% endif %}
 
