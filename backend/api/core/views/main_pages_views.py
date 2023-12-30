@@ -55,6 +55,7 @@ def home(request):
         dislikes = [post for post in posts if post.is_dislikeable_by(request.user)]
         saved_post_ids = [post.id for post in posts if not post.is_saveable_by(request.user)] 
         form = PostForm()
+        reported_posts = [post for post in posts if not post.is_reportable_by(request.user)]
         reposted_post_ids = Repost.objects.filter(user=request.user).values_list('post_id', flat=True)
         data=Notifications.objects.filter(user=request.user).order_by('-id')
         following_users = request.user.profile.following.all()
@@ -69,7 +70,8 @@ def home(request):
             'data' : data,
             'reportPostForm': PostReportForm(), 
             'reposted_post_ids': reposted_post_ids,
-            'followPost' : following_posts
+            'followPost' : following_posts,
+            'reported_posts': reported_posts
             }
         return render(request, 'index.html',context)
     else:
