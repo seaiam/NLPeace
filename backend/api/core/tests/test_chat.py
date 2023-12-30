@@ -30,7 +30,7 @@ class ChatTest(TestCase):
         expected = f"/accounts/login/?next=/accounts/profile/messages/{self.user2.id}"
         self.assertRedirects(response, expected) 
 
-    def test_chat_fileupload(self):
+    def test_chat_file_upload(self):
         self.client.login(username=self.username1, password=self.password)
         self.client.get(reverse('room', args=[self.user2.id]))
         data = {'file': SimpleUploadedFile("../static/testProfilePic.jpg", b"file_content")}
