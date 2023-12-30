@@ -25,7 +25,7 @@ def home(request):
                 #extract tweet from form
                 tweet_text = form.cleaned_data['content']
                 #pass tweet to nlp classifier
-                result = classify_tweet(tweet_text)
+                result = classify_text(tweet_text)
 
                 if result["prediction"][0] == 2: #Post is appropriate
                     post = form.save(commit=False)
@@ -149,6 +149,8 @@ def guest(request,user_id):
     dislikes = [post for post in all_Posts if post.is_dislikeable_by(user)]
     followers = Profile.objects.get(user=user).followers.all()
     following = Profile.objects.get(user=user).following.all()
+    liked_posts = Post.objects.filter(postlike__liker=user).distinct().order_by('-created_at')
+    saved_post_ids = [post.id for post in posts if not post.is_saveable_by(user)] 
 
     context = {
         'user':user,
@@ -159,6 +161,9 @@ def guest(request,user_id):
         'media_posts':image_posts,
         'likes': likes,
         'dislikes': dislikes,
+        'liked_posts': liked_posts,
+        'saved_post_ids': saved_post_ids,
+        'reportPostForm': PostReportForm(),
         'reportUserForm': UserReportForm(),
         'followers' : followers,
         'following' : following,
@@ -209,7 +214,7 @@ def comment(request, post_id):
                 #extract text from comment
                 comment_text = form.cleaned_data['content']
                 #pass comment to nlp classifier
-                result = classify_tweet(comment_text)
+                result = classify_text(comment_text)
 
                 if result["prediction"][0] == 2: #Comment is appropriate
                     post = form.save(commit=False)
@@ -234,7 +239,7 @@ def comment(request, post_id):
         post = Post.objects.get(pk=post_id)
         replies = Post.objects.filter(parent_post=post_id)
         form = PostForm()
-        context = {'post': post, 'form': form, 'replies':replies}
+        context = {'post': post, 'form': form, 'replies':replies, 'reportPostForm': PostReportForm()}
         return render(request, 'comment.html', context)
     else:
         #redirect user to login page
@@ -381,9 +386,9 @@ def report_post(request, post_id):
             return redirect('home')
 
 
-def classify_tweet(tweet_text):
+def classify_text(text):
     url = 'https://nlpeace-api-2e54e3d268ac.herokuapp.com/classify/'
-    payload = {'text': tweet_text}
+    payload = {'text': text}
     try:
         response = requests.post(url, json=payload)
         if response.status_code == 200:

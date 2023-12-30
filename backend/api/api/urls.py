@@ -20,6 +20,7 @@ from core.views import authentication_views, main_pages_views, profile_views
 from django.conf import settings
 from django.conf.urls.static import static
 
+
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('auth/', include("django.contrib.auth.urls")),
@@ -39,6 +40,7 @@ urlpatterns = [
     path('forget_password/', authentication_views.ForgetPassword,name='forget_password'),
     path('change_password/<token>/',authentication_views.ChangePassword,name='change_password'),
     path('user/<int:user_id>/privacy/', profile_views.privacy_settings_view, name='privacy_settings'),
+     path('user/<int:user_id>/messaging_settings/', profile_views.messaging_settings_view, name='messaging_settings'),
     path('comment/<int:post_id>', main_pages_views.comment, name='comment'),
     path('repost/<int:post_id>/', main_pages_views.repost, name='repost'),
     path('accounts/profile/search/',profile_views.search_user,name="search_user"),
@@ -54,6 +56,7 @@ urlpatterns = [
     path('save_post/<int:post_id>/', main_pages_views.save_post, name='save_post'),
     path('bookmarks/', main_pages_views.bookmarked_posts, name='bookmarked_posts'),
     path('delete_post/', profile_views.delete_post, name='delete_post'),
+    path('accounts/profile/messages/', include("chat.urls"))
     path('report/<int:post_id>/', main_pages_views.report, name='report'),
     path('report_post/<int:post_id>/', main_pages_views.report_post, name='report_post')
 ]

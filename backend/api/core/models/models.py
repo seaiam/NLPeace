@@ -13,6 +13,7 @@ class Profile(models.Model):
     forget_password_token=models.CharField(max_length=100,default='')
     is_private = models.BooleanField(default=True)
     is_banned = models.BooleanField(default=False)
+    messaging_is_private = models.BooleanField(default=True)
 
 class ProfileWarning(models.Model):
     offender = models.ForeignKey(User, related_name='offender', on_delete=models.CASCADE)

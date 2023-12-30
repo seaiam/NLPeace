@@ -44,6 +44,7 @@ RUN python -m venv /py && \
     apk add --update --no-cache --virtual .tmp-build-deps \
         build-base postgresql-dev musl-dev && \
     /py/bin/pip install -r /tmp/requirements.txt && \
+    /py/bin/pip install -U 'channels[daphne]' && \
     rm -rf /tmp && \
     apk del .tmp-build-deps && \
     adduser \
