@@ -82,12 +82,11 @@ def repost(request, post_id):
     if request.user.is_authenticated:
         if request.method == 'POST':
             post_to_repost = Post.objects.get(id=post_id)
-            repostedExists = Repost.objects.filter(post=post_to_repost, user=request.user).exists()
-            if repostedExists:
+            if Repost.objects.filter(post=post_to_repost, user=request.user).exists():
                 Repost.objects.filter(post=post_to_repost, user=request.user).delete()
             else:
                 Repost.objects.create(post=post_to_repost, user=request.user)
-        return redirect('home')
+        return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
     else:
         return redirect('login')
 

@@ -123,7 +123,7 @@
                 <hr>
                
                 {% if post.user.id != request.user.id %}
-                <div class ="icons-list" >
+                <div class ="icons-list1" >
                     <div class="feed" >
                         <span class="like-count">{{ post.get_number_likes }}</span>
                         {% if post in likes %}
@@ -139,7 +139,9 @@
                     <div class="feed" >
                         <span class="dislike-count">{{ post.get_number_dislikes }}</span>
                         {% if post in dislikes  %}
-                            <a href="{% url 'dislike' post.id %}" class="like-link"><i class="far fa-thumbs-down" aria-hidden="true"></i> </a>
+                            <a href="{% url 'dislike' post.id %}" class="like-link">
+                                <i class="far fa-thumbs-down" aria-hidden="true"></i> 
+                            </a>
                         {% else %}
                             <a href="{% url 'dislike' post.id %}" class="post-disliked like-link">
                                 <i class="far fa-thumbs-down" aria-hidden="true"></i> 
@@ -163,21 +165,21 @@
                             </div>
                         {% endif %}
                     </form>
+                    
 
                     <form method="post" action="{% url 'repost' post.id %}">
                         {% csrf_token %}
                         {% if post.id in reposted_post_ids %}
-                            <div class="feed-reposted"><i class="fa fa-retweet" aria-hidden="true">  <button type="submit" class = "repost-button">Reposted</button></i> </div>
+                            <div class="feed-reposted">  
+                                <button type="submit" class = "reposted-button"><i class="fa fa-retweet" aria-hidden="true"></i></button> 
+                            </div>
                         {% else %}
-                        <div class="feed">
-                            <button type="submit" class = "repost-button"><i class="fa fa-retweet" aria-hidden="true"></i> </button>
-                        </div>
+                            <div class="feed">
+                                <button type="submit" class = "repost-button"><i class="fa fa-retweet" aria-hidden="true"></i></button>
+                            </div>
                         {% endif %}
                     </form>
 
-
-                    <div class="feed">
-                        
                         {% if post in reported_posts %}
                             
                         <form method="post" action="{% url 'report_post' post.id %}">
@@ -219,7 +221,7 @@
                         
                     </div>
                
-                </div>
+                
                      
                 {% else %}
             
@@ -227,21 +229,25 @@
                     <div class="feed" >
                         <span class="like-count">{{ post.get_number_likes }}</span>
                         {% if post in likes %}
-                        <a href="{% url 'like' post.id %}" class="like-link"><i class="far fa-thumbs-up" aria-hidden="true"></i> </a>
-                                {% else %}
-                                <span class="post-liked">
-                                    <i class="far fa-thumbs-up" aria-hidden="true"></i>
-                                </span>    
+                            <a href="{% url 'like' post.id %}" class="like-link">
+                                <i class="far fa-thumbs-up" aria-hidden="true"></i> 
+                            </a>
+                        {% else %}
+                            <a href="{% url 'like' post.id %}" class="post-liked like-link">
+                                <i class="far fa-thumbs-up" aria-hidden="true"></i> 
+                            </a>     
                         {% endif %}
                     </div>
                     <div class="feed" >
                         <span class="dislike-count">{{ post.get_number_dislikes }}</span>
                         {% if post in dislikes  %}
-                        <a href="{% url 'dislike' post.id %}" class="like-link"><i class="far fa-thumbs-down" aria-hidden="true"></i> </a>
-                                {% else %}
-                                <span class="post-disliked">
-                                    <i class="far fa-thumbs-down" aria-hidden="true"></i>
-                                </span>
+                            <a href="{% url 'dislike' post.id %}" class="like-link">
+                                <i class="far fa-thumbs-down" aria-hidden="true"></i> 
+                            </a>
+                        {% else %}
+                            <a href="{% url 'dislike' post.id %}" class="post-disliked like-link">
+                                <i class="far fa-thumbs-down" aria-hidden="true"></i> 
+                            </a>
                         {% endif %} 
                     </div>
 
@@ -265,11 +271,13 @@
                     <form method="post" action="{% url 'repost' post.id %}">
                         {% csrf_token %}
                         {% if post.id in reposted_post_ids %}
-                            <div class="feed-reposted"><i class="fa fa-retweet" aria-hidden="true">  <button type="button" class = "reposted-button" disabled></button></i> </div>
+                            <div class="feed-reposted">
+                                <button type="submit" class = "reposted-button" ><i class="fa fa-retweet" aria-hidden="true"></i></button>
+                            </div>
                         {% else %}
-                        <div class="feed">
-                            <button type="submit" class = "repost-button"><i class="fa fa-retweet" aria-hidden="true"></i> </button>
-                        </div>
+                            <div class="feed">
+                                <button type="submit" class = "repost-button"><i class="fa fa-retweet" aria-hidden="true"></i></button> 
+                            </div>
                         {% endif %}
                     </form>
                  
@@ -279,7 +287,7 @@
                    
             </div>
            </div>      
-            </div>
+        </div>
         {% empty %}
             <li>No posts available.</li>
         {% endfor %}
@@ -319,27 +327,32 @@
                         <h6 class="card-subtitle mb-2" style="float: right; margin-top:5px;">{{ post.created_at|date:"M d, Y H:i" }}</h6>
                         <br>
                         <hr>
-                        <div class="icons-list">
+                        <div class="icons-list1">
                             <div class="feed" >
                                 <span class="like-count">{{ post.get_number_likes }}</span>
                                 {% if post in likes %}
-                                <a href="{% url 'like' post.id %}" class="like-link"><i class="far fa-thumbs-up" aria-hidden="true"></i> </a>
-                                        {% else %}
-                                        <span class="post-liked">
-                                            <i class="far fa-thumbs-up" aria-hidden="true"></i>
-                                        </span>
+                                    <a href="{% url 'like' post.id %}" class="like-link">
+                                        <i class="far fa-thumbs-up" aria-hidden="true"></i> 
+                                    </a>
+                                {% else %}
+                                    <a href="{% url 'like' post.id %}" class="post-liked like-link">
+                                        <i class="far fa-thumbs-up" aria-hidden="true"></i> 
+                                    </a>
                                 {% endif %}
                             </div>
                             <div class="feed" >
                                 <span class="dislike-count">{{ post.get_number_dislikes }}</span>
                                 {% if post in dislikes  %}
-                                <a href="{% url 'dislike' post.id %}" class="like-link"><i class="far fa-thumbs-down" aria-hidden="true"></i></a>
-                                        {% else %}
-                                        <span class="post-disliked">
-                                            <i class="far fa-thumbs-down" aria-hidden="true"></i>
-                                        </span>
+                                    <a href="{% url 'dislike' post.id %}" class="like-link">
+                                        <i class="far fa-thumbs-down" aria-hidden="true"></i>
+                                    </a>
+                                {% else %}
+                                    <a href="{% url 'dislike' post.id %}" class="post-disliked like-link">
+                                        <i class="far fa-thumbs-down" aria-hidden="true"></i> 
+                                    </a>
                                 {% endif %}
                             </div>
+
                             <div class="feed">
                                 <a class="comment-link" href="{% url 'comment' post_id=post.id %}"><i class="far fa-comment" aria-hidden="true"></i></a>
                             </div>
@@ -360,7 +373,9 @@
                             <form method="post" action="{% url 'repost' post.id %}">
                                 {% csrf_token %}
                                 {% if post.id in reposted_post_ids %}
-                                    <div class="feed-reposted"><i class="fa fa-retweet" aria-hidden="true">  <button type="button" class="reposted-button">Reposted</button></i></div>
+                                    <div class="feed-reposted">  
+                                        <button type="submit" class="reposted-button"><i class="fa fa-retweet" aria-hidden="true"></i></button>
+                                    </div>
                                 {% else %}
                                     <div class="feed">
                                         <button type="submit" class="repost-button"><i class="fa fa-retweet" aria-hidden="true"></i></button>
@@ -368,10 +383,20 @@
                                 {% endif %}
                             </form>
 
+                            {% if post in reported_posts %}
+                            
+                            <form method="post" action="{% url 'report_post' post.id %}">
+                                {% csrf_token %}
+                                <div class="feed-reposted"><i class="fa fa-flag" aria-hidden="true">  <button type="submit" class = "reposted-button">Reported</button></i> </div>
+    
+                            </form>
+                            {% else %}
+
                             <div class="feed post-actions__label">
                                 {% with counter=forloop.counter|stringformat:"s" %}
                                 {% with id="report-following-"|add:counter %}
-                                <i class="far fa-flag" onclick="toggleModal('{{id}}')" aria-hidden="true"></i>
+
+                                <i class="far fa-flag" onclick="toggleModal('{{id}}')" aria-hidden="true"> Report</i>
                                 <div id="{{ id }}" class="popup">
                                     <div class="popup-content">
                                         <span class="close" onclick="toggleModal('{{ id }}')">&times;</span>
@@ -392,6 +417,7 @@
                                 {% endwith %}
                                 {% endwith %}
                             </div>
+                            {% endif %}
                         </div>
                     </div>
                 </div>
