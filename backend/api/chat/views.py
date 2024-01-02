@@ -4,17 +4,20 @@ from django.shortcuts import render
 from django.utils.safestring import mark_safe
 from .chat_service import getChatRoom
 import json
+from django.contrib import messages
 User = get_user_model()
 
 def index(request):
     users = User.objects.all()
     searched_term = request.GET.get('search','')
     searched_users = User.objects.filter(username__icontains=searched_term)
+    if searched_term and not searched_users.exists():
+        messages.warning(request, f'No user found with the username: {searched_term}')
     context = {
         'users' : users,
         'searched_term': searched_term,
         'searched_users': searched_users
-    }
+    }   
     return render(request, "messages.html", context)
 
 @login_required
