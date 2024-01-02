@@ -98,16 +98,19 @@
                                 <div class="users-container">
                                     <div class="message-search-box">
                                         <div class="input-group">
-                                            <input class="form-control" placeholder="Search">
+                                            <form method="get" action="{% url 'messages' %}" >
+                                                {% csrf_token %}
+                                            <input class="form-control" placeholder="Search" name="search" >
                                             <div class="input-group-btn">
-                                                <button type="button" class="btn btn-info">
+                                                <button type="submit" class="btn btn-info">
                                                     <i class="fa fa-search"></i>
                                                 </button>
                                             </div>
+                                        </form>
                                         </div>
                                     </div>
                                     <ul class="users">
-                                    {% for user in users%}
+                                    {% for user in searched_users %}
                                         <a href="{% url 'room' target_user_id=user.id %}" style = "color:#00001c; text-decoration: none;">
                                             <li class="person" >
                                                 <div class="user">

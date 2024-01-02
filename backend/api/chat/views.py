@@ -8,9 +8,12 @@ User = get_user_model()
 
 def index(request):
     users = User.objects.all()
-    
+    searched_term = request.GET.get('search','')
+    searched_users = User.objects.filter(username__icontains=searched_term)
     context = {
-        'users' : users
+        'users' : users,
+        'searched_term': searched_term,
+        'searched_users': searched_users
     }
     return render(request, "messages.html", context)
 
@@ -18,10 +21,11 @@ def index(request):
 def room(request,target_user_id):
     target_user = User.objects.filter(id = target_user_id).first()
     chat_room = getChatRoom(request.user, target_user)
-    
+   
     context = {
         'room_name_json':mark_safe(json.dumps(chat_room.room_name)),
         'username':mark_safe(json.dumps(request.user.username)),
-        'target_user': target_user
+        'target_user': target_user,
+   
     }
     return render(request, "room.html", context)
