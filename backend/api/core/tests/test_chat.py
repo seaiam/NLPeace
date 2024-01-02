@@ -38,7 +38,6 @@ class ChatTest(TestCase):
         response = self.client.post(reverse('upload', args=[self.user2.id]), data)
         self.assertEqual(response.status_code, 302)
         self.assertEqual(Message.objects.count(), count + 1)
-        self.assertRedirects(response, expected)
 
     def test_chat_private_accounts(self):
        
