@@ -5,7 +5,7 @@ from django.shortcuts import redirect, render
 from django.utils.safestring import mark_safe
 from django.urls import reverse
 from .chat_service import getChatRoom
-from .forms import UploadForm
+from .forms import UploadFileForm, UploadImageForm
 from .models import Message
 import json
 import mimetypes
@@ -33,22 +33,37 @@ def room(request,target_user_id):
         'room_name': chat_room.room_name,
         'room_name_json':mark_safe(json.dumps(chat_room.room_name)),
         'username':mark_safe(json.dumps(request.user.username)),
-        'upload': UploadForm(),
-        'target_user': target_user
+        'upload_file': UploadFileForm(),
+        'upload_image': UploadImageForm(),
+        'target_user': target_user,
     }
     return render(request, "room.html", context)
 
 @login_required
-def upload(request, target_user_id):
+def upload_file(request, target_user_id):
     if request.user.is_authenticated:
         if request.method == "POST":
-            form = UploadForm(request.POST, request.FILES)
+            form = UploadFileForm(request.POST, request.FILES)
             if form.is_valid():
                 target_user = User.objects.filter(id=target_user_id).first()
                 room = getChatRoom(request.user, target_user)
                 upload = form.save(commit=False)
                 match = re.match(FILE_PATH_PATTERN, upload.file.path)
                 message = Message.objects.create(author=request.user, content=match.group("filename"), room_id=room, is_file_download=True)
+                upload.message = message
+                upload.save()
+    return redirect(reverse("room", args=[target_user_id]))
+
+@login_required
+def upload_image(request, target_user_id):
+    if request.user.is_authenticated:
+        if request.method == "POST":
+            form = UploadImageForm(request.POST, request.FILES)
+            if form.is_valid():
+                target_user = User.objects.filter(id=target_user_id).first()
+                room = getChatRoom(request.user, target_user)
+                upload = form.save(commit=False)
+                message = Message.objects.create(author=request.user, content='', room_id=room, is_image=True)
                 upload.message = message
                 upload.save()
     return redirect(reverse("room", args=[target_user_id]))

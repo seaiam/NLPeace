@@ -24,11 +24,18 @@ class ChatConsumer(WebsocketConsumer):
         return result
     
     def message_to_json(self,message):
+        if message.is_image:
+            upload = message.imageupload_set.first()
+            src = upload.image.url
+        else:
+            src = ''
         return {
             'author':message.author.username,
             'content':message.content,
             'timestamp':str(message.timestamp),
-            'is_file_download': str(message.is_file_download)
+            'is_file_download': message.is_file_download,
+            'is_image': message.is_image,
+            'src': src,
         }
     
     def new_message(self,data):

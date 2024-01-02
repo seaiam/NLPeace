@@ -161,12 +161,12 @@
                                         </div>
                                         <div class="widget-post__actions post--actions">
                                             <div class="post-actions__attachments">
-                                                <label for="upload-image" class="post-actions__label" onclick="">
+                                                <label for="upload-image" class="post-actions__label" onclick="clickElement('{{ upload_image.image.id_for_label }}')">
                                                 <i class="bi bi-camera" sty aria-hidden="true"></i> 
                                                 </label>
                                                 &nbsp;
                 
-                                                <label for="upload-image" class="post-actions__label" onclick="clickElement('{{ upload.file.id_for_label }}')">
+                                                <label for="upload-image" class="post-actions__label" onclick="clickElement('{{ upload_file.file.id_for_label }}')">
                                                 <i class="bi bi-paperclip" aria-hidden="true"></i> 
                                                 </label>    
                                                 &nbsp; 
@@ -191,9 +191,14 @@
         </div>
     </div>
 
-    <form id='room-file-upload-form' action="{% url 'upload' room_name  %}" class="d-none" enctype="multipart/form-data" method="POST">
+    <form id='room-file-upload-form' action="{% url 'upload_file' room_name  %}" class="d-none" enctype="multipart/form-data" method="POST">
         {% csrf_token %}
-        {{ upload.file }}
+        {{ upload_file.file }}
+    </form>
+
+    <form id='room-image-upload-form' action="{% url 'upload_image' room_name  %}" class="d-none" enctype="multipart/form-data" method="POST">
+        {% csrf_token %}
+        {{ upload_image.image }}
     </form>
 
     <script src="{% static 'reconnecting-websocket.js' %}"></script>
@@ -230,9 +235,12 @@
 
         function getContent(message) {
             let element = null;
-            if (message.is_file_download == 'True') {
+            if (message.is_file_download) {
                 element = document.createElement('a');
                 element.href = `download/${message.content}`;
+            } else if (message.is_image) {
+                element = document.createElement('img');
+                element.src = message.src
             } else {
                 element = document.createElement('p');
             }
@@ -341,11 +349,17 @@
             messageInputDom.value = '';
         };
 
-        document.querySelector('#{{ upload.file.id_for_label }}').onchange = function(e) {
+        document.querySelector('#{{ upload_file.file.id_for_label }}').onchange = function(e) {
             if (e.target.files && e.target.files.length) {
                 const form = document.querySelector('#room-file-upload-form').submit();
             }
         };
+
+        document.querySelector('#{{ upload_image.image.id_for_label }}').onchange = function(e) {
+            if (e.target.files && e.target.files.length) {
+                const form = document.querySelector('#room-image-upload-form').submit();
+            }
+        }
         
     </script>
 </body>
