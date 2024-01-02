@@ -100,7 +100,7 @@
                                         <div class="input-group">
                                             <form method="get" action="{% url 'messages' %}" >
                                                 {% csrf_token %}
-                                            <input class="form-control" placeholder="Search" name="search" >
+                                            <input class="form-control" placeholder="Search" name="search" value="{{ searched_term }}">
                                             <div class="input-group-btn">
                                                 <button type="submit" class="btn btn-info">
                                                     <i class="fa fa-search"></i>
