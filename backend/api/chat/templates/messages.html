@@ -76,7 +76,7 @@
         </div>
         {% endblock %}
     </div>   
-            <div class="container">
+            <div class="popup-container">
                     {% if messages %}
                     {% for message in messages %}
                 <div class="alert alert-warning alert-dismissible fade show ">
@@ -88,7 +88,7 @@
             </div>
 
      <!-- Messaging Container -->
-     <div class="container">
+     <div class="container mt-4">
         <div class="content-wrapper">
             <div class="row gutters">
                 <div class="col-xl-10 col-lg-12 col-md-12 col-sm-12 col-12">
@@ -97,17 +97,17 @@
                             <div class="col-xl-4 col-lg-4 col-md-4 col-sm-3 col-3">
                                 <div class="users-container">
                                     <div class="message-search-box">
-                                        <div class="input-group">
-                                            <form method="get" action="{% url 'messages' %}" >
+                                        <form method="get" action="{% url 'messages' %}" >
                                                 {% csrf_token %}
-                                            <input class="form-control" placeholder="Search" name="search" value="{{ searched_term }}">
-                                            <div class="input-group-btn">
-                                                <button type="submit" class="btn btn-info">
-                                                    <i class="fa fa-search"></i>
-                                                </button>
+                                            <div class="input-group">
+                                                <input class="form-control" placeholder="Search" name="search" value="{{ searched_term }}">
+                                                <div class="input-group-btn">
+                                                    <button type="submit" class="btn btn-info">
+                                                        <i class="fa fa-search"></i>
+                                                    </button>
+                                                </div>
                                             </div>
                                         </form>
-                                        </div>
                                     </div>
                                     <ul class="users">
                                     {% for user in searched_users %}

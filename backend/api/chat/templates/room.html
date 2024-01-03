@@ -76,16 +76,6 @@
         </div>
         {% endblock %}
     </div>   
-            <div class="container">
-                    {% if messages %}
-                    {% for message in messages %}
-                <div class="alert alert-warning alert-dismissible fade show ">
-                    {{ message }}
-                    <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
-                    {% endfor %}
-                    {% endif %}
-                </div>
-            </div>
 
      <!-- Messaging Container -->
      <div class="container">
@@ -97,11 +87,11 @@
                             <div class="col-xl-4 col-lg-4 col-md-4 col-sm-3 col-3">
                                 <div class="users-container">
                                     <div class="message-search-box">
-                                       
-                                            <a href="{% url 'messages' %}" class="btn btn-info">
-                                                <i class="fa fa-arrow-left"> Back to Messages</i> 
+                                            <a href="{% url 'messages' %}">
+                                                <button type="button" class="btn btn-default p-2 rounded-circle btn-small">
+                                                <i class="fa fa-arrow-left"></i>
+                                                </button>
                                             </a>
-                                        
                                     </div>
                                     <ul class="users">
                                         <li class="person" >
