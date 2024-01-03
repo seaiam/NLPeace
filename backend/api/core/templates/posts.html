@@ -5,7 +5,8 @@
         <div class="card-body">
             {% if post.id in pinned_post_ids %}
             <i class="bi bi-pin"></i> Pinned
-        {% endif %}
+            {% endif %}
+        
             {% if post.user.id == request.user.id %}
             <div class="dropdown-delete" style="position: absolute; top: 1px; right: 20px; z-index: 1000;">
                 <a class="hidden-arrow" type="button" data-toggle="dropdown" aria-expanded="false">
@@ -24,7 +25,7 @@
                       
                         {% if post.id in pinned_post_ids %}
 
-                        <li><a class="dropdown-item" href=""><i class="bi bi-pin"></i>Unpin post</a></li>
+                        <li><a class="dropdown-item" href="{% url 'unpin' post.id %}"><i class="bi bi-pin"></i>Unpin post</a></li>
                         {% else %}
 
                         <li><a class="dropdown-item" href="{% url 'pin' post.id %}"><i class="bi bi-pin"></i>Pin to your profile</a></li>
@@ -33,6 +34,7 @@
                     </ul>
             </div>
             {% endif %}
+           
             {% if post.reposts.all %}
             {% if post.reposts.all|length == 1%}
                 <div class="repost-info">

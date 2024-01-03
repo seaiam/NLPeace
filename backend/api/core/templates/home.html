@@ -244,12 +244,12 @@
         {% for post in media_posts %}
         {% include "posts.html" with tab="media" %}
       
-         {% empty %}
-         {% if pinned_image_posts %}
+        {% empty %}
+        {% if pinned_image_posts %}
 
-         {% else %}
-         <div class="no-post">No media available. </div>
-         {% endif %}
+        {% else %}
+        <div class="no-post">No media available. </div>
+        {% endif %}
         
      {% endfor %}
       </div>

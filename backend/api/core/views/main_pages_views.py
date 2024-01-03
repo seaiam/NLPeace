@@ -412,3 +412,18 @@ def pin(request, post_id):
         return HttpResponseRedirect(request.META.get('HTTP_REFERER', '/'))
  return redirect('login')    
     
+
+@login_required
+def unpin(request, post_id):     
+ if request.user.is_authenticated:
+        post = Post.objects.get(pk=post_id)
+        postpin= PostPin.objects.filter(pinner=request.user, post=post)
+        if postpin.exists():
+         postpin.delete()
+         messages.success(request, 'Post unpinned.')
+
+        referer = request.META.get('HTTP_REFERER')
+        if referer and 'profile' in referer.lower():
+            return redirect('profile')
+        return HttpResponseRedirect(request.META.get('HTTP_REFERER', '/'))
+ return redirect('login')    
