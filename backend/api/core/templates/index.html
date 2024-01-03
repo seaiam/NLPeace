@@ -66,9 +66,7 @@
             <div class="d-flex justify-content-center align-items-center">
                 <div class="card" style="width: 39rem; border-radius: 30px;margin:20px 0px 20px 0px;  overflow: hidden;background: linear-gradient(to right, #F9D1C4 0%, #9BBDDD 51%, #F9D1C4 100%);">
                     <div class="card-body">
-                        {% if post.id in all_pinned_ids %}
-                        <i class="bi bi-pin"></i> Pinned
-                    {% endif %}
+                        
                         {% if post.user.id == request.user.id %}
                         <div class="dropdown-delete" style="position: absolute; top: 1px; right: 20px; z-index: 1000;">
                             <a class="hidden-arrow" type="button" data-toggle="dropdown" aria-expanded="false">
@@ -281,9 +279,7 @@
             <div class="d-flex justify-content-center align-items-center">
                 <div class="card" style="width: 39rem; border-radius: 30px;margin:20px 0px 20px 0px;  overflow: hidden;background: linear-gradient(to right, #F9D1C4 0%, #9BBDDD 51%, #F9D1C4 100%);">
                     <div class="card-body">
-                        {% if post.id in all_pinned_ids %}
-                        <i class="bi bi-pin"></i> Pinned
-                    {% endif %}
+                        
                         {% if post.reposts.all %}
                             {% for repost in post.reposts.all %}
                                 <div class="repost-info">

@@ -54,7 +54,7 @@ def home(request):
         likes = [post for post in posts if post.is_likeable_by(request.user)]
         dislikes = [post for post in posts if post.is_dislikeable_by(request.user)]
         saved_post_ids = [post.id for post in posts if not post.is_saveable_by(request.user)] 
-        all_pinned_ids = [post.id for post in posts if post.all_pins()] 
+        pinned_post_ids = [post.id for post in posts if post.is_pinned_by(request.user)] 
         form = PostForm()
         reposted_post_ids = Repost.objects.filter(user=request.user).values_list('post_id', flat=True)
         data=Notifications.objects.filter(user=request.user).order_by('-id')
@@ -66,7 +66,7 @@ def home(request):
             'likes': likes,
             'dislikes': dislikes,
             'saved_post_ids': saved_post_ids,
-            'all_pinned_ids' : all_pinned_ids,
+            'pinned_post_ids' : pinned_post_ids,
             'form': form, 
             'data' : data,
             'reportPostForm': PostReportForm(), 
@@ -145,7 +145,8 @@ def guest(request,user_id):
     pinned_posts = [post for post in posts if post.is_pinned_by(user=user)]
     pinned_image_posts = [post for post in posts if post.is_pinned_by(user=user) and post.image]
     non_pinned_posts = [post for post in posts if not post.is_pinned_by(user=user)]
-    
+    pinned_post_ids = [post.id for post in posts if post.is_pinned_by(user=user)] 
+
     all_Posts = list(chain(non_pinned_posts, reposts))
     all_Posts.sort(key=lambda item: item.created_at, reverse=True)
     
@@ -176,7 +177,8 @@ def guest(request,user_id):
         'following' : following,
         'pinned_posts' : pinned_posts,
         'non_pinned_posts': non_pinned_posts,
-        'pinned_image_posts' : pinned_image_posts
+        'pinned_image_posts' : pinned_image_posts,
+        "pinned_post_ids" : pinned_post_ids
         }
     return render(request,'home.html',context)
 
