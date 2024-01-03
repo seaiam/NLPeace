@@ -88,3 +88,20 @@ class ChatTest(TestCase):
 
 
 
+    def test_search_existing_user(self):
+
+        self.client.login(username=self.username1, password=self.password)
+
+        # search for user2
+        response = self.client.get(reverse('messages') + "?search=" + self.username2)
+
+        self.assertContains(response, self.username2)
+        self.assertNotContains(response, "No user found with the username: " + self.username2) 
+        
+
+    def test_search_nonexistent_user(self):
+
+        self.client.login(username=self.username1, password=self.password)
+        search_term="jenny"
+        response = self.client.get(reverse('messages') + f"?search={search_term}")
+        self.assertContains(response, "No user found with the username: jenny") 
