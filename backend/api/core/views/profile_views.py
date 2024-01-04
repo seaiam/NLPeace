@@ -10,19 +10,14 @@ from core.forms.profile_forms import *
 from core.models.models import *
 from django.contrib.auth.models import User
 from django.http import HttpResponseRedirect
-
+from .services import *
 
 
 @login_required
-def add_block(request,blocked_id):
-        updated_user=Profile.objects.get(pk=request.user.id)
-        blocked_user=User.objects.get(pk=blocked_id)
-
-        updated_user.blocked.add(blocked_user)
-        updated_user.save()
-        messages.error(request,"User Blocked Successfully.")      
-        return redirect('profile')
-
+def add_block(request, blocked_id):
+    block_user(request.user.id, blocked_id)
+    messages.error(request, "User Blocked Successfully.")
+    return redirect('profile')
 
 @login_required
 def profile_settings(request):
@@ -180,25 +175,31 @@ def follow_user(request):
         following_user=User.objects.get(pk=following_user_id)
         search=request.POST.get('search')
         request.session['search'] = search
-        
+
+        # deny the follow if the user is blocked 
+        if followed_user.profile.blocked.filter(id=following_user_id).exists():
+            messages.error(request, "You cannot follow this user because they have blocked you.")
+            return redirect('profile')
+
 #following a private profile
-        if followed_user.profile.is_private:
-            followed_user.profile.follow_requests.add(following_user)
-            messages.success(request,'A follow request has been sent.')
-            followed_user.save()
-            notification_message = f"{following_user.username} sent you a follow request." #message sent to private profile
-            notification = Notifications(notifications=notification_message, user=followed_user,sent_by=following_user,type="request")
-            notification.save()
         else:
-            followed_user.profile.followers.add(following_user) #following a public profile
-            following_user.profile.following.add(followed_user)
-            followed_user.save()
-            following_user.save()
-            notification_message = f"{following_user.username} has started following you." #message sent to public profile profile to notify followed user
-            notification = Notifications(notifications=notification_message, user=followed_user,sent_by=following_user,type="")
-            notification.save()
-            messages.success(request,f"You have started following {followed_user}.") #message to following user
-   
+            if followed_user.profile.is_private:
+                followed_user.profile.follow_requests.add(following_user)
+                messages.success(request,'A follow request has been sent.')
+                followed_user.save()
+                notification_message = f"{following_user.username} sent you a follow request." #message sent to private profile
+                notification = Notifications(notifications=notification_message, user=followed_user,sent_by=following_user,type="request")
+                notification.save()
+            else:
+                followed_user.profile.followers.add(following_user) #following a public profile
+                following_user.profile.following.add(followed_user)
+                followed_user.save()
+                following_user.save()
+                notification_message = f"{following_user.username} has started following you." #message sent to public profile profile to notify followed user
+                notification = Notifications(notifications=notification_message, user=followed_user,sent_by=following_user,type="")
+                notification.save()
+                messages.success(request,f"You have started following {followed_user}.") #message to following user
+    
     return HttpResponseRedirect(request.META.get('HTTP_REFERER', '/'))
    
     
