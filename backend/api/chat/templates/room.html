@@ -345,6 +345,13 @@
         document.addEventListener('DOMContentLoaded', function() {
             document.getElementById('gif-search-icon-label').addEventListener('click', function() {
             var modal = document.getElementById('gif-search-modal');
+            var gifSearchInput = document.getElementById('gif-search-input');
+            var gifSearchResults = document.getElementById('gif-search-results');
+            
+            // Clear previours searches
+            gifSearchInput.value = '';
+            gifSearchResults.innerHTML = '';
+
             if (modal.style.display === 'none' || modal.style.display === '') {
                 modal.style.display = 'block';
             } else {
