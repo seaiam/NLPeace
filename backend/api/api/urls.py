@@ -57,7 +57,9 @@ urlpatterns = [
     path('save_post/<int:post_id>/', main_pages_views.save_post, name='save_post'),
     path('bookmarks/', main_pages_views.bookmarked_posts, name='bookmarked_posts'),
     path('delete_post/', profile_views.delete_post, name='delete_post'),
-    path('accounts/profile/messages/', include("chat.urls"))
+    path('accounts/profile/messages/', include("chat.urls")),
+    path('pin/<int:post_id>/', main_pages_views.pin, name='pin'),
+    path('unpin/<int:post_id>/', main_pages_views.unpin, name='unpin'),
 ]
 
 if settings.DEBUG:

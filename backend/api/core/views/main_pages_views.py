@@ -54,6 +54,7 @@ def home(request):
         likes = [post for post in posts if post.is_likeable_by(request.user)]
         dislikes = [post for post in posts if post.is_dislikeable_by(request.user)]
         saved_post_ids = [post.id for post in posts if not post.is_saveable_by(request.user)] 
+        pinned_post_ids = [post.id for post in posts if post.is_pinned_by(request.user)] 
         form = PostForm()
         reposted_post_ids = Repost.objects.filter(user=request.user).values_list('post_id', flat=True)
         data=Notifications.objects.filter(user=request.user).order_by('-id')
@@ -64,7 +65,8 @@ def home(request):
             'posts': posts, 
             'likes': likes,
             'dislikes': dislikes,
-            'saved_post_ids': saved_post_ids,  
+            'saved_post_ids': saved_post_ids,
+            'pinned_post_ids' : pinned_post_ids,
             'form': form, 
             'data' : data,
             'reportPostForm': PostReportForm(), 
@@ -91,20 +93,23 @@ def profile(request):
     posts = Post.objects.filter(user = request.user)
     reposts_ids = Repost.objects.filter(user = request.user).values_list('post_id', flat=True)
     reposts = Post.objects.filter(id__in = reposts_ids)
-    #we combine all user posts and reposts to show them chronogically on the user profile
-    all_Posts = list(chain(posts, reposts))
+    pinned_posts = [post for post in posts if post.is_pinned_by(request.user)]
+    pinned_image_posts = [post for post in posts if post.is_pinned_by(request.user) and post.image]
+    non_pinned_posts = [post for post in posts if not post.is_pinned_by(request.user)]
+    
+    all_Posts = list(chain(non_pinned_posts, reposts))
     all_Posts.sort(key=lambda item: item.created_at, reverse=True)
     # Create a list of posts with images
-    image_posts = [post for post in posts if post.image]
+    image_posts = [post for post in non_pinned_posts if post.image]
     image_posts.sort(key=lambda item: item.created_at, reverse=True)
-    likes = [post for post in all_Posts if post.is_likeable_by(request.user)]
-    dislikes = [post for post in all_Posts if post.is_dislikeable_by(request.user)]    
+    likes = [post for post in posts if post.is_likeable_by(request.user)]
+    dislikes = [post for post in posts if post.is_dislikeable_by(request.user)]  
     followers = Profile.objects.get(user=request.user).followers.all()
     following = Profile.objects.get(user=request.user).following.all()
     liked_posts = Post.objects.filter(postlike__liker=request.user).distinct().order_by('-created_at')
     saved_post_ids = [post.id for post in posts if not post.is_saveable_by(request.user)] # ADDED THIS
-      
-
+    pinned_post_ids = [post.id for post in posts if post.is_pinned_by(request.user)] 
+    
     context = {
         'profile': profile,
         'posts': all_Posts,
@@ -121,6 +126,10 @@ def profile(request):
         'reportUserForm': UserReportForm(),
         'followers' : followers,
         'following' : following,
+        'pinned_post_ids' : pinned_post_ids,
+        'pinned_posts' : pinned_posts,
+        'non_pinned_posts' : non_pinned_posts,
+        'pinned_image_posts' : pinned_image_posts
         }
     return render(request, 'home.html', context)
 
@@ -132,14 +141,20 @@ def guest(request,user_id):
     posts = Post.objects.filter(user = user)
     reposts_ids = Repost.objects.filter(user = user).values_list('post_id', flat=True)
     reposts = Post.objects.filter(id__in = reposts_ids)
-    #we combine all user posts and reposts to show them chronogically on the user profile
-    all_Posts = list(chain(posts, reposts))
+
+    pinned_posts = [post for post in posts if post.is_pinned_by(user=user)]
+    pinned_image_posts = [post for post in posts if post.is_pinned_by(user=user) and post.image]
+    non_pinned_posts = [post for post in posts if not post.is_pinned_by(user=user)]
+    pinned_post_ids = [post.id for post in posts if post.is_pinned_by(user=user)] 
+
+    all_Posts = list(chain(non_pinned_posts, reposts))
     all_Posts.sort(key=lambda item: item.created_at, reverse=True)
+    
      # Create a list of posts with images
-    image_posts = [post for post in posts if post.image]
+    image_posts = [post for post in non_pinned_posts if post.image]
     image_posts.sort(key=lambda item: item.created_at, reverse=True)
-    likes = [post for post in all_Posts if post.is_likeable_by(user)]
-    dislikes = [post for post in all_Posts if post.is_dislikeable_by(user)]
+    likes = [post for post in posts if post.is_likeable_by(user)]
+    dislikes = [post for post in posts if post.is_dislikeable_by(user)]
     followers = Profile.objects.get(user=user).followers.all()
     following = Profile.objects.get(user=user).following.all()
     liked_posts = Post.objects.filter(postlike__liker=user).distinct().order_by('-created_at')
@@ -160,6 +175,10 @@ def guest(request,user_id):
         'reportUserForm': UserReportForm(),
         'followers' : followers,
         'following' : following,
+        'pinned_posts' : pinned_posts,
+        'non_pinned_posts': non_pinned_posts,
+        'pinned_image_posts' : pinned_image_posts,
+        "pinned_post_ids" : pinned_post_ids
         }
     return render(request,'home.html',context)
 
@@ -339,6 +358,8 @@ def bookmarked_posts(request):
     data=Notifications.objects.filter(user=request.user).order_by('-id')
     following_users = request.user.profile.following.all()
     following_posts = Post.objects.filter(user__in=following_users).order_by('-created_at')
+    pinned_post_ids = [post.id for post in posts if post.is_pinned_by(request.user)] 
+    
 
     context =  {
         'bookmarked_posts': posts,
@@ -350,7 +371,8 @@ def bookmarked_posts(request):
         'data' : data,
         'reportPostForm': PostReportForm(), 
         'reposted_post_ids': reposted_post_ids,
-        'followPost' : following_posts
+        'followPost' : following_posts,
+        'pinned_post_ids': pinned_post_ids
         }
     return render(request, 'bookmark.html', context)
 
@@ -371,3 +393,37 @@ def classify_text(text):
     except requests.exceptions.RequestException as e:
         # Handle request exception
         return {'error': str(e)}
+
+
+   
+@login_required
+def pin(request, post_id):     
+ if request.user.is_authenticated:
+        post = Post.objects.get(pk=post_id)
+        if PostPin.objects.filter(pinner=request.user).count() >= 3:
+            messages.error(request, 'You can only pin up to three posts.')
+        else:
+         PostPin.objects.create(pinner=request.user, post=post)
+         messages.success(request, 'Post pinned successfully.')
+
+        referer = request.META.get('HTTP_REFERER')
+        if referer and 'profile' in referer.lower():
+            return redirect('profile')
+        return HttpResponseRedirect(request.META.get('HTTP_REFERER', '/'))
+ return redirect('login')    
+    
+
+@login_required
+def unpin(request, post_id):     
+ if request.user.is_authenticated:
+        post = Post.objects.get(pk=post_id)
+        postpin= PostPin.objects.filter(pinner=request.user, post=post)
+        if postpin.exists():
+         postpin.delete()
+         messages.success(request, 'Post unpinned.')
+
+        referer = request.META.get('HTTP_REFERER')
+        if referer and 'profile' in referer.lower():
+            return redirect('profile')
+        return HttpResponseRedirect(request.META.get('HTTP_REFERER', '/'))
+ return redirect('login')    

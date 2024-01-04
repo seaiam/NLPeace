@@ -30,7 +30,16 @@
                                     <input type="hidden" name="post_id" value="{{ post.id }}" readonly/>
                                 </form>
                                 </li>
-                                <li><a class="dropdown-item" href="#"><i class="bi bi-pin"></i>Pin to your profile</a></li>
+                                          
+                        {% if post.id in pinned_post_ids %}
+
+                        <li><a class="dropdown-item" href="{% url 'unpin' post.id %}"><i class="bi bi-pin"></i>Unpin post</a></li>
+                        {% else %}
+
+                        <li><a class="dropdown-item" href="{% url 'pin' post.id %}"><i class="bi bi-pin"></i>Pin to your profile</a></li>
+
+                   {% endif %}
+                              
                             </ul>
                         </div>
                         {% endif %}
