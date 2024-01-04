@@ -225,18 +225,17 @@
         var imgTag = document.createElement('img');
         var nameDiv = document.createElement('div');
         var timeDiv = document.createElement('div');
-        var msgListTag = document.createElement('li');
     
-        if (message.gif_url) {
-            var gifImg = document.createElement('img');
-            gifImg.src = message.gif_url;
-            gifImg.className = 'chat-gif'; 
-            gifImg.onerror = function() {
-                gifImg.src = 'media/profilePictures/banner.jpg'; //placeholder image
-            };
+        // if (message.gif_url) {
+        //     var gifImg = document.createElement('img');
+        //     gifImg.src = message.gif_url;
+        //     gifImg.className = 'chat-gif-image'; 
+        //     gifImg.onerror = function() {
+        //         gifImg.src = 'media/profilePictures/banner.jpg'; //placeholder image
+        //     };
 
-            msgListTag.appendChild(gifImg);
-        }
+        //     messageDiv.appendChild(gifImg);
+        // }
 
     
         if (author === username){
@@ -245,10 +244,26 @@
             pTag.className = 'message-text';
             timeDiv.className= 'message-time';
 
-            if (message.content) { 
-                pTag.textContent = message.content;
-                msgListTag.appendChild(pTag); 
+            var msgContent;
+            if (message.gif_url) {
+                msgContent = document.createElement('img');
+                msgContent.src = message.gif_url;
+                msgContent.className = 'chat-gif-image';
+                msgContent.style.width = 'auto';
+                msgContent.style.height = 'auto'; 
+                msgContent.onerror = function() {
+                    msgContent.src = 'media/profilePictures/banner.jpg'; // Placeholder image
+                };
+            } else if (message.content) {
+                msgContent = document.createElement('p');
+                msgContent.textContent = message.content;
+                msgContent.className = 'message-text';
             }
+
+            if (msgContent) {
+                msgListTag.appendChild(msgContent);
+            }
+
             // pTag.textContent = message.content;
             timeDiv.textContent = new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
 
@@ -261,12 +276,32 @@
             messageDiv.className = 'message-pic';
             pTag.className = 'message-text';
             timeDiv.className= 'message-time';
+
+            var msgContent;
+            if (message.gif_url) {
+                msgContent = document.createElement('img');
+                msgContent.src = message.gif_url;
+                msgContent.className = 'chat-gif-image';
+                msgContent.style.width = 'auto';
+                msgContent.style.height = 'auto'; 
+                msgContent.onerror = function() {
+                    msgContent.src = 'media/profilePictures/banner.jpg'; // Placeholder image
+                };
+            } else if (message.content) {
+                msgContent = document.createElement('p');
+                msgContent.textContent = message.content;
+                msgContent.className = 'message-text';
+            }
+
+            if (msgContent) {
+                msgListTag.appendChild(msgContent);
+            }
             
-            pTag.textContent = message.content;
+            // pTag.textContent = message.content;
             timeDiv.textContent = new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
 
             msgListTag.appendChild(messageDiv);
-            msgListTag.appendChild(pTag);
+            // msgListTag.appendChild(pTag);
             msgListTag.appendChild(timeDiv);
     }
         
