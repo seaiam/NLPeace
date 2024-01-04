@@ -102,8 +102,8 @@ def profile(request):
     # Create a list of posts with images
     image_posts = [post for post in non_pinned_posts if post.image]
     image_posts.sort(key=lambda item: item.created_at, reverse=True)
-    likes = [post for post in all_Posts if post.is_likeable_by(request.user)]
-    dislikes = [post for post in all_Posts if post.is_dislikeable_by(request.user)]  
+    likes = [post for post in posts if post.is_likeable_by(request.user)]
+    dislikes = [post for post in posts if post.is_dislikeable_by(request.user)]  
     followers = Profile.objects.get(user=request.user).followers.all()
     following = Profile.objects.get(user=request.user).following.all()
     liked_posts = Post.objects.filter(postlike__liker=request.user).distinct().order_by('-created_at')
@@ -153,8 +153,8 @@ def guest(request,user_id):
      # Create a list of posts with images
     image_posts = [post for post in non_pinned_posts if post.image]
     image_posts.sort(key=lambda item: item.created_at, reverse=True)
-    likes = [post for post in all_Posts if post.is_likeable_by(user)]
-    dislikes = [post for post in all_Posts if post.is_dislikeable_by(user)]
+    likes = [post for post in posts if post.is_likeable_by(user)]
+    dislikes = [post for post in posts if post.is_dislikeable_by(user)]
     followers = Profile.objects.get(user=user).followers.all()
     following = Profile.objects.get(user=user).following.all()
     liked_posts = Post.objects.filter(postlike__liker=user).distinct().order_by('-created_at')

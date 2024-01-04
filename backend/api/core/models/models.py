@@ -57,11 +57,7 @@ class Post(models.Model):
     def is_pinned_by(self, user):
         return self.postpin_set.filter(pinner=user).exists()
     
-    def all_pins(self):
-        return self.postpin_set.all()
-    
-  
-
+   
 class Repost(models.Model):
     post = models.ForeignKey(Post, null=True, on_delete=models.CASCADE, related_name='reposts')
     user = models.ForeignKey(User, on_delete=models.CASCADE)
