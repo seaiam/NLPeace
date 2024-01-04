@@ -151,8 +151,7 @@ def comment(request, post_id):
     
 @login_required
 def like(request, post_id):
-    if request.method == 'POST':
-        handle_like(request.user, post_id)
+    handle_like(request.user, post_id)
 
     referer = request.META.get('HTTP_REFERER')
     if referer and 'profile' in referer.lower():
@@ -161,8 +160,7 @@ def like(request, post_id):
 
 @login_required
 def dislike(request, post_id):
-    if request.method == 'POST':
-        handle_dislike(request.user, post_id)
+    handle_dislike(request.user, post_id)
 
     referer = request.META.get('HTTP_REFERER')
     if referer and 'profile' in referer.lower():

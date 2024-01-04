@@ -124,18 +124,37 @@ def process_comment_form(request, form, post_id):
 
 def handle_like(user, post_id):
     post = Post.objects.get(pk=post_id)
+
+    #check if post is disliked
     dislike = PostDislike.objects.filter(disliker=user, post=post).first()
     if dislike:
         dislike.delete()
-    like = PostLike.objects.create(liker=user, post=post)
+    
+    #unlike if post is already liked
+    liked = PostLike.objects.filter(liker=user, post=post).exists()
+    if liked:
+        PostLike.objects.filter(liker=user, post=post).delete()
+    else:
+        #like post
+        like = PostLike.objects.create(liker=user, post=post)
+
 
 
 def handle_dislike(user, post_id):
     post = get_object_or_404(Post, id=post_id)
+    
+    #check if post is liked already
     like = PostLike.objects.filter(liker=user, post=post).first()
     if like:
         like.delete()
-    dislike = PostDislike.objects.create(disliker=user, post=post)
+
+    #undislike if already disliked
+    disliked = PostDislike.objects.filter(disliker=user, post=post).exists()
+    if disliked:
+        PostDislike.objects.filter(disliker=user, post=post).delete()
+    else:
+        #dislike post
+        dislike = PostDislike.objects.create(disliker=user, post=post)
 
 
 def report_post(user, post_id, form_data):

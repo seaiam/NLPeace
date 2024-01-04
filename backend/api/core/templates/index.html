@@ -114,26 +114,28 @@
                 <br>
                 <hr>
                 <div class ="icons-list" >
-
                     <div class="feed" >
-                        {% if post in likes %}
-                        <a href="{% url 'like' post.id %}" class="like-link"><i class="far fa-thumbs-up" aria-hidden="true"></i> Like </a>
-                                {% else %}
+                        <a href="{% url 'like' post.id %}" class="like-link"><i class="far fa-thumbs-up" aria-hidden="true"></i>
+                            {% if post in likes %}
                                 <span class="post-liked">
-                                    <i class="far fa-thumbs-up" aria-hidden="true"></i> Liked
+                                    Like
                                 </span>
-                                
-                        {% endif %}
+                            {% else %}
+                            Liked
+                            {% endif %}
+                        </a>
                         <span class="like-count">{{ post.get_number_likes }}</span>
                     </div>
                     <div class="feed" >
-                        {% if post in dislikes  %}
-                        <a href="{% url 'dislike' post.id %}" class="like-link"><i class="far fa-thumbs-down" aria-hidden="true"></i> Dislike </a>
-                                {% else %}
+                        <a href="{% url 'dislike' post.id %}" class="like-link"><i class="far fa-thumbs-down" aria-hidden="true"></i> 
+                            {% if post in dislikes %}
                                 <span class="post-disliked">
-                                    <i class="far fa-thumbs-down" aria-hidden="true"></i> Disliked
+                                    Dislike
                                 </span>
-                        {% endif %} 
+                            {% else %}
+                                Disliked
+                            {% endif %}
+                        </a>
                         <span class="dislike-count">{{ post.get_number_dislikes }}</span>
                     </div>
 
