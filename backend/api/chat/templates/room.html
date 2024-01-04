@@ -313,96 +313,63 @@
         function fetchMessages() {
             chatSocket.send(JSON.stringify({'command':'fetch_messages'}));
         } 
-        document.getElementById('gif-upload').addEventListener('change', function(event) {
-            if (event.target.files.length > 0) {
-                var gifFile = event.target.files[0];
-                uploadGif(gifFile);
+
+        document.addEventListener('DOMContentLoaded', function() {
+            document.getElementById('gif-search-button').addEventListener('click', function() {
+                var modal = document.getElementById('gif-search-modal');
+                if (modal.style.display === 'none' || modal.style.display === '') {
+                    modal.style.display = 'block';
+                } else {
+                    modal.style.display = 'none';
+                }
+            });
+
+            document.getElementById('gif-search-submit').addEventListener('click', function(event) {
+                event.preventDefault(); 
+                var query = document.getElementById('gif-search-input').value;
+                fetchGifs(query);
+            });
+
+            function fetchGifs(query) {
+                var giphyUrl = 'https://api.giphy.com/v1/gifs';
+                var apiKey = '9a6zGfy6TBTv459CNi2y3KtOWkB69vOx';
+                var url = query ? `${giphyUrl}/search?api_key=${apiKey}&q=${query}` : `${giphyUrl}/trending?api_key=${apiKey}`;
+
+                fetch(url)
+                .then(response => response.json())
+                .then(data => {
+                    displayGifResults(data);
+                })
+                .catch(error => console.error('Error searching GIFs:', error));
+            }
+
+            function displayGifResults(data) {
+                console.log("Data received from Giphy:", data); // Debugging 
+                var resultsContainer = document.getElementById('gif-search-results');
+                resultsContainer.innerHTML = '';
+                
+                data.data.forEach(gif => {
+                    var img = document.createElement('img');
+                    img.src = gif.images.fixed_height.url;
+                    img.addEventListener('click', function() {
+                        sendGifMessage(gif.images.fixed_height.url);
+                        document.getElementById('gif-search-modal').style.display = 'none'; 
+                    });
+                    resultsContainer.appendChild(img);
+                });
+            }
+
+            function sendGifMessage(gifUrl) {
+                chatSocket.send(JSON.stringify({
+                    'command': 'new_message',
+                    'message': '', 
+                    'gif_url': gifUrl,
+                    'from': username
+                }));
+                console.log("GIF sent: ", gifUrl); // Debugging 
             }
         });
 
-        
-        function uploadGif(gifFile) {
-            console.log("Uploading GIF", gifFile); // debugging
-
-            var formData = new FormData();
-            formData.append('gif', gifFile);
-            formData.append('csrfmiddlewaretoken', csrfToken);  // Include CSRF token
-
-            fetch('/chat/upload_gif/', {
-                method: 'POST',
-                body: formData,
-            })
-            .then(response => response.json())
-            .then(data => {
-                console.log("Server response:", data);
-                if (data.gif_url) {
-                    console.log("Sending GIF URL over WebSocket", data.gif_url); //debuging
-                    chatSocket.send(JSON.stringify({
-                        'command': 'new_message',
-                        'message': '', 
-                        'gif_url': data.gif_url,
-                        'from': username
-                    }));
-                }
-            })
-            .catch(error => console.error('Error uploading GIF:', error));
-        }
-
-    document.addEventListener('DOMContentLoaded', function() {
-        console.log("DOMContentLoaded event fired");
-    document.getElementById('gif-search-button').addEventListener('click', function(event) {
-    console.log("Modal button clicked"); // debuging
-    event.preventDefault(); 
-    
-    document.getElementById('gif-search-modal').style.display = 'block';
-    });
-
-    document.getElementById('gif-search-submit').addEventListener('click', function(event) {
-        console.log("Search button clicked")
-        event.preventDefault(); 
-        var query = document.getElementById('gif-search-input').value;
-        // fetch(`/search-giphy/?query=${query}`)
-        fetch(`/chat/search-giphy/?query=${query}`)
-
-        .then(response => response.json())
-        .then(data => {
-            displayGifResults(data);
-        })
-        .catch(error => console.error('Error searching GIFs:', error));
-    });
-        function displayGifResults(data) {
-            console.log(data)
-            var resultsContainer = document.getElementById('gif-search-results');
-            resultsContainer.innerHTML = '';
-
-            
-            data.data.forEach(gif => {
-                var img = document.createElement('img');
-                img.src = gif.images.fixed_height.url; 
-                img.style.cursor = 'pointer';
-                img.style.width = '100px'; 
-                img.style.height = '100px';
-                img.style.margin = '5px';
-
-                img.addEventListener('click', function() {
-                    sendGifMessage(gif.images.fixed_height.url); 
-                    document.getElementById('gif-search-modal').style.display = 'none'; 
-                });
-
-                resultsContainer.appendChild(img);
-            });
-        }
-
-        function sendGifMessage(gifUrl) {
-            chatSocket.send(JSON.stringify({
-                'command': 'new_message',
-                'message': '', 
-                'gif_url': gifUrl,
-                'from': username
-            }));
-        }
-    });
-
-    </script>
+</script>
 </body>
 </html>
