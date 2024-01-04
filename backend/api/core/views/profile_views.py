@@ -25,13 +25,15 @@ def profile_settings(request):
     user = get_user_by_id(request.user.id)
     if not user:
         return HttpResponseNotFound()
-    return render(request, 'settings.html', {
+    
+    context = {
         'user': user,
         'data': data,
         'editUsernameForm': EditUsernameForm(instance=user),
         'editPasswordForm': PasswordChangeForm(request.user),
         'privacy_form': PrivacySettingsForm(instance=user.profile)
-    })
+    }
+    return render(request, 'settings.html', context)
 
 
 @login_required

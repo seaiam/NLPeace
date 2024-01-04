@@ -163,7 +163,11 @@ def like(request, post_id):
 def dislike(request, post_id):
     if request.method == 'POST':
         handle_dislike(request.user, post_id)
-    return HttpResponseRedirect(request.META.get('HTTP_REFERER', 'home'))
+
+    referer = request.META.get('HTTP_REFERER')
+    if referer and 'profile' in referer.lower():
+        return redirect('profile')
+    return HttpResponseRedirect(request.META.get('HTTP_REFERER', '/'))
 
 
 @login_required

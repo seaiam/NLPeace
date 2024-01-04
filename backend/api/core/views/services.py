@@ -127,14 +127,16 @@ def handle_like(user, post_id):
     dislike = PostDislike.objects.filter(disliker=user, post=post).first()
     if dislike:
         dislike.delete()
-    PostLike.objects.create(liker=user, post=post)
+    like = PostLike.objects.create(liker=user, post=post)
+
 
 def handle_dislike(user, post_id):
     post = get_object_or_404(Post, id=post_id)
     like = PostLike.objects.filter(liker=user, post=post).first()
     if like:
         like.delete()
-    PostDislike.objects.create(disliker=user, post=post)
+    dislike = PostDislike.objects.create(disliker=user, post=post)
+
 
 def report_post(user, post_id, form_data):
     report = PostReportForm(form_data).save(commit=False)
