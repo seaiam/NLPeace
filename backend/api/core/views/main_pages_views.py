@@ -293,7 +293,7 @@ def report(request, post_id):
                 report.post = Post.objects.get(pk=post_id)
                 report.save()
                 messages.success(request, 'Post successfully reported.')
-        return redirect('home')
+        return HttpResponseRedirect(request.META.get('HTTP_REFERER', '/'))
     return redirect('login')
 
 @login_required
@@ -382,7 +382,7 @@ def report_post(request, post_id):
                 PostReport.objects.filter(post=post_to_report, reporter=request.user).delete()
             else:
                 PostReport.objects.create(post=post_to_report, reporter=request.user)
-            return redirect('home')
+            return HttpResponseRedirect(request.META.get('HTTP_REFERER', '/'))
 
 
 def classify_text(text):
