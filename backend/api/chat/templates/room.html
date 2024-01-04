@@ -157,11 +157,6 @@
                                             </label>
                                             &nbsp; 
             
-                                            <input type="file" id="gif-upload" accept="image/gif" style="display: none;">
-                                            <label for="gif-upload" class="post-actions__label">
-                                                <i class="bi bi-filetype-gif" aria-hidden="true"></i>
-                                            </label>
-                                            
 
                                         </div>
                                         <div class="post-actions__widget">
@@ -234,16 +229,15 @@
         var msgListTag = document.createElement('li');
     
         if (message.gif_url) {
-        var gifImg = document.createElement('img');
-        gifImg.src = message.gif_url;
-        gifImg.className = 'chat-gif'; //need to add a class for styling the GIF image
+            var gifImg = document.createElement('img');
+            gifImg.src = message.gif_url;
+            gifImg.className = 'chat-gif'; 
+            gifImg.onerror = function() {
+                gifImg.src = 'media/profilePictures/banner.jpg'; //placeholder image
+            };
 
-        gifImg.onerror = function() {
-            gifImg.src = 'media/profilePictures/banner.jpg'; //placeholder image
-        };
-
-         msgListTag.appendChild(gifImg);
-    }
+            msgListTag.appendChild(gifImg);
+        }
 
     
         if (author === username){

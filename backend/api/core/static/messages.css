@@ -257,6 +257,31 @@ ul {
     max-width: 1200px;
 }
 
+#gif-search-modal {
+    position: absolute; 
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    background-color: #F9D1C4; 
+    box-shadow: 0 -2px 5px rgba(0, 0, 0, 0.1);
+    z-index: 1000; 
+    overflow: auto; 
+    max-height: 200px; 
+}
+
+#gif-search-results {
+    display: flex;
+    overflow-x: auto;
+    padding: 10px; 
+    gap: 10px; 
+}
+
+#gif-search-results img {
+    height: 100px; 
+    cursor: pointer;
+    border-radius: 8px;
+}
+
 @media (max-width: 768px) {
     .container {
         position: relative; 
