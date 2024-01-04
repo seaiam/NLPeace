@@ -156,8 +156,11 @@
                                                 <i class="bi bi-paperclip" aria-hidden="true"></i> 
                                             </label>
                                             &nbsp; 
-            
 
+                                            <label for="gif-search-icon" class="post-actions__label" id="gif-search-icon-label">
+                                                <i class="bi bi-filetype-gif" aria-hidden="true"></i>
+                                            </label>
+            
                                         </div>
                                         <div class="post-actions__widget">
                                             <button id="chat-message-submit" type="submit" class="btn post-actions__publish">Send</button>
@@ -165,15 +168,12 @@
                                        
                                     </div>
                                 </form>
-                                <!-- giffy -->
-                                <button id="gif-search-button" class="btn btn-primary">Search GIFs</button>
-
+                                <!-- giffy -->                       
                                 <div id="gif-search-modal" style="display:none;">
                                     <input type="text" id="gif-search-input" placeholder="Search GIFs">
                                     <button id="gif-search-submit" class="btn btn-info">Search</button>
                                     <div id="gif-search-results"></div>
                                 </div>
-
                             </div>
                         </div>
                     </div>
@@ -190,7 +190,6 @@
     </script>
     
     <script>
-        // {% comment %} var roomName = JSON.parse(document.getElementById('room-name').textContent); {% endcomment %}
         var roomName={{room_name_json}};
         var username={{username}};
         
@@ -309,13 +308,13 @@
         } 
 
         document.addEventListener('DOMContentLoaded', function() {
-            document.getElementById('gif-search-button').addEventListener('click', function() {
-                var modal = document.getElementById('gif-search-modal');
-                if (modal.style.display === 'none' || modal.style.display === '') {
-                    modal.style.display = 'block';
-                } else {
-                    modal.style.display = 'none';
-                }
+            document.getElementById('gif-search-icon-label').addEventListener('click', function() {
+            var modal = document.getElementById('gif-search-modal');
+            if (modal.style.display === 'none' || modal.style.display === '') {
+                modal.style.display = 'block';
+            } else {
+                modal.style.display = 'none';
+            }
             });
 
             document.getElementById('gif-search-submit').addEventListener('click', function(event) {
