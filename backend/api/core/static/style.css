@@ -1202,7 +1202,12 @@ img {
   color: #00001c;
 }
 
-
+.pin-post{
+  font-style: italic ;
+  color: #00001c;
+  font-size: large;
+  font-weight: 500;
+}
 .dropdown-menu{
   background-image: linear-gradient(0deg, #F9D1C4, #9BBDDD);
   box-shadow: 0 0 15px 3px rgba(0, 0, 0, 0.25);
