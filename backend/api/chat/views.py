@@ -5,6 +5,8 @@ from django.utils.safestring import mark_safe
 from .chat_service import getChatRoom
 import json
 from django.contrib import messages
+from django.http import HttpResponseRedirect
+
 User = get_user_model()
 
 def index(request):
@@ -13,6 +15,7 @@ def index(request):
     searched_users = User.objects.filter(username__icontains=searched_term)
     if searched_term and not searched_users.exists():
         messages.warning(request, f'No user found with the username: {searched_term}')
+        return HttpResponseRedirect(request.META.get('HTTP_REFERER', '/'))
     context = {
         'users' : users,
         'searched_term': searched_term,

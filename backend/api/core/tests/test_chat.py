@@ -100,8 +100,15 @@ class ChatTest(TestCase):
         
 
     def test_search_nonexistent_user(self):
+        try:  
+            self.user1_profile=self.user1.profile
+        except ObjectDoesNotExist:
+            # Handle the case where the profile does not exist/ create a profile
+            self.user1_profile=Profile.objects.create(user=self.user1)    
+            self.user1_profile.save()
 
         self.client.login(username=self.username1, password=self.password)
         search_term="jenny"
-        response = self.client.get(reverse('messages') + f"?search={search_term}")
+        
+        response = self.client.get(reverse('messages') + f"?search={search_term}",follow=True)
         self.assertContains(response, "No user found with the username: jenny") 
