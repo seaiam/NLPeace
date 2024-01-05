@@ -829,6 +829,20 @@ img {
 .icons-list{
   color: #00001c;
   display: grid;  
+  grid-template-columns: 1fr 1fr 1fr 1fr 1fr 1fr;  
+  padding-bottom:10px;
+}
+
+.icons-list1{
+  color: #00001c;
+  display: grid;  
+  grid-template-columns: 1fr 1fr 1fr 1fr 1fr;  
+  padding-bottom:10px;
+}
+
+.icons-list-2{
+  color: #00001c;
+  display: grid;  
   grid-template-columns: 1fr 1fr 1fr 1fr 1fr;  
   padding-bottom:10px;
 }
@@ -862,11 +876,11 @@ border: none;
 padding: 0;
 background: none;
 color: #0047ab;
-font-style: italic;
 }
 
 .feed-reposted{
   color:#0047ab;
+  margin-left:18%;
 }
 
 .repost-info{
@@ -877,6 +891,30 @@ font-style: italic;
 
 button:focus {
   outline: none;
+}
+
+/*bookmarks button */
+.bookmark-button{
+  border: none;
+  padding: 0;
+  background: none;
+  color: #00001c;
+  
+}
+button:focus {
+  outline: none;
+}
+
+.bookmarked-button{
+border: none;
+padding: 0;
+background: none;
+color: #0047ab;
+}
+
+.feed-bookmark{
+  color:#0047ab;
+  margin-left:18%;
 }
 
 /* seacrh-user css*/
@@ -1006,7 +1044,6 @@ button:hover {
   padding: 0;
   background: none;
   color: #0047ab;
-  font-style: italic;
   }
 
 /* settings CSS */
@@ -1157,7 +1194,7 @@ img {
 
 /* report user css */
 
-.fa-ellipsis-v{
+.fa-ellipsis-v, .fa-comment-dots{
   color: #D9D9D9;
 }
 
@@ -1165,7 +1202,12 @@ img {
   color: #00001c;
 }
 
-
+.pin-post{
+  font-style: italic ;
+  color: #00001c;
+  font-size: large;
+  font-weight: 500;
+}
 .dropdown-menu{
   background-image: linear-gradient(0deg, #F9D1C4, #9BBDDD);
   box-shadow: 0 0 15px 3px rgba(0, 0, 0, 0.25);

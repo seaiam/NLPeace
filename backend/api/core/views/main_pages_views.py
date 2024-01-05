@@ -10,19 +10,17 @@ from django.shortcuts import get_object_or_404
 from itertools import chain
 from django.http import *
 import requests
-
 from core.forms.user_forms import UserReportForm
 from core.forms.profile_forms import *
 from core.forms.posting_forms import *
 from core.models.models import *
 from django.http import HttpResponseRedirect
-
 from .services import *
 
 def home(request):
     if not request.user.is_authenticated:
         return redirect('login')
-
+      
     if request.method == 'POST':
         form = PostForm(request.POST, request.FILES)
         post = process_post_form(request, form)
@@ -66,7 +64,14 @@ def profile(request):
     following = profile.following.all()
     liked_posts = Post.objects.filter(postlike__liker=request.user).distinct().order_by('-created_at')
     data = Notifications.objects.filter(user=request.user).order_by('-id')
-
+    #TEMP
+    pinned_posts = [post for post in posts if post.is_pinned_by(request.user)]
+    pinned_image_posts = [post for post in posts if post.is_pinned_by(request.user) and post.image]
+    non_pinned_posts = [post for post in posts if not post.is_pinned_by(request.user)]
+    liked_posts = Post.objects.filter(postlike__liker=request.user).distinct().order_by('-created_at')
+    saved_post_ids = [post.id for post in posts if not post.is_saveable_by(request.user)] # ADDED THIS
+    pinned_post_ids = [post.id for post in posts if post.is_pinned_by(request.user)] 
+    
     context = {
         'profile': profile,
         'posts': all_posts,
@@ -81,9 +86,13 @@ def profile(request):
         'editBioForm': EditBioForm(instance=profile),
         'reportPostForm': PostReportForm(),
         'reportUserForm': UserReportForm(),
-        'followers': followers,
-        'following': following,
-    }
+        'followers' : followers,
+        'following' : following,
+        'pinned_post_ids' : pinned_post_ids,
+        'pinned_posts' : pinned_posts,
+        'non_pinned_posts' : non_pinned_posts,
+        'pinned_image_posts' : pinned_image_posts
+        }
     return render(request, 'home.html', context)
 
 @login_required
@@ -96,6 +105,12 @@ def guest(request, user_id):
     likes, dislikes, _ = get_post_interactions(guest_user, all_posts)
     followers = profile.followers.all()
     following = profile.following.all()
+    pinned_posts = [post for post in posts if post.is_pinned_by(user=user)]
+    pinned_image_posts = [post for post in posts if post.is_pinned_by(user=user) and post.image]
+    non_pinned_posts = [post for post in posts if not post.is_pinned_by(user=user)]
+    pinned_post_ids = [post.id for post in posts if post.is_pinned_by(user=user)] 
+    liked_posts = Post.objects.filter(postlike__liker=user).distinct().order_by('-created_at')
+    saved_post_ids = [post.id for post in posts if not post.is_saveable_by(user)] 
 
     context = {
         'user': guest_user,
@@ -106,11 +121,18 @@ def guest(request, user_id):
         'media_posts': image_posts,
         'likes': likes,
         'dislikes': dislikes,
+        'liked_posts': liked_posts,
+        'saved_post_ids': saved_post_ids,
+        'reportPostForm': PostReportForm(),
         'reportUserForm': UserReportForm(),
-        'followers': followers,
-        'following': following,
-    }
-    return render(request, 'home.html', context)
+        'followers' : followers,
+        'following' : following,
+        'pinned_posts' : pinned_posts,
+        'non_pinned_posts': non_pinned_posts,
+        'pinned_image_posts' : pinned_image_posts,
+        "pinned_post_ids" : pinned_post_ids
+        }
+    return render(request,'home.html',context)
 
 @login_required
 def notifications(request):
@@ -121,7 +143,6 @@ def notifications(request):
 @login_required
 def accept_decline_invite(request):
     data = get_user_notifications(request.user)
-  
     if request.method == 'POST':
         followed_user_pk = request.POST.get('followed_user')
         following_user_pk = request.POST.get('following_user')
@@ -131,7 +152,6 @@ def accept_decline_invite(request):
             messages.success(request, f"Follow request accepted.")
         else:
             messages.info(request, "Follow request declined.")
-
     return render(request, 'notifications.html', {'data': data})
 
 @login_required
@@ -213,6 +233,8 @@ def bookmarked_posts(request):
     data = Notifications.objects.filter(user=request.user).order_by('-id')
     following_users = request.user.profile.following.all()
     following_posts = Post.objects.filter(user__in=following_users).order_by('-created_at')
+    pinned_post_ids = [post.id for post in posts if post.is_pinned_by(request.user)] 
+    
 
     context = {
         'bookmarked_posts': posts,
@@ -223,6 +245,52 @@ def bookmarked_posts(request):
         'data': data,
         'reportPostForm': PostReportForm(),
         'reposted_post_ids': reposted_post_ids,
-        'followPost': following_posts
-    }
+        'followPost' : following_posts,
+        'pinned_post_ids': pinned_post_ids
+        }
     return render(request, 'bookmark.html', context)
+
+def classify_text(text):
+    url = 'https://nlpeace-api-2e54e3d268ac.herokuapp.com/classify/'
+    payload = {'text': text}
+    try:
+        response = requests.post(url, json=payload)
+        if response.status_code == 200:
+            return response.json()
+        else:
+            # Handle response error
+            return {'error': 'Failed to get prediction', 'status_code': response.status_code}
+    except requests.exceptions.RequestException as e:
+        # Handle request exception
+        return {'error': str(e)}
+  
+@login_required
+def pin(request, post_id):     
+ if request.user.is_authenticated:
+        post = Post.objects.get(pk=post_id)
+        if PostPin.objects.filter(pinner=request.user).count() >= 3:
+            messages.error(request, 'You can only pin up to three posts.')
+        else:
+         PostPin.objects.create(pinner=request.user, post=post)
+         messages.success(request, 'Post pinned successfully.')
+
+        referer = request.META.get('HTTP_REFERER')
+        if referer and 'profile' in referer.lower():
+            return redirect('profile')
+        return HttpResponseRedirect(request.META.get('HTTP_REFERER', '/'))
+ return redirect('login')    
+    
+@login_required
+def unpin(request, post_id):     
+ if request.user.is_authenticated:
+        post = Post.objects.get(pk=post_id)
+        postpin= PostPin.objects.filter(pinner=request.user, post=post)
+        if postpin.exists():
+         postpin.delete()
+         messages.success(request, 'Post unpinned.')
+
+        referer = request.META.get('HTTP_REFERER')
+        if referer and 'profile' in referer.lower():
+            return redirect('profile')
+        return HttpResponseRedirect(request.META.get('HTTP_REFERER', '/'))
+ return redirect('login')

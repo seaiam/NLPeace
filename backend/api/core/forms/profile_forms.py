@@ -34,3 +34,13 @@ class PrivacySettingsForm(forms.ModelForm):
     class Meta:
         model = Profile
         fields = ['is_private'] 
+class MessagingSettingsForm(forms.ModelForm):
+    messaging_is_private = forms.ChoiceField(
+        choices=((False, 'Everyone'), (True, 'Followers')),
+        widget=forms.Select(attrs={'class': 'form-privacy'}),
+        initial=True
+    )
+
+    class Meta:
+        model = Profile
+        fields = ['messaging_is_private'] 

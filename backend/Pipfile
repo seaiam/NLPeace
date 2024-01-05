@@ -9,8 +9,8 @@ djangorestframework = "==3.14.0"
 psycopg2 = "==2.9.9"
 factory_boy = "*"
 faker = "*"
+channels-redis = "*"
 coverage = "*"
-
 [dev-packages]
 flake8 = "*"
 

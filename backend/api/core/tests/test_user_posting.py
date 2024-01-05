@@ -4,7 +4,7 @@ from django.contrib.auth.models import User
 from core.models.models import  Profile
 from django.core.files.uploadedfile import SimpleUploadedFile
 from django.db.utils import IntegrityError
-from core.models.models import Post, PostDislike, PostLike, PostReport
+from core.models.models import Post, PostDislike, PostLike, PostReport,PostPin
 from core.forms.posting_forms import PostForm
 from core.models.models import Repost
 from django.core.exceptions import ObjectDoesNotExist
@@ -210,4 +210,59 @@ class ReportTestCase(TestCase):
         reports = PostReport.objects.all()
         self.assertEqual(response.status_code, 302)
         self.assertEqual(1, reports.count())
+
+class PinTestCase(TestCase):
+
+    def setUp(self):
+        self.user = User.objects.create_user(username='testuser', password='password')
+        self.client.login(username='testuser', password='password')
+        self.post = Post.objects.create(user=self.user, content='Parent Post')
+        self.post2 = Post.objects.create(user=self.user, content='Second Post')
+        self.post3 = Post.objects.create(user=self.user, content='Third Post')
+        self.post4 = Post.objects.create(user=self.user, content='Fourth Post')
+        
+        
+        try:
+            self.profile = self.user.profile  # Try to access the profile
+        except ObjectDoesNotExist:
+            # Handle the case where the profile does not exist/ create a profile
+            self.profile = Profile.objects.create(user=self.user)          
+
+    
+    
+    def test_pin_post(self):
+        response = self.client.post(reverse('pin', args=[self.post.id]))
+        self.assertEqual(response.status_code, 302)
+        pins = PostPin.objects.all()
+        self.assertEqual(1, pins.count())
+       
+     
+    
+    def test_unpin_post(self):
+        #pinned the post before unpinning it
+        self.postpin = PostPin.objects.create(pinner=self.user, post=self.post)
+        #check if post is pinned
+        pins=PostPin.objects.all()
+        self.assertEqual(1, pins.count())
+        #unpin post
+        response = self.client.post(reverse('unpin', args=[self.post.id]))
+        self.assertEqual(response.status_code, 302)
+        pins = PostPin.objects.all()
+        self.assertEqual(0, pins.count())
+       
+       
+    def test_pin_post_limit(self):
+       #pinned the post before unpinning it
+        self.postpin = PostPin.objects.create(pinner=self.user, post=self.post)
+        self.postpin2 = PostPin.objects.create(pinner=self.user, post=self.post2)
+        self.postpin3 = PostPin.objects.create(pinner=self.user, post=self.post3)
+        pins=PostPin.objects.all()
+        self.assertEqual(3, pins.count())
+
+        #only three posts can be pinned
+        response = self.client.post(reverse('pin', args=[self.post4.id]))
+        self.assertEqual(response.status_code, 302)
+        pins = PostPin.objects.all()
+        self.assertEqual(3, pins.count())
+
 

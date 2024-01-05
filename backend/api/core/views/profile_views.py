@@ -18,24 +18,24 @@ def add_block(request, blocked_id):
     messages.error(request, "User Blocked Successfully.")
     return redirect('profile')
 
-
 @login_required
 def profile_settings(request):
     data = get_user_notifications(request.user)
-    user = get_user_by_id(request.user.id)
-    if not user:
+    if request.method == 'GET':
+      user = get_user_by_id(request.user.id)
+      if not user:
         return HttpResponseNotFound()
-    
-    context = {
+     
+      context = {
         'user': user,
-        'data': data,
+        'data' : data, 
         'editUsernameForm': EditUsernameForm(instance=user),
         'editPasswordForm': PasswordChangeForm(request.user),
-        'privacy_form': PrivacySettingsForm(instance=user.profile)
-    }
+        'privacy_form':PrivacySettingsForm(instance=user.profile),
+        'messaging_form':MessagingSettingsForm(instance=user.profile)
+      }
     return render(request, 'settings.html', context)
-
-
+    
 @login_required
 def update_username(request):
     if request.method == 'POST':
@@ -90,6 +90,29 @@ def privacy_settings_view(request, user_id):
 
 
 @login_required
+def messaging_settings_view(request, user_id):
+    user = User.objects.get(pk=user_id)
+    profile_instance = user.profile
+
+    if request.user != user:  
+        return HttpResponseForbidden("You don't have permission to edit this user's settings.")
+
+    if request.method == "POST":
+        form = MessagingSettingsForm(request.POST, instance=profile_instance)
+        if form.is_valid():
+            form.save()
+            messages.success(request, "Messaging settings updated!")
+            return redirect('profile')
+    else:
+        form = MessagingSettingsForm(instance=profile_instance)
+
+    context = {
+        'messaging_form': form
+    }
+    
+    return render(request, 'settings.html', context)
+
+@login_required
 def search_user(request):
     if request.method == "POST":
         search = request.POST.get('search')
@@ -109,7 +132,15 @@ def follow_user(request):
     if request.method == 'POST':
         followed_user_id = request.POST.get('followed_user')
         following_user_id = request.POST.get('following_user')
+        #Needs refactoring
+        followed_user=User.objects.get(pk=followed_user_id)
+        following_user=User.objects.get(pk=following_user_id)
         
+        # deny the follow if the user is blocked 
+        if followed_user.profile.blocked.filter(id=following_user_id).exists():
+            messages.error(request, "You cannot follow this user because they have blocked you.")
+            return redirect('profile')
+          
         # Handle the follow request and get response details
         is_private, followed_username = handle_follow_request(followed_user_id, following_user_id)
         if is_private:

@@ -1,5 +1,6 @@
 from django.contrib.auth.models import User
 from django.db import models
+from django.core.exceptions import ValidationError
 
 class Profile(models.Model):
     user = models.OneToOneField(User, on_delete=models.RESTRICT, primary_key=True)
@@ -13,6 +14,7 @@ class Profile(models.Model):
     forget_password_token=models.CharField(max_length=100,default='')
     is_private = models.BooleanField(default=True)
     is_banned = models.BooleanField(default=False)
+    messaging_is_private = models.BooleanField(default=True)
 
 class ProfileWarning(models.Model):
     offender = models.ForeignKey(User, related_name='offender', on_delete=models.CASCADE)
@@ -51,8 +53,11 @@ class Post(models.Model):
 
     def is_saveable_by(self, user):
         return user not in {save.saver for save in self.postsave_set.all()}
-
-
+    
+    def is_pinned_by(self, user):
+        return self.postpin_set.filter(pinner=user).exists()
+    
+   
 class Repost(models.Model):
     post = models.ForeignKey(Post, null=True, on_delete=models.CASCADE, related_name='reposts')
     user = models.ForeignKey(User, on_delete=models.CASCADE)
@@ -129,3 +134,14 @@ class PostSave(models.Model):
 
     def __str__(self):
         return f'{self.saver.username} saved {self.post.content}'
+
+class PostPin(models.Model):
+    pinner = models.ForeignKey(User, on_delete=models.CASCADE)
+    post = models.ForeignKey(Post, on_delete=models.CASCADE)
+
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(fields=['pinner', 'post'], name='pinner_post_unique')
+        ]
+
+   
