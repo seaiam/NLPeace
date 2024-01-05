@@ -65,12 +65,12 @@ def profile(request):
     liked_posts = Post.objects.filter(postlike__liker=request.user).distinct().order_by('-created_at')
     data = Notifications.objects.filter(user=request.user).order_by('-id')
     #TEMP
-    pinned_posts = [post for post in posts if post.is_pinned_by(request.user)]
-    pinned_image_posts = [post for post in posts if post.is_pinned_by(request.user) and post.image]
-    non_pinned_posts = [post for post in posts if not post.is_pinned_by(request.user)]
+    pinned_posts = [post for post in all_posts if post.is_pinned_by(request.user)]
+    pinned_image_posts = [post for post in all_posts if post.is_pinned_by(request.user) and post.image]
+    non_pinned_posts = [post for post in all_posts if not post.is_pinned_by(request.user)]
     liked_posts = Post.objects.filter(postlike__liker=request.user).distinct().order_by('-created_at')
-    saved_post_ids = [post.id for post in posts if not post.is_saveable_by(request.user)] # ADDED THIS
-    pinned_post_ids = [post.id for post in posts if post.is_pinned_by(request.user)] 
+    saved_post_ids = [post.id for post in all_posts if not post.is_saveable_by(request.user)] # ADDED THIS
+    pinned_post_ids = [post.id for post in all_posts if post.is_pinned_by(request.user)] 
     
     context = {
         'profile': profile,
@@ -105,12 +105,12 @@ def guest(request, user_id):
     likes, dislikes, _ = get_post_interactions(guest_user, all_posts)
     followers = profile.followers.all()
     following = profile.following.all()
-    pinned_posts = [post for post in posts if post.is_pinned_by(user=user)]
-    pinned_image_posts = [post for post in posts if post.is_pinned_by(user=user) and post.image]
-    non_pinned_posts = [post for post in posts if not post.is_pinned_by(user=user)]
-    pinned_post_ids = [post.id for post in posts if post.is_pinned_by(user=user)] 
-    liked_posts = Post.objects.filter(postlike__liker=user).distinct().order_by('-created_at')
-    saved_post_ids = [post.id for post in posts if not post.is_saveable_by(user)] 
+    pinned_posts = [post for post in all_posts if post.is_pinned_by(user=guest_user)]
+    pinned_image_posts = [post for post in all_posts if post.is_pinned_by(user=guest_user) and post.image]
+    non_pinned_posts = [post for post in all_posts if not post.is_pinned_by(user=guest_user)]
+    pinned_post_ids = [post.id for post in all_posts if post.is_pinned_by(user=guest_user)] 
+    liked_posts = Post.objects.filter(postlike__liker=guest_user).distinct().order_by('-created_at')
+    saved_post_ids = [post.id for post in all_posts if not post.is_saveable_by(guest_user)] 
 
     context = {
         'user': guest_user,
@@ -267,6 +267,7 @@ def classify_text(text):
 @login_required
 def pin(request, post_id):     
  if request.user.is_authenticated:
+        #needs refactoring
         post = Post.objects.get(pk=post_id)
         if PostPin.objects.filter(pinner=request.user).count() >= 3:
             messages.error(request, 'You can only pin up to three posts.')
@@ -283,6 +284,7 @@ def pin(request, post_id):
 @login_required
 def unpin(request, post_id):     
  if request.user.is_authenticated:
+        #needs refactoring
         post = Post.objects.get(pk=post_id)
         postpin= PostPin.objects.filter(pinner=request.user, post=post)
         if postpin.exists():

@@ -15,7 +15,10 @@ def register_user(request):
             return redirect('profile')
     else:
         form = UserRegistrationForm()
-        return render(request, 'registration/register.html', {'form': form})
+        context = {
+        'form': form
+        }
+        return render(request, 'registration/register.html', context)
 
 def login_user(request):
     if request.method == "POST":
