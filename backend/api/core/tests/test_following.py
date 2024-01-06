@@ -67,7 +67,7 @@ class FollowUserTest(TestCase):
        
         response = self.client.post(reverse('accept_decline_invite'), data,follow=True)
         self.assertEqual(response.status_code, 200)
-        self.assertContains(response, 'testuser started following you.')
+        self.assertContains(response, 'Follow request accepted.')
 
     def test_follow_public_user(self):
         self.client.login(username='testuser', password='testpassword123')
