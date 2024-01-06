@@ -55,3 +55,5 @@ RUN apk add --update --no-cache bind-tools
 ENV PATH="/py/bin:$PATH"
 
 USER django-user
+
+RUN mkdir api/core
