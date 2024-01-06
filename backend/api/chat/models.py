@@ -19,3 +19,11 @@ class Message(models.Model):
     
     def last_10_messages(room_name):
         return Message.objects.filter(room_id=room_name).order_by('timestamp').all()[:10]
+
+class FileUpload(models.Model):
+    file = models.FileField(upload_to='messageFiles')
+    message = models.ForeignKey(Message, on_delete=models.CASCADE, default=None)
+
+class ImageUpload(models.Model):
+    image = models.ImageField(upload_to='messageImages')
+    message = models.ForeignKey(Message, on_delete=models.CASCADE, default=None)
