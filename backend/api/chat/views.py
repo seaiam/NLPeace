@@ -12,6 +12,7 @@ from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import redirect, render
 from django.urls import reverse
 from django.utils.safestring import mark_safe
+from redis.exceptions import ConnectionError
 from .chat_service import getChatRoom, message_to_json
 from .forms import *
 from .models import Message
@@ -90,4 +91,7 @@ def _send_message(room, message):
         'message': message_to_json(message),
     }
     channel_layer = get_channel_layer()
-    async_to_sync(channel_layer.group_send)(f'chat_{room.room_name}', {"type": "chat.message", "message": content})
+    try:
+        async_to_sync(channel_layer.group_send)(f'chat_{room.room_name}', {"type": "chat.message", "message": content})
+    except ConnectionError:
+        pass
