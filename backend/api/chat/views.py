@@ -1,12 +1,14 @@
 import json
+import mimetypes
 import re
 
 from asgiref.sync import async_to_sync
 from channels.layers import get_channel_layer
+from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth import get_user_model
-from django.http import HttpResponseRedirect
+from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import redirect, render
 from django.urls import reverse
 from django.utils.safestring import mark_safe
@@ -68,6 +70,14 @@ def _send_file_message(room, message):
     }
     channel_layer = get_channel_layer()
     async_to_sync(channel_layer.group_send)(f'chat_{room.room_name}', {"type": "chat.message", "message": content})
+
+@login_required
+def download(request, path):
+    with open(f'{settings.MEDIA_ROOT}/messageFiles/{path}', 'rb') as f:
+        match = re.match(FILE_PATH_PATTERN, path)
+        response = HttpResponse(f.read(), content_type=mimetypes.guess_type(path))
+        response['Content-Disposition'] = f'attachment; filename={path}'
+        return response
 
 @login_required
 def upload_image(request, target_user_id):
