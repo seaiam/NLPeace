@@ -180,13 +180,13 @@
         </div>
     </div>
 
-    <form id="room-file-upload-form" action="{% url 'upload_file' room_name %}" method="POST"
+    <form id="room-file-upload-form" action="{% url 'upload_file' target_user.id %}" method="POST"
           enctype="multipart/form-data" class="d-none" >
         {% csrf_token %}
         {{ file_upload_form.file }}
     </form>
 
-    <form id="room-image-upload-form" action="{% url 'upload_image' room_name %}" method="POST"
+    <form id="room-image-upload-form" action="{% url 'upload_image' target_user.id %}" method="POST"
           enctype="multipart/form-data" class="d-none" >
         {% csrf_token %}
         {{ image_upload_form.image }}
@@ -195,22 +195,22 @@
     <script src="{% static 'reconnecting-websocket.js' %}"></script>
     
     <script>
-        var roomName={{room_name_json}};
-        var username={{username}};
-        var chatSocket = new ReconnectingWebSocket(
+        const roomName={{room_name_json}};
+        const username={{username}};
+        const chatSocket = new ReconnectingWebSocket(
             'ws://' + window.location.host + '/ws/chat/' + roomName + '/'
         );
 
         chatSocket.onopen = function(e) {
-                var m = fetchMessages();
+            fetchMessages();
         }; 
 
-        function fetchMessages() {
+        const fetchMessages = function() {
             chatSocket.send(JSON.stringify({
                 'command': 'fetch_messages',
                 'room_id': roomName  
             }));
-        }
+        };
 
         chatSocket.onerror = function(e){
             console.log(e)
@@ -225,14 +225,35 @@
             } else if (data['command']==='new_message'){
                 createMessage(data['message'], roomName);
             }
-        };    
+        };   
+
+        const getContent = function(message) {
+            let element = null;
+            if (message.is_file_download) {
+                element = document.createElement('a');
+                element.href = `download/${message.content}`;
+                element.textContent = message.content;
+                element.onclick = () => {
+                    const log = document.querySelector('#chat-log');
+                    log.innerHTML = '';
+                };
+            } else if (message.is_image) {
+                element = document.createElement('img');
+                element.src = message.src;
+            } else {
+                element = document.createElement('p');
+                element.textContent = message.content;
+            }
+            return element
+        }
+
         
         const createMessage = function(message, roomName) {
           
             const author = message['author'];
             const msgListTag = document.createElement('li');
             const messageDiv = document.createElement('div');
-            const pTag = document.createElement('p');
+            const pTag = getContent(message)
             const imgTag = document.createElement('img');
             const nameDiv = document.createElement('div');
             const timeDiv = document.createElement('div');
