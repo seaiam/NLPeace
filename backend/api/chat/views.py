@@ -25,8 +25,6 @@ def room(request,room_name):
         'username':mark_safe(json.dumps(request.user.username))
 
                                                                    })
-
-
 def search_giphy(request):
     if request.method == 'GET':
         query = request.GET.get('query', '')
