@@ -293,3 +293,23 @@ def delete_user_post(user_id, post_id):
         post.delete()
         return True
     return False
+
+
+
+def handle_unpin(user, post_id):
+    post = Post.objects.get(pk=post_id)
+    postpin= PostPin.objects.filter(pinner=user, post=post)
+    if postpin.exists():
+         postpin.delete()
+         message='Post unpinned.'
+         return message
+
+def handle_pin(user, post_id):
+    post = Post.objects.get(pk=post_id)
+    if PostPin.objects.filter(pinner=user).count() >= 3:
+        message='You can only pin up to three posts.'
+        return message
+    else:
+        PostPin.objects.create(pinner=user, post=post)
+        message='Post pinned successfully.'
+        return message

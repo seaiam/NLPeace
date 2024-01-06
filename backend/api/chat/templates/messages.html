@@ -76,7 +76,7 @@
         </div>
         {% endblock %}
     </div>   
-            <div class="container">
+            <div class="popup-container">
                     {% if messages %}
                     {% for message in messages %}
                 <div class="alert alert-warning alert-dismissible fade show ">
@@ -88,7 +88,7 @@
             </div>
 
      <!-- Messaging Container -->
-     <div class="container">
+     <div class="container mt-5">
         <div class="content-wrapper">
             <div class="row gutters">
                 <div class="col-xl-10 col-lg-12 col-md-12 col-sm-12 col-12">
@@ -97,17 +97,20 @@
                             <div class="col-xl-4 col-lg-4 col-md-4 col-sm-3 col-3">
                                 <div class="users-container">
                                     <div class="message-search-box">
-                                        <div class="input-group">
-                                            <input class="form-control" placeholder="Search">
-                                            <div class="input-group-btn">
-                                                <button type="button" class="btn btn-info">
-                                                    <i class="fa fa-search"></i>
-                                                </button>
+                                        <form method="get" action="{% url 'messages' %}" >
+                                                {% csrf_token %}
+                                            <div class="input-group">
+                                                <input class="form-control" placeholder="Search" name="search" >
+                                                <div class="input-group-btn">
+                                                    <button type="submit" class="btn btn-info">
+                                                        <i class="fa fa-search"></i>
+                                                    </button>
+                                                </div>
                                             </div>
-                                        </div>
+                                        </form>
                                     </div>
                                     <ul class="users">
-                                    {% for user in users%}
+                                    {% for user in searched_users %}
                                         <a href="{% url 'room' target_user_id=user.id %}" style = "color:#00001c; text-decoration: none;">
                                             <li class="person" >
                                                 <div class="user">
@@ -139,6 +142,12 @@
             </div>
         </div>
     </div>
+
+     <!-- Bootstrap JS and Popper.js -->
+     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
+     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+     <script src="{% static 'style.js' %}" type="text/javascript"></script>
 
 </body>
 </html>

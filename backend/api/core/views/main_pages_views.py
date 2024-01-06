@@ -10,6 +10,7 @@ from django.shortcuts import get_object_or_404
 from itertools import chain
 from django.http import *
 import requests
+
 from core.forms.user_forms import UserReportForm
 from core.forms.profile_forms import *
 from core.forms.posting_forms import *
@@ -267,14 +268,8 @@ def classify_text(text):
 @login_required
 def pin(request, post_id):     
  if request.user.is_authenticated:
-        #needs refactoring
-        post = Post.objects.get(pk=post_id)
-        if PostPin.objects.filter(pinner=request.user).count() >= 3:
-            messages.error(request, 'You can only pin up to three posts.')
-        else:
-         PostPin.objects.create(pinner=request.user, post=post)
-         messages.success(request, 'Post pinned successfully.')
-
+        message = handle_pin(request.user, post_id)
+        messages.info(request, message)
         referer = request.META.get('HTTP_REFERER')
         if referer and 'profile' in referer.lower():
             return redirect('profile')
@@ -284,13 +279,8 @@ def pin(request, post_id):
 @login_required
 def unpin(request, post_id):     
  if request.user.is_authenticated:
-        #needs refactoring
-        post = Post.objects.get(pk=post_id)
-        postpin= PostPin.objects.filter(pinner=request.user, post=post)
-        if postpin.exists():
-         postpin.delete()
-         messages.success(request, 'Post unpinned.')
-
+        message = handle_unpin(request.user, post_id)
+        messages.info(request, message)
         referer = request.META.get('HTTP_REFERER')
         if referer and 'profile' in referer.lower():
             return redirect('profile')
