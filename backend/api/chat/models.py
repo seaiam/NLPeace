@@ -13,6 +13,8 @@ class Message(models.Model):
     content=models.TextField()
     timestamp=models.DateTimeField(auto_now_add=True)
     room_id = models.ForeignKey(ChatRoom,related_name='room_id',on_delete=models.CASCADE)
+    is_file_download = models.BooleanField(default=False)
+    is_image = models.BooleanField(default=False)
     
     def __str__(self):
         return self.author.username
