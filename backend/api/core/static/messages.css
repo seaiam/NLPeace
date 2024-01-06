@@ -167,6 +167,16 @@
     margin-bottom: 20px;
 }
 
+.message-image {
+    width: 192px !important;
+    height: 192px !important;
+    object-fit: scale-down;
+}
+
+.message-image:hover {
+    cursor: pointer;
+}
+
 .message-container li img {
     width: 48px;
     height: 48px;

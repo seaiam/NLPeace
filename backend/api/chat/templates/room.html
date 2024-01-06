@@ -225,7 +225,57 @@
             } else if (data['command']==='new_message'){
                 createMessage(data['message'], roomName);
             }
-        };   
+        };
+        
+        const createMessage = function(message, roomName) {
+          
+            const author = message['author'];
+            const msgListTag = document.createElement('li');
+            const messageDiv = document.createElement('div');
+            const imgTag = document.createElement('img');
+            const nameDiv = document.createElement('div');
+            const timeDiv = document.createElement('div');
+
+            let content = getContent(message)
+
+            messageDiv.className = 'message-pic';
+            timeDiv.className= 'message-time';
+            content.textContent = message.content;
+            timeDiv.textContent = new Date(message.timestamp).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+
+            if (message.is_image) {
+                const img = content;
+                img.className = 'message-image';
+                content = document.createElement('a');
+                content.appendChild(img);
+                popup = createImagePopup(message);
+                document.body.appendChild(popup);
+                content.onclick = () => {
+                    popup.style.display = 'block';
+                    return true;
+                }
+            } else {
+                content.className = 'message-text';
+            }
+        
+            if (author === username){
+                msgListTag.className= 'message-right';
+                msgListTag.appendChild(timeDiv);
+                msgListTag.appendChild(content);
+                msgListTag.appendChild(messageDiv);
+            } else {
+                msgListTag.className ='message-left';
+                msgListTag.appendChild(messageDiv);
+                msgListTag.appendChild(content);
+                msgListTag.appendChild(timeDiv);
+            }
+    
+            
+            const chatLog = document.querySelector('.messageContainerScroll');
+            chatLog.appendChild(msgListTag);
+
+            chatLog.scrollTop = chatLog.scrollHeight;
+        };
 
         const getContent = function(message) {
             let element = null;
@@ -247,51 +297,23 @@
             return element
         }
 
-        
-        const createMessage = function(message, roomName) {
-          
-            const author = message['author'];
-            const msgListTag = document.createElement('li');
-            const messageDiv = document.createElement('div');
-            const pTag = getContent(message)
-            const imgTag = document.createElement('img');
-            const nameDiv = document.createElement('div');
-            const timeDiv = document.createElement('div');
-
-        
-            if (author === username){
-                msgListTag.className= 'message-right';
-                messageDiv.className = 'message-pic';
-                pTag.className = 'message-text';
-                timeDiv.className= 'message-time';
-
-                pTag.textContent = message.content;
-                timeDiv.textContent = new Date(message.timestamp).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
-
-                msgListTag.appendChild(timeDiv);
-                msgListTag.appendChild(pTag);
-                msgListTag.appendChild(messageDiv);
-            }
-            else {
-                msgListTag.className ='message-left';
-                messageDiv.className = 'message-pic';
-                pTag.className = 'message-text';
-                timeDiv.className= 'message-time';
-                
-                pTag.textContent = message.content;
-                timeDiv.textContent = new Date(message.timestamp).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
-
-                msgListTag.appendChild(messageDiv);
-                msgListTag.appendChild(pTag);
-                msgListTag.appendChild(timeDiv);
-            }
-    
-            
-            const chatLog = document.querySelector('.messageContainerScroll');
-            chatLog.appendChild(msgListTag);
-
-            chatLog.scrollTop = chatLog.scrollHeight;
-        };
+        const createImagePopup = function(message) {
+            const popup = document.createElement('div');
+            const content = document.createElement('div');
+            const close = document.createElement('span');
+            const img = document.createElement('img');
+            popup.id = `room-image-${message.src}`;
+            popup.classList.add('popup');
+            content.classList.add('popup-content');
+            close.classList.add('close');
+            close.innerHTML = '&times;';
+            img.src = message.src;
+            popup.appendChild(content);
+            content.appendChild(close);
+            content.appendChild(img);
+            close.onclick = () => popup.style.display = 'none';
+            return popup;
+        }
 
         chatSocket.onclose = function(e) {
             console.error('Chat socket closed unexpectedly');

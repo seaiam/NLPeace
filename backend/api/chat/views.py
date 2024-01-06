@@ -60,16 +60,8 @@ def upload_file(request, target_user_id):
             message = Message.objects.create(author=request.user, content=match.group("filename"), room_id=room, is_file_download=True)
             upload.message = message
             upload.save()
-            _send_file_message(room, message)
+            _send_message(room, message)
     return redirect(reverse('room', args=[target_user_id]))
-
-def _send_file_message(room, message):
-    content = {
-        'command': 'new_message',
-        'message': message_to_json(message),
-    }
-    channel_layer = get_channel_layer()
-    async_to_sync(channel_layer.group_send)(f'chat_{room.room_name}', {"type": "chat.message", "message": content})
 
 @login_required
 def download(request, path):
@@ -81,4 +73,21 @@ def download(request, path):
 
 @login_required
 def upload_image(request, target_user_id):
-    return redirect(reverse('room', args=[target_user_id]))
+    if request.method == "POST":
+        form = ImageUploadForm(request.POST, request.FILES)
+        if form.is_valid():
+            room = getChatRoom(request.user, User.objects.filter(id=target_user_id).first())
+            upload = form.save(commit=False)
+            message = Message.objects.create(author=request.user, content='', room_id=room, is_image=True)
+            upload.message = message
+            upload.save()
+            _send_message(room, message)
+    return redirect(reverse("room", args=[target_user_id]))
+
+def _send_message(room, message):
+    content = {
+        'command': 'new_message',
+        'message': message_to_json(message),
+    }
+    channel_layer = get_channel_layer()
+    async_to_sync(channel_layer.group_send)(f'chat_{room.room_name}', {"type": "chat.message", "message": content})
