@@ -13,6 +13,12 @@
     <link rel="stylesheet"  type="text/css" href="{% static 'messages.css' %}">
     <link rel="stylesheet" type="text/css" href="{% static 'style.css' %}">
     <title>Chat Room</title>
+    <script>
+        function clickElement(id) {
+            const element = document.getElementById(id);
+            element.click();
+        }
+    </script>
 </head>
 <body>
     {% include "navbar.html" %}
@@ -142,12 +148,14 @@
                                         </div>
                                         <div class="widget-post__actions post--actions">
                                             <div class="post-actions__attachments">
-                                                <label for="upload-image" class="post-actions__label" onclick="">
+                                                <label for="upload-image" class="post-actions__label"
+                                                       onclick="clickElement('{{ image_upload_form.image.id_for_label }}')">
                                                 <i class="bi bi-camera" sty aria-hidden="true"></i> 
                                                 </label>
                                                 &nbsp;
                 
-                                                <label for="upload-image" class="post-actions__label">
+                                                <label for="upload-image" class="post-actions__label"
+                                                       onclick="clickElement('{{ file_upload_form.file.id_for_label }}')">
                                                     <i class="bi bi-paperclip" aria-hidden="true"></i> 
                                                 </label>
                                                 &nbsp; 
@@ -172,6 +180,18 @@
         </div>
     </div>
 
+    <form id="room-file-upload-form" action="{% url 'upload_file' room_name %}" method="POST"
+          enctype="multipart/form-data" class="d-none" >
+        {% csrf_token %}
+        {{ file_upload_form.file }}
+    </form>
+
+    <form id="room-image-upload-form" action="{% url 'upload_image' room_name %}" method="POST"
+          enctype="multipart/form-data" class="d-none" >
+        {% csrf_token %}
+        {{ image_upload_form.image }}
+    </form>
+
     <script src="{% static 'reconnecting-websocket.js' %}"></script>
     
     <script>
@@ -182,15 +202,21 @@
         );
 
         chatSocket.onopen = function(e) {
-                var m = fetchMessages()
-                console.log(e)
-        } 
+                var m = fetchMessages();
+        }; 
+
+        function fetchMessages() {
+            chatSocket.send(JSON.stringify({
+                'command': 'fetch_messages',
+                'room_id': roomName  
+            }));
+        }
 
         chatSocket.onerror = function(e){
             console.log(e)
-        }
+        };
 
-        chatSocket.onmessage = function(e){
+        chatSocket.onmessage = function(e) {
             var data = JSON.parse(e.data);
             if (data['command']==='messages'){
                 for (let i=0; i<data['messages'].length;i++){
@@ -199,50 +225,51 @@
             } else if (data['command']==='new_message'){
                 createMessage(data['message'], roomName);
             }
-        }    
-        createMessage= function(message, roomName) {
-          
-        var author = message['author'];
-        var msgListTag = document.createElement('li');
-        var messageDiv = document.createElement('div');
-        var pTag = document.createElement('p');
-        var imgTag = document.createElement('img');
-        var nameDiv = document.createElement('div');
-        var timeDiv = document.createElement('div');
-
-    
-        if (author === username){
-            msgListTag.className= 'message-right';
-            messageDiv.className = 'message-pic';
-            pTag.className = 'message-text';
-            timeDiv.className= 'message-time';
-
-            pTag.textContent = message.content;
-            timeDiv.textContent = new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
-
-            msgListTag.appendChild(timeDiv);
-            msgListTag.appendChild(pTag);
-            msgListTag.appendChild(messageDiv);
-        }
-        else {
-            msgListTag.className ='message-left';
-            messageDiv.className = 'message-pic';
-            pTag.className = 'message-text';
-            timeDiv.className= 'message-time';
-            
-            pTag.textContent = message.content;
-            timeDiv.textContent = new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
-
-            msgListTag.appendChild(messageDiv);
-            msgListTag.appendChild(pTag);
-            msgListTag.appendChild(timeDiv);
-    }
-   
+        };    
         
-        var chatLog = document.querySelector('.messageContainerScroll');
-        chatLog.appendChild(msgListTag);
+        const createMessage = function(message, roomName) {
+          
+            const author = message['author'];
+            const msgListTag = document.createElement('li');
+            const messageDiv = document.createElement('div');
+            const pTag = document.createElement('p');
+            const imgTag = document.createElement('img');
+            const nameDiv = document.createElement('div');
+            const timeDiv = document.createElement('div');
 
-        chatLog.scrollTop = chatLog.scrollHeight;
+        
+            if (author === username){
+                msgListTag.className= 'message-right';
+                messageDiv.className = 'message-pic';
+                pTag.className = 'message-text';
+                timeDiv.className= 'message-time';
+
+                pTag.textContent = message.content;
+                timeDiv.textContent = new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+
+                msgListTag.appendChild(timeDiv);
+                msgListTag.appendChild(pTag);
+                msgListTag.appendChild(messageDiv);
+            }
+            else {
+                msgListTag.className ='message-left';
+                messageDiv.className = 'message-pic';
+                pTag.className = 'message-text';
+                timeDiv.className= 'message-time';
+                
+                pTag.textContent = message.content;
+                timeDiv.textContent = new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+
+                msgListTag.appendChild(messageDiv);
+                msgListTag.appendChild(pTag);
+                msgListTag.appendChild(timeDiv);
+            }
+    
+            
+            const chatLog = document.querySelector('.messageContainerScroll');
+            chatLog.appendChild(msgListTag);
+
+            chatLog.scrollTop = chatLog.scrollHeight;
         };
 
         chatSocket.onclose = function(e) {
@@ -267,13 +294,21 @@
             }));
             messageInputDom.value = '';
         };
-        
-        function fetchMessages() {
-            chatSocket.send(JSON.stringify({
-                'command': 'fetch_messages',
-                'room_id': roomName  
-            }));
-        }
+
+        document.querySelector('#{{ file_upload_form.file.id_for_label }}').onchange = function(e) {
+            if (e.target.files && e.target.files.length) {
+                const form = document.querySelector('#room-file-upload-form');
+                form.submit();
+            }
+        };
+
+        document.querySelector('#{{ image_upload_form.image.id_for_label }}').onchange = function(e) {
+            if (e.target.files && e.target.files.length) {
+                const form = document.querySelector('#room-image-upload-form');
+                form.submit();
+            }
+        };
+
     </script>
 </body>
 </html>
