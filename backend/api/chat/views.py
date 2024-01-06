@@ -41,38 +41,35 @@ def room(request,target_user_id):
 
 @login_required
 def upload_file(request, target_user_id):
-    if request.user.is_authenticated:
-        if request.method == "POST":
-            form = UploadFileForm(request.POST, request.FILES)
-            if form.is_valid():
-                target_user = User.objects.filter(id=target_user_id).first()
-                room = getChatRoom(request.user, target_user)
-                upload = form.save(commit=False)
-                match = re.match(FILE_PATH_PATTERN, upload.file.path)
-                message = Message.objects.create(author=request.user, content=match.group("filename"), room_id=room, is_file_download=True)
-                upload.message = message
-                upload.save()
+    if request.method == "POST":
+        form = UploadFileForm(request.POST, request.FILES)
+        if form.is_valid():
+            target_user = User.objects.filter(id=target_user_id).first()
+            room = getChatRoom(request.user, target_user)
+            upload = form.save(commit=False)
+            match = re.match(FILE_PATH_PATTERN, upload.file.path)
+            message = Message.objects.create(author=request.user, content=match.group("filename"), room_id=room, is_file_download=True)
+            upload.message = message
+            upload.save()
     return redirect(reverse("room", args=[target_user_id]))
 
 @login_required
 def upload_image(request, target_user_id):
-    if request.user.is_authenticated:
-        if request.method == "POST":
-            form = UploadImageForm(request.POST, request.FILES)
-            if form.is_valid():
-                target_user = User.objects.filter(id=target_user_id).first()
-                room = getChatRoom(request.user, target_user)
-                upload = form.save(commit=False)
-                message = Message.objects.create(author=request.user, content='', room_id=room, is_image=True)
-                upload.message = message
-                upload.save()
+    if request.method == "POST":
+        form = UploadImageForm(request.POST, request.FILES)
+        if form.is_valid():
+            target_user = User.objects.filter(id=target_user_id).first()
+            room = getChatRoom(request.user, target_user)
+            upload = form.save(commit=False)
+            message = Message.objects.create(author=request.user, content='', room_id=room, is_image=True)
+            upload.message = message
+            upload.save()
     return redirect(reverse("room", args=[target_user_id]))
 
 @login_required
 def download(request, path):
-    if request.user.is_authenticated:
-        with open(f'api/core/media/messageFiles/{path}', 'rb') as f:
-            match = re.match(FILE_PATH_PATTERN, path)
-            response = HttpResponse(f.read(), content_type=mimetypes.guess_type(path))
-            response['Content-Disposition'] = f'attachment; filename={path}'
-            return response
+    with open(f'api/core/media/messageFiles/{path}', 'rb') as f: # TODO don't hardcode directory path.
+        match = re.match(FILE_PATH_PATTERN, path)
+        response = HttpResponse(f.read(), content_type=mimetypes.guess_type(path))
+        response['Content-Disposition'] = f'attachment; filename={path}'
+        return response
