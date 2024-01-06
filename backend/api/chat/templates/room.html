@@ -238,13 +238,14 @@
             if (message.is_file_download) {
                 element = document.createElement('a');
                 element.href = `download/${message.content}`;
+                element.textContent = message.content;
             } else if (message.is_image) {
                 element = document.createElement('img');
-                element.src = message.src
+                element.src = message.src;
             } else {
                 element = document.createElement('p');
+                element.textContent = message.content;
             }
-            element.textContent = message.content;
             return element
         }
         
@@ -259,56 +260,23 @@
             var timeDiv = document.createElement('div');
 
     
-        if (author === username){
-            msgListTag.className= 'message-right';
             messageDiv.className = 'message-pic';
-            pTag.className = 'message-text';
             timeDiv.className= 'message-time';
-
             pTag.textContent = message.content;
             timeDiv.textContent = new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
-
-            msgListTag.appendChild(timeDiv);
-            msgListTag.appendChild(pTag);
-            msgListTag.appendChild(messageDiv);
-        }
-        else {
-            msgListTag.className ='message-left';
-            messageDiv.className = 'message-pic';
-            pTag.className = 'message-text';
-            timeDiv.className= 'message-time';
-            
-            pTag.textContent = message.content;
-            timeDiv.textContent = new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
-
-            msgListTag.appendChild(messageDiv);
-            msgListTag.appendChild(pTag);
-            msgListTag.appendChild(timeDiv);
-    }
-   
-        
+            if (message.is_image) {
+                pTag.className = 'message-image';
+            } else {
+                pTag.className = 'message-text';
+            }
             if (author === username){
                 msgListTag.className= 'message-right';
-                messageDiv.className = 'message-pic';
-                pTag.className = 'message-text';
-                timeDiv.className= 'message-time';
-
-                pTag.textContent = message.content;
-                timeDiv.textContent = new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
-
                 msgListTag.appendChild(timeDiv);
                 msgListTag.appendChild(pTag);
                 msgListTag.appendChild(messageDiv);
             }
             else {
                 msgListTag.className ='message-left';
-                messageDiv.className = 'message-pic';
-                pTag.className = 'message-text';
-                timeDiv.className= 'message-time';
-                
-                pTag.textContent = message.content;
-                timeDiv.textContent = new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
-
                 msgListTag.appendChild(messageDiv);
                 msgListTag.appendChild(pTag);
                 msgListTag.appendChild(timeDiv);
