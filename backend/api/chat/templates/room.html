@@ -266,7 +266,7 @@
                 timeDiv.className= 'message-time';
 
                 pTag.textContent = message.content;
-                timeDiv.textContent = new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+                timeDiv.textContent = new Date(message.timestamp).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
 
                 msgListTag.appendChild(timeDiv);
                 msgListTag.appendChild(pTag);
@@ -279,7 +279,7 @@
                 timeDiv.className= 'message-time';
                 
                 pTag.textContent = message.content;
-                timeDiv.textContent = new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+                timeDiv.textContent = new Date(message.timestamp).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
 
                 msgListTag.appendChild(messageDiv);
                 msgListTag.appendChild(pTag);
