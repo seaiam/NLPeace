@@ -1,4 +1,6 @@
 from core.forms.profile_forms import *
+from core.models.models import *
+
 
 def block_user(request_user_id, blocked_user_id):
     updated_user = Profile.objects.get(pk=request_user_id)
@@ -15,3 +17,22 @@ def block_user(request_user_id, blocked_user_id):
     if blocked_user_profile.followers.filter(id=request_user_id).exists():     
         blocked_user_profile.followers.remove(updated_user.user)
     blocked_user_profile.save()
+
+
+def handle_unpin(user, post_id):
+    post = Post.objects.get(pk=post_id)
+    postpin= PostPin.objects.filter(pinner=user, post=post)
+    if postpin.exists():
+         postpin.delete()
+         message='Post unpinned.'
+         return message
+
+def handle_pin(user, post_id):
+    post = Post.objects.get(pk=post_id)
+    if PostPin.objects.filter(pinner=user).count() >= 3:
+        message='You can only pin up to three posts.'
+        return message
+    else:
+        PostPin.objects.create(pinner=user, post=post)
+        message='Post pinned successfully.'
+        return message
