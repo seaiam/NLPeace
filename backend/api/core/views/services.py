@@ -93,7 +93,6 @@ def handle_invitation(followed_user_pk, following_user_pk, action):
     followed_user = User.objects.get(pk=followed_user_pk)
     following_user = User.objects.get(pk=following_user_pk)
     notification = Notifications.objects.get(user=followed_user_pk, sent_by=following_user_pk, type="request")
-
     if action == "accept":
         followed_user.profile.follow_requests.remove(following_user)
         followed_user.profile.followers.add(following_user)
@@ -138,8 +137,6 @@ def handle_like(user, post_id):
         #like post
         like = PostLike.objects.create(liker=user, post=post)
 
-
-
 def handle_dislike(user, post_id):
     post = get_object_or_404(Post, id=post_id)
     
@@ -156,16 +153,15 @@ def handle_dislike(user, post_id):
         #dislike post
         dislike = PostDislike.objects.create(disliker=user, post=post)
 
-
 def report_post(user, post_id, form_data):
     report = PostReportForm(form_data).save(commit=False)
     report.reporter = user
     report.post = get_object_or_404(Post, pk=post_id)
     report.save()
 
-def report_user(user, reported_id, form_data):
-    report = UserReportForm(form_data).save(commit=False)
-    report.reporter = user
+def report_user_service(request, reported_id, form):
+    report = form.save(commit=False)
+    report.reporter = request.user
     report.reported = get_object_or_404(User, id=reported_id)
     report.save()
 
@@ -205,11 +201,11 @@ def update_user_username(request_user_id, form_data):
     if form.is_valid():
         form.save()
 
-def update_user_password(user, form_data):
-    form = PasswordChangeForm(user, form_data)
+def update_user_password(request, form_data):
+    form = PasswordChangeForm(request.user, form_data)
     if form.is_valid():
         updated_user = form.save()
-        update_session_auth_hash(user, updated_user)
+        update_session_auth_hash(request, updated_user)
 
 def update_user_profile_banner(request_user_id, form_data, files_data):
     profile = Profile.objects.get_or_create(pk=request_user_id)
@@ -239,7 +235,6 @@ def update_privacy_settings(user_id, form_data):
 
 def search_for_users(search_query):
     return User.objects.filter(username__icontains=search_query).order_by('username')
-
 
 def handle_follow_request(followed_user_id, following_user_id):
     followed_user = User.objects.get(pk=followed_user_id)
@@ -293,8 +288,6 @@ def delete_user_post(user_id, post_id):
         post.delete()
         return True
     return False
-
-
 
 def handle_unpin(user, post_id):
     post = Post.objects.get(pk=post_id)

@@ -47,7 +47,7 @@ def update_username(request):
 @login_required
 def update_password(request):
     if request.method == 'POST':
-        update_user_password(request.user, request.POST)
+        update_user_password(request, request.POST)
         return redirect('profile')
     return HttpResponseServerError()
 
@@ -117,7 +117,8 @@ def search_user(request):
     if request.method == "POST":
         search = request.POST.get('search')
         searched = search_for_users(search) if search else None
-        search=request.session.get('search')
+        if searched:
+            return render(request,'search_user.html',{'search':search,'searched':searched})
 
     search = request.session.get('search')
     if search:
@@ -161,9 +162,10 @@ def unfollow_user(request):
     if request.method == 'POST':
         unfollowed_user_id = request.POST.get('unfollowed_user')
         unfollowing_user_id = request.POST.get('unfollowing_user')
-        
+        unfollowed_user = User.objects.get(pk=unfollowed_user_id)
+
         handle_unfollow_request(unfollowed_user_id, unfollowing_user_id)
-        messages.success(request, f"You have unfollowed the user.")
+        messages.success(request, f"You have unfollowed {unfollowed_user.username}.")
 
         search = request.POST.get('search')
         if search:

@@ -28,6 +28,7 @@ def login_user(request):
             return redirect('profile')
         else:
             messages.error(request, 'There was an error logging in. Try again...')
+            return redirect('login')
     return render(request, 'registration/login.html')
 
 def logout_user(request):
@@ -48,7 +49,6 @@ def ChangePassword(request, token):
 def ForgetPassword(request):
     if request.method == "POST":
         email = request.POST.get('email')
-        if handle_forget_password(email):
-            messages.success(request, "An email will be sent if a user with this email exists.")
-            return redirect('/accounts/login/')
-    return render(request, 'forget_password.html')
+        handle_forget_password(email)
+        messages.success(request, "An email will be sent if a user with this email exists.")
+        return redirect('/accounts/login/')

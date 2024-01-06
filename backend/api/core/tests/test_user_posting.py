@@ -150,9 +150,11 @@ class LikeAndDislikeTestCase(TestCase):
         self.assertEqual(1, likes.count())
         self.assertEqual(0, dislikes.count())
     
-    def test_like_post_with_already_liked_is_error(self):
+    def test_like_post_with_already_liked_is_removed(self):
         PostLike.objects.create(liker=self.user, post=self.post)
-        self.assertRaises(IntegrityError, lambda: self.client.get(reverse('like', args=[self.post.id]),))
+        response = self.client.get(reverse('like', args=[self.post.id]))
+        self.assertEqual(0, self.post.get_number_likes())
+        self.assertTrue(self.post.is_likeable_by(self.user))
     
     def test_dislike_post(self):
         response = self.client.get(reverse('dislike', args=[self.post.id]))
@@ -173,9 +175,11 @@ class LikeAndDislikeTestCase(TestCase):
         self.assertEqual(0, likes.count())
         self.assertEqual(1, dislikes.count())
     
-    def test_dislike_post_with_already_disliked_is_error(self):
+    def test_dislike_post_with_already_disliked_is_removed(self):
         PostDislike.objects.create(disliker=self.user, post=self.post)
-        self.assertRaises(IntegrityError, lambda: self.client.get(reverse('dislike', args=[self.post.id])))
+        response = self.client.get(reverse('dislike', args=[self.post.id]))
+        self.assertEqual(0, self.post.get_number_dislikes())
+        self.assertTrue(self.post.is_dislikeable_by(self.user))
 
 class RepostTestCase(TestCase):
     def setUp(self):

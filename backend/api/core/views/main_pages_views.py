@@ -203,7 +203,7 @@ def report_user(request, reported_id):
     if request.method == 'POST':
         form = UserReportForm(request.POST)
         if form.is_valid():
-            report_user(request.user, reported_id, request.POST)
+            report_user_service(request, reported_id, form)
             messages.success(request, 'User successfully reported.')
         else:
             messages.error(request, 'User not reported.')

@@ -7,8 +7,6 @@ from django.conf import settings
 from django.core.mail import send_mail
 from core.models.models import Profile, User
 
-
-
 def register_new_user(request, form_data):
     form = UserRegistrationForm(form_data)
     if form.is_valid():
