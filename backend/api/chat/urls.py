@@ -11,7 +11,6 @@ from . import views
 urlpatterns = [
     path("", views.index, name="index"),
     path("<str:room_name>/", views.room, name="room"),
-    path('upload_gif/', views.upload_gif, name='upload_gif'),
     path('search-giphy/', views.search_giphy, name='search_giphy'),
 ]
 

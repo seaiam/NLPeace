@@ -25,22 +25,6 @@ def room(request,room_name):
         'username':mark_safe(json.dumps(request.user.username))
 
                                                                    })
-def save_gif_and_get_url(gif):
-    # unique name for GIF
-    file_name = f"gifs/{uuid.uuid4()}-{gif.name}"
-    file_path = default_storage.save(file_name, ContentFile(gif.read()))
-
-    gif_url = f"{settings.MEDIA_URL}{file_path}"
-    return gif_url
-
-def upload_gif(request):
-    if request.method == 'POST' and request.FILES['gif']:
-        gif = request.FILES['gif']
-        gif_url = save_gif_and_get_url(gif)
-
-        return JsonResponse({'gif_url': gif_url})
-    return JsonResponse({'error': 'Invalid request'}, status=400)
-
 
 
 def search_giphy(request):
