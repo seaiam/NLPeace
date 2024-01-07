@@ -1221,8 +1221,8 @@ img {
   white-space: nowrap; 
 }
 
-/* Delete Item Adjusment*/
-.delete-button  {
+/* Delete and Edit Item Adjusment*/
+.delete-button, .edit-button  {
   display: flex; 
   align-items: center; 
   white-space: nowrap; 
