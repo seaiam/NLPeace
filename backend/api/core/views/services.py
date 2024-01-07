@@ -1,10 +1,7 @@
 from api.logger_config import configure_logger # TODO add logging statements
 from django.http import HttpResponseForbidden
 from django.contrib import messages
-from django.shortcuts import render, redirect
-from django.contrib.auth.decorators import login_required
-from django.core import serializers
-from django.http import JsonResponse
+from django.shortcuts import redirect
 from django.db.models import Q
 from django.shortcuts import get_object_or_404
 from itertools import chain
@@ -306,3 +303,28 @@ def handle_pin(user, post_id):
         PostPin.objects.create(pinner=user, post=post)
         message='Post pinned successfully.'
         return message
+
+def get_post_to_edit(post):
+    if post:
+        context = {
+            'content_to_edit': post.content,
+            'form': PostForm()
+        }
+        return context
+    else:
+        return redirect('error_500')
+
+def handle_edit_post(request,form, post):
+    if form.is_valid():
+        edited_text = form.cleaned_data['content']
+        result = classify_tweet(edited_text)
+        if result["prediction"][0] in [1, 0]:  # Offensive or hate speech
+            message = 'This post contains offensive language and is not allowed on our platform.' if result["prediction"][0] == 1 else 'This post contains hateful language and is not allowed on our platform.'
+            messages.error(request, message)
+            return None
+        elif result["prediction"][0] == 2:  # Appropriate
+            post = form.save()
+            post.is_edited = True
+            post.save()
+            return post
+    return None

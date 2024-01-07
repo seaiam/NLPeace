@@ -3,7 +3,6 @@ from django.http import HttpResponseForbidden
 from django.contrib import messages
 from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import login_required
-from django.core import serializers
 from django.http import JsonResponse
 from django.db.models import Q
 from django.shortcuts import get_object_or_404
@@ -286,3 +285,20 @@ def unpin(request, post_id):
             return redirect('profile')
         return HttpResponseRedirect(request.META.get('HTTP_REFERER', '/'))
  return redirect('login')
+
+@login_required
+def edit_post(request, post_id):
+    post = get_object_or_404(Post, id=post_id)
+    original_poster = post.user
+
+    if request.user == original_poster:
+        if request.method == 'POST':
+            form = PostForm(request.POST, request.FILES, instance = post)
+            result = handle_edit_post(request, form, post)
+            if result:
+                return HttpResponseRedirect(request.META.get('HTTP_REFERER', '/'))
+        else:
+            context = get_post_to_edit(post)
+            return render(request, 'edit_post.html', context)
+    else:
+        return render(request, '401.html', status=401)
