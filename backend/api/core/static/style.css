@@ -1233,6 +1233,8 @@ img {
   border: none;
   cursor: pointer;
   width: 100%;
+  margin-top: 10px;
+  margin-bottom: 10px;
 }
 
 .delete-button:focus {
