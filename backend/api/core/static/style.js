@@ -20,10 +20,8 @@ const toggleModal = (id) => {
     const modal = document.getElementById(id);
     console.log(modal)
     if (modal.style.display === "" || modal.style.display === "none") {
-        console.log("true")
         modal.style.display = "block";
     } else {
-        console.log("false")
         modal.style.display = "none";
     }
 }
