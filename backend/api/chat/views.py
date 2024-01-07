@@ -40,7 +40,6 @@ def index(request):
 def room(request,target_user_id):
     target_user = User.objects.filter(id = target_user_id).first()
     chat_room = getChatRoom(request.user, target_user)
-    print(chat_room.room_name)
     context = {
         'room_name_json':mark_safe(json.dumps(chat_room.room_name)),
         'username':mark_safe(json.dumps(request.user.username)),
