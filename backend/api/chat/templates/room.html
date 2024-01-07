@@ -235,6 +235,12 @@
             const imgTag = document.createElement('img');
             const nameDiv = document.createElement('div');
             const timeDiv = document.createElement('div');
+            const dropdownDiv = document.createElement('div');
+            const dropdownToggle = document.createElement('a');
+            const dropdownIcon = document.createElement('i');
+            const dropdownMenu = document.createElement('ul');
+            const dropdownItem = document.createElement('li');
+            const reportLink = document.createElement('a');
 
             let content = getContent(message)
 
@@ -265,8 +271,24 @@
                 msgListTag.appendChild(messageDiv);
             } else {
                 msgListTag.className ='message-left';
+                dropdownDiv.className = 'dropdown-message';
+                dropdownToggle.className = 'hidden-arrow';
+                dropdownToggle.setAttribute('data-toggle', 'dropdown');
+                dropdownToggle.setAttribute('aria-expanded', 'false');
+                dropdownIcon.className = 'fas fa-ellipsis-v';
+                dropdownMenu.className = 'dropdown-menu';
+                reportLink.className = 'dropdown-item';
+                reportLink.href = '#';
+                reportLink.innerHTML = '<i class="far fa-flag"></i> Report';
                 msgListTag.appendChild(messageDiv);
                 msgListTag.appendChild(content);
+                dropdownToggle.appendChild(dropdownIcon);
+                dropdownItem.appendChild(reportLink);
+                dropdownMenu.appendChild(dropdownItem);
+                dropdownDiv.appendChild(dropdownToggle);
+                dropdownDiv.appendChild(dropdownMenu);
+
+                msgListTag.appendChild(dropdownDiv);
                 msgListTag.appendChild(timeDiv);
             }
     
@@ -354,5 +376,12 @@
         };
 
     </script>
+
+     <!-- Bootstrap JS and Popper.js -->
+     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
+     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+     <script src="{% static 'style.js' %}" type="text/javascript"></script>
+
 </body>
 </html>
