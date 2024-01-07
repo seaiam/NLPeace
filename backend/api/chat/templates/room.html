@@ -284,8 +284,7 @@
                 element.href = `download/${message.content}`;
                 element.textContent = message.content;
                 element.onclick = () => {
-                    const log = document.querySelector('#chat-log');
-                    log.innerHTML = '';
+                    
                 };
             } else if (message.is_image) {
                 element = document.createElement('img');
@@ -317,6 +316,8 @@
 
         chatSocket.onclose = function(e) {
             console.error('Chat socket closed unexpectedly');
+            const log = document.querySelector('#chat-log');
+            log.innerHTML = '';
         };
 
         document.querySelector('#chat-message-input').focus();
