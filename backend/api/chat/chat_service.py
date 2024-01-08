@@ -16,3 +16,21 @@ def getChatRoom(current_user, target_user):
         )
 
     return chat_room
+
+def messages_to_json(messages):
+    return [message_to_json(message) for message in messages]
+
+def message_to_json(message):
+    if message.is_image:
+            upload = message.imageupload_set.first()
+            src = upload.image.url
+    else:
+        src = ''
+    return {
+        'author': message.author.username,
+        'content': message.content,
+        'timestamp': str(message.timestamp),
+        'is_file_download': message.is_file_download,
+        'is_image': message.is_image,
+        'src': src
+    }

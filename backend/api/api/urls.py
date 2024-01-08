@@ -26,7 +26,7 @@ urlpatterns = [
     path('auth/', include("django.contrib.auth.urls")),
     path('accounts/login/', authentication_views.login_user, name="login"),
     path('logout_user', authentication_views.logout_user, name="logout_user"),
-    path('register_user', authentication_views.register_user, name='register_user'),
+    path('register_user/', authentication_views.register_user, name='register_user'),
     path('', main_pages_views.home, name='home'),
     path('accounts/profile/', main_pages_views.profile, name='profile'),
     path('accounts/profile/<int:blocked_id>/', profile_views.add_block, name='add_block'),

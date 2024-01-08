@@ -1,9 +1,13 @@
-from django.test import TestCase
-from chat.models import ChatRoom
-from core.models.models import User
-from django.urls import reverse
 from django.core.exceptions import ObjectDoesNotExist
+from django.core.files.uploadedfile import SimpleUploadedFile
+from django.test import TestCase
+from django.urls import reverse
+from io import BytesIO
+from PIL import Image
+from chat.models import ChatRoom, Message
+from core.models.models import User
 from core.models.models import *
+
 class ChatTest(TestCase):
     
     def setUp(self):
@@ -88,3 +92,49 @@ class ChatTest(TestCase):
 
 
 
+    def test_search_existing_user(self):
+
+        self.client.login(username=self.username1, password=self.password)
+
+        # search for user2
+        response = self.client.get(reverse('messages') + "?search=" + self.username2)
+
+        self.assertContains(response, self.username2)
+        self.assertNotContains(response, "No user found with the username: " + self.username2) 
+        
+
+    def test_search_nonexistent_user(self):
+        try:  
+            self.user1_profile=self.user1.profile
+        except ObjectDoesNotExist:
+            # Handle the case where the profile does not exist/ create a profile
+            self.user1_profile=Profile.objects.create(user=self.user1)    
+            self.user1_profile.save()
+
+        self.client.login(username=self.username1, password=self.password)
+        search_term="jenny"
+        
+        response = self.client.get(reverse('messages') + f"?search={search_term}",follow=True)
+        self.assertContains(response, "No user found with the username: jenny") 
+
+    def test_chat_file_upload(self):
+        self.client.login(username=self.username1, password=self.password)
+        self.client.get(reverse('room', args=[self.user2.id]))
+        data = {'file': SimpleUploadedFile("assets/test.txt", b"file_content")}
+        count = Message.objects.count()
+        response = self.client.post(reverse('upload_file', args=[self.user2.id]), data)
+        self.assertEqual(response.status_code, 302)
+        self.assertEqual(Message.objects.count(), count + 1)
+    
+    def test_chat_image_upload(self):
+        self.client.login(username=self.username1, password=self.password)
+        self.client.get(reverse('room', args=[self.user2.id]))
+        with Image.open('assets/test.jpg') as image:
+            f = BytesIO()
+            image.save(f, 'jpeg')
+            f.seek(0)
+            data = {'image': SimpleUploadedFile('test.jpg', f.read())}
+            count = Message.objects.count()
+            response = self.client.post(reverse('upload_image', args=[self.user2.id]), data)
+            self.assertEqual(response.status_code, 302)
+            self.assertEqual(Message.objects.count(), count + 1)

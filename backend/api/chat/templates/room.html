@@ -13,6 +13,12 @@
     <link rel="stylesheet"  type="text/css" href="{% static 'messages.css' %}">
     <link rel="stylesheet" type="text/css" href="{% static 'style.css' %}">
     <title>Chat Room</title>
+    <script>
+        function clickElement(id) {
+            const element = document.getElementById(id);
+            element.click();
+        }
+    </script>
 </head>
 <body>
     {% include "navbar.html" %}
@@ -76,16 +82,6 @@
         </div>
         {% endblock %}
     </div>   
-            <div class="container">
-                    {% if messages %}
-                    {% for message in messages %}
-                <div class="alert alert-warning alert-dismissible fade show ">
-                    {{ message }}
-                    <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
-                    {% endfor %}
-                    {% endif %}
-                </div>
-            </div>
 
      <!-- Messaging Container -->
      <div class="container">
@@ -97,14 +93,11 @@
                             <div class="col-xl-4 col-lg-4 col-md-4 col-sm-3 col-3">
                                 <div class="users-container">
                                     <div class="message-search-box">
-                                        <div class="input-group">
-                                            <input class="form-control" placeholder="Search">
-                                            <div class="input-group-btn">
-                                                <button type="button" class="btn btn-info">
-                                                    <i class="fa fa-search"></i>
+                                            <a href="{% url 'messages' %}">
+                                                <button type="button" class="btn btn-default p-2 rounded-circle btn-small">
+                                                <i class="fa fa-arrow-left"></i>
                                                 </button>
-                                            </div>
-                                        </div>
+                                            </a>
                                     </div>
                                     <ul class="users">
                                         <li class="person" >
@@ -155,12 +148,14 @@
                                         </div>
                                         <div class="widget-post__actions post--actions">
                                             <div class="post-actions__attachments">
-                                                <label for="upload-image" class="post-actions__label" onclick="">
+                                                <label for="upload-image" class="post-actions__label"
+                                                       onclick="clickElement('{{ image_upload_form.image.id_for_label }}')">
                                                 <i class="bi bi-camera" sty aria-hidden="true"></i> 
                                                 </label>
                                                 &nbsp;
                 
-                                                <label for="upload-image" class="post-actions__label">
+                                                <label for="upload-image" class="post-actions__label"
+                                                       onclick="clickElement('{{ file_upload_form.file.id_for_label }}')">
                                                     <i class="bi bi-paperclip" aria-hidden="true"></i> 
                                                 </label>
                                                 &nbsp; 
@@ -185,25 +180,43 @@
         </div>
     </div>
 
+    <form id="room-file-upload-form" action="{% url 'upload_file' target_user.id %}" method="POST"
+          enctype="multipart/form-data" class="d-none" >
+        {% csrf_token %}
+        {{ file_upload_form.file }}
+    </form>
+
+    <form id="room-image-upload-form" action="{% url 'upload_image' target_user.id %}" method="POST"
+          enctype="multipart/form-data" class="d-none" >
+        {% csrf_token %}
+        {{ image_upload_form.image }}
+    </form>
+
     <script src="{% static 'reconnecting-websocket.js' %}"></script>
     
     <script>
-        var roomName={{room_name_json}};
-        var username={{username}};
-        var chatSocket = new ReconnectingWebSocket(
+        const roomName={{room_name_json}};
+        const username={{username}};
+        const chatSocket = new ReconnectingWebSocket(
             'ws://' + window.location.host + '/ws/chat/' + roomName + '/'
         );
 
         chatSocket.onopen = function(e) {
-                var m = fetchMessages()
-                console.log(e)
-        } 
+            fetchMessages();
+        }; 
+
+        const fetchMessages = function() {
+            chatSocket.send(JSON.stringify({
+                'command': 'fetch_messages',
+                'room_id': roomName  
+            }));
+        };
 
         chatSocket.onerror = function(e){
             console.log(e)
-        }
+        };
 
-        chatSocket.onmessage = function(e){
+        chatSocket.onmessage = function(e) {
             var data = JSON.parse(e.data);
             if (data['command']==='messages'){
                 for (let i=0; i<data['messages'].length;i++){
@@ -212,54 +225,99 @@
             } else if (data['command']==='new_message'){
                 createMessage(data['message'], roomName);
             }
-        }    
-        createMessage= function(message, roomName) {
-          
-        var author = message['author'];
-        var msgListTag = document.createElement('li');
-        var messageDiv = document.createElement('div');
-        var pTag = document.createElement('p');
-        var imgTag = document.createElement('img');
-        var nameDiv = document.createElement('div');
-        var timeDiv = document.createElement('div');
-
-    
-        if (author === username){
-            msgListTag.className= 'message-right';
-            messageDiv.className = 'message-pic';
-            pTag.className = 'message-text';
-            timeDiv.className= 'message-time';
-
-            pTag.textContent = message.content;
-            timeDiv.textContent = new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
-
-            msgListTag.appendChild(timeDiv);
-            msgListTag.appendChild(pTag);
-            msgListTag.appendChild(messageDiv);
-        }
-        else {
-            msgListTag.className ='message-left';
-            messageDiv.className = 'message-pic';
-            pTag.className = 'message-text';
-            timeDiv.className= 'message-time';
-            
-            pTag.textContent = message.content;
-            timeDiv.textContent = new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
-
-            msgListTag.appendChild(messageDiv);
-            msgListTag.appendChild(pTag);
-            msgListTag.appendChild(timeDiv);
-    }
-   
-        
-        var chatLog = document.querySelector('.messageContainerScroll');
-        chatLog.appendChild(msgListTag);
-
-        chatLog.scrollTop = chatLog.scrollHeight;
         };
+        
+        const createMessage = function(message, roomName) {
+          
+            const author = message['author'];
+            const msgListTag = document.createElement('li');
+            const messageDiv = document.createElement('div');
+            const imgTag = document.createElement('img');
+            const nameDiv = document.createElement('div');
+            const timeDiv = document.createElement('div');
+
+            let content = getContent(message)
+
+            messageDiv.className = 'message-pic';
+            timeDiv.className= 'message-time';
+            content.textContent = message.content;
+            timeDiv.textContent = new Date(message.timestamp).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+
+            if (message.is_image) {
+                const img = content;
+                img.className = 'message-image';
+                content = document.createElement('a');
+                content.appendChild(img);
+                popup = createImagePopup(message);
+                document.body.appendChild(popup);
+                content.onclick = () => {
+                    popup.style.display = 'block';
+                    return true;
+                }
+            } else {
+                content.className = 'message-text';
+            }
+        
+            if (author === username){
+                msgListTag.className= 'message-right';
+                msgListTag.appendChild(timeDiv);
+                msgListTag.appendChild(content);
+                msgListTag.appendChild(messageDiv);
+            } else {
+                msgListTag.className ='message-left';
+                msgListTag.appendChild(messageDiv);
+                msgListTag.appendChild(content);
+                msgListTag.appendChild(timeDiv);
+            }
+    
+            
+            const chatLog = document.querySelector('.messageContainerScroll');
+            chatLog.appendChild(msgListTag);
+
+            chatLog.scrollTop = chatLog.scrollHeight;
+        };
+
+        const getContent = function(message) {
+            let element = null;
+            if (message.is_file_download) {
+                element = document.createElement('a');
+                element.href = `download/${message.content}`;
+                element.textContent = message.content;
+                element.onclick = () => {
+                    
+                };
+            } else if (message.is_image) {
+                element = document.createElement('img');
+                element.src = message.src;
+            } else {
+                element = document.createElement('p');
+                element.textContent = message.content;
+            }
+            return element
+        }
+
+        const createImagePopup = function(message) {
+            const popup = document.createElement('div');
+            const content = document.createElement('div');
+            const close = document.createElement('span');
+            const img = document.createElement('img');
+            popup.id = `room-image-${message.src}`;
+            popup.classList.add('popup');
+            content.classList.add('popup-content');
+            close.classList.add('close');
+            close.innerHTML = '&times;';
+            img.src = message.src;
+            popup.appendChild(content);
+            content.appendChild(close);
+            content.appendChild(img);
+            close.onclick = () => popup.style.display = 'none';
+            return popup;
+        }
 
         chatSocket.onclose = function(e) {
             console.error('Chat socket closed unexpectedly');
+            const log = document.querySelector('#chat-log');
+            log.innerHTML = '';
         };
 
         document.querySelector('#chat-message-input').focus();
@@ -280,13 +338,21 @@
             }));
             messageInputDom.value = '';
         };
-        
-        function fetchMessages() {
-            chatSocket.send(JSON.stringify({
-                'command': 'fetch_messages',
-                'room_id': roomName  
-            }));
-        }
+
+        document.querySelector('#{{ file_upload_form.file.id_for_label }}').onchange = function(e) {
+            if (e.target.files && e.target.files.length) {
+                const form = document.querySelector('#room-file-upload-form');
+                form.submit();
+            }
+        };
+
+        document.querySelector('#{{ image_upload_form.image.id_for_label }}').onchange = function(e) {
+            if (e.target.files && e.target.files.length) {
+                const form = document.querySelector('#room-image-upload-form');
+                form.submit();
+            }
+        };
+
     </script>
 </body>
 </html>

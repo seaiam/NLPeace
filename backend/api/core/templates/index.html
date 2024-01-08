@@ -134,6 +134,15 @@
                 {% if post.user.id != request.user.id %}
                 <div class ="icons-list" >
                     <div class="feed" >
+                        <a href="{% url 'like' post.id %}" class="like-link"><i class="far fa-thumbs-up" aria-hidden="true"></i>
+                            {% if post in likes %}
+                                <span class="post-liked">
+                                    Like
+                                </span>
+                            {% else %}
+                            Liked
+                            {% endif %}
+                        </a>
                         <span class="like-count">{{ post.get_number_likes }}</span>
                         {% if post in likes %}
                             <a href="{% url 'like' post.id %}" class="like-link">
