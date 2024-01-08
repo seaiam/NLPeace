@@ -5,7 +5,6 @@
 
 {% block content %}
 
-
 <div class="d-flex justify-content-center align-items-center">   
     <div class="card" style="width: 39rem; background: linear-gradient(to right, #F9D1C4 0%, #9BBDDD 51%, #F9D1C4 100%);  border-radius: 15px; margin-bottom:30px;">
         <div class="card-body">
@@ -71,17 +70,11 @@
                         <div class="dropdown-delete" style="position: absolute; top: 1px; right: 20px; z-index: 1000;">
                             <a class="hidden-arrow" type="button" data-toggle="dropdown" aria-expanded="false">
                                 <i class="fas fa-ellipsis-h mt-4"></i>
-                            </a>
+                            </a>      
                             <ul class="dropdown-menu delete-menu dropdown-menu-right">
-                                <li>
-                                    <form id="" action="" method="POST">
-                                        {% csrf_token %}
-                                        <button type="submit" class="edit-button">
-                                            <i class="bi bi-pencil-square icon-spacing"></i>Edit Post
-                                        </button>
-                                        <input type="hidden" name="post_id" value="{{ post.id }}" readonly/>
-                                    </form>
-                                </li>
+                                <button type="button" onclick="toggleModal('edit-post-modal-{{ post.id }}')" class="edit-button">
+                                    <i class="bi bi-pencil-square icon-spacing"></i>Edit Post
+                                </button>                        
                                 <li>
                                 <form id="delPostForm" action="{% url 'delete_post' %}" method="POST">
                                     {% csrf_token %}
@@ -93,14 +86,24 @@
                                 </li>
                                  
                                 {% if post.id in pinned_post_ids %}
-
                                 <li><a class="dropdown-item" href="{% url 'unpin' post.id %}"><i class="bi bi-pin"></i>Unpin post</a></li>
                                 {% else %}
-
                                 <li><a class="dropdown-item" href="{% url 'pin' post.id %}"><i class="bi bi-pin"></i>Pin to your profile</a></li>
 
                         {% endif %}
                             </ul>
+                            <!-- Edit Posts Popup -->
+                            <div id="edit-post-modal-{{ post.id }}" class="popup">
+                                <div class="popup-content">
+                                    <span class="close" onclick="toggleModal('edit-post-modal-{{ post.id }}')">&times;</span>
+                                    <p class="modalTitle">Edit Post</p>
+                                    <form action="{% url 'edit_post' post.id %}" method="POST" enctype="multipart/form-data">
+                                        {% csrf_token %}
+                                        <textarea name="content" class="edit-post-textarea">{{ post.content }}</textarea>
+                                        <button type="submit" class="saveButton">Save</button>
+                                    </form>
+                                </div>
+                            </div>         
                         </div>
                         {% endif %}
                         {% if post.reposts.all %}
@@ -405,6 +408,13 @@
 </div>
 
 <script>
+    // Edit Post Popup
+    function toggleModal(modalId) {
+        var modal = document.getElementById(modalId);
+        modal.style.display = modal.style.display === "block" ? "none" : "block";
+    }
+
+    // All posts or Followers posts tabs
     function openPostTab(event, posttabName) {
         var posttabcontent, posttabbutton;
 
