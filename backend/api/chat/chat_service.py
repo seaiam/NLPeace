@@ -1,6 +1,7 @@
 from .models import ChatRoom
 from django.contrib.auth import get_user_model
 from django.db.models import Q
+import requests
 
 #We get the chat room that is mapped to the two users in question
 def getChatRoom(current_user, target_user):
@@ -34,3 +35,17 @@ def message_to_json(message):
         'is_image': message.is_image,
         'src': src
     }
+
+def classify_message(message_text):
+    url = 'https://nlpeace-api-2e54e3d268ac.herokuapp.com/classify/'
+    payload = {'text': message_text}
+    try:
+        response = requests.post(url, json=payload)
+        if response.status_code == 200:
+            return response.json()
+        else:
+            # Handle response error
+            return {'error': 'Failed to get prediction', 'status_code': response.status_code}
+    except requests.exceptions.RequestException as e:
+        # Handle request exception
+        return {'error': str(e)}

@@ -86,6 +86,9 @@ def upload_image(request, target_user_id):
     return redirect(reverse("room", args=[target_user_id]))
 
 def _send_message(room, message):
+    #monitor message with NLP model
+    
+
     content = {
         'command': 'new_message',
         'message': message_to_json(message),
