@@ -100,8 +100,3 @@ window.onclick = function(event) {
 
 // opening tab 1 by default
 document.getElementById("defaultOpenPost").click();
-
-function toggleModal(modalId) {
-    var modal = document.getElementById(modalId);
-    modal.style.display = modal.style.display === "block" ? "none" : "block";
-}
