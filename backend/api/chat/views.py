@@ -1,7 +1,7 @@
 import json
 import mimetypes
 import re
-
+from api.logger_config import configure_logger 
 from asgiref.sync import async_to_sync
 from channels.layers import get_channel_layer
 from django.conf import settings
@@ -16,11 +16,17 @@ from redis.exceptions import ConnectionError
 from .chat_service import getChatRoom, message_to_json
 from .forms import *
 from .models import Message
+from django.views.decorators.csrf import csrf_exempt
+from django.views.decorators.http import require_POST
+from django.http import JsonResponse
+from .chat_service import *
 
 FILE_PATH_PATTERN = r'.*/(?P<filename>.+)$'
 
 
 User = get_user_model()
+
+logger = configure_logger("chat_logger")
 
 def index(request):
     users = User.objects.all()
@@ -86,9 +92,6 @@ def upload_image(request, target_user_id):
     return redirect(reverse("room", args=[target_user_id]))
 
 def _send_message(room, message):
-    #monitor message with NLP model
-    
-
     content = {
         'command': 'new_message',
         'message': message_to_json(message),
@@ -98,3 +101,17 @@ def _send_message(room, message):
         async_to_sync(channel_layer.group_send)(f'chat_{room.room_name}', {"type": "chat.message", "message": content})
     except ConnectionError:
         pass
+
+@csrf_exempt
+@require_POST
+def classifyMessage(request):
+    try:
+        data = json.loads(request.body)
+        message = data.get('message')
+        is_allowed, result = process_message(message)
+        logger.info(f"message: {message}")
+        logger.info(f"is allowed: {is_allowed}")
+        logger.info(f"result: {result}")
+        return JsonResponse({'is_allowed': is_allowed, 'error_message': result})
+    except Exception as e:
+        return JsonResponse({'error': str(e)}, status=500)

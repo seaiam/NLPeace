@@ -49,3 +49,12 @@ def classify_message(message_text):
     except requests.exceptions.RequestException as e:
         # Handle request exception
         return {'error': str(e)}
+    
+def process_message(message):
+    result = classify_message(message)
+    if result["prediction"][0] in [1, 0]:  # Offensive or hate speech
+        error_message = 'This message contains offensive language and is not allowed on our platform.' if result["prediction"][0] == 1 else 'This message contains hateful language and is not allowed on our platform.'
+        return False, error_message
+    elif result["prediction"][0] == 2:  # Appropriate
+        return True, message
+    return False
