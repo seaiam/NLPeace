@@ -21,57 +21,49 @@ const toggleModal = (id) => {
     }
 }
 
-// Uploading Picture
-const showFilePicker = (id) => {
-    const upload = document.getElementById(id);
-    upload.click();
+$(document).ready(() => {
+
+    const startPostUpload = document.getElementById("create-upload-image"); 
+    const startPostPreviewDiv = document.getElementById("create-preview-image"); 
+    if (startPostUpload && startPostPreviewDiv) {
+        const image = startPostPreviewDiv.getElementsByTagName("IMG")[0]
+        startPostUpload.addEventListener('change', e => {
+            updateImagePreview(e, startPostPreviewDiv);
+        });
+    }
+
+    $(".edit-post-modal").each(function() {
+        const modalId = $(this).attr('id');
+        const postId = modalId.split('-').pop();
+        const editPostUpload = document.getElementById(`edit-upload-image-${postId}`);
+        const editPostPreviewDiv = document.getElementById(`edit-preview-image-${postId}`);
+        if (editPostUpload && editPostPreviewDiv) {
+            editPostUpload.addEventListener('change', e => {
+                updateImagePreview(e, editPostPreviewDiv);
+            });
+        }
+    });
+});
+
+function updateImagePreview(event, previewDiv) {
+    const reader = new FileReader();
+    if (event.target.files && event.target.files[0]) {
+        reader.onload = () => {
+            const image = previewDiv.getElementsByTagName("IMG")[0];
+            image.src = reader.result;
+        };
+        reader.readAsDataURL(event.target.files[0]);
+        previewDiv.style.display = "block";
+    }
 }
-const handleDeletePostImage = () => {
-    const upload = document.getElementById("id_image");
-    const div = document.getElementById("preview_image");
+
+// Delete uploaded image
+function handleDeletePostImage(previewDivId) {
+    const div = document.getElementById(previewDivId);
     const image = div.getElementsByTagName('IMG')[0];
-    upload.value = null;
-    div.style.display = "none"; 
+    div.style.display = "none";
     image.src = "#";
 }
-
-// Image upload
-$(document).ready(() => {
-    const upload = document.getElementById("id_image");
-    const div = document.getElementById("preview_image");
-    if (upload && div) {
-        const image = div.getElementsByTagName("IMG")[0]
-        upload.addEventListener('change', e => {
-            const reader = new FileReader()
-            if (e.target.files && e.target.files[0]) {
-                reader.onload = () => {
-                    image.src = reader.result;
-                };
-                reader.readAsDataURL(e.target.files[0]);
-                div.style.display = "block";
-            }
-        });
-    }
-});
-
-// Comment
-$(document).ready(() => {
-    const upload = document.getElementById("id_image");
-    const div = document.getElementById("preview_image");
-    if (upload && div) {
-        const image = div.getElementsByTagName("IMG")[0]
-        upload.addEventListener('change', e => {
-            const reader = new FileReader()
-            if (e.target.files && e.target.files[0]) {
-                reader.onload = () => {
-                    image.src = reader.result;
-                };
-                reader.readAsDataURL(e.target.files[0]);
-                div.style.display = "block";
-            }
-        });
-    }
-});
 
 // Script for opening tabs on Profile page
 function openPostTab(event, posttabName) {
