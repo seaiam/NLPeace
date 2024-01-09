@@ -30,7 +30,7 @@ class ChatTest(TestCase):
 
     def test_chat_unauthenticated(self):
         response = self.client.get(reverse('room', args=[self.user2.id]))
-        expected = f"/accounts/login/?next=/accounts/profile/messages/{self.user2.id}"
+        expected = f"/accounts/login/?next=/chat/{self.user2.id}"
         self.assertRedirects(response, expected)
 
     def test_chat_private_accounts(self):
