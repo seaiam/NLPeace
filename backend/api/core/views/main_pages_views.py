@@ -43,6 +43,8 @@ def home(request):
         'dislikes': dislikes,
         'saved_post_ids': saved_post_ids,
         'form': PostForm(),
+        'reportPostForm': PostReportForm(),
+        'reportUserForm': UserReportForm(),
         'data': data,
         'reportPostForm': PostReportForm(),
         'reposted_post_ids': reposted_post_ids,
@@ -188,16 +190,6 @@ def dislike(request, post_id):
         return redirect('profile')
     return HttpResponseRedirect(request.META.get('HTTP_REFERER', '/'))
 
-
-@login_required
-def report(request, post_id):
-    if request.method == 'POST':
-        form = PostReportForm(request.POST)
-        if form.is_valid():
-            report_post(request.user, post_id, request.POST)
-            messages.success(request, 'Post successfully reported.')
-        return redirect('home')
-
 @login_required
 def report_user(request, reported_id):
     if request.method == 'POST':
@@ -247,26 +239,27 @@ def bookmarked_posts(request):
         'reportPostForm': PostReportForm(),
         'reposted_post_ids': reposted_post_ids,
         'followPost' : following_posts,
-        'reported_posts' : reported_posts,
         'pinned_post_ids': pinned_post_ids
         }
     return render(request, 'bookmark.html', context)
 
-    
+
 @login_required
 def report_post(request, post_id):
-    # Only allow POST requests for saving a post. Better to keep, I ran into this issue wasted time because no message telling me it wasn't POST
-    if request.user.is_authenticated:
-        if request.method == 'POST':
+    if request.method == 'POST':
+        form = PostReportForm(request.POST)
+        if form.is_valid():
             post_to_report = Post.objects.get(id=post_id)
-            reportedExists = PostReport.objects.filter(post=post_to_report, reporter=request.user).exists()
-            print('========')
-            print(PostReport.objects.filter(post=post_to_report))
-            if reportedExists:
+            reported_exists = PostReport.objects.filter(post=post_to_report, reporter=request.user).exists()
+            
+            if reported_exists:
                 PostReport.objects.filter(post=post_to_report, reporter=request.user).delete()
             else:
                 PostReport.objects.create(post=post_to_report, reporter=request.user)
-            return HttpResponseRedirect(request.META.get('HTTP_REFERER', '/'))
+            
+            messages.success(request, 'Post successfully reported.')
+    
+    return HttpResponseRedirect(request.META.get('HTTP_REFERER', '/'))
 
 
 def classify_text(text):

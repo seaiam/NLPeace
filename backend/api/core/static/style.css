@@ -836,14 +836,14 @@ img {
 .icons-list1{
   color: #00001c;
   display: grid;  
-  grid-template-columns: 1fr 1fr 1fr 1fr 1fr;  
+  grid-template-columns: 1fr 1fr 1fr 1fr 1fr 1fr;  
   padding-bottom:10px;
 }
 
 .icons-list-2{
   color: #00001c;
   display: grid;  
-  grid-template-columns: 1fr 1fr 1fr 1fr 1fr;  
+  grid-template-columns: 1fr 1fr 1fr 1fr 1fr 1fr;  
   padding-bottom:10px;
 }
 
@@ -915,6 +915,7 @@ color: #0047ab;
 .feed-bookmark{
   color:#0047ab;
   margin-left:18%;
+  margin-right: 10%;
 }
 
 /* seacrh-user css*/
