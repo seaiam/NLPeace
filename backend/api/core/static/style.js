@@ -22,49 +22,56 @@ const toggleModal = (id) => {
 }
 
 // Uploading Picture
-const showFilePicker = (id, formType, event) => {
-    event.preventDefault(); 
+const showFilePicker = (id) => {
     const upload = document.getElementById(id);
-    upload.setAttribute('data-form-type', formType);
     upload.click();
 }
+const handleDeletePostImage = () => {
+    const upload = document.getElementById("id_image");
+    const div = document.getElementById("preview_image");
+    const image = div.getElementsByTagName('IMG')[0];
+    upload.value = null;
+    div.style.display = "none"; 
+    image.src = "#";
+}
 
+// Image upload
 $(document).ready(() => {
-    $('input[type="file"]').on('change', function() {
-        const formType = $(this).data('form-type');
-        const previewDiv = formType === 'edit' ? $('#edit-preview-image') : $('#create-preview-image'); 
-        const image = previewDiv.find('img')[0];
-
-        const reader = new FileReader();
-        if (this.files && this.files[0]) {
-            reader.onload = (e) => {
-                image.src = e.target.result;
-            };
-            reader.readAsDataURL(this.files[0]);
-            previewDiv.show();
-        }
-    });
+    const upload = document.getElementById("id_image");
+    const div = document.getElementById("preview_image");
+    if (upload && div) {
+        const image = div.getElementsByTagName("IMG")[0]
+        upload.addEventListener('change', e => {
+            const reader = new FileReader()
+            if (e.target.files && e.target.files[0]) {
+                reader.onload = () => {
+                    image.src = reader.result;
+                };
+                reader.readAsDataURL(e.target.files[0]);
+                div.style.display = "block";
+            }
+        });
+    }
 });
 
-// Delete uploaded image
-const handleDeletePostImage = (formType) => {
-    let upload, div;
-
-    if (formType === 'create') {
-        upload = document.getElementById("create-upload-image");
-        div = document.getElementById("create-preview-image");
-    } else if (formType === 'edit') {
-        upload = document.getElementById("edit-upload-image");
-        div = document.getElementById("edit-preview-image");
-    }
-
+// Comment
+$(document).ready(() => {
+    const upload = document.getElementById("id_image");
+    const div = document.getElementById("preview_image");
     if (upload && div) {
-        const image = div.getElementsByTagName('IMG')[0];
-        upload.value = null;
-        div.style.display = "none"; 
-        image.src = "#";
+        const image = div.getElementsByTagName("IMG")[0]
+        upload.addEventListener('change', e => {
+            const reader = new FileReader()
+            if (e.target.files && e.target.files[0]) {
+                reader.onload = () => {
+                    image.src = reader.result;
+                };
+                reader.readAsDataURL(e.target.files[0]);
+                div.style.display = "block";
+            }
+        });
     }
-}
+});
 
 // Script for opening tabs on Profile page
 function openPostTab(event, posttabName) {
