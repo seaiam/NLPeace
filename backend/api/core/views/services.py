@@ -61,7 +61,10 @@ def get_user_posts(user):
 
 def create_repost(user, post_id):
     post_to_repost = get_object_or_404(Post, id=post_id)
-    Repost.objects.create(post=post_to_repost, user=user)
+    if Repost.objects.filter(post=post_to_repost, user=user).exists():
+        Repost.objects.filter(post=post_to_repost, user=user).delete()
+    else:
+        Repost.objects.create(post=post_to_repost, user=user)
 
 def get_user_profile(user):
     profile, _ = Profile.objects.get_or_create(user=user)
@@ -153,12 +156,20 @@ def handle_dislike(user, post_id):
         #dislike post
         dislike = PostDislike.objects.create(disliker=user, post=post)
 
-def report_post(user, post_id, form_data):
-    report = PostReportForm(form_data).save(commit=False)
-    report.reporter = user
-    report.post = get_object_or_404(Post, pk=post_id)
-    report.save()
+def report_post_service (request, form, post_id):
+    post_to_report = Post.objects.get(id=post_id)
 
+    if form.is_valid():
+        report = form.save(commit=False)
+        PostReport.objects.create(post=post_to_report, reporter=request.user)
+        report.reporter = request.user
+        report.post = get_object_or_404(Post, pk=post_id)
+        report.save()
+        messages.success(request, 'Post successfully reported.')
+    else:
+        PostReport.objects.filter(post=post_to_report, reporter=request.user).delete()
+        messages.success(request, 'Post un-reported')
+    
 def report_user_service(request, reported_id, form):
     report = form.save(commit=False)
     report.reporter = request.user

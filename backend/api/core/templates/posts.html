@@ -146,7 +146,7 @@
                         <div class="popup-content">
                             <span class="close" onclick="toggleModal('{{ id }}')">&times;</span>
                             <p class="modalTitle">Report</p>
-                            <form action="{% url 'report_posts' post.id %}" method="POST">
+                            <form action="{% url 'report_post' post.id %}" method="POST">
                                 {% csrf_token %}
                                 <label for="{{ reportPostForm.category.id_for_label }}" class="form-outline mb-4" style="font-size:20px;">Category</label>
                                 {{ reportPostForm.category }}
@@ -229,7 +229,7 @@
                     {% if post in reported_posts %}
                     <form method="post" action="{% url 'report_post' post.id %}">
                         {% csrf_token %}
-                        <div class="feed-reposted">  <button type="submit" class = "reposted-button"><i class="fa fa-flag" aria-hidden="true"></button></i> </div>
+                        <div class="feed-reposted"><button type="submit" class = "reposted-button"><i class="fa fa-flag" aria-hidden="true"></button></i> </div>
                     </form>
                 {% else %}
 
