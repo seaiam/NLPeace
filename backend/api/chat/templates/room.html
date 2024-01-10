@@ -178,12 +178,6 @@
                 </div>
             </div>
         </div>
-        <form id="video-upload-form" action="{% url 'upload_video' target_user.id %}" method="POST"
-        enctype="multipart/form-data" class="" >
-      {% csrf_token %}
-      {{ video_upload_form.video }}
-      <button type='submit'> submit </button>
-  </form>
     </div>
 
    
