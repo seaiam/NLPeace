@@ -304,16 +304,6 @@ def handle_pin(user, post_id):
         message='Post pinned successfully.'
         return message
 
-def get_post_to_edit(post):
-    if post:
-        context = {
-            'content_to_edit': post.content,
-            'form': PostForm()
-        }
-        return context
-    else:
-        return redirect('error_500')
-
 def handle_edit_post(request,form, post, remove_image):
     if form.is_valid():
         edited_text = form.cleaned_data['content']
