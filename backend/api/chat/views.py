@@ -15,7 +15,7 @@ from django.utils.safestring import mark_safe
 from redis.exceptions import ConnectionError
 from .chat_service import getChatRoom, message_to_json
 from .forms import *
-from .models import Message
+from .models import Message, ReportMessage
 
 FILE_PATH_PATTERN = r'.*/(?P<filename>.+)$'
 
@@ -95,3 +95,13 @@ def _send_message(room, message):
         async_to_sync(channel_layer.group_send)(f'chat_{room.room_name}', {"type": "chat.message", "message": content})
     except ConnectionError:
         pass
+
+def report_message(request, message_id):
+    if request.method == "POST":
+        reported = Message.objects.get(pk=message_id)
+        report = ReportMessage.objects.create(reporter=request.user, message=reported)
+        messages.success(request, 'Message reported')
+        return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
+    
+    else:
+        return redirect('login')

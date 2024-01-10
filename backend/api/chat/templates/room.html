@@ -191,7 +191,7 @@
         {% csrf_token %}
         {{ image_upload_form.image }}
     </form>
-
+    
     <script src="{% static 'reconnecting-websocket.js' %}"></script>
     
     <script>
@@ -240,7 +240,21 @@
             const dropdownIcon = document.createElement('i');
             const dropdownMenu = document.createElement('ul');
             const dropdownItem = document.createElement('li');
-            const reportLink = document.createElement('a');
+            const csrftoken = '{{ csrf_token }}';
+
+            const reportLink = document.createElement('form'); // create report form
+            reportLink.setAttribute("method", "POST");
+            reportLink.setAttribute("action", message.report_link); // setting action of form to
+            
+            const csrftokeninput = document.createElement('input'); // data for csrf token, need to do like this
+            csrftokeninput.setAttribute('name', 'csrfmiddlewaretoken');
+            csrftokeninput.setAttribute('type', 'hidden');
+            csrftokeninput.setAttribute('value', csrftoken);
+            
+            const reportButton = document.createElement('button'); //button to submit the form
+            reportButton.setAttribute("type", "submit");
+            reportLink.appendChild(reportButton); // appending submit button to form
+            reportLink.appendChild(csrftokeninput); // appending token to report form
 
             let content = getContent(message)
 
@@ -278,8 +292,7 @@
                 dropdownIcon.className = 'fas fa-ellipsis-v';
                 dropdownMenu.className = 'dropdown-menu';
                 reportLink.className = 'dropdown-item';
-                reportLink.href = '#';
-                reportLink.innerHTML = '<i class="far fa-flag"></i> Report';
+                reportButton.innerHTML = '<i class="far fa-flag"></i> Report';
                 msgListTag.appendChild(messageDiv);
                 msgListTag.appendChild(content);
                 dropdownToggle.appendChild(dropdownIcon);
@@ -291,8 +304,7 @@
                 msgListTag.appendChild(dropdownDiv);
                 msgListTag.appendChild(timeDiv);
             }
-    
-            
+
             const chatLog = document.querySelector('.messageContainerScroll');
             chatLog.appendChild(msgListTag);
 

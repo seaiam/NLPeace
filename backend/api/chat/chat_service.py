@@ -1,6 +1,7 @@
 from .models import ChatRoom
 from django.contrib.auth import get_user_model
 from django.db.models import Q
+from django.urls import reverse
 
 #We get the chat room that is mapped to the two users in question
 def getChatRoom(current_user, target_user):
@@ -26,11 +27,14 @@ def message_to_json(message):
             src = upload.image.url
     else:
         src = ''
+        
+    report_link = reverse('report_message', args=[message.id])
     return {
         'author': message.author.username,
         'content': message.content,
         'timestamp': str(message.timestamp),
         'is_file_download': message.is_file_download,
         'is_image': message.is_image,
-        'src': src
+        'src': src,
+        'report_link': report_link
     }
