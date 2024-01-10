@@ -298,8 +298,9 @@ def edit_post(request, post_id):
             result = handle_edit_post(request, form, post, image_flag)
             if result:
                 return HttpResponseRedirect(request.META.get('HTTP_REFERER', '/'))
+            else:
+                return error_500(request)
         else:
-            context = get_post_to_edit(post)
-            return render(request, 'edit_post.html', context)
+            return render(request, '401.html', status=401)
     else:
         return render(request, '401.html', status=401)
