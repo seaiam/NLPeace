@@ -223,20 +223,6 @@
                         </div>
                     {% endif %}
                 </form>
-
-                <form method="post" action="{% url 'report_post' post.id %}">
-                    {% csrf_token %}
-                    {% if post in reported_posts %}
-                    <form method="post" action="{% url 'report_post' post.id %}">
-                        {% csrf_token %}
-                        <div class="feed-reposted"><button type="submit" class = "reposted-button"><i class="fa fa-flag" aria-hidden="true"></button></i> </div>
-                    </form>
-                {% else %}
-
-            
-            {% endif %}
-                </form>
-             
                 {% endif %}
         </div>
     </div>
