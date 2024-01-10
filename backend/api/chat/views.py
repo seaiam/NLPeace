@@ -66,7 +66,6 @@ def upload_file(request, target_user_id):
 @login_required
 def download(request, path):
     with open(f'{settings.MEDIA_ROOT}/messageFiles/{path}', 'rb') as f:
-        match = re.match(FILE_PATH_PATTERN, path)
         response = HttpResponse(f.read(), content_type=mimetypes.guess_type(path))
         response['Content-Disposition'] = f'attachment; filename={path}'
         return response
