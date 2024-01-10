@@ -117,8 +117,12 @@
                                                             </div>
                                                         </div>
                                                         {% if post.image %}
-                                                        <img class="card-img-top mt-2" src="{{ post.image.url }}" alt="Post image" /><br><br>
+                                                        <div id="current-image-{{ post.id }}">
+                                                            <button type="button" class="close" onclick="handleDeletePostImage('current-image-{{ post.id }}', '{{ post.id }}')" style="color: #00001c;">&times;</button>
+                                                            <img class="card-img-top mt-2" src="{{ post.image.url }}" alt="Post image" /><br><br>
+                                                        </div>
                                                         {% endif %}
+                                                        <input type="hidden" id="remove-image-flag-{{ post.id }}" name="remove_image" value="false">
                                                         <hr>
                                                         <div class="row">       
                                                             <div class="col">

@@ -58,11 +58,16 @@ function updateImagePreview(event, previewDiv) {
 }
 
 // Delete uploaded image
-function handleDeletePostImage(previewDivId) {
+function handleDeletePostImage(previewDivId, postId) {
     const div = document.getElementById(previewDivId);
     const image = div.getElementsByTagName('IMG')[0];
     div.style.display = "none";
     image.src = "#";
+
+    const removeImageFlag = document.getElementById(`remove-image-flag-${postId}`);
+    if (removeImageFlag) {
+        removeImageFlag.value = "true";
+    }
 }
 
 // Script for opening tabs on Profile page
