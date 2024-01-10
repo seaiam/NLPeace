@@ -47,6 +47,7 @@ def room(request,target_user_id):
         'target_user': target_user,
         'file_upload_form': FileUploadForm(),
         'image_upload_form': ImageUploadForm(),
+        'video_upload_form': VideoUploadForm(),
     }
     return render(request, "room.html", context)
 
@@ -63,6 +64,19 @@ def upload_file(request, target_user_id):
             upload.save()
             _send_message(room, message)
     return redirect(reverse('room', args=[target_user_id]))
+
+@login_required
+def upload_video(request, target_user_id):
+    if request.method == "POST":
+        form = VideoUploadForm(request.POST, request.FILES)
+        if form.is_valid():
+            room = getChatRoom(request.user, User.objects.filter(id=target_user_id).first())
+            upload = form.save(commit=False)
+            message = Message.objects.create(author=request.user, content='', room_id=room, is_video=True)
+            upload.message = message
+            upload.save()
+            _send_message(room, message)
+    return redirect(reverse("room", args=[target_user_id]))
 
 @login_required
 def download(request, path):

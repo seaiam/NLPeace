@@ -24,6 +24,10 @@ def message_to_json(message):
     if message.is_image:
             upload = message.imageupload_set.first()
             src = upload.image.url
+    elif message.is_video:
+            upload = message.videoupload_set.first()
+            src = upload.video.url
+
     else:
         src = ''
     return {
@@ -32,5 +36,6 @@ def message_to_json(message):
         'timestamp': str(message.timestamp),
         'is_file_download': message.is_file_download,
         'is_image': message.is_image,
+        'is_video': message.is_video,
         'src': src
     }

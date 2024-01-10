@@ -15,6 +15,7 @@ class Message(models.Model):
     room_id = models.ForeignKey(ChatRoom,related_name='room_id',on_delete=models.CASCADE)
     is_file_download = models.BooleanField(default=False)
     is_image = models.BooleanField(default=False)
+    is_video =models.BooleanField(default=False)
     
     def __str__(self):
         return self.author.username
@@ -24,6 +25,10 @@ class Message(models.Model):
 
 class FileUpload(models.Model):
     file = models.FileField(upload_to='messageFiles')
+    message = models.ForeignKey(Message, on_delete=models.CASCADE, default=None)
+    
+class VideoUpload(models.Model):
+    video = models.FileField(upload_to='messageVideos')
     message = models.ForeignKey(Message, on_delete=models.CASCADE, default=None)
 
 class ImageUpload(models.Model):
