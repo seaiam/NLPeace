@@ -28,15 +28,18 @@ class Message(models.Model):
     def save(self, *args, **kwargs):
         super(Message, self).save(*args, **kwargs)
         channel_layer = get_channel_layer()
-        async_to_sync(channel_layer.group_send)(f'notifications_{self._get_target_id()}', {
-            'type': 'notification',
-            'message': {
-                'type': 'message',
-                'author': self.author.get_username(),
-                'timestamp': str(self.timestamp),
-                'url': reverse("room", args=[self.author.id])
-            },
-        })
+        try:
+            async_to_sync(channel_layer.group_send)(f'notifications_{self._get_target_id()}', {
+                'type': 'notification',
+                'message': {
+                    'type': 'message',
+                    'author': self.author.get_username(),
+                    'timestamp': str(self.timestamp),
+                    'url': reverse("room", args=[self.author.id])
+                },
+            })
+        except:
+            pass
     
     def _get_target_id(self):
         if self.room_id.user1 == self.author:

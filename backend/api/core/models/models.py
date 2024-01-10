@@ -63,15 +63,18 @@ class Post(models.Model):
         super(Post, self).save(*args, **kwargs)
         if self.parent_post is not None:
             channel_layer = get_channel_layer()
-            async_to_sync(channel_layer.group_send)(f'notifications_{self.parent_post.user.id}', {
-                'type': 'notification',
-                'message': {
-                    'type': 'comment',
-                    'author': self.user.get_username(),
-                    'timestamp': str(self.created_at),
-                    'url': reverse('home'),
-                }
-            })
+            try:
+                async_to_sync(channel_layer.group_send)(f'notifications_{self.parent_post.user.id}', {
+                    'type': 'notification',
+                    'message': {
+                        'type': 'comment',
+                        'author': self.user.get_username(),
+                        'timestamp': str(self.created_at),
+                        'url': reverse('home'),
+                    }
+                })
+            except:
+                pass
     
    
 class Repost(models.Model):
