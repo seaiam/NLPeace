@@ -314,7 +314,7 @@ def get_post_to_edit(post):
     else:
         return redirect('error_500')
 
-def handle_edit_post(request,form, post):
+def handle_edit_post(request,form, post, remove_image):
     if form.is_valid():
         edited_text = form.cleaned_data['content']
         result = classify_tweet(edited_text)
@@ -323,6 +323,9 @@ def handle_edit_post(request,form, post):
             messages.error(request, message)
             return None
         elif result["prediction"][0] == 2:  # Appropriate
+            if remove_image and post.image:
+                post.image.delete(save=True)
+                post.image = None
             post = form.save()
             post.is_edited = True
             post.save()

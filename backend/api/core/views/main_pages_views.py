@@ -293,8 +293,9 @@ def edit_post(request, post_id):
 
     if request.user == original_poster:
         if request.method == 'POST':
+            image_flag = request.POST.get('remove_image', 'false') == 'true'
             form = PostForm(request.POST, request.FILES, instance = post)
-            result = handle_edit_post(request, form, post)
+            result = handle_edit_post(request, form, post, image_flag)
             if result:
                 return HttpResponseRedirect(request.META.get('HTTP_REFERER', '/'))
         else:
