@@ -4,6 +4,8 @@ from django.contrib.auth import get_user_model
 from django.db import models
 from django.urls import reverse
 
+from core.utils import attempt_send_message
+
 User=get_user_model()
 
 class ChatRoom(models.Model):
@@ -27,19 +29,17 @@ class Message(models.Model):
     
     def save(self, *args, **kwargs):
         super(Message, self).save(*args, **kwargs)
-        channel_layer = get_channel_layer()
-        try:
-            async_to_sync(channel_layer.group_send)(f'notifications_{self._get_target_id()}', {
+        attempt_send_message(
+            f'notifications_{self._get_target_id()}',
+            {
                 'type': 'notification',
                 'message': {
                     'type': 'message',
                     'author': self.author.get_username(),
                     'timestamp': str(self.timestamp),
                     'url': reverse("room", args=[self.author.id])
-                },
-            })
-        except:
-            pass
+            },
+        })
     
     def _get_target_id(self):
         if self.room_id.user1 == self.author:
