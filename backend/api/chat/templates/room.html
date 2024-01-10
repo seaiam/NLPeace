@@ -83,6 +83,17 @@
         {% endblock %}
     </div>   
 
+        <div class="popup-container">
+            {% if messages %}
+            {% for message in messages %}
+            <div class="alert alert-warning alert-dismissible fade show ">
+                {{ message }}
+                <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
+                {% endfor %}
+                {% endif %}
+            </div>
+        </div>
+
      <!-- Messaging Container -->
      <div class="container">
         <div class="content-wrapper">
@@ -253,6 +264,7 @@
             
             const reportButton = document.createElement('button'); //button to submit the form
             reportButton.setAttribute("type", "submit");
+            reportButton.className = 'report-dm-button';
             reportLink.appendChild(reportButton); // appending submit button to form
             reportLink.appendChild(csrftokeninput); // appending token to report form
 
