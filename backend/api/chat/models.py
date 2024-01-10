@@ -1,5 +1,8 @@
+from asgiref.sync import async_to_sync
+from channels.layers import get_channel_layer
 from django.contrib.auth import get_user_model
 from django.db import models
+from django.urls import reverse
 
 User=get_user_model()
 
@@ -21,6 +24,26 @@ class Message(models.Model):
     
     def last_10_messages(room_name):
         return Message.objects.filter(room_id=room_name).order_by('timestamp').all()[:10]
+    
+    def save(self, *args, **kwargs):
+        super(Message, self).save(*args, **kwargs)
+        channel_layer = get_channel_layer()
+        async_to_sync(channel_layer.group_send)(f'notifications_{self._get_target_id()}', {
+            'type': 'notification',
+            'message': {
+                'type': 'message',
+                'author': self.author.get_username(),
+                'timestamp': str(self.timestamp),
+                'url': reverse("room", args=[self.author.id])
+            },
+        })
+    
+    def _get_target_id(self):
+        if self.room_id.user1 == self.author:
+            return self.room_id.user2.id
+        else:
+            return self.room_id.user1.id
+
 
 class FileUpload(models.Model):
     file = models.FileField(upload_to='messageFiles')

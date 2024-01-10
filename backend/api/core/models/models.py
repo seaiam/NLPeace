@@ -1,6 +1,8 @@
+from asgiref.sync import async_to_sync
+from channels.layers import get_channel_layer
 from django.contrib.auth.models import User
 from django.db import models
-from django.core.exceptions import ValidationError
+from django.urls import reverse
 
 class Profile(models.Model):
     user = models.OneToOneField(User, on_delete=models.RESTRICT, primary_key=True)
@@ -56,6 +58,20 @@ class Post(models.Model):
     
     def is_pinned_by(self, user):
         return self.postpin_set.filter(pinner=user).exists()
+    
+    def save(self, *args, **kwargs):
+        super(Post, self).save(*args, **kwargs)
+        if self.parent_post is not None:
+            channel_layer = get_channel_layer()
+            async_to_sync(channel_layer.group_send)(f'notifications_{self.parent_post.user.id}', {
+                'type': 'notification',
+                'message': {
+                    'type': 'comment',
+                    'author': self.user.get_username(),
+                    'timestamp': str(self.created_at),
+                    'url': reverse('home'),
+                }
+            })
     
    
 class Repost(models.Model):
