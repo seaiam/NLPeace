@@ -71,6 +71,17 @@
                             <p class="card-text">{{ post.content }}</p>
                         </div>
                     </div>
+
+                    <div class="video-container">
+                        {% if post.video %}
+                        <video class="centered-video" width="320" height="240" controls>
+                            <source src="{{ post.video.url }}" type="video/mp4">
+                            Your browser does not support the video tag.
+                        </video>
+                        {% endif %}
+        
+                    </div>
+
                     {% if post.image %}
                     <img class="card-img-top mt-2" src="{{ post.image.url }}" alt="Post image" /><br><br>
                     {% endif %}
