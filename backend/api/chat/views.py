@@ -96,12 +96,13 @@ def _send_message(room, message):
     except ConnectionError:
         pass
 
+@login_required
 def report_message(request, message_id):
     if request.method == "POST":
         reported = Message.objects.get(pk=message_id)
         report = ReportMessage.objects.create(reporter=request.user, message=reported)
         messages.success(request, 'Message reported')
-        return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
+        return HttpResponseRedirect(request.META.get('HTTP_REFERER', '/'))
     
     else:
         return redirect('login')
