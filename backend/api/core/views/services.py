@@ -161,7 +161,6 @@ def report_post_service (request, form, post_id):
 
     if form.is_valid():
         report = form.save(commit=False)
-        PostReport.objects.create(post=post_to_report, reporter=request.user)
         report.reporter = request.user
         report.post = get_object_or_404(Post, pk=post_id)
         report.save()
