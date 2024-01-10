@@ -226,17 +226,6 @@
         var nameDiv = document.createElement('div');
         var timeDiv = document.createElement('div');
     
-        // if (message.gif_url) {
-        //     var gifImg = document.createElement('img');
-        //     gifImg.src = message.gif_url;
-        //     gifImg.className = 'chat-gif-image'; 
-        //     gifImg.onerror = function() {
-        //         gifImg.src = 'media/profilePictures/banner.jpg'; //placeholder image
-        //     };
-
-        //     messageDiv.appendChild(gifImg);
-        // }
-
     
         if (author === username){
             msgListTag.className= 'message-right';
@@ -264,11 +253,9 @@
                 msgListTag.appendChild(msgContent);
             }
 
-            // pTag.textContent = message.content;
             timeDiv.textContent = new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
 
             msgListTag.appendChild(timeDiv);
-            // msgListTag.appendChild(pTag);
             msgListTag.appendChild(messageDiv);
         }
         else {
@@ -297,11 +284,9 @@
                 msgListTag.appendChild(msgContent);
             }
             
-            // pTag.textContent = message.content;
             timeDiv.textContent = new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
 
             msgListTag.appendChild(messageDiv);
-            // msgListTag.appendChild(pTag);
             msgListTag.appendChild(timeDiv);
     }
         
