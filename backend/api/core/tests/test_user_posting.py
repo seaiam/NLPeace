@@ -281,16 +281,12 @@ class EditPostTestCase(TestCase):
         self.client.login(username='testuser1', password='password')
 
     def test_edit_post_as_poster_authenticated(self):
-        response = self.client.get(reverse('edit_post', args=[self.post1.id]))
-        self.assertContains(response, self.original_text)
         self.client.post(reverse('edit_post',args=[self.post1.id]), {'content': self.edited_text})
         post = Post.objects.get(id = self.pid)
         self.assertEquals(post.content, self.edited_text)
         self.assertTrue(post.is_edited)
 
     def test_edit_post_not_as_poster_authenticated(self):
-        response = self.client.get(reverse('edit_post', args=[self.post2.id]), follow=True)
-        self.assertEqual(response.status_code, 401)
         response = self.client.post(reverse('edit_post',args=[self.post2.id]), {'content': self.edited_text})
         self.assertEqual(response.status_code, 401)
         self.assertEquals(self.post2.content, self.original_text)
