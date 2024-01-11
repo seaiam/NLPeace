@@ -219,7 +219,8 @@
         const fetchMessages = function() {
             chatSocket.send(JSON.stringify({
                 'command': 'fetch_messages',
-                'room_id': roomName  
+                'room_id': roomName ,
+                'username': username,
             }));
         };
 
@@ -239,7 +240,6 @@
         };
         
         const createMessage = function(message, roomName) {
-          
             const author = message['author'];
             const msgListTag = document.createElement('li');
             const messageDiv = document.createElement('div');

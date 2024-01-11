@@ -10,11 +10,12 @@ User=get_user_model()
 class ChatConsumer(WebsocketConsumer):
     
     def fetch_messages(self,data):
+        user = User.objects.get(username=data['username'])
         room_id = data.get('room_id')
         messages=Message.last_10_messages(room_id)
         content={
             'command': 'messages',
-            'messages': messages_to_json(messages)
+            'messages': messages_to_json(messages, user)
         }
         self.send_message(content)
     
