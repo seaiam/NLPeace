@@ -161,7 +161,6 @@
                                         </div>
                                        
                                     </div>
-                                </form>
                                 <!-- giffy -->                       
                                 <div id="gif-search-modal" style="display:none;">
                                     <input type="text" id="gif-search-input" placeholder="Search GIFs">
@@ -216,6 +215,9 @@
         {{ image_upload_form.image }}
     </form>
     
+    <script type="text/javascript">
+        var csrfToken = '{{ csrf_token }}';
+    </script>
     <script src="{% static 'reconnecting-websocket.js' %}"></script>
     
     <script>
