@@ -4,7 +4,7 @@ from django.test import TestCase
 from django.urls import reverse
 from io import BytesIO
 from PIL import Image
-from chat.models import ChatRoom, Message
+from chat.models import ChatRoom, Message, ReportMessage
 from core.models.models import User
 from core.models.models import *
 
@@ -17,6 +17,7 @@ class ChatTest(TestCase):
         email2 = 'testuser2@email.com'
         self.username2 = 'testuser2'
         self.password = 'testpassword123'
+        self.message = 'testmessage'
         self.user1 = User.objects.create_user(username=self.username1, email=email1, password=self.password)
         self.user2 = User.objects.create_user(username=self.username2, email=email2, password=self.password)
     
@@ -138,3 +139,13 @@ class ChatTest(TestCase):
             response = self.client.post(reverse('upload_image', args=[self.user2.id]), data)
             self.assertEqual(response.status_code, 302)
             self.assertEqual(Message.objects.count(), count + 1)
+
+    def test_report_message(self):
+        self.client.login(username=self.username1, password=self.password)
+        testroom = ChatRoom.objects.create(user1=self.user1, user2=self.user2)
+        reports = ReportMessage.objects.all()
+        count = reports.count()
+        testmessage = Message.objects.create(author=self.user2, content=self.message, room_id=testroom)
+        response = self.client.post(reverse('report_message', args=[testmessage.id]))
+        self.assertEqual(response.status_code, 302)
+        self.assertEqual(count+1, reports.count())

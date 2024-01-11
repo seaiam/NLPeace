@@ -1,6 +1,8 @@
 from django.contrib.auth.models import User
 from django.db import models
-from django.core.exceptions import ValidationError
+from django.urls import reverse
+
+from core.utils import attempt_send_message
 
 class Profile(models.Model):
     user = models.OneToOneField(User, on_delete=models.RESTRICT, primary_key=True)
@@ -25,13 +27,13 @@ class ProfileWarning(models.Model):
     def __str__(self):
         return str(self.issued_at)
 
-
 class Post(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     content = models.CharField(max_length=280)
     image = models.ImageField(upload_to='postImages/', null=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
     parent_post = models.ForeignKey('self', null=True, blank=True, on_delete=models.CASCADE, related_name='replies')
+    is_edited = models.BooleanField(default = False)
 
     def get_number_likes(self):
         return self.postlike_set.all().count()
@@ -57,6 +59,21 @@ class Post(models.Model):
     def is_pinned_by(self, user):
         return self.postpin_set.filter(pinner=user).exists()
     
+    def save(self, *args, **kwargs):
+        super(Post, self).save(*args, **kwargs)
+        if self.parent_post is not None:
+            attempt_send_message(
+                f'notifications_{self.parent_post.user.id}',
+                {
+                    'type': 'notification',
+                    'message': {
+                        'type': 'comment',
+                        'author': self.user.get_username(),
+                        'timestamp': str(self.created_at),
+                        'url': reverse('home'),
+                }
+            })
+    
    
 class Repost(models.Model):
     post = models.ForeignKey(Post, null=True, on_delete=models.CASCADE, related_name='reposts')
@@ -65,7 +82,6 @@ class Repost(models.Model):
 
     def __str__(self):
         return f'{self.user.username} reposted {self.post.content}'
-
 
 class PostReport(models.Model):
     class Category(models.IntegerChoices):
@@ -120,8 +136,7 @@ class UserReport(models.Model):
     date_reported = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
-        return f'{self.reporter.username} -- {UserReport.Reason(self.reason).name} -- {self.date_reported}'
-    
+        return f'{self.reporter.username} -- {UserReport.Reason(self.reason).name} -- {self.date_reported}'  
 
 class PostSave(models.Model):
     saver = models.ForeignKey(User, on_delete=models.CASCADE)

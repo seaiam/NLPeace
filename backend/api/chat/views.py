@@ -12,7 +12,6 @@ from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import redirect, render
 from django.urls import reverse
 from django.utils.safestring import mark_safe
-from redis.exceptions import ConnectionError
 from .chat_service import getChatRoom, message_to_json
 from .forms import *
 from .models import Message
@@ -20,6 +19,8 @@ from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_POST
 from django.http import JsonResponse
 from .chat_service import *
+from .models import Message, ReportMessage
+from core.utils import attempt_send_message
 
 FILE_PATH_PATTERN = r'.*/(?P<filename>.+)$'
 
@@ -46,7 +47,6 @@ def index(request):
 def room(request,target_user_id):
     target_user = User.objects.filter(id = target_user_id).first()
     chat_room = getChatRoom(request.user, target_user)
-    print(chat_room.room_name)
     context = {
         'room_name_json':mark_safe(json.dumps(chat_room.room_name)),
         'username':mark_safe(json.dumps(request.user.username)),
@@ -73,7 +73,6 @@ def upload_file(request, target_user_id):
 @login_required
 def download(request, path):
     with open(f'{settings.MEDIA_ROOT}/messageFiles/{path}', 'rb') as f:
-        match = re.match(FILE_PATH_PATTERN, path)
         response = HttpResponse(f.read(), content_type=mimetypes.guess_type(path))
         response['Content-Disposition'] = f'attachment; filename={path}'
         return response
@@ -96,11 +95,7 @@ def _send_message(room, message):
         'command': 'new_message',
         'message': message_to_json(message),
     }
-    channel_layer = get_channel_layer()
-    try:
-        async_to_sync(channel_layer.group_send)(f'chat_{room.room_name}', {"type": "chat.message", "message": content})
-    except ConnectionError:
-        pass
+    attempt_send_message(f'chat_{room.room_name}', {"type": "chat.message", "message": content})
 
 @csrf_exempt
 @require_POST
@@ -120,3 +115,17 @@ def classifyMessage(request):
     except Exception as e:
         return JsonResponse({'error': str(e)}, status=500)
     
+@login_required
+def report_message(request, message_id):
+    if request.method == "POST":
+        reported = Message.objects.get(pk=message_id)
+        if ReportMessage.objects.filter(reporter=request.user, message=reported).exists():
+            ReportMessage.objects.filter(reporter=request.user, message=reported).delete()
+            messages.success(request, 'Report removed')
+        else:
+            report = ReportMessage.objects.create(reporter=request.user, message=reported)
+            messages.success(request, 'Message reported')
+        return HttpResponseRedirect(request.META.get('HTTP_REFERER', '/'))
+    
+    else:
+        return redirect('login')

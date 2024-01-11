@@ -11,4 +11,5 @@ urlpatterns = [
     path("<int:target_user_id>/upload_image", views.upload_image, name="upload_image"),
     path("download/<str:path>", views.download, name="download"),
     path("classifyMessage/", views.classifyMessage, name="classifyMessage"),
+    path("<int:message_id>/report_message", views.report_message, name="report_message"),
 ]

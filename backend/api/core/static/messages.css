@@ -220,6 +220,34 @@
     background: #ffffff;
 }
 
+.message-container li.message-left .dropdown-message {
+    float:right;
+    padding-left:10px;
+    margin-top:7px;
+ }
+ 
+ .message-container li.message-left .dropdown-message .fa-ellipsis-v{
+     color: #00001c;
+ }
+
+ .report-dm-button  {
+    display: flex; 
+    align-items: center; 
+    white-space: nowrap; 
+    color: #000; 
+    margin-right: 8px; 
+    text-decoration: none;
+    background-color: transparent;
+    border: none;
+    cursor: pointer;
+    width: 100%;
+  }
+  
+  .report-dm-button:focus {
+    outline: none;
+    box-shadow: none;
+  }
+
 .message-container li .message-text:before {
     content: '';
     position: absolute;
