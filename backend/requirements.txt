@@ -7,3 +7,4 @@ faker
 requests
 channels_redis
 coverage
+pytest
