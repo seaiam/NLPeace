@@ -52,11 +52,7 @@
                 </a>
                 <ul class="dropdown-menu">
                   <li><a class="dropdown-item" href="#" onclick="toggleModal('reportModal')"> <i class="far fa-flag"></i> Report User</a></li>
-                  {% if profile.user not in request.user.profile.blocked.all|dictsort:"id" %}                     
-                    <li><a class="dropdown-item" href="{% url 'add_block' profile.user.id %}"><i class="fa fa-ban"></i> Block User</a></li>
-                  {% else %}                  
-                    <li><a class="dropdown-item" href="{% url 'add_block' profile.user.id %}"><i class="fa fa-ban"></i> Unblock User</a></li>
-                  {% endif %}
+                  <li><a class="dropdown-item" href="{% url 'add_block' profile.user.id %}"><i class="fa fa-ban"></i> Block User</a></li>
                   <li><a class="dropdown-item" href="#"><i class="far fa-paper-plane"></i>Share Profile</a></li>
                 </ul>
               </div>
