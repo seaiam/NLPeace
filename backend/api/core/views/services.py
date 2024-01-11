@@ -307,7 +307,7 @@ def handle_pin(user, post_id):
 def handle_edit_post(request,form, post, remove_image, parent_post):
     if form.is_valid():
         edited_text = form.cleaned_data['content']
-        result = classify_tweet(edited_text)
+        result = classify_text(edited_text)
         if result["prediction"][0] in [1, 0]:  # Offensive or hate speech
             message = 'This edit contains offensive language and is not allowed on our platform.' if result["prediction"][0] == 1 else 'This post contains hateful language and is not allowed on our platform.'
             messages.error(request, message)
