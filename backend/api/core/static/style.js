@@ -70,6 +70,14 @@ function handleDeletePostImage(previewDivId, postId) {
     }
 }
 
+// opening tab 1 by default
+$(document).ready(() => {
+    const post = document.getElementById("defaultOpenPost");
+    if (post) {
+        post.click();
+    }
+})
+
 // Script for opening tabs on Profile page
 function openPostTab(event, posttabName) {
     var posttabcontent, profiletabbutton;
@@ -94,6 +102,7 @@ window.onclick = function(event) {
         event.target.style.display = "none";
     }
 };
+
 
 // opening tab 1 by default
 document.getElementById("defaultOpenPost").click();

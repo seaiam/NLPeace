@@ -84,6 +84,19 @@
                 </div>
             </div>
 
+            <div aria-live="polite" aria-atomic="true" style="position: relative;">
+                <div id="base-notification-toast" class="toast m-4" style="position: absolute; top: 0; right: 0;">
+                    <div class="toast-header">
+                        <strong id="base-notification-toast-header-time-indication" class="mr-auto"></strong>
+                        <button type="button" class="ml-2 mb-1 close" data-dismiss="toast" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div id="base-notification-toast-body" class="toast-body">
+                    </div>
+                </div>
+            </div>
+
 
     <!--NEW PAGES EXTEND CONTENT BLOCK-->
     {% block content %}
@@ -97,10 +110,44 @@
     <script src="{% static 'style.js' %}" type="text/javascript"></script>
 
     <script>
+        
         $(document).ready(() => {
             addFormSubmitListener('profile-edit-pic-form', '{{ editPicForm.pic.id_for_label }}');
             addFormSubmitListener('profile-edit-banner-form', '{{ editBannerForm.banner.id_for_label }}');
-        })
+
+            $('.toast').toast({ delay: 5000 })
+        });
+
+        const userId = {{ user.id }};
+        const ws = new WebSocket(`ws://${window.location.host}/ws/notifications/${userId}/`);
+
+        const createTimestampedUserActionLinkNotification = (data, action) => {
+            const link = document.createElement('a');
+            const date = new Date(data.message.timestamp);
+            const time = document.getElementById('base-notification-toast-header-time-indication');
+            time.textContent = date.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+            link.textContent = `${data.message.author} just ${action}!`;
+            link.href = data.message.url;
+            return link;
+        };
+
+        ws.onmessage = (event) => {
+            const data = JSON.parse(event.data);
+            const body = document.getElementById('base-notification-toast-body');
+            body.innerHTML = '';
+            switch (data.message.type) {
+                case 'comment':
+                    body.appendChild(createTimestampedUserActionLinkNotification(data, 'commented on your post'));
+                    break;
+                case 'message':
+                    body.appendChild(createTimestampedUserActionLinkNotification(data, 'sent you a message'));
+                    break;
+                default:
+                    throw new Error(`Unknown notification type: ${data.message.type}`);
+            }
+            $('#base-notification-toast').toast('show');
+        };
+
     </script>
 
 </body>

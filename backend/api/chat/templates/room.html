@@ -283,9 +283,6 @@
                 element = document.createElement('a');
                 element.href = `download/${message.content}`;
                 element.textContent = message.content;
-                element.onclick = () => {
-                    
-                };
             } else if (message.is_image) {
                 element = document.createElement('img');
                 element.src = message.src;

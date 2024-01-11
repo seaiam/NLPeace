@@ -1287,6 +1287,7 @@ img {
   color: #00001c;
 }
 
+
 .edit-status{
   font-size: small;
   color: #383938;
@@ -1307,6 +1308,11 @@ img {
 
 .edit-post-textarea{
   background-color: #f2f2f2;
+}
+
+#base-notification-toast {
+  background: linear-gradient(to right, #F9D1C4 0%, #9BBDDD 51%, #F9D1C4 100%);
+
 }
 
 /* Media Queries */
