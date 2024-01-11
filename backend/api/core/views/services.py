@@ -304,30 +304,21 @@ def handle_pin(user, post_id):
         message='Post pinned successfully.'
         return message
 
-def get_post_to_edit(post):
-    if post:
-        context = {
-            'content_to_edit': post.content,
-            'form': PostForm()
-        }
-        return context
-    else:
-        return redirect('error_500')
-
-def handle_edit_post(request,form, post, remove_image):
+def handle_edit_post(request,form, post, remove_image, parent_post):
     if form.is_valid():
         edited_text = form.cleaned_data['content']
         result = classify_tweet(edited_text)
         if result["prediction"][0] in [1, 0]:  # Offensive or hate speech
-            message = 'This post contains offensive language and is not allowed on our platform.' if result["prediction"][0] == 1 else 'This post contains hateful language and is not allowed on our platform.'
+            message = 'This edit contains offensive language and is not allowed on our platform.' if result["prediction"][0] == 1 else 'This post contains hateful language and is not allowed on our platform.'
             messages.error(request, message)
-            return None
         elif result["prediction"][0] == 2:  # Appropriate
             if remove_image and post.image:
                 post.image.delete(save=True)
                 post.image = None
             post = form.save()
             post.is_edited = True
+            post.parent_post = parent_post
             post.save()
-            return post
-    return None
+    else:
+        messages.error(request, "There was an error editing your post. Try again.")
+    return post

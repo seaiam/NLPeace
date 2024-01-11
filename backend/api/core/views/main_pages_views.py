@@ -295,12 +295,9 @@ def edit_post(request, post_id):
         if request.method == 'POST':
             image_flag = request.POST.get('remove_image', 'false') == 'true'
             form = PostForm(request.POST, request.FILES, instance = post)
-            result = handle_edit_post(request, form, post, image_flag)
-            if result:
-                return HttpResponseRedirect(request.META.get('HTTP_REFERER', '/'))
-            else:
-                return error_500(request)
+            result = handle_edit_post(request, form, post, image_flag, post.parent_post)
+            return HttpResponseRedirect(request.META.get('HTTP_REFERER', '/'))  
         else:
-            return render(request, '401.html', status=401)
+            return render(request, '401.html', status=400)
     else:
         return render(request, '401.html', status=401)
