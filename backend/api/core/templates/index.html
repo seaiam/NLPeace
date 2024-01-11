@@ -32,11 +32,11 @@
                                     {{ form.image }}
                                     &nbsp; &nbsp; &nbsp; &nbsp;
 
-                                    <label for="upload-image" class="post-actions__label">
+                                    <label for="upload-image" class="post-actions__label" onclick="showFilePicker('{{ form.video.id_for_label }}')">
                                         <i class="fa fa-video" aria-hidden="true"></i> 
                                     Video
                                     </label>
-                                    {{ form.video }}
+                                    <p hidden> {{ form.video }} </p>
                                     &nbsp; &nbsp; &nbsp; &nbsp;
 
                                     <label for="upload-video" class="post-actions__label">
