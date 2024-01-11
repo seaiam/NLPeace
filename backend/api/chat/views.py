@@ -111,10 +111,10 @@ def classifyMessage(request):
         message = data.get('message')
         #process message by using nlp to see if message is allowed
         is_allowed, result = process_message(message)
-        #log message and any error statements
-        logger.info(f"message: {message}")
-        logger.info(f"is allowed: {is_allowed}")
-        logger.info(f"result: {result}")
+        ##log message and any error statements
+        #logger.info(f"message: {message}")
+        #logger.info(f"is allowed: {is_allowed}")
+        #logger.info(f"result: {result}")
         #return message or error message to user
         return JsonResponse({'is_allowed': is_allowed, 'error_message': result})
     except Exception as e:
