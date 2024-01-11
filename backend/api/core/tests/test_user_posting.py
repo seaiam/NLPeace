@@ -54,6 +54,16 @@ class PostTestCase(TestCase):
         post = Post.objects.first()
         self.assertIsNotNone(post)
         self.assertIsNotNone(post.image)
+        
+    def test_post_with_video(self):
+        response = self.client.post(reverse('home'), {
+            'content': 'Test post',
+            'image': {'image': SimpleUploadedFile('../static/test-video.mp4', b'file_content')}
+        })
+        self.assertEqual(response.status_code, 302)
+        post = Post.objects.first()
+        self.assertIsNotNone(post)
+        self.assertIsNotNone(post.image)
 
     def test_delete_post_as_poster(self):
         new_post = Post.objects.create(user=self.user,content='test post')

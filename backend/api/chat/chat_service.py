@@ -26,6 +26,10 @@ def message_to_json(message, user=None):
     if message.is_image:
             upload = message.imageupload_set.first()
             src = upload.image.url
+    elif message.is_video:
+            upload = message.videoupload_set.first()
+            src = upload.video.url
+
     else:
         src = ''
     if user is None:
@@ -42,6 +46,7 @@ def message_to_json(message, user=None):
         'timestamp': str(message.timestamp),
         'is_file_download': message.is_file_download,
         'is_image': message.is_image,
+        'is_video': message.is_video,
         'src': src,
         'can_report': can_report,
         'report_link': report_link,

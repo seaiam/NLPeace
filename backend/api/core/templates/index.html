@@ -28,17 +28,19 @@
                                     <i class="fa fa-camera" sty aria-hidden="true"></i> 
                                     Photo
                                     </label>
-                                    <input type="file" id="create-upload-image" name="image" style="display: none;">
+                                    <input type="file" id="create-upload-image" name="image" accept="image/*" style="display: none;">
                                     {{ form.image }}
                                     &nbsp; &nbsp; &nbsp; &nbsp;
 
-                                    <label for="upload-image" class="post-actions__label">
+                                    <label for="create-upload-video" class="post-actions__label">
                                         <i class="fa fa-video" aria-hidden="true"></i> 
-                                    Video
+                                        Video
                                     </label>
+                                    <input type="file" id="create-upload-video" name="video" accept="video/*" style="display: none;">
+                                    <p hidden> {{ form.video }} </p>
                                     &nbsp; &nbsp; &nbsp; &nbsp;
 
-                                    <label for="upload-image" class="post-actions__label">
+                                    <label for="upload-video" class="post-actions__label">
                                         <i class="fa fa-list-ul" aria-hidden="true"></i> 
                                     Poll
                                     </label>
@@ -65,7 +67,7 @@
         {% for post in posts %}
             {% include "posts.html" with post=post %}
         {% empty %}
-        <div class="no-post">No posts available.</div>
+            <div class="no-post">No posts available.</div>
         {% endfor %}
     </div>
 
@@ -80,7 +82,7 @@
 </div>
 
 <script>
-    // All posts or Followers posts tabs
+// All posts or Followers posts tabs
     function openPostTab(event, posttabName) {
         var posttabcontent, posttabbutton;
 
