@@ -14,8 +14,8 @@ from .services import *
 
 @login_required
 def add_block(request, blocked_id):
-    message = block_user(request.user.id, blocked_id)
-    messages.info(request, message)
+    block_user(request.user.id, blocked_id)
+    messages.error(request, "User Blocked Successfully.")
     return redirect('profile')
 
 @login_required
