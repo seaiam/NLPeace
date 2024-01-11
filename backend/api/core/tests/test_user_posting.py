@@ -98,7 +98,6 @@ class PostTestCase(TestCase):
         otherProfile = self.client.get(reverse('guest',kwargs = {'user_id': otherId}))
         self.assertNotContains(otherProfile, 'Post on profile')
     
-
 class CommentTestCase(TestCase):
 
     def setUp(self):
@@ -279,4 +278,35 @@ class PinTestCase(TestCase):
         pins = PostPin.objects.all()
         self.assertEqual(3, pins.count())
 
+class EditPostTestCase(TestCase):
 
+    def setUp(self):
+        self.original_text = "unedited content"
+        self.edited_text = "edited content"
+        self.user1 = User.objects.create_user(username='testuser1', password='password')
+        self.user2 = User.objects.create_user(username='testuser2', password='password')
+        self.post1 = Post.objects.create(user = self.user1, content = self.original_text)
+        self.pid = self.post1.id
+        self.post2 = Post.objects.create(user = self.user2, content = self.original_text)
+        self.client.login(username='testuser1', password='password')
+
+    def test_edit_post_as_poster_authenticated(self):
+        self.client.post(reverse('edit_post',args=[self.post1.id]), {'content': self.edited_text})
+        post = Post.objects.get(id = self.pid)
+        self.assertEquals(post.content, self.edited_text)
+        self.assertTrue(post.is_edited)
+
+    def test_edit_post_not_as_poster_authenticated(self):
+        response = self.client.post(reverse('edit_post',args=[self.post2.id]), {'content': self.edited_text})
+        self.assertEqual(response.status_code, 401)
+        self.assertEquals(self.post2.content, self.original_text)
+        self.assertFalse(self.post2.is_edited)
+        
+    def test_edit_post_unauthenticated(self):
+        self.client.logout() 
+        response = self.client.get(reverse('edit_post', args=[self.post2.id]))
+        self.assertEqual(response.status_code, 302)        
+        response = self.client.post(reverse('edit_post',args=[self.post2.id]), {'content': self.edited_text})
+        self.assertEqual(response.status_code, 302)  
+        self.assertEquals(self.post2.content, self.original_text)
+        self.assertFalse(self.post2.is_edited)
