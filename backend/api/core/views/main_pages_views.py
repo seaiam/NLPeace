@@ -3,7 +3,6 @@ from django.http import HttpResponseForbidden
 from django.contrib import messages
 from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import login_required
-from django.core import serializers
 from django.http import JsonResponse
 from django.db.models import Q
 from django.shortcuts import get_object_or_404
@@ -251,19 +250,6 @@ def bookmarked_posts(request):
         }
     return render(request, 'bookmark.html', context)
 
-def classify_text(text):
-    url = 'https://nlpeace-api-2e54e3d268ac.herokuapp.com/classify/'
-    payload = {'text': text}
-    try:
-        response = requests.post(url, json=payload)
-        if response.status_code == 200:
-            return response.json()
-        else:
-            # Handle response error
-            return {'error': 'Failed to get prediction', 'status_code': response.status_code}
-    except requests.exceptions.RequestException as e:
-        # Handle request exception
-        return {'error': str(e)}
   
 @login_required
 def pin(request, post_id):     
@@ -286,3 +272,19 @@ def unpin(request, post_id):
             return redirect('profile')
         return HttpResponseRedirect(request.META.get('HTTP_REFERER', '/'))
  return redirect('login')
+
+@login_required
+def edit_post(request, post_id):
+    post = get_object_or_404(Post, id=post_id)
+    original_poster = post.user
+
+    if request.user == original_poster:
+        if request.method == 'POST':
+            image_flag = request.POST.get('remove_image', 'false') == 'true'
+            form = PostForm(request.POST, request.FILES, instance = post)
+            result = handle_edit_post(request, form, post, image_flag, post.parent_post)
+            return HttpResponseRedirect(request.META.get('HTTP_REFERER', '/'))  
+        else:
+            return render(request, '401.html', status=400)
+    else:
+        return render(request, '401.html', status=401)

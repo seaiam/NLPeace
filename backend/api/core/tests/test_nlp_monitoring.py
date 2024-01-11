@@ -1,0 +1,111 @@
+from django.test import TestCase, Client, RequestFactory
+from django.urls import reverse
+from unittest.mock import patch
+import json
+from django.contrib.sessions.middleware import SessionMiddleware
+from django.contrib.messages.storage.session import SessionStorage
+
+from django.contrib.auth.models import User
+from django.contrib.messages import get_messages
+from core.forms.posting_forms import PostForm
+from core.views.services import process_post_form, classify_text
+
+
+class ChatMonitoringTest(TestCase):
+
+    def setUp(self):
+        self.client = Client()
+        self.classify_message_url = reverse('classifyMessage')
+
+    def test_valid_post_request(self):
+        # Simulate valid POST request
+        response = self.client.post(self.classify_message_url, {'message': 'test message'}, content_type='application/json')
+        self.assertEqual(response.status_code, 200)
+        
+    def test_get_request_rejected(self):
+        # Test that GET requests are rejected
+        response = self.client.get(self.classify_message_url)
+        self.assertEqual(response.status_code, 405)
+
+
+class NLPMonitoringTest(TestCase):
+    def test_classify_text(self):
+        test_text = "This is a test message."
+        response = classify_text(test_text)
+
+        # Confirm response structure
+        self.assertIsInstance(response, dict)
+        
+        # Check for the presence of 'prediction' key
+        self.assertIn('prediction', response)
+        self.assertIsInstance(response['prediction'], list)
+
+        # Validate the prediction value (assuming it's an integer)
+        if response['prediction']:
+            self.assertIn(response['prediction'][0], [0, 1, 2])
+
+        # Validate response format and types
+        if 'error' in response:
+            self.assertIn('status_code', response)
+            self.assertIsInstance(response['error'], str)
+            self.assertIsInstance(response['status_code'], int)
+
+class PostProcessingTest(TestCase):
+
+    def setUp(self):
+        self.factory = RequestFactory()
+        self.user = User.objects.create_user(username='testuser', password='12345')
+        self.form_data = {'content': 'Test post content'}
+
+    @patch('core.views.services.classify_text')
+    def test_process_post_form_with_appropriate_content(self, mock_classify_text):
+        mock_classify_text.return_value = {"prediction": [2]} 
+
+        request = self.factory.post('/home/', self.form_data)
+        request.user = self.user
+        form = PostForm(data=self.form_data)
+
+        # Dummy function for middleware initialization
+        def dummy_get_response(request):
+            return None
+
+        # Add session middleware to the request
+        middleware = SessionMiddleware(dummy_get_response)
+        middleware.process_request(request)
+        request.session.save()
+
+        # Add messages to the request
+        messages = SessionStorage(request)
+        setattr(request, '_messages', messages)
+
+
+        if form.is_valid():
+            response = process_post_form(request, form)
+            self.assertIsNotNone(response)
+
+    @patch('core.views.services.classify_text')
+    def test_process_post_form_with_offensive_content(self, mock_classify_text):
+        mock_classify_text.return_value = {"prediction": [1]}  # Offensive content
+
+        request = self.factory.post('/home/', self.form_data)
+        request.user = self.user
+        form = PostForm(data=self.form_data)
+
+        # Dummy function for middleware initialization
+        def dummy_get_response(request):
+            return None
+
+        # Add session middleware to the request
+        middleware = SessionMiddleware(dummy_get_response)
+        middleware.process_request(request)
+        request.session.save()
+
+        # Add messages to the request
+        messages = SessionStorage(request)
+        setattr(request, '_messages', messages)
+
+        if form.is_valid():
+            process_post_form(request, form)
+            messages = list(get_messages(request))
+            self.assertEqual(len(messages), 1)
+            self.assertIn('offensive language', str(messages[0]))
