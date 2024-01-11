@@ -27,12 +27,14 @@ def message_to_json(message, user=None):
             src = upload.image.url
     else:
         src = ''
-    if user and ReportMessage.objects.filter(reporter=user).exists():
+    if user is None:
+         user = get_target_user(message)
+         print(user)
+    if user and ReportMessage.objects.filter(reporter=user, message=message).exists():
         can_report = False
-        report_link = ''
     else:
         can_report = True
-        report_link = reverse('report_message', args=[message.id])
+    report_link = reverse('report_message', args=[message.id])
     return {
         'author': message.author.username,
         'content': message.content,
@@ -43,3 +45,9 @@ def message_to_json(message, user=None):
         'can_report': can_report,
         'report_link': report_link,
     }
+
+def get_target_user(message):
+     if message.author == message.room_id.user1:
+          return message.room_id.user2
+     else:
+          return message.room_id.user1

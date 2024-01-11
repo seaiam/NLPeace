@@ -240,6 +240,7 @@
         };
         
         const createMessage = function(message, roomName) {
+            console.log(message);
             const author = message['author'];
             const msgListTag = document.createElement('li');
             const messageDiv = document.createElement('div');
@@ -304,7 +305,7 @@
                 dropdownIcon.className = 'fas fa-ellipsis-v';
                 dropdownMenu.className = 'dropdown-menu';
                 reportLink.className = 'dropdown-item';
-                reportButton.innerHTML = '<i class="far fa-flag"></i> Report';
+                reportButton.innerHTML = `<i class="far fa-flag"></i> ${message.can_report ?  'Report' : 'Unreport'}`;
                 msgListTag.appendChild(messageDiv);
                 msgListTag.appendChild(content);
                 dropdownToggle.appendChild(dropdownIcon);
