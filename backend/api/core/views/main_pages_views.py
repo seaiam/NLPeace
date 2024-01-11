@@ -250,19 +250,6 @@ def bookmarked_posts(request):
         }
     return render(request, 'bookmark.html', context)
 
-def classify_text(text):
-    url = 'https://nlpeace-api-2e54e3d268ac.herokuapp.com/classify/'
-    payload = {'text': text}
-    try:
-        response = requests.post(url, json=payload)
-        if response.status_code == 200:
-            return response.json()
-        else:
-            # Handle response error
-            return {'error': 'Failed to get prediction', 'status_code': response.status_code}
-    except requests.exceptions.RequestException as e:
-        # Handle request exception
-        return {'error': str(e)}
   
 @login_required
 def pin(request, post_id):     

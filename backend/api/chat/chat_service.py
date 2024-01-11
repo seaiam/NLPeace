@@ -1,6 +1,7 @@
 from .models import ChatRoom, ReportMessage
 from django.contrib.auth import get_user_model
 from django.db.models import Q
+import requests
 from django.urls import reverse
 
 #We get the chat room that is mapped to the two users in question
@@ -45,6 +46,29 @@ def message_to_json(message, user=None):
         'can_report': can_report,
         'report_link': report_link,
     }
+
+def classify_message(message_text):
+    url = 'https://nlpeace-api-2e54e3d268ac.herokuapp.com/classify/'
+    payload = {'text': message_text}
+    try:
+        response = requests.post(url, json=payload)
+        if response.status_code == 200:
+            return response.json()
+        else:
+            # Handle response error
+            return {'error': 'Failed to get prediction', 'status_code': response.status_code}
+    except requests.exceptions.RequestException as e:
+        # Handle request exception
+        return {'error': str(e)}
+    
+def process_message(message):
+    result = classify_message(message)
+    if result["prediction"][0] in [1, 0]:  # Offensive or hate speech
+        error_message = 'This message contains offensive language and is not allowed on our platform.' if result["prediction"][0] == 1 else 'This message contains hateful language and is not allowed on our platform.'
+        return False, error_message
+    elif result["prediction"][0] == 2:  # Appropriate
+        return True, message
+    return False
 
 def get_target_user(message):
      if message.author == message.room_id.user1:

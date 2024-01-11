@@ -1,7 +1,9 @@
 import json
 import mimetypes
 import re
-
+from api.logger_config import configure_logger 
+from asgiref.sync import async_to_sync
+from channels.layers import get_channel_layer
 from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
@@ -12,6 +14,11 @@ from django.urls import reverse
 from django.utils.safestring import mark_safe
 from .chat_service import getChatRoom, message_to_json
 from .forms import *
+from .models import Message
+from django.views.decorators.csrf import csrf_exempt
+from django.views.decorators.http import require_POST
+from django.http import JsonResponse
+from .chat_service import *
 from .models import Message, ReportMessage
 from core.utils import attempt_send_message
 
@@ -19,6 +26,8 @@ FILE_PATH_PATTERN = r'.*/(?P<filename>.+)$'
 
 
 User = get_user_model()
+
+logger = configure_logger("chat_logger")
 
 def index(request):
     users = User.objects.all()
@@ -88,6 +97,24 @@ def _send_message(room, message):
     }
     attempt_send_message(f'chat_{room.room_name}', {"type": "chat.message", "message": content})
 
+@csrf_exempt
+@require_POST
+def classifyMessage(request):
+    try:
+        #ajax call is made when user clicks send
+        data = json.loads(request.body)
+        message = data.get('message')
+        #process message by using nlp to see if message is allowed
+        is_allowed, result = process_message(message)
+        ##log message and any error statements
+        #logger.info(f"message: {message}")
+        #logger.info(f"is allowed: {is_allowed}")
+        #logger.info(f"result: {result}")
+        #return message or error message to user
+        return JsonResponse({'is_allowed': is_allowed, 'error_message': result})
+    except Exception as e:
+        return JsonResponse({'error': str(e)}, status=500)
+    
 @login_required
 def report_message(request, message_id):
     if request.method == "POST":

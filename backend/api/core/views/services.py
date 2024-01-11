@@ -19,7 +19,7 @@ from django.contrib.auth import update_session_auth_hash
 def process_post_form(request, form):
     if form.is_valid():
         tweet_text = form.cleaned_data['content']
-        result = classify_tweet(tweet_text)
+        result = classify_text(tweet_text)
         if result["prediction"][0] in [1, 0]:  # Offensive or hate speech
             message = 'This post contains offensive language and is not allowed on our platform.' if result["prediction"][0] == 1 else 'This post contains hateful language and is not allowed on our platform.'
             messages.error(request, message)
@@ -31,9 +31,9 @@ def process_post_form(request, form):
             return post
     return None
 
-def classify_tweet(tweet_text):
+def classify_text(text):
     url = 'https://nlpeace-api-2e54e3d268ac.herokuapp.com/classify/'
-    payload = {'text': tweet_text}
+    payload = {'text': text}
     try:
         response = requests.post(url, json=payload)
         if response.status_code == 200:
@@ -104,7 +104,7 @@ def handle_invitation(followed_user_pk, following_user_pk, action):
 def process_comment_form(request, form, post_id):
     if form.is_valid():
         comment_text = form.cleaned_data['content']
-        result = classify_tweet(comment_text)
+        result = classify_text(comment_text)
 
         if result["prediction"][0] in [1, 0]:  # Offensive or hate speech
             message = 'This comment contains offensive language and is not allowed on our platform.' if result["prediction"][0] == 1 else 'This comment contains hateful language and is not allowed on our platform.'
@@ -307,7 +307,7 @@ def handle_pin(user, post_id):
 def handle_edit_post(request,form, post, remove_image, parent_post):
     if form.is_valid():
         edited_text = form.cleaned_data['content']
-        result = classify_tweet(edited_text)
+        result = classify_text(edited_text)
         if result["prediction"][0] in [1, 0]:  # Offensive or hate speech
             message = 'This edit contains offensive language and is not allowed on our platform.' if result["prediction"][0] == 1 else 'This post contains hateful language and is not allowed on our platform.'
             messages.error(request, message)
