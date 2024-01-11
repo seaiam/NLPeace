@@ -4,8 +4,6 @@ from django.urls import reverse
 from core.models.models import User , Profile
 from django.core.exceptions import ObjectDoesNotExist
 
-
-
 class UserLoginTest(TestCase):
 
     def setUp(self):
@@ -20,12 +18,10 @@ class UserLoginTest(TestCase):
         login_success = self.client.login(username=self.username, password=self.password)
         self.assertTrue(login_success)
 
-
     def test_incorrect_login(self):
         # Send a POST request to the login view with invalid credentials
         login_success = self.client.login(username=self.username, password='wronginput')
         self.assertFalse(login_success)
-
 
     def test_login_after_registration(self):
         # First, register the user
@@ -52,9 +48,12 @@ class UserLoginTest(TestCase):
     
     def test_login_fails_if_user_is_banned(self):
         Profile.objects.create(user=self.user, is_banned=True)
-        response = self.client.post(reverse('login'), {'username': 'testuser', 'password': 'testpassword123'})
+        login_data = {
+            'username': self.user.username,
+            'password': self.user.password,
+        }
+        response = self.client.post(reverse('login'),login_data)
         self.assertRedirects(response, reverse('login'))
-
 
 class ForgetPasswordTest(TestCase):
 
@@ -72,7 +71,7 @@ class ForgetPasswordTest(TestCase):
             # Handle the case where the profile does not exist/ create a profile
             self.profile = Profile.objects.create(user=self.user)
 
-            #Try a user email that exists
+    #Try a user email that exists
     def test_forget_password_correct_email(self):
         reset_password_data = {
             'email': 'testuser@email.com',
@@ -88,7 +87,7 @@ class ForgetPasswordTest(TestCase):
         self.assertIsNotNone(profile.forget_password_token)
         self.assertRedirects(response, '/accounts/login/')
 
-            #Try a user email that doesn't exist
+    #Try a user email that doesn't exist
     def test_forget_password_wrong_email(self):
         reset_password_data = {
             'email': 'testusr@email.com',
@@ -102,7 +101,6 @@ class ForgetPasswordTest(TestCase):
         #check to see if response shows the desired message
         self.assertContains(response, "An email will be sent if a user with this email exists.")
         self.assertRedirects(response, '/accounts/login/')
-
 
 class ChangePasswordTest(TestCase):
 

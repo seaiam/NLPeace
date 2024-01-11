@@ -4,7 +4,7 @@ from django.contrib.auth.models import User
 from core.models.models import  Profile
 from django.core.files.uploadedfile import SimpleUploadedFile
 from django.db.utils import IntegrityError
-from core.models.models import Post, PostDislike, PostLike, PostReport
+from core.models.models import Post, PostDislike, PostLike, PostReport,PostPin
 from core.forms.posting_forms import PostForm
 from core.models.models import Repost
 from django.core.exceptions import ObjectDoesNotExist
@@ -88,7 +88,6 @@ class PostTestCase(TestCase):
         otherProfile = self.client.get(reverse('guest',kwargs = {'user_id': otherId}))
         self.assertNotContains(otherProfile, 'Post on profile')
     
-
 class CommentTestCase(TestCase):
 
     def setUp(self):
@@ -150,9 +149,11 @@ class LikeAndDislikeTestCase(TestCase):
         self.assertEqual(1, likes.count())
         self.assertEqual(0, dislikes.count())
     
-    def test_like_post_with_already_liked_is_error(self):
+    def test_like_post_with_already_liked_is_removed(self):
         PostLike.objects.create(liker=self.user, post=self.post)
-        self.assertRaises(IntegrityError, lambda: self.client.get(reverse('like', args=[self.post.id]),))
+        response = self.client.get(reverse('like', args=[self.post.id]))
+        self.assertEqual(0, self.post.get_number_likes())
+        self.assertTrue(self.post.is_likeable_by(self.user))
     
     def test_dislike_post(self):
         response = self.client.get(reverse('dislike', args=[self.post.id]))
@@ -173,9 +174,11 @@ class LikeAndDislikeTestCase(TestCase):
         self.assertEqual(0, likes.count())
         self.assertEqual(1, dislikes.count())
     
-    def test_dislike_post_with_already_disliked_is_error(self):
+    def test_dislike_post_with_already_disliked_is_removed(self):
         PostDislike.objects.create(disliker=self.user, post=self.post)
-        self.assertRaises(IntegrityError, lambda: self.client.get(reverse('dislike', args=[self.post.id])))
+        response = self.client.get(reverse('dislike', args=[self.post.id]))
+        self.assertEqual(0, self.post.get_number_dislikes())
+        self.assertTrue(self.post.is_dislikeable_by(self.user))
 
 class RepostTestCase(TestCase):
     def setUp(self):
@@ -211,3 +214,89 @@ class ReportTestCase(TestCase):
         self.assertEqual(response.status_code, 302)
         self.assertEqual(1, reports.count())
 
+class PinTestCase(TestCase):
+
+    def setUp(self):
+        self.user = User.objects.create_user(username='testuser', password='password')
+        self.client.login(username='testuser', password='password')
+        self.post = Post.objects.create(user=self.user, content='Parent Post')
+        self.post2 = Post.objects.create(user=self.user, content='Second Post')
+        self.post3 = Post.objects.create(user=self.user, content='Third Post')
+        self.post4 = Post.objects.create(user=self.user, content='Fourth Post')
+        
+        
+        try:
+            self.profile = self.user.profile  # Try to access the profile
+        except ObjectDoesNotExist:
+            # Handle the case where the profile does not exist/ create a profile
+            self.profile = Profile.objects.create(user=self.user)          
+
+    
+    
+    def test_pin_post(self):
+        response = self.client.post(reverse('pin', args=[self.post.id]))
+        self.assertEqual(response.status_code, 302)
+        pins = PostPin.objects.all()
+        self.assertEqual(1, pins.count())
+       
+     
+    
+    def test_unpin_post(self):
+        #pinned the post before unpinning it
+        self.postpin = PostPin.objects.create(pinner=self.user, post=self.post)
+        #check if post is pinned
+        pins=PostPin.objects.all()
+        self.assertEqual(1, pins.count())
+        #unpin post
+        response = self.client.post(reverse('unpin', args=[self.post.id]))
+        self.assertEqual(response.status_code, 302)
+        pins = PostPin.objects.all()
+        self.assertEqual(0, pins.count())
+       
+       
+    def test_pin_post_limit(self):
+       #pinned the post before unpinning it
+        self.postpin = PostPin.objects.create(pinner=self.user, post=self.post)
+        self.postpin2 = PostPin.objects.create(pinner=self.user, post=self.post2)
+        self.postpin3 = PostPin.objects.create(pinner=self.user, post=self.post3)
+        pins=PostPin.objects.all()
+        self.assertEqual(3, pins.count())
+
+        #only three posts can be pinned
+        response = self.client.post(reverse('pin', args=[self.post4.id]))
+        self.assertEqual(response.status_code, 302)
+        pins = PostPin.objects.all()
+        self.assertEqual(3, pins.count())
+
+class EditPostTestCase(TestCase):
+
+    def setUp(self):
+        self.original_text = "unedited content"
+        self.edited_text = "edited content"
+        self.user1 = User.objects.create_user(username='testuser1', password='password')
+        self.user2 = User.objects.create_user(username='testuser2', password='password')
+        self.post1 = Post.objects.create(user = self.user1, content = self.original_text)
+        self.pid = self.post1.id
+        self.post2 = Post.objects.create(user = self.user2, content = self.original_text)
+        self.client.login(username='testuser1', password='password')
+
+    def test_edit_post_as_poster_authenticated(self):
+        self.client.post(reverse('edit_post',args=[self.post1.id]), {'content': self.edited_text})
+        post = Post.objects.get(id = self.pid)
+        self.assertEquals(post.content, self.edited_text)
+        self.assertTrue(post.is_edited)
+
+    def test_edit_post_not_as_poster_authenticated(self):
+        response = self.client.post(reverse('edit_post',args=[self.post2.id]), {'content': self.edited_text})
+        self.assertEqual(response.status_code, 401)
+        self.assertEquals(self.post2.content, self.original_text)
+        self.assertFalse(self.post2.is_edited)
+        
+    def test_edit_post_unauthenticated(self):
+        self.client.logout() 
+        response = self.client.get(reverse('edit_post', args=[self.post2.id]))
+        self.assertEqual(response.status_code, 302)        
+        response = self.client.post(reverse('edit_post',args=[self.post2.id]), {'content': self.edited_text})
+        self.assertEqual(response.status_code, 302)  
+        self.assertEquals(self.post2.content, self.original_text)
+        self.assertFalse(self.post2.is_edited)

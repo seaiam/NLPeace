@@ -5,7 +5,6 @@
 
 {% block content %}
 
-
 <div class="d-flex justify-content-center align-items-center">   
     <div class="card" style="width: 39rem; background: linear-gradient(to right, #F9D1C4 0%, #9BBDDD 51%, #F9D1C4 100%);  border-radius: 15px; margin-bottom:30px;">
         <div class="card-body">
@@ -17,18 +16,19 @@
                             <div class="widget-post__content">
                             <textarea name="{{ form.content.name }}" id="post-content" class="widget-post__textarea scroller" placeholder="Start a Post...">{{ form.content.value|default:'' }}</textarea>
                             </div>
-                            <div id="preview_image" style="display: none;">
-                                <button type="button" class="close" onclick="handleDeletePostImage()" style="color: #00001c;">&times;</button>
+                            <div id="create-preview-image" style="display: none;">
+                                <button type="button" class="close" onclick="handleDeletePostImage('create-preview-image')" style="color: #00001c;">&times;</button>
                                 <img class="card-img-top mb-2" src="#" />
                             </div>
                             <div class="widget-post__options is--hidden" id="stock-options">
                             </div>
                             <div class="widget-post__actions post--actions">
                                 <div class="post-actions__attachments">
-                                    <label for="upload-image" class="post-actions__label" onclick="showFilePicker('{{ form.image.id_for_label }}')">
+                                    <label for="create-upload-image" class="post-actions__label">
                                     <i class="fa fa-camera" sty aria-hidden="true"></i> 
                                     Photo
                                     </label>
+                                    <input type="file" id="create-upload-image" name="image" style="display: none;">
                                     {{ form.image }}
                                     &nbsp; &nbsp; &nbsp; &nbsp;
 
@@ -63,235 +63,24 @@
     <div id="All" class="posttabcontent">
         <!-- All Posts -->
         {% for post in posts %}
-            <div class="d-flex justify-content-center align-items-center">
-                <div class="card" style="width: 39rem; border-radius: 30px;margin:20px 0px 20px 0px;  overflow: hidden;background: linear-gradient(to right, #F9D1C4 0%, #9BBDDD 51%, #F9D1C4 100%);">
-                    <div class="card-body">
-                        {% if post.user.id == request.user.id %}
-                        <div class="dropdown-delete" style="position: absolute; top: 1px; right: 20px; z-index: 1000;">
-                            <a class="hidden-arrow" type="button" data-toggle="dropdown" aria-expanded="false">
-                                <i class="fas fa-ellipsis-h mt-4"></i>
-                            </a>
-                            <ul class="dropdown-menu delete-menu dropdown-menu-right delete-dropdown">
-                                <li>
-                                <form id="delPostForm" action="{% url 'delete_post' %}" method="POST">
-                                    {% csrf_token %}
-                                    <button type="submit" class="delete-button">
-                                        <i class="bi bi-trash icon-spacing"></i> Delete
-                                    </button>
-                                    <input type="hidden" name="post_id" value="{{ post.id }}" readonly/>
-                                </form>
-                                </li>
-                                <li><a class="dropdown-item" href="#"><i class="bi bi-pin"></i>Pin to your profile</a></li>
-                            </ul>
-                        </div>
-                        {% endif %}
-                        {% if post.reposts.all %}
-                            {% for repost in post.reposts.all %}
-                                <div class="repost-info">
-                                    Reposted by @{{ repost.user.username }}
-                                </div>
-                            {% endfor %}
-                        {% endif %}
-                        <div class="row top-aligned-row">
-                            <div class="col-2">
-                                {% if post.user.profile and post.user.profile.pic %}
-                                    <img src="{{ post.user.profile.pic.url }}" alt="{{ post.user.username }}'s profile picture" class="user-pic">
-                                {% else %}
-                                    <img src="{% static 'default.jpg' %}" class="user-pic" alt="{{ post.user.username }}'s profile picture" />
-                                {% endif %}
-                            </div>
-                            <div class="col-10">
-                                <h5 class="card-title">
-                                    <strong><a href="{% url 'guest' post.user.id %}" class="username-link">@{{ post.user.username }}</a></strong>
-                                </h5>
-                                <p class="card-text">{{ post.content }}</p>
-                            </div>
-                        </div>
-                {% if post.image %}
-                <img class="card-img-top mt-2" src="{{ post.image.url }}" alt="Post image" /><br><br>
-                {% endif %}
-                <h6 class="card-subtitle mb-2" style ="float: right; margin-top:5px;">{{ post.created_at|date:"M d, Y H:i" }}</h6>
-                <br>
-                <hr>
-                <div class ="icons-list" >
-
-                    <div class="feed" >
-                        {% if post in likes %}
-                        <a href="{% url 'like' post.id %}" class="like-link"><i class="far fa-thumbs-up" aria-hidden="true"></i> Like </a>
-                                {% else %}
-                                <span class="post-liked">
-                                    <i class="far fa-thumbs-up" aria-hidden="true"></i> Liked
-                                </span>
-                                
-                        {% endif %}
-                        <span class="like-count">{{ post.get_number_likes }}</span>
-                    </div>
-                    <div class="feed" >
-                        {% if post in dislikes  %}
-                        <a href="{% url 'dislike' post.id %}" class="like-link"><i class="far fa-thumbs-down" aria-hidden="true"></i> Dislike </a>
-                                {% else %}
-                                <span class="post-disliked">
-                                    <i class="far fa-thumbs-down" aria-hidden="true"></i> Disliked
-                                </span>
-                        {% endif %} 
-                        <span class="dislike-count">{{ post.get_number_dislikes }}</span>
-                    </div>
-
-                    <div class="feed"> <i class="far fa-comment" aria-hidden="true"> <a class="comment-link" href="{% url 'comment' post_id=post.id %}">Comment</a></i> </div> 
-
-                    <form method="post" action="{% url 'save_post' post.id %}">
-                        {% csrf_token %}
-                        {% if post.id in saved_post_ids %}
-                            <div class="feed-reposted"><i class="fa fa-bookmark" aria-hidden="true">  <button type="submit" class = "repost-button"> Saved </button></i> </div>
-                        {% else %}
-                            <div class="feed"><i class="fa fa-bookmark" aria-hidden="true">  <button type="submit" class = "repost-button">Bookmark</button></i> </div>
-                        {% endif %}
-                    </form>
-
-                    <form method="post" action="{% url 'repost' post.id %}">
-                        {% csrf_token %}
-                        {% if post.id in reposted_post_ids %}
-                            <div class="feed-reposted"><i class="fa fa-retweet" aria-hidden="true">  <button type="button" class = "reposted-button" disabled>Reposted</button></i> </div>
-                        {% else %}
-                        <div class="feed"><i class="fa fa-retweet" aria-hidden="true">  <button type="submit" class = "repost-button">Repost</button></i> </div>
-                        {% endif %}
-                    </form>
-
-
-                    <div class="feed post-actions__label">
-                        {% with counter=forloop.counter|stringformat:"s" %}
-                        {% with id="report-"|add:counter %}
-                        <i class="far fa-flag" onclick="toggleModal('{{ id }}')" aria-hidden="true"> Report</i>
-                        <div id="{{ id }}" class="popup">
-                            <div class="popup-content">
-                                <span class="close" onclick="toggleModal('{{ id }}')">&times;</span>
-                                <p class="modalTitle">Report</p>
-                                <form action="{% url 'report' post.id %}" method="POST">
-                                    {% csrf_token %}
-                                    <label for="{{ reportPostForm.category.id_for_label }}" class="form-outline mb-4" style="font-size:20px;">Category</label>
-                                    {{ reportPostForm.category }}
-                                    <br>
-                                    <label for="{{ reportPostForm.info.id_for_label }}" class="form-outline mb-4" style="font-size:20px;">Additional information</label>
-                                    {{ reportPostForm.info }}
-                                    <div class="text-md-right">
-                                        <button class="saveButton">Report</button>
-                                    </div>
-                                </form>
-                            </div>
-                        </div>
-                        {% endwith %}
-                        {% endwith %}
-                    </div>
-                </div>
-                   
-            </div>
-           </div>      
-            </div>
+            {% include "posts.html" with post=post %}
         {% empty %}
-            <li>No posts available.</li>
+        <div class="no-post">No posts available.</div>
         {% endfor %}
     </div>
 
     <div id="Followers" class="posttabcontent">
         <!-- Follower Posts -->
         {% for post in followPost %}
-            <div class="d-flex justify-content-center align-items-center">
-                <div class="card" style="width: 39rem; border-radius: 30px;margin:20px 0px 20px 0px;  overflow: hidden;background: linear-gradient(to right, #F9D1C4 0%, #9BBDDD 51%, #F9D1C4 100%);">
-                    <div class="card-body">
-                        {% if post.reposts.all %}
-                            {% for repost in post.reposts.all %}
-                                <div class="repost-info">
-                                    Reposted by @{{ repost.user.username }}
-                                </div>
-                            {% endfor %}
-                        {% endif %}
-                        <div class="row top-aligned-row">
-                            <div class="col-2">
-                                {% if post.user.profile and post.user.profile.pic %}
-                                    <img src="{{ post.user.profile.pic.url }}" alt="{{ post.user.username }}'s profile picture" class="user-pic">
-                                {% else %}
-                                    <img src="{% static 'default.jpg' %}" class="user-pic" alt="{{ post.user.username }}'s profile picture" />
-                                {% endif %}
-                            </div>
-                            <div class="col-10">
-                                <h5 class="card-title">
-                                    <strong><a href="{% url 'guest' post.user.id %}" class="username-link">@{{ post.user.username }}</a></strong>
-                                </h5>
-                                <p class="card-text">{{ post.content }}</p>
-                            </div>
-                        </div>
-                        {% if post.image %}
-                            <img class="card-img-top mt-2" src="{{ post.image.url }}" alt="Post image" /><br><br>
-                        {% endif %}
-                        <h6 class="card-subtitle mb-2" style="float: right; margin-top:5px;">{{ post.created_at|date:"M d, Y H:i" }}</h6>
-                        <br>
-                        <hr>
-                        <div class="icons-list">
-                            <div class="feed" >
-                                {% if post in likes %}
-                                <a href="{% url 'like' post.id %}" class="like-link"><i class="far fa-thumbs-up" aria-hidden="true"></i> Like </a>
-                                        {% else %}
-                                        <span class="post-liked">
-                                            <i class="far fa-thumbs-up" aria-hidden="true"></i> Liked
-                                        </span>
-                                        
-                                {% endif %}
-                                <span class="like-count">{{ post.get_number_likes }}</span>
-                            </div>
-                            <div class="feed" >
-                                {% if post in dislikes  %}
-                                <a href="{% url 'dislike' post.id %}" class="like-link"><i class="far fa-thumbs-down" aria-hidden="true"></i> Dislike </a>
-                                        {% else %}
-                                        <span class="post-disliked">
-                                            <i class="far fa-thumbs-down" aria-hidden="true"></i> Disliked
-                                        </span>
-                                {% endif %}
-                                <span class="dislike-count">{{ post.get_number_dislikes }}</span>
-                            </div>
-                            <div class="feed"><i class="far fa-comment" aria-hidden="true"> <a class="comment-link" href="{% url 'comment' post_id=post.id %}">Comment</a></i></div>
-                            <form method="post" action="{% url 'repost' post.id %}">
-                                {% csrf_token %}
-                                {% if post.id in reposted_post_ids %}
-                                    <div class="feed-reposted"><i class="fa fa-retweet" aria-hidden="true">  <button type="button" class="reposted-button" disabled>Reposted</button></i></div>
-                                {% else %}
-                                    <div class="feed"><i class="fa fa-retweet" aria-hidden="true">  <button type="submit" class="repost-button">Repost</button></i></div>
-                                {% endif %}
-                            </form>
-                            <div class="feed post-actions__label">
-                                {% with counter=forloop.counter|stringformat:"s" %}
-                                {% with id="report-following-"|add:counter %}
-                                <i class="far fa-flag" onclick="toggleModal('{{id}}')" aria-hidden="true"> Report</i>
-                                <div id="{{ id }}" class="popup">
-                                    <div class="popup-content">
-                                        <span class="close" onclick="toggleModal('{{ id }}')">&times;</span>
-                                        <p class="modalTitle">Report</p>
-                                        <form action="report/" method="POST">
-                                            {% csrf_token %}
-                                            <label for="{{ reportPostForm.category.id_for_label }}" class="form-outline mb-4" style="font-size:20px;">Category</label>
-                                            {{ reportPostForm.category }}
-                                            <br>
-                                            <label for="{{ reportPostForm.info.id_for_label }}" class="form-outline mb-4" style="font-size:20px;">Additional information</label>
-                                            {{ reportPostForm.info }}
-                                            <div class="text-md-right">
-                                                <button class="saveButton">Report</button>
-                                            </div>
-                                        </form>
-                                    </div>
-                                </div>
-                                {% endwith %}
-                                {% endwith %}
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
+            {% include "posts.html" with post=post %}
         {% empty %}
-            <li>No follower posts available.</li>
+            <div class="no-post">No follower posts available.</div>
         {% endfor %}
     </div>
 </div>
 
 <script>
+    // All posts or Followers posts tabs
     function openPostTab(event, posttabName) {
         var posttabcontent, posttabbutton;
 

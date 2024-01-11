@@ -13,10 +13,106 @@
                     <a class="hidden-arrow" type="button" data-toggle="dropdown" aria-expanded="false">
                         <i class="fas fa-ellipsis-h mt-4"></i>
                     </a>
-                    <ul class="dropdown-menu delete-menu dropdown-menu-right delete-dropdown">
-                        <li><a class="dropdown-item" href="#"><i class="bi bi-trash"></i> Delete</a></li>
-                        <li><a class="dropdown-item" href="#"><i class="bi bi-pin"></i>Pin to your profile</a></li>
-                    </ul>
+                    <ul class="dropdown-menu delete-menu dropdown-menu-right">
+                        <button type="button" onclick="toggleModal('edit-post-modal-{{ post.id }}')" class="edit-button">
+                            <i class="bi bi-pencil-square icon-spacing"></i>Edit Post
+                        </button>        
+                            <li>
+                            <form id="delPostForm" action="{% url 'delete_post' %}" method="POST">
+                                {% csrf_token %}
+                                <button type="submit" class="delete-button">
+                                    <i class="bi bi-trash icon-spacing"></i> Delete
+                                </button>
+                                <input type="hidden" name="post_id" value="{{ post.id }}" readonly/>
+                            </form>
+                            </li>
+                          
+                            {% if post.id in pinned_post_ids %}
+    
+                            <li><a class="dropdown-item" href="{% url 'unpin' post.id %}"><i class="bi bi-pin"></i>Unpin post</a></li>
+                            {% else %}
+    
+                            <li><a class="dropdown-item" href="{% url 'pin' post.id %}"><i class="bi bi-pin"></i>Pin to your profile</a></li>
+    
+                       {% endif %}
+                        </ul>
+                        <!-- Edit Posts Popup -->
+                        <div id="edit-post-modal-{{ post.id }}" class="popup edit-post-modal">
+                            <div class="popup-content-edit">
+                                <span class="close" onclick="toggleModal('edit-post-modal-{{ post.id }}')">&times;</span>
+                                <p class="modalTitle">Edit Post</p>
+                                <form action="{% url 'edit_post' post.id %}" method="POST" enctype="multipart/form-data">
+                                    {% csrf_token %}
+                                    <div class="d-flex justify-content-center align-items-center">
+                                        <div class="card" style="width: 39rem; border-radius: 30px;margin:20px 0px 20px 0px;  overflow: hidden;background: linear-gradient(to right, #F9D1C4 0%, #9BBDDD 51%, #F9D1C4 100%);">
+                                            <div class="card-body">
+                                                <div class = "row top-aligned-row">
+                                                    <div class = "col-2">
+                                                        {% if post.user.profile and post.user.profile.pic %}
+                                                            <img src="{{ post.user.profile.pic.url }}" alt="{{ post.user.username }}'s profile picture" class="user-pic">
+                                                        {% else %}
+                                                            <img src="{% static 'default.jpg' %}" class="user-pic" alt="{{ post.user.username }}'s profile picture" />
+                                                        {% endif %}
+                                                        </div>
+                                                        <div class="col-10">
+                                                            <h5 class="card-title"><strong>@{{ post.user.username }}</strong></h5>
+                                                            <textarea name="content" class="edit-post-textarea">{{ post.content }}</textarea>
+                                                        </div>
+                                                    </div>
+                                                    {% if post.image %}
+                                                    <div id="current-image-{{ post.id }}">
+                                                        <button type="button" class="close" onclick="handleDeletePostImage('current-image-{{ post.id }}', '{{ post.id }}')" style="color: #00001c;">&times;</button>
+                                                        <img class="card-img-top mt-2" src="{{ post.image.url }}" alt="Post image" /><br><br>
+                                                    </div>
+                                                    {% endif %}
+                                                    <input type="hidden" id="remove-image-flag-{{ post.id }}" name="remove_image" value="false">
+                                                    <hr>
+                                                    <div class="row">       
+                                                        <div class="col">
+                                                            <div>
+                                                                <form method="post" id="widget-form" class="widget-post__form" enctype="multipart/form-data" name="form" aria-label="post widget">
+                                                                    {% csrf_token %}
+                                                                    <div id="edit-preview-image-{{ post.id }}" style="display: none;">
+                                                                        <button type="button" class="close" onclick="handleDeletePostImage('edit-preview-image-{{ post.id }}')" style="color: #00001c;">&times;</button>
+                                                                        <img class="card-img-top mb-2" src="#" />
+                                                                    </div>
+                                                                    <div class="widget-post__options is--hidden" id="stock-options">
+                                                                    </div>
+                                                                    <div class="widget-post__actions post--actions">
+                                                                        <div class="post-actions__attachments">
+                                                                            <label for="edit-upload-image-{{ post.id }}" class="post-actions__label">
+                                                                            <i class="fa fa-camera" sty aria-hidden="true"></i> 
+                                                                            Photo
+                                                                            </label>
+                                                                            <input type="file" id="edit-upload-image-{{ post.id }}" name="image" style="display: none;">
+                                                                            {{ form.image }}
+                                                                            &nbsp; &nbsp; &nbsp; &nbsp;
+    
+                                                                            <label for="upload-image" class="post-actions__label">
+                                                                                <i class="fa fa-video" aria-hidden="true"></i> 
+                                                                            Video
+                                                                            </label>
+                                                                            &nbsp; &nbsp; &nbsp; &nbsp;
+    
+                                                                            <label for="upload-image" class="post-actions__label">
+                                                                                <i class="fa fa-list-ul" aria-hidden="true"></i> 
+                                                                            Poll
+                                                                            </label>
+                                                                        </div>
+                                                                        <div class="post-actions__widget">
+                                                                        <button type="submit" class="btn post-actions__publish">Save</button>
+                                                                        </div>
+                                                                    </div>
+                                                                </form>
+                                                        </div> 
+                                                    </div>    
+                                                </div>
+                                            </div> 
+                                        </div>    
+                                    </div>  
+                                </form>
+                            </div>
+                        </div>    
                 </div>
             {% endif %}
                 <div class = "row top-aligned-row">
@@ -28,7 +124,11 @@
                         {% endif %}
                     </div>
                     <div class="col-10">
-                        <h5 class="card-title"><strong>@{{ post.user.username }}</strong></h5>
+                        <h5 class="card-title"><strong>@{{ post.user.username }}</strong>
+                            {% if post.is_edited %}           
+                            <span class="edit-status"><i class="bi bi-dot"></i>Edited</span>
+                            {% endif %}
+                        </h5>
                         <p class="card-text">{{ post.content }}</p>
                     </div>
                 </div>
@@ -38,21 +138,25 @@
                 <h6 class="card-subtitle mb-2" style ="float: right; margin-top:5px;">{{ post.created_at|date:"M d, Y H:i" }}</h6>
                 <br>
                 <hr>
-                <div class ="icons-list" >
-                    <div class="feed" ><i class="far fa-thumbs-up" aria-hidden="true"> Likes</i></div>
-                    <div class="feed"> <i class="far fa-comment" aria-hidden="true"> Comment</i> </div> 
+                <div class ="icons-list-2" >
+                    <div class="feed" ><i class="far fa-thumbs-up" aria-hidden="true"></i></div>
+                    <div class="feed" ><i class="far fa-thumbs-down" aria-hidden="true"></i></div>
+                    <div class="feed"> <i class="far fa-comment" aria-hidden="true"> </i> </div> 
                     <form method="post" action="{% url 'repost' post.id %}">
                         {% csrf_token %}
                         {% if post.id in reposted_post_ids %}
-                            <div class="feed-reposted"><i class="fa fa-retweet" aria-hidden="true">  <button type="button" class = "reposted-button" disabled>Reposted</button></i> </div>
+                            <div class="feed-reposted">
+                                 <button type="button" class = "reposted-button" disabled><i class="fa fa-retweet" aria-hidden="true"></i></button> </div>
                         {% else %}
-                        <div class="feed"><i class="fa fa-retweet" aria-hidden="true">  <button type="submit" class = "repost-button">Repost</button></i> </div>
+                        <div class="feed">
+                            <button type="submit" class = "repost-button"><i class="fa fa-retweet" aria-hidden="true"></i></button> </div>
                         {% endif %}
                     </form>
                     <div class="feed post-actions__label">
-                        <i class="far fa-flag" onclick="handleReportClick(this)" aria-hidden="true"> Report</i>
+                        <i class="far fa-flag" onclick="handleReportClick(this)" aria-hidden="true"></i>
                         <input type="hidden" value="{{ post.id }}" />
                     </div>
+                   
                 </div>
                 <hr>
                 <!-- Reply box -->
@@ -64,16 +168,16 @@
                                 <div class="widget-post__content">
                                 <textarea name="{{ form.content.name }}" id="post-content" class="widget-post__textarea scroller" placeholder="Post your reply...">{{ form.content.value|default:'' }}</textarea>
                                 </div>
-                                <div id="preview_image" style="display: none;">
-                                    <button type="button" class="close" onclick="handleDeletePostImageClick()" style="color: #00001c;">&times;</button>
+                                <div id="create-preview-image" style="display: none;">
+                                    <button type="button" class="close" onclick="handleDeletePostImage('create-preview-image')" style="color: #00001c;">&times;</button>
                                     <img class="card-img-top mb-2" src="#" />
                                 </div>
                                 <div class="widget-post__options is--hidden" id="stock-options">
                                 </div>
                                 <div class="widget-post__actions post--actions">
                                     <div class="post-actions__attachments">
-                                        <label for="upload-image" class="post-actions__label" onclick="showFilePicker('{{ form.image.id_for_label }}')">
-                                        <i class="fa fa-camera" sty aria-hidden="true"></i> 
+                                        <label for="create-upload-image" class="post-actions__label">
+                                            <i class="fa fa-camera" sty aria-hidden="true"></i> 
                                         Photo
                                         </label>
                                         {{ form.image }}
@@ -113,9 +217,34 @@
                     <div class="grid-item" >
                         <i class="far fa-thumbs-up" aria-hidden="true" ></i>&nbsp;&nbsp;&nbsp;
                         <a class="comment-link" href="{% url 'comment' post_id=reply.id %}"><i class="far fa-comment" aria-hidden="true"></i></a>
+                        <div class="feed post-actions__label">
+                            {% with counter=forloop.counter|stringformat:"s" %}
+                            {% with id="report-following-"|add:counter %}
+                            <i class="far fa-flag" onclick="toggleModal('{{id}}')" aria-hidden="true"></i>
+                            <div id="{{ id }}" class="popup">
+                                <div class="popup-content">
+                                    <span class="close" onclick="toggleModal('{{ id }}')">&times;</span>
+                                    <p class="modalTitle">Report</p>
+                                    <form action="{% url 'report' post.id %}" method="POST">
+                                        {% csrf_token %}
+                                        <label for="{{ reportPostForm.category.id_for_label }}" class="form-outline mb-4" style="font-size:20px;">Category</label>
+                                        {{ reportPostForm.category }}
+                                        <br>
+                                        <label for="{{ reportPostForm.info.id_for_label }}" class="form-outline mb-4" style="font-size:20px;">Additional information</label>
+                                        {{ reportPostForm.info }}
+                                        <div class="text-md-right">
+                                            <button class="saveButton">Report</button>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                            {% endwith %}
+                            {% endwith %}
+                        </div>
                     </div>
                 </div>
                 <hr>
+                
                 {% endfor %}
                 
         </div>
