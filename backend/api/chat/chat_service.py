@@ -1,6 +1,5 @@
-from .models import ChatRoom
-from django.contrib.auth import get_user_model
 from django.db.models import Q
+from .models import ChatRoom
 
 #We get the chat room that is mapped to the two users in question
 def getChatRoom(current_user, target_user):
