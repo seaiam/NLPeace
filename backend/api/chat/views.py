@@ -12,7 +12,7 @@ from django.urls import reverse
 from django.utils.safestring import mark_safe
 from .chat_service import getChatRoom, message_to_json
 from .forms import *
-from .models import Message
+from .models import Message, ReportMessage
 from core.utils import attempt_send_message
 
 FILE_PATH_PATTERN = r'.*/(?P<filename>.+)$'
@@ -87,3 +87,18 @@ def _send_message(room, message):
         'message': message_to_json(message),
     }
     attempt_send_message(f'chat_{room.room_name}', {"type": "chat.message", "message": content})
+
+@login_required
+def report_message(request, message_id):
+    if request.method == "POST":
+        reported = Message.objects.get(pk=message_id)
+        if ReportMessage.objects.filter(reporter=request.user, message=reported).exists():
+            ReportMessage.objects.filter(reporter=request.user, message=reported).delete()
+            messages.success(request, 'Report removed')
+        else:
+            report = ReportMessage.objects.create(reporter=request.user, message=reported)
+            messages.success(request, 'Message reported')
+        return HttpResponseRedirect(request.META.get('HTTP_REFERER', '/'))
+    
+    else:
+        return redirect('login')

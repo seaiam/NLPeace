@@ -83,6 +83,17 @@
         {% endblock %}
     </div>   
 
+        <div class="popup-container">
+            {% if messages %}
+            {% for message in messages %}
+            <div class="alert alert-warning alert-dismissible fade show ">
+                {{ message }}
+                <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
+                {% endfor %}
+                {% endif %}
+            </div>
+        </div>
+
      <!-- Messaging Container -->
      <div class="container">
         <div class="content-wrapper">
@@ -191,7 +202,7 @@
         {% csrf_token %}
         {{ image_upload_form.image }}
     </form>
-
+    
     <script src="{% static 'reconnecting-websocket.js' %}"></script>
     
     <script>
@@ -208,7 +219,8 @@
         const fetchMessages = function() {
             chatSocket.send(JSON.stringify({
                 'command': 'fetch_messages',
-                'room_id': roomName  
+                'room_id': roomName ,
+                'username': username,
             }));
         };
 
@@ -228,13 +240,34 @@
         };
         
         const createMessage = function(message, roomName) {
-          
+            console.log(message);
             const author = message['author'];
             const msgListTag = document.createElement('li');
             const messageDiv = document.createElement('div');
             const imgTag = document.createElement('img');
             const nameDiv = document.createElement('div');
             const timeDiv = document.createElement('div');
+            const dropdownDiv = document.createElement('div');
+            const dropdownToggle = document.createElement('a');
+            const dropdownIcon = document.createElement('i');
+            const dropdownMenu = document.createElement('ul');
+            const dropdownItem = document.createElement('li');
+            const csrftoken = '{{ csrf_token }}';
+
+            const reportLink = document.createElement('form'); // create report form
+            reportLink.setAttribute("method", "POST");
+            reportLink.setAttribute("action", message.report_link); // setting action of form to
+            
+            const csrftokeninput = document.createElement('input'); // data for csrf token, need to do like this
+            csrftokeninput.setAttribute('name', 'csrfmiddlewaretoken');
+            csrftokeninput.setAttribute('type', 'hidden');
+            csrftokeninput.setAttribute('value', csrftoken);
+            
+            const reportButton = document.createElement('button'); //button to submit the form
+            reportButton.setAttribute("type", "submit");
+            reportButton.className = 'report-dm-button';
+            reportLink.appendChild(reportButton); // appending submit button to form
+            reportLink.appendChild(csrftokeninput); // appending token to report form
 
             let content = getContent(message)
 
@@ -265,12 +298,26 @@
                 msgListTag.appendChild(messageDiv);
             } else {
                 msgListTag.className ='message-left';
+                dropdownDiv.className = 'dropdown-message';
+                dropdownToggle.className = 'hidden-arrow';
+                dropdownToggle.setAttribute('data-toggle', 'dropdown');
+                dropdownToggle.setAttribute('aria-expanded', 'false');
+                dropdownIcon.className = 'fas fa-ellipsis-v';
+                dropdownMenu.className = 'dropdown-menu';
+                reportLink.className = 'dropdown-item';
+                reportButton.innerHTML = `<i class="far fa-flag"></i> ${message.can_report ?  'Report' : 'Unreport'}`;
                 msgListTag.appendChild(messageDiv);
                 msgListTag.appendChild(content);
+                dropdownToggle.appendChild(dropdownIcon);
+                dropdownItem.appendChild(reportLink);
+                dropdownMenu.appendChild(dropdownItem);
+                dropdownDiv.appendChild(dropdownToggle);
+                dropdownDiv.appendChild(dropdownMenu);
+
+                msgListTag.appendChild(dropdownDiv);
                 msgListTag.appendChild(timeDiv);
             }
-    
-            
+
             const chatLog = document.querySelector('.messageContainerScroll');
             chatLog.appendChild(msgListTag);
 
@@ -351,5 +398,12 @@
         };
 
     </script>
+
+     <!-- Bootstrap JS and Popper.js -->
+     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
+     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+     <script src="{% static 'style.js' %}" type="text/javascript"></script>
+
 </body>
 </html>

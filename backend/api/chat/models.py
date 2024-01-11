@@ -55,3 +55,7 @@ class FileUpload(models.Model):
 class ImageUpload(models.Model):
     image = models.ImageField(upload_to='messageImages')
     message = models.ForeignKey(Message, on_delete=models.CASCADE, default=None)
+
+class ReportMessage(models.Model):
+    reporter = models.ForeignKey(User, on_delete=models.DO_NOTHING, default=None)
+    message = models.ForeignKey(Message, on_delete=models.CASCADE, default=None)
