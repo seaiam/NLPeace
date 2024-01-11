@@ -32,8 +32,6 @@ def process_post_form(request, form):
             post.user = request.user
             post.save()
             return post
-    else:
-        print(form.errors) 
     return None
 
 def classify_tweet(tweet_text):
