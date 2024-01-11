@@ -60,6 +60,7 @@ urlpatterns = [
     path('accounts/profile/messages/', include("chat.urls")),
     path('pin/<int:post_id>/', main_pages_views.pin, name='pin'),
     path('unpin/<int:post_id>/', main_pages_views.unpin, name='unpin'),
+    path('edit/<int:post_id>/', main_pages_views.edit_post, name='edit_post'),
 ]
 
 if settings.DEBUG:
