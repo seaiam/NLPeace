@@ -47,6 +47,7 @@ def message_to_json(message, user=None):
         'is_image': message.is_image,
         'is_video': message.is_video,
         'src': src,
+        'gif_url': message.gif_url, 
         'can_report': can_report,
         'report_link': report_link,
     }
