@@ -27,7 +27,7 @@ LABEL maintainer="SOEN490"
 ENV PYTHONUNBUFFERED 1
 
 
-
+RUN apk add --update --no-cache libffi-dev
 
 
 COPY ./requirements.txt /tmp/requirements.txt

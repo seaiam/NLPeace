@@ -9,13 +9,13 @@
     <div id="Posts" class="posttabcontent">
 
         {% for post in bookmarked_posts %}
-            {% include "posts.html" with tab="posts" %}
-            {%empty%}
-                {% if bookmarked_posts %}
-                    {%else%}
-                    <div class="no-post">No posts available. </div>
-                {% endif %}
 
+        {% load static %}
+        
+        {% include "posts.html" with post=post %}
+
+        {% empty %}
+            <h4 class="notification-text"> No saved posts. </h4>
         {% endfor %}
 
     </div>
