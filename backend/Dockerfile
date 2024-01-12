@@ -35,10 +35,10 @@ COPY ./api /api
 WORKDIR /api
 EXPOSE 8000
 
-# Install libffi-dev 
-RUN apk add --update --no-cache libffi-dev
 
-RUN python -m venv /py && \
+# Install libffi-dev
+RUN python -m venv /py && \ 
+    apk add --update --no-cache libffi-dev && \ 
     /py/bin/pip install --upgrade pip && \
     apk add --update --no-cache postgresql-client && \
     apk add --update --no-cache --virtual .tmp-build-deps \
@@ -51,6 +51,7 @@ RUN python -m venv /py && \
         --disabled-password \
         --no-create-home \
         django-user
+        
 
 RUN apk add --update --no-cache bind-tools
 ENV PATH="/py/bin:$PATH"
