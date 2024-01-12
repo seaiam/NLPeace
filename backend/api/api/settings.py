@@ -170,3 +170,5 @@ CHANNEL_LAYERS = {
         },
     },
 }
+
+GIPHY_API_KEY = '9a6zGfy6TBTv459CNi2y3KtOWkB69vOx'

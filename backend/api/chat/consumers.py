@@ -25,7 +25,9 @@ class ChatConsumer(WebsocketConsumer):
         author=data['from']
         author_user= User.objects.filter(username=author)[0]
         room_id = ChatRoom.objects.get(room_name = data['room_name'])
-        message=Message.objects.create(author=author_user,content=data['message'],room_id = room_id)
+    
+        message=Message.objects.create(author=author_user,content=data['message'],room_id = room_id, gif_url=data.get('gif_url', None),)
+
         content={
             'command':'new_message',
             'message': message_to_json(message)
