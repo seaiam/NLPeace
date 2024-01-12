@@ -247,8 +247,6 @@
         };
         
         const createMessage = function(message, roomName) {
-            console.log(message);
-            
             const author = message['author'];
             const msgListTag = document.createElement('li');
             const messageDiv = document.createElement('div');
@@ -474,6 +472,79 @@
                 form.submit();
             }
         };
+
+        function getCSRFToken() {
+            let csrfToken = null;
+            if (document.cookie && document.cookie !== '') {
+                const cookies = document.cookie.split(';');
+                for (let i = 0; i < cookies.length; i++) {
+                    const cookie = cookies[i].trim();
+                    if (cookie.substring(0, 10) === ('csrftoken=')) {
+                        csrfToken = decodeURIComponent(cookie.substring(10));
+                        break;
+                    }
+                }
+            }
+            return csrfToken;
+        }
+
+        document.addEventListener('DOMContentLoaded', function() {
+            document.getElementById('gif-search-icon-label').addEventListener('click', function() {
+            var modal = document.getElementById('gif-search-modal');
+            var gifSearchInput = document.getElementById('gif-search-input');
+            var gifSearchResults = document.getElementById('gif-search-results');
+
+            // Clear previours searches
+            gifSearchInput.value = '';
+            gifSearchResults.innerHTML = '';
+
+            if (modal.style.display === 'none' || modal.style.display === '') {
+                modal.style.display = 'block';
+            } else {
+                modal.style.display = 'none';
+            }
+            });
+            document.getElementById('gif-search-submit').addEventListener('click', function(event) {
+                event.preventDefault(); 
+                var query = document.getElementById('gif-search-input').value;
+                fetchGifs(query);
+            });
+            function fetchGifs(query) {
+                var giphyUrl = 'https://api.giphy.com/v1/gifs';
+                var apiKey = '9a6zGfy6TBTv459CNi2y3KtOWkB69vOx';
+                var url = query ? `${giphyUrl}/search?api_key=${apiKey}&q=${query}` : `${giphyUrl}/trending?api_key=${apiKey}`;
+                fetch(url)
+                .then(response => response.json())
+                .then(data => {
+                    displayGifResults(data);
+                })
+                .catch(error => console.error('Error searching GIFs:', error));
+            }
+            function displayGifResults(data) {
+                var resultsContainer = document.getElementById('gif-search-results');
+                resultsContainer.innerHTML = '';
+                
+                data.data.forEach(gif => {
+                    var img = document.createElement('img');
+                    img.src = gif.images.fixed_height.url;
+                    img.addEventListener('click', function() {
+                        sendGifMessage(gif.images.fixed_height.url);
+                        document.getElementById('gif-search-modal').style.display = 'none'; 
+                    });
+                    resultsContainer.appendChild(img);
+                });
+            }
+            function sendGifMessage(gifUrl) {
+                chatSocket.send(JSON.stringify({
+                    'command': 'new_message',
+                    'message': '', 
+                    'gif_url': gifUrl,
+                    'from': username,
+                    'room_name': roomName
+                }));
+            }
+        });
+
 
     </script>
 
