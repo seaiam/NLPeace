@@ -1,6 +1,7 @@
 import json
 import mimetypes
 import re
+import requests
 from api.logger_config import configure_logger 
 from asgiref.sync import async_to_sync
 from channels.layers import get_channel_layer
@@ -21,6 +22,7 @@ from django.http import JsonResponse
 from .chat_service import *
 from .models import Message, ReportMessage
 from core.utils import attempt_send_message
+
 
 FILE_PATH_PATTERN = r'.*/(?P<filename>.+)$'
 
@@ -143,3 +145,16 @@ def report_message(request, message_id):
     
     else:
         return redirect('login')
+    
+def search_giphy(request):
+    if request.method == 'GET':
+        query = request.GET.get('query', '')
+        limit = request.GET.get('limit', 10)
+        api_key = settings.GIPHY_API_KEY
+        giphy_api_url = f"https://api.giphy.com/v1/gifs/search?api_key={api_key}&q={query}&limit={limit}"
+        response = requests.get(giphy_api_url)
+        if response.status_code == 200:
+            return JsonResponse(response.json())
+        else:
+            return JsonResponse({'error': 'Failed to fetch GIFs'}, status=500)
+    return JsonResponse({'error': 'Invalid request'}, status=400)

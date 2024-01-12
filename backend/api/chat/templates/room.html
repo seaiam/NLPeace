@@ -171,13 +171,18 @@
                                                 </label>
                                                 &nbsp; 
                 
-                                                <label for="upload-image" class="post-actions__label">
-                                                    <i class="bi bi-filetype-gif" aria-hidden="true"></i> 
+                                                <label for="gif-search-icon" class="post-actions__label" id="gif-search-icon-label">
+                                                    <i class="bi bi-filetype-gif" aria-hidden="true"></i>
                                                 </label>
                                             </div>
                                             <div class="post-actions__widget">
                                                 <button id="chat-message-submit" type="submit" class="btn post-actions__publish">Send</button>
                                             </div>
+                                        </div>
+                                        <div id="gif-search-modal" style="display:none;">
+                                            <input type="text" id="gif-search-input" placeholder="Search GIFs">
+                                            <button id="gif-search-submit" class="btn btn-info">Search</button>
+                                            <div id="gif-search-results"></div>
                                         </div>
                                     </form>
                                 {%else%}
@@ -243,11 +248,10 @@
         
         const createMessage = function(message, roomName) {
             console.log(message);
+            
             const author = message['author'];
             const msgListTag = document.createElement('li');
             const messageDiv = document.createElement('div');
-            const imgTag = document.createElement('img');
-            const nameDiv = document.createElement('div');
             const timeDiv = document.createElement('div');
             const dropdownDiv = document.createElement('div');
             const dropdownToggle = document.createElement('a');
@@ -271,14 +275,41 @@
             reportLink.appendChild(reportButton); // appending submit button to form
             reportLink.appendChild(csrftokeninput); // appending token to report form
 
-            let content = getContent(message)
+            let content;
+            if (message.gif_url != null) {
+                // Handling for GIF messages
+                content = document.createElement('img');
+                content.src = message.gif_url;
+                content.className = 'message-gif';
+            } else {
+                // Handling for text messages
+                content = document.createElement('p');
+                content.textContent = message.content;
+                content.className = 'message-text';
+            }
 
-            messageDiv.className = 'message-pic';
+
+            // messageDiv.className = 'message-pic';
             timeDiv.className= 'message-time';
-            content.textContent = message.content;
+            // content.textContent = message.content;
             timeDiv.textContent = new Date(message.timestamp).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
 
-            if (message.is_image) {
+            if (message.gif_url!=null) {
+                const gif = content;
+                gif.className = 'chat-gif-image';
+                msgContent = document.createElement('img');
+                content = document.createElement('a');
+                gif.style.width = 'auto';
+                gif.style.height = 'auto'; 
+                content.appendChild(gif);
+                popup = createImagePopup(message);
+                document.body.appendChild(popup);
+                content.onclick = () => {
+                    popup.style.display = 'block';
+                    return true;
+                }
+                
+            } else if (message.is_image) {
                 const img = content;
                 img.className = 'message-image';
                 content = document.createElement('a');
@@ -316,6 +347,15 @@
                 dropdownDiv.appendChild(dropdownToggle);
                 dropdownDiv.appendChild(dropdownMenu);
 
+                msgListTag.appendChild(messageDiv);
+                msgListTag.appendChild(content);
+                dropdownToggle.appendChild(dropdownIcon);
+                dropdownItem.appendChild(reportLink);
+                dropdownMenu.appendChild(dropdownItem);
+                dropdownDiv.appendChild(dropdownToggle);
+                dropdownDiv.appendChild(dropdownMenu);
+
+                msgListTag.appendChild(dropdownDiv);
                 msgListTag.appendChild(dropdownDiv);
                 msgListTag.appendChild(timeDiv);
             }
@@ -335,7 +375,13 @@
             } else if (message.is_image) {
                 element = document.createElement('img');
                 element.src = message.src;
-            } else {
+            } else if (message.gif_url!=null) {
+                element = document.createElement('img');
+                element.src = message.gif_url;
+                element.className = 'chat-gif-image';
+                element.style.width = 'auto';
+                element.style.height = 'auto'; 
+            }else {
                 element = document.createElement('p');
                 element.textContent = message.content;
             }
@@ -377,6 +423,14 @@
             e.preventDefault();
             const messageInputDom = document.querySelector('#chat-message-input');
             const message = messageInputDom.value;
+            
+            const messageType = message.startsWith('http://') || message.startsWith('https://') ? 'gif' : 'text';
+
+            const messageData = {
+                message: message,
+                type: messageType
+            };
+
 
             //AJAX request to classify the message
             fetch('/chat/classifyMessage/', {
@@ -394,6 +448,7 @@
                     chatSocket.send(JSON.stringify({
                         'command':'new_message',
                         'message': message,
+                        'type': messageType,
                         'from':username,
                         'room_name': roomName
                     }));
@@ -419,22 +474,6 @@
                 form.submit();
             }
         };
-
-        function getCSRFToken() {
-            let csrfToken = null;
-            if (document.cookie && document.cookie !== '') {
-                const cookies = document.cookie.split(';');
-                for (let i = 0; i < cookies.length; i++) {
-                    const cookie = cookies[i].trim();
-                    if (cookie.substring(0, 10) === ('csrftoken=')) {
-                        csrfToken = decodeURIComponent(cookie.substring(10));
-                        break;
-                    }
-                }
-            }
-            return csrfToken;
-        }
-
 
     </script>
 

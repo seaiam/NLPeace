@@ -21,6 +21,7 @@ class Message(models.Model):
     is_file_download = models.BooleanField(default=False)
     is_image = models.BooleanField(default=False)
     is_video =models.BooleanField(default=False)
+    gif_url = models.URLField(null=True, blank=True)  
     
     def __str__(self):
         return self.author.username
