@@ -299,6 +299,8 @@
                 gif.className = 'chat-gif-image';
                 msgContent = document.createElement('img');
                 content = document.createElement('a');
+                gif.style.width = 'auto';
+                gif.style.height = 'auto'; 
                 content.appendChild(gif);
                 popup = createImagePopup(message);
                 document.body.appendChild(popup);
