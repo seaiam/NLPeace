@@ -274,8 +274,8 @@
             reportLink.appendChild(reportButton); // appending submit button to form
             reportLink.appendChild(csrftokeninput); // appending token to report form
 
-            const content = getContent(message);
-
+            let content = getContent(message);
+            
             // messageDiv.className = 'message-pic';
             timeDiv.className= 'message-time';
             // content.textContent = message.content;
@@ -348,12 +348,7 @@
 
         const getContent = function(message) {
             let element = null;
-            if (message.gif_url != null) {
-                // Handling for GIF messages
-                content = document.createElement('img');
-                content.src = message.gif_url;
-                content.className = 'message-gif';
-            } else if (message.is_file_download) {
+            if (message.is_file_download) {
                 element = document.createElement('a');
                 element.href = `download/${message.content}`;
                 element.textContent = message.content;
