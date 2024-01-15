@@ -1315,6 +1315,37 @@ img {
 
 }
 
+#gif-search-modal {
+  position: absolute; 
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  background-color: #F9D1C4; 
+  box-shadow: 0 -2px 5px rgba(0, 0, 0, 0.1);
+  z-index: 1000; 
+  overflow: auto; 
+  max-height: 200px; 
+}
+
+#gif-search-results {
+  display: flex;
+  overflow-x: auto;
+  padding: 10px; 
+  gap: 10px; 
+}
+
+#gif-search-results img {
+  height: 100px; 
+  cursor: pointer;
+  border-radius: 8px;
+}
+
+#gif-search-submit:hover, #gif-search-submit:active, #gif-search-submit:focus {
+  background-color: #00001c;
+  border: none;
+  box-shadow: none;
+}
+
 /* Media Queries */
 @media (max-width: 991.98px) { 
     .sidebar {
