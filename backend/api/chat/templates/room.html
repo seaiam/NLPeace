@@ -341,10 +341,13 @@
             }
 
             const chatLog = document.querySelector('.messageContainerScroll');
+            
             chatLog.appendChild(msgListTag);
 
             chatLog.scrollTop = chatLog.scrollHeight;
-        };
+
+            msgListTag.scrollIntoView(false); 
+           };
 
         const getContent = function(message) {
             let element = null;
