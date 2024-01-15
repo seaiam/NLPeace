@@ -73,26 +73,18 @@ body {
   margin-top: 15px;
 }
 
-.fa-user-alt {
+.fa-user-alt, .fa-lock, .fa-envelope, .fa-ellipsis-h {
   color: #00001c;
 }
 
-.fa-lock {
-  color: #00001c;
-}
-
-.fa-envelope {
-  color: #00001c;
-}
-
-.login-button {
+.login-button, .passwordchange-button {
   display: flex;
   justify-content: center;
   align-items: center;
   margin-top: 90px;
 }
 
-.button1 {
+.button1, .button2 {
   background: none;
   border: 1px solid black;
   border-radius: 20px;
@@ -157,19 +149,6 @@ button:hover {
   justify-content: center;
   align-items: center;
   margin-top: 40px;
-}
-
-.button2 {
-  background: none;
-  border: 1px solid black;
-  border-radius: 20px;
-  width: 70%;
-  padding: 10px;
-  font-weight: 600;
-  transition: 0.5s;
-  background-size: 200% auto;
-  box-shadow: 0 0 20px #eee;
-  background-image: linear-gradient(to right, #F9D1C4 0%, #9BBDDD 51%, #F9D1C4 100%);
 }
 
 button:hover {
@@ -256,13 +235,6 @@ button:hover {
   position: relative;
   align-items: center;
   justify-content: center;
-}
-
-.passwordchange-button{
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  margin-top:90px;
 }
 
 hr{
@@ -357,21 +329,12 @@ hr{
 }
 
 /* css for user followers and following*/
-.followers {
+.followers, .following {
   color: #d9d9d9;
   text-decoration: none;
 }
 
-.following {
-  color: #d9d9d9;
-  text-decoration: none;
-}
-
-.fa-user-friends {
-  color: #d9d9d9;
-}
-
-.fa-search {
+.fa-user-friends, .fa-search, .fa-ellipsis-v, .fa-comment-dots {
   color: #d9d9d9;
 }
 
@@ -564,19 +527,6 @@ input[type="file"] {
   padding-left: 30px;
 }
 /* Popup for follow */
-.followModal {
-  display: none;
-  position: fixed;
-  z-index: 3;
-  left: 0;
-  top: 0;
-  width: 100%;
-  height: 100%;
-  overflow: auto;
-  background-color: rgba(0, 0, 0, 0.4);
-  align-items: center;
-  justify-content: center;
-}
 
 .followModal-content {
   position: relative;
@@ -590,8 +540,8 @@ input[type="file"] {
 }
 
 
-/* Popup for Bio */
-.popup {
+/* Popup for Bio and Follow */
+.popup, .followModal {
   display: none;
   position: fixed;
   z-index: 3;
@@ -1195,14 +1145,6 @@ img {
 
 /* report user css */
 
-.fa-ellipsis-v, .fa-comment-dots{
-  color: #D9D9D9;
-}
-
-.fa-ellipsis-h{
-  color: #00001c;
-}
-
 .pin-post{
   font-style: italic ;
   color: #00001c;
@@ -1310,10 +1252,17 @@ img {
   background-color: #f2f2f2;
 }
 
+.centered-video {
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+}
+
 #base-notification-toast {
   background: linear-gradient(to right, #F9D1C4 0%, #9BBDDD 51%, #F9D1C4 100%);
 
 }
+
 
 /* Media Queries */
 @media (max-width: 991.98px) { 
@@ -1356,11 +1305,6 @@ img {
   }
 }
 
-.centered-video {
-  display: block;
-  margin-left: auto;
-  margin-right: auto;
-}
 
 
 
