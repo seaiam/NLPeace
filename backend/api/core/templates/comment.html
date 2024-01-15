@@ -124,7 +124,8 @@
                         {% endif %}
                     </div>
                     <div class="col-10">
-                        <h5 class="card-title"><strong>@{{ post.user.username }}</strong>
+                        <h5 class="card-title">
+                            <strong><a href="{% url 'guest' post.user.id %}" class="username-link">@{{ post.user.username }}</a></strong>
                             {% if post.is_edited %}           
                             <span class="edit-status"><i class="bi bi-dot"></i>Edited</span>
                             {% endif %}
@@ -215,7 +216,9 @@
                         {% endif %}
                     </div>
                     <div class="tweet-content" style="flex-grow: 1;">
-                        <h6 class="card-title"><strong> @{{ reply.user.username }}</strong></h6>
+                        <h6 class="card-title">
+                        <strong><a href="{% url 'guest' reply.user.id %}" class="username-link">@{{ reply.user.username }}</a></strong>
+                        </h6>
                         <p class="card-text">{{ reply.content }}</p>
                         {% if reply.image %}
                         <img class="card-img-top mt-2" src="{{ reply.image.url }}" alt="reply image" />
