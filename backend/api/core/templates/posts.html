@@ -148,7 +148,14 @@
                         <span class="edit-status"><i class="bi bi-dot"></i>Edited</span>
                         {% endif %}
                     </h5>
-                    <p class="card-text">{{ post.content }}</p>
+                    <p class="card-text">
+                    {% if post.parent_post %}
+                    <i>
+                        <a href="{% url 'comment' post.parent_post.id %}" style="color:#00008B; text-decoration: none;">Replied to {{ post.parent_post.user.username}}'s post:</a><br>
+                    </i>
+                    {% endif %}
+                        {{ post.content }}
+                    </p>
                 </div>
             </div>
 
