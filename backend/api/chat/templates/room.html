@@ -341,10 +341,22 @@
             }
 
             const chatLog = document.querySelector('.messageContainerScroll');
+            
+            // debugging autoscroll
+            console.log("Before appending message: scrollTop:", chatLog.scrollTop, "scrollHeight:", chatLog.scrollHeight, "clientHeight:", chatLog.clientHeight);
+
             chatLog.appendChild(msgListTag);
 
             chatLog.scrollTop = chatLog.scrollHeight;
-        };
+
+            // debugging autoscroll
+            console.log("After appending message: scrollTop:", chatLog.scrollTop, "scrollHeight:", chatLog.scrollHeight, "clientHeight:", chatLog.clientHeight);
+
+            msgListTag.scrollIntoView(false); 
+
+            // debugging autoscroll
+            console.log("After scrolling: scrollTop:", chatLog.scrollTop);
+                    };
 
         const getContent = function(message) {
             let element = null;
