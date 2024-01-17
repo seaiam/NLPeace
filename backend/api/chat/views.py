@@ -35,13 +35,17 @@ def index(request):
     users = User.objects.all()
     searched_term = request.GET.get('search','')
     searched_users = User.objects.filter(username__icontains=searched_term)
+    chatroom = ChatRoom.objects.filter(Q(user1=request.user) | Q(user2=request.user) ).all()
+    
     if searched_term and not searched_users.exists():
         messages.warning(request, f'No user found with the username: {searched_term}')
         return HttpResponseRedirect(request.META.get('HTTP_REFERER', '/'))
     context = {
         'users' : users,
         'searched_term': searched_term,
-        'searched_users': searched_users
+        'searched_users': searched_users,
+        'chatroom' : chatroom,
+       
     }   
     return render(request, "messages.html", context)
 
