@@ -34,12 +34,13 @@ def message_to_json(message, user=None):
         src = ''
     if user is None:
          user = get_target_user(message)
-    if user and ReportMessage.objects.filter(reporter=user, message=message).exists():
+    if user and message.is_reported_by(user):
         can_report = False
     else:
         can_report = True
     report_link = reverse('report_message', args=[message.id])
     return {
+        'id' : message.id,
         'author': message.author.username,
         'content': message.content,
         'timestamp': str(message.timestamp),

@@ -46,7 +46,7 @@ def index(request):
     return render(request, "messages.html", context)
 
 @login_required
-def room(request,target_user_id):
+def room(request, target_user_id):
     target_user = User.objects.filter(id = target_user_id).first()
     chat_room = getChatRoom(request.user, target_user)
     context = {
@@ -56,6 +56,7 @@ def room(request,target_user_id):
         'file_upload_form': FileUploadForm(),
         'image_upload_form': ImageUploadForm(),
         'video_upload_form': VideoUploadForm(),
+        'dm_report_form': DMReportForm(),
     }
     return render(request, "room.html", context)
 
@@ -135,11 +136,11 @@ def classifyMessage(request):
 def report_message(request, message_id):
     if request.method == "POST":
         reported = Message.objects.get(pk=message_id)
-        if ReportMessage.objects.filter(reporter=request.user, message=reported).exists():
+        if reported.is_reported_by(request.user):
             ReportMessage.objects.filter(reporter=request.user, message=reported).delete()
             messages.success(request, 'Report removed')
         else:
-            report = ReportMessage.objects.create(reporter=request.user, message=reported)
+            ReportMessage.objects.create(reporter=request.user, message=reported)
             messages.success(request, 'Message reported')
         return HttpResponseRedirect(request.META.get('HTTP_REFERER', '/'))
     
