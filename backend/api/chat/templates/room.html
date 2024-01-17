@@ -209,6 +209,24 @@
         {% csrf_token %}
         {{ image_upload_form.image }}
     </form>
+
+    <div>
+        <div id="modalDmReport" class="popup">
+            <div class="popup-content">
+                <span id="dmReportClose" class="close" onclick="toggleModal('modalDmReport')">&times;</span>
+                <p class="modalTitle">DM Report</p>
+                <form id="dmReportForm" action="" method="POST">
+                    {% csrf_token %}
+                    <label for="{{ dm_report_form.category.id_for_label }}" class="form-outline mb-4" style="font-size:20px;">Category</label>
+                    {{ dm_report_form.category }}
+                    <br>
+                    <div class="text-md-right">
+                        <button id="buttonDmReport" class="saveButton">Report</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
     
     <script src="{% static 'reconnecting-websocket.js' %}"></script>
     
@@ -257,22 +275,14 @@
             const dropdownIcon = document.createElement('i');
             const dropdownMenu = document.createElement('ul');
             const dropdownItem = document.createElement('li');
+            const reportLink = document.createElement('button');
             const csrftoken = '{{ csrf_token }}';
+            const modalDmReport = document.getElementById("modalDmReport");
 
-            const reportLink = document.createElement('form'); // create report form
-            reportLink.setAttribute("method", "POST");
-            reportLink.setAttribute("action", message.report_link); // setting action of form to
-            
             const csrftokeninput = document.createElement('input'); // data for csrf token, need to do like this
             csrftokeninput.setAttribute('name', 'csrfmiddlewaretoken');
             csrftokeninput.setAttribute('type', 'hidden');
             csrftokeninput.setAttribute('value', csrftoken);
-            
-            const reportButton = document.createElement('button'); //button to submit the form
-            reportButton.setAttribute("type", "submit");
-            reportButton.className = 'report-dm-button';
-            reportLink.appendChild(reportButton); // appending submit button to form
-            reportLink.appendChild(csrftokeninput); // appending token to report form
 
             let content = getContent(message);
             
@@ -325,7 +335,22 @@
                 dropdownIcon.className = 'fas fa-ellipsis-v';
                 dropdownMenu.className = 'dropdown-menu';
                 reportLink.className = 'dropdown-item';
-                reportButton.innerHTML = `<i class="far fa-flag"></i> ${message.can_report ?  'Report' : 'Unreport'}`;
+                if (message.can_report){
+                    reportLink.innerHTML = '<i class="far fa-flag"></i>Report'
+                    reportLink.onclick = () => {   
+                        const reportForm = document.getElementById('dmReportForm');
+                        reportForm.setAttribute('action', `report_message/${message.id}`);
+                        modalDmReport.style.display = "block";
+                    }
+                }
+                else {
+                    reportLink.innerHTML = '<i class="far fa-flag"></i>Unreport'
+                    reportLink.onclick = () => {
+                        const reportForm = document.getElementById('dmReportForm');
+                        reportForm.setAttribute('action', `report_message/${message.id}`);
+                        reportForm.submit();
+                    }
+                }
                 msgListTag.appendChild(messageDiv);
                 msgListTag.appendChild(content);
                 dropdownToggle.appendChild(dropdownIcon);
