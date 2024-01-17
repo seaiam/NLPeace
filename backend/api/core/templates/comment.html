@@ -124,7 +124,8 @@
                         {% endif %}
                     </div>
                     <div class="col-10">
-                        <h5 class="card-title"><strong>@{{ post.user.username }}</strong>
+                        <h5 class="card-title">
+                            <strong><a href="{% url 'guest' post.user.id %}" class="username-link">@{{ post.user.username }}</a></strong>
                             {% if post.is_edited %}           
                             <span class="edit-status"><i class="bi bi-dot"></i>Edited</span>
                             {% endif %}
@@ -145,26 +146,139 @@
                 <h6 class="card-subtitle mb-2" style ="float: right; margin-top:5px;">{{ post.created_at|date:"M d, Y H:i" }}</h6>
                 <br>
                 <hr>
-                <div class ="icons-list-2" >
-                    <div class="feed" ><i class="far fa-thumbs-up" aria-hidden="true"></i></div>
-                    <div class="feed" ><i class="far fa-thumbs-down" aria-hidden="true"></i></div>
-                    <div class="feed"> <i class="far fa-comment" aria-hidden="true"> </i> </div> 
+                <!--icons-->
+                {% if post.user.id != request.user.id %}
+                <div class ="icons-list" >
+                    <div class="feed" >
+                        <span class="like-count">{{ post.get_number_likes }}</span>
+                        {% if likeable %}
+                        <a href="{% url 'like' post.id %}" class="like-link"><i class="far fa-thumbs-up" aria-hidden="true"></i> </a>
+                                {% else %}
+                                <span class="post-liked">
+                                    <i class="far fa-thumbs-up" aria-hidden="true"></i>
+                                </span>    
+                        {% endif %}
+                    </div>
+                    <div class="feed" >
+                        <span class="dislike-count">{{ post.get_number_dislikes }}</span>
+                        {% if dislikeable %}
+                        <a href="{% url 'dislike' post.id %}" class="like-link"><i class="far fa-thumbs-down" aria-hidden="true"></i> </a>
+                                {% else %}
+                                <span class="post-disliked">
+                                    <i class="far fa-thumbs-down" aria-hidden="true"></i>
+                                </span>
+                        {% endif %} 
+                    </div>
+    
+                    <div class="feed">
+                        <a class="comment-link" href="{% url 'comment' post_id=post.id %}"><i class="far fa-comment" aria-hidden="true"></i></a>
+                     </div> 
+    
+                     <form method="post" action="{% url 'save_post' post.id %}">
+                        {% csrf_token %}
+                        {% if post.id in saved_post_ids %}
+                            <div class="feed-bookmark">
+                                <button type="submit" class = "bookmarked-button"><i class="far fa-bookmark" aria-hidden="true"></i> </button>
+                                </div>
+                        {% else %}
+                            <div class="feed">
+                                <button type="submit" class = "bookmark-button"> <i class="far fa-bookmark" aria-hidden="true"></i> </button>
+                            </div>
+                        {% endif %}
+                    </form>
+    
                     <form method="post" action="{% url 'repost' post.id %}">
                         {% csrf_token %}
                         {% if post.id in reposted_post_ids %}
-                            <div class="feed-reposted">
-                                 <button type="button" class = "reposted-button" disabled><i class="fa fa-retweet" aria-hidden="true"></i></button> </div>
+                            <div class="feed-reposted"><i class="fa fa-retweet" aria-hidden="true">  <button type="button" class = "reposted-button" disabled></button></i> </div>
                         {% else %}
                         <div class="feed">
-                            <button type="submit" class = "repost-button"><i class="fa fa-retweet" aria-hidden="true"></i></button> </div>
+                            <button type="submit" class = "repost-button"><i class="fa fa-retweet" aria-hidden="true"></i> </button>
+                        </div>
                         {% endif %}
                     </form>
+    
                     <div class="feed post-actions__label">
-                        <i class="far fa-flag" onclick="handleReportClick(this)" aria-hidden="true"></i>
-                        <input type="hidden" value="{{ post.id }}" />
+                        {% with counter=forloop.counter|stringformat:"s" %}
+                        {% with id="report-"|add:counter %}
+                        <i class="far fa-flag" onclick="toggleModal('{{ id }}')" aria-hidden="true"></i>
+                        <div id="{{ id }}" class="popup">
+                            <div class="popup-content">
+                                <span class="close" onclick="toggleModal('{{ id }}')">&times;</span>
+                                <p class="modalTitle">Report</p>
+                                <form action="{% url 'report' post.id %}" method="POST">
+                                    {% csrf_token %}
+                                    <label for="{{ reportPostForm.category.id_for_label }}" class="form-outline mb-4" style="font-size:20px;">Category</label>
+                                    {{ reportPostForm.category }}
+                                    <br>
+                                    <label for="{{ reportPostForm.info.id_for_label }}" class="form-outline mb-4" style="font-size:20px;">Additional information</label>
+                                    {{ reportPostForm.info }}
+                                    <div class="text-md-right">
+                                        <button class="saveButton">Report</button>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                        {% endwith %}
+                        {% endwith %}
                     </div>
-                   
+               
                 </div>
+    
+                {% else %}
+                
+                <div class ="icons-list1" >
+                    <div class="feed" >
+                        <span class="like-count">{{ post.get_number_likes }}</span>
+                        {% if likeable %}
+                        <a href="{% url 'like' post.id %}" class="like-link"><i class="far fa-thumbs-up" aria-hidden="true"></i> </a>
+                                {% else %}
+                                <span class="post-liked">
+                                    <i class="far fa-thumbs-up" aria-hidden="true"></i>
+                                </span>    
+                        {% endif %}
+                    </div>
+                    <div class="feed" >
+                        <span class="dislike-count">{{ post.get_number_dislikes }}</span>
+                        {% if dislikeable  %}
+                        <a href="{% url 'dislike' post.id %}" class="like-link"><i class="far fa-thumbs-down" aria-hidden="true"></i> </a>
+                                {% else %}
+                                <span class="post-disliked">
+                                    <i class="far fa-thumbs-down" aria-hidden="true"></i>
+                                </span>
+                        {% endif %} 
+                    </div>
+    
+                    <div class="feed">
+                        <a class="comment-link" href="{% url 'comment' post_id=post.id %}"><i class="far fa-comment" aria-hidden="true"></i></a>
+                     </div> 
+    
+                     <form method="post" action="{% url 'save_post' post.id %}">
+                        {% csrf_token %}
+                        {% if post.id in saved_post_ids %}
+                            <div class="feed-bookmark">
+                                <button type="submit" class = "bookmarked-button"><i class="far fa-bookmark" aria-hidden="true"></i> </button>
+                                </div>
+                        {% else %}
+                            <div class="feed">
+                                <button type="submit" class = "bookmark-button"> <i class="far fa-bookmark" aria-hidden="true"></i> </button>
+                            </div>
+                        {% endif %}
+                    </form>
+    
+                    <form method="post" action="{% url 'repost' post.id %}">
+                        {% csrf_token %}
+                        {% if post.id in reposted_post_ids %}
+                            <div class="feed-reposted"><i class="fa fa-retweet" aria-hidden="true">  <button type="button" class = "reposted-button" disabled></button></i> </div>
+                        {% else %}
+                        <div class="feed">
+                            <button type="submit" class = "repost-button"><i class="fa fa-retweet" aria-hidden="true"></i> </button>
+                        </div>
+                        {% endif %}
+                    </form>
+                 
+                </div>
+                {% endif %}
                 <hr>
                 <!-- Reply box -->
                 <div class="row comment-section">       
@@ -187,13 +301,16 @@
                                             <i class="fa fa-camera" sty aria-hidden="true"></i> 
                                         Photo
                                         </label>
+                                        <input type="file" id="create-upload-image" name="image" accept="image/*" style="display: none;">
                                         {{ form.image }}
                                         &nbsp; &nbsp; &nbsp; &nbsp;
                 
-                                        <label for="upload-image" class="post-actions__label">
+                                        <label for="create-upload-video" class="post-actions__label">
                                             <i class="fa fa-video" aria-hidden="true"></i> 
-                                        Video
+                                            Video
                                         </label>
+                                        <input type="file" id="create-upload-video" name="video" accept="video/*" style="display: none;">
+                                        <p hidden> {{ form.video }} </p>
                                     </div>
                                     <div class="post-actions__widget">
                                     <button type="submit" class="btn post-actions__publish">Reply</button>
@@ -215,14 +332,43 @@
                         {% endif %}
                     </div>
                     <div class="tweet-content" style="flex-grow: 1;">
-                        <h6 class="card-title"><strong> @{{ reply.user.username }}</strong></h6>
+                        <h6 class="card-title">
+                        <strong><a href="{% url 'guest' reply.user.id %}" class="username-link">@{{ reply.user.username }}</a></strong>
+                        </h6>
                         <p class="card-text">{{ reply.content }}</p>
+                        <div class="video-container">
+                            {% if reply.video %}
+                            <video class="centered-video" width="400" height="240" controls>
+                                <source src="{{ reply.video.url }}" type="video/mp4">
+                                Your browser does not support the video tag.
+                            </video>
+                            {% endif %}
+                        </div>
+                        <div class="comment-picture-container">
                         {% if reply.image %}
                         <img class="card-img-top mt-2" src="{{ reply.image.url }}" alt="reply image" />
                         {% endif %}
+                        </div>
                     </div>
                     <div class="grid-item" >
-                        <i class="far fa-thumbs-up" aria-hidden="true" ></i>&nbsp;&nbsp;&nbsp;
+                        <span class="like-count">{{ reply.get_number_likes }}</span>
+                        {% if reply in likes %}
+                        <a href="{% url 'like' reply.id %}" class="like-link"><i class="far fa-thumbs-up" aria-hidden="true"></i> </a>
+                                {% else %}
+                                <span class="post-liked">
+                                    <i class="far fa-thumbs-up" aria-hidden="true"></i>
+                                </span> 
+                        {% endif %}
+                        &nbsp;
+                        <span class="dislike-count">{{ reply.get_number_dislikes }}</span>
+                        {% if reply in dislikes  %}
+                        <a href="{% url 'dislike' reply.id %}" class="like-link"><i class="far fa-thumbs-down" aria-hidden="true"></i> </a>
+                                {% else %}
+                                <span class="post-disliked">
+                                    <i class="far fa-thumbs-down" aria-hidden="true"></i>
+                                </span>
+                        {% endif %} 
+                        &nbsp;&nbsp;
                         <a class="comment-link" href="{% url 'comment' post_id=reply.id %}"><i class="far fa-comment" aria-hidden="true"></i></a>
                         <div class="feed post-actions__label">
                             {% with counter=forloop.counter|stringformat:"s" %}
@@ -232,7 +378,7 @@
                                 <div class="popup-content">
                                     <span class="close" onclick="toggleModal('{{ id }}')">&times;</span>
                                     <p class="modalTitle">Report</p>
-                                    <form action="{% url 'report' post.id %}" method="POST">
+                                    <form action="{% url 'report' reply.id %}" method="POST">
                                         {% csrf_token %}
                                         <label for="{{ reportPostForm.category.id_for_label }}" class="form-outline mb-4" style="font-size:20px;">Category</label>
                                         {{ reportPostForm.category }}
