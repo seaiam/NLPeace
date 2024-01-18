@@ -43,7 +43,6 @@ def message_to_json(message, user=None):
         src = ''
     if user is None:
          user = get_target_user(message)
-         print(user)
     if user and ReportMessage.objects.filter(reporter=user, message=message).exists():
         can_report = False
     else:
