@@ -248,7 +248,7 @@
                         <div class="popup-content">
                             <span class="close" onclick="toggleModal('{{ id }}')">&times;</span>
                             <p class="modalTitle">Report</p>
-                            <form action="{% url 'report_post' post.id %}" method="POST">
+                            <form action="{% url 'report' post.id %}" method="POST">
                                 {% csrf_token %}
                                 <label for="{{ reportPostForm.category.id_for_label }}" class="form-outline mb-4" style="font-size:20px;">Category</label>
                                 {{ reportPostForm.category }}
