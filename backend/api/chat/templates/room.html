@@ -130,7 +130,8 @@
                                 <div class="opened-user-message">
                                     <span class="name">{{target_user.username}}</span>
                                 </div>
-                                <div class="message-container">
+                                <div class="message-container" id="message-container" >
+
                                     {% if target_user.profile.messaging_is_private and not request.user in target_user.profile.followers.all and request.user != target_user %}
                                     <ul class="message-box messageContainerScroll" >
                                         <h3 style="display: flex; justify-content: center; align-items: center; margin-top:10px">
@@ -239,15 +240,17 @@
             var data = JSON.parse(e.data);
             if (data['command']==='messages'){
                 for (let i=0; i<data['messages'].length;i++){
-                    createMessage(data['messages'][i], roomName);
+                    createMessage(data['messages'][i], roomName,true);
                 }
             } else if (data['command']==='new_message'){
-                createMessage(data['message'], roomName);
+                createMessage(data['message'], roomName,true);
+            } else if (data['command']==='fetch_messages_more') {
+                for (let i=0; i<data['messages'].length;i++){
+                    createMessage(data['messages'][i], roomName,false);
+                }
             }
         };
-        
-        const createMessage = function(message, roomName) {
-            
+        const createMessage = function(message, roomName, check) {
             const author = message['author'];
             const msgListTag = document.createElement('li');
             const messageDiv = document.createElement('div');
@@ -341,8 +344,12 @@
             }
 
             const chatLog = document.querySelector('.messageContainerScroll');
-            
-            chatLog.appendChild(msgListTag);
+                if (check===true){
+                    chatLog.appendChild(msgListTag);
+                } else {
+                    chatLog.insertBefore(msgListTag, chatLog.firstChild); 
+                }
+
 
             chatLog.scrollTop = chatLog.scrollHeight;
 
@@ -370,6 +377,22 @@
             }
             return element
         }
+
+        const chatContainer = document.getElementById('message-container');
+
+        chatContainer.addEventListener('scroll', () => {
+            if (chatContainer.scrollTop === 0) {
+                fetchMoreMessages();
+            }
+        }); 
+
+        const fetchMoreMessages = function() {
+            chatSocket.send(JSON.stringify({
+                'command': 'fetch_messages_more',
+                'room_id': roomName ,
+                'username': username,
+            }));
+        };
 
         const createImagePopup = function(message) {
             const popup = document.createElement('div');
