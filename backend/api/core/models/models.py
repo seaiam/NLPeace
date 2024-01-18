@@ -18,6 +18,17 @@ class Profile(models.Model):
     is_banned = models.BooleanField(default=False)
     messaging_is_private = models.BooleanField(default=True)
 
+    def insert_interests(self, interests):
+        pass # TODO
+
+    def remove_interests(self, threshold):
+        pass # TODO
+
+class ProfileInterest(models.Model):
+    profile = ForeignKey(Profile, on_delete=models.CASCADE)
+    name = models.CharField(max_length=1024)
+    last_expressed = modesl.DateTimeField()
+
 class ProfileWarning(models.Model):
     offender = models.ForeignKey(User, related_name='offender', on_delete=models.CASCADE)
     issuer = models.OneToOneField(User, on_delete=models.DO_NOTHING)
@@ -159,5 +170,10 @@ class PostPin(models.Model):
         constraints = [
             models.UniqueConstraint(fields=['pinner', 'post'], name='pinner_post_unique')
         ]
-
    
+class Advertisement(models.Model):
+    content = models.CharField(max_length=280)
+
+class AdvertisementTopic(models.Model):
+    ad = models.ForeignKey(Advertisement, on_delete=models.CASCADE)
+    name = models.CharField(max_length=1024)

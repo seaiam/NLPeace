@@ -1,19 +1,19 @@
-from api.logger_config import configure_logger # TODO add logging statements
-from django.http import HttpResponseForbidden
-from django.contrib import messages
-from django.shortcuts import redirect
-from django.db.models import Q
-from django.shortcuts import get_object_or_404
-from itertools import chain
-from django.http import *
 import requests
+
+from api.logger_config import configure_logger # TODO add logging statements
+from django.conf import settings
+from django.contrib import messages
+from django.contrib.auth import update_session_auth_hash
+from django.contrib.auth.forms import PasswordChangeForm
+from django.db.models import Q
+from django.http import *
+from django.shortcuts import get_object_or_404, redirect
+from itertools import chain
 
 from core.forms.user_forms import UserReportForm
 from core.forms.profile_forms import *
 from core.forms.posting_forms import *
 from core.models.models import *
-from django.contrib.auth.forms import PasswordChangeForm
-from django.contrib.auth import update_session_auth_hash
 
 
 def process_post_form(request, form):
@@ -25,6 +25,7 @@ def process_post_form(request, form):
             messages.error(request, message)
             return None
         elif result["prediction"][0] == 2:  # Appropriate
+            update_interests(request.user, tweet_text)
             post = form.save(commit=False)
             post.user = request.user
             post.save()
@@ -44,6 +45,20 @@ def classify_text(text):
     except requests.exceptions.RequestException as e:
         # Handle request exception
         return {'error': str(e)}
+
+def update_interests(user, text):
+    user.remove_interests()
+    user.insert_interests(get_interests(text))
+
+def get_interests(text):
+    return get_hashtags(text) + get_sentiments(text)
+
+def get_hashtags(text):
+    return map(lambda hashtag: hashtag[1:] ,filter(lambda word: word.startswith('#'), text.split(' ')))
+
+def get_sentiments(text):
+    # TODO implement sentiment analysis for interest inference.
+    return []
     
 def get_user_posts(user):
     user_ids_following = user.profile.following.values_list('id', flat=True)
