@@ -81,8 +81,7 @@ def report(request, post_id):
     if request.method == 'POST':
         form = PostReportForm(request.POST)
         if form.is_valid():
-            report_post(request.user, post_id, request.POST)
-            messages.success(request, 'Post successfully reported.')
+            report_post_service(request, post_id, form)
         return redirect('home')
 
 @login_required

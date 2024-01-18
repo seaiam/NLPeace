@@ -82,6 +82,9 @@ class Post(models.Model):
                 }
             })
     
+    def is_reported_by(self, user):
+        return PostReport.objects.filter(reporter=user, post=self).exists()
+    
    
 class Repost(models.Model):
     post = models.ForeignKey(Post, null=True, on_delete=models.CASCADE, related_name='reposts')

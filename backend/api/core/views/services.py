@@ -1,19 +1,17 @@
-from api.logger_config import configure_logger # TODO add logging statements
-from django.http import HttpResponseForbidden
-from django.contrib import messages
-from django.shortcuts import redirect
-from django.db.models import Q
-from django.shortcuts import get_object_or_404
-from itertools import chain
-from django.http import *
 import requests
 
-from core.forms.user_forms import UserReportForm
-from core.forms.profile_forms import *
-from core.forms.posting_forms import *
-from core.models.models import *
-from django.contrib.auth.forms import PasswordChangeForm
+from api.logger_config import configure_logger # TODO add logging statements
+from django.contrib import messages
 from django.contrib.auth import update_session_auth_hash
+from django.contrib.auth.forms import PasswordChangeForm
+from django.db.models import Q
+from django.http import *
+from django.shortcuts import get_object_or_404, redirect
+from itertools import chain
+
+from core.forms.profile_forms import *
+from core.forms.user_forms import UserReportForm
+from core.models.models import *
 
 
 def process_post_form(request, form):
@@ -153,18 +151,17 @@ def handle_dislike(user, post_id):
         #dislike post
         dislike = PostDislike.objects.create(disliker=user, post=post)
 
-def report_post_service (request, form, post_id):
-    post_to_report = Post.objects.get(id=post_id)
-
-    if form.is_valid():
+def report_post_service(request, post_id, form):
+    post = get_object_or_404(Post, pk=post_id)
+    if post.is_reported_by(request.user):
+        PostReport.objects.filter(post=post, reporter=request.user).delete()
+        messages.success(request, 'Post un-reported')
+    else:
         report = form.save(commit=False)
         report.reporter = request.user
-        report.post = get_object_or_404(Post, pk=post_id)
+        report.post = post
         report.save()
         messages.success(request, 'Post successfully reported.')
-    else:
-        PostReport.objects.filter(post=post_to_report, reporter=request.user).delete()
-        messages.success(request, 'Post un-reported')
     
 def report_user_service(request, reported_id, form):
     report = form.save(commit=False)
