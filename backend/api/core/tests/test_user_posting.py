@@ -4,7 +4,7 @@ from django.contrib.auth.models import User
 from core.models.models import  Profile
 from django.core.files.uploadedfile import SimpleUploadedFile
 from django.db.utils import IntegrityError
-from core.models.models import Post, PostDislike, PostLike, PostReport,PostPin
+from core.models.models import Post, PostDislike, PostLike, PostReport,PostPin, Profile
 from core.forms.posting_forms import PostForm
 from core.models.models import Repost
 from django.core.exceptions import ObjectDoesNotExist
@@ -106,11 +106,15 @@ class CommentTestCase(TestCase):
         self.post = Post.objects.create(user=self.user, content='Parent Post')
     
     def test_add_comment(self):
+        Profile.objects.create(user=self.user)
         response = self.client.post(reverse('comment', args=[self.post.id]), {'content': 'Test comment'})
         self.assertEqual(response.status_code, 302)  #testing that we get redirected
         self.assertEqual(self.post.replies.count(), 1) #testing that we have 1 reply in the database
         comment = self.post.replies.first()
         self.assertEqual(comment.content, 'Test comment') #testing the content of the comment
+        login_success = self.client.login(username=self.user.username, password=self.user.password)
+        response = self.client.get(reverse('home'))
+        self.assertContains(response, f"Replied to {self.user.username}'s post:")
 
     def test_invalid_comment(self):
         response = self.client.post(reverse('comment', args=[self.post.id]), {'content': ''})

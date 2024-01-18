@@ -182,15 +182,3 @@ def delete_notification(request):
             notification_id = request.POST.get('notification')
             delete_user_notification(notification_id)
     return HttpResponseRedirect(request.META.get('HTTP_REFERER', '/'))
-
-@login_required
-def delete_post(request):
-    if request.method == "POST":
-        post_id = request.POST.get('post_id')
-        if delete_user_post(request.user.id, post_id):
-            messages.success(request, "Post deleted successfully.")
-        else:
-            messages.error(request, "You may not delete this post.")
-    return HttpResponseRedirect(request.META.get('HTTP_REFERER', '/'))
-
-
