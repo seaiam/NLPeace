@@ -231,7 +231,7 @@ class ReportTestCase(TestCase):
     def test_report_post(self):
         reports = PostReport.objects.all()
         counts = reports.count()
-        response = self.client.post(reverse('report_post', args=[self.post.id]), {'category': 0})
+        response = self.client.post(reverse('report', args=[self.post.id]), {'category': 0})
         self.assertEqual(response.status_code, 302)
         self.assertEqual(counts+1, reports.count())
 
