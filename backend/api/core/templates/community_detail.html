@@ -28,6 +28,10 @@
         <p>No posts in this community yet.</p>
     {% endif %}
 
+    {% if request.user == community.admin %}
+        <a href="{% url 'edit_community' community_id=community.id %}">Edit Community</a>
+    {% endif %}
+
     <a href="{% url 'home' %}">Back to Home</a>
 </body>
 </html>
