@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>{{ community.name }}</title>
+</head>
+<body>
+    <h1>{{ community.name }}</h1>
+
+    {% if community.description %}
+        <p><strong>Description:</strong> {{ community.description }}</p>
+    {% endif %}
+
+    {% if community.pic %}
+        <img src="{{ community.pic.url }}" alt="Community Picture">
+    {% endif %}
+
+    <p><strong>Privacy:</strong> {% if community.is_private %}Private{% else %}Public{% endif %}</p>
+</p>
+
+    <h2>Posts</h2>
+    {% if community_posts %}
+        <ul>
+            {% for post in community_posts %}
+                <li>{{ post.post.content }} - Posted by {{ post.post.user.username }}</li>
+            {% endfor %}
+        </ul>
+    {% else %}
+        <p>No posts in this community yet.</p>
+    {% endif %}
+
+    <a href="{% url 'home' %}">Back to Home</a>
+</body>
+</html>
