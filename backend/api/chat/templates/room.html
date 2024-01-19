@@ -336,6 +336,13 @@
 
                 msgListTag.appendChild(messageDiv);
                 msgListTag.appendChild(content);
+                dropdownToggle.appendChild(dropdownIcon);
+                dropdownItem.appendChild(reportLink);
+                dropdownMenu.appendChild(dropdownItem);
+                dropdownDiv.appendChild(dropdownToggle);
+                dropdownDiv.appendChild(dropdownMenu);
+
+                msgListTag.appendChild(dropdownDiv);
                 msgListTag.appendChild(dropdownDiv);
                 msgListTag.appendChild(timeDiv);
             }
@@ -474,18 +481,18 @@
         }
 
         document.addEventListener('DOMContentLoaded', function() {
-             document.getElementById('gif-search-icon-label').addEventListener('click', function() {
-             var modal = document.getElementById('gif-search-modal');
-             var gifSearchInput = document.getElementById('gif-search-input');
-             var gifSearchResults = document.getElementById('gif-search-results');
+            document.getElementById('gif-search-icon-label').addEventListener('click', function() {
+            var modal = document.getElementById('gif-search-modal');
+            var gifSearchInput = document.getElementById('gif-search-input');
+            var gifSearchResults = document.getElementById('gif-search-results');
 
-             // Clear previours searches
-             gifSearchInput.value = '';
-             gifSearchResults.innerHTML = '';
+            // Clear previours searches
+            gifSearchInput.value = '';
+            gifSearchResults.innerHTML = '';
 
-             if (modal.style.display === 'none' || modal.style.display === '') {
-                 modal.style.display = 'block';
-             } else {
+            if (modal.style.display === 'none' || modal.style.display === '') {
+                modal.style.display = 'block';
+            } else {
                 modal.style.display = 'none';
             }
             });
@@ -506,7 +513,6 @@
                 .catch(error => console.error('Error searching GIFs:', error));
             }
             function displayGifResults(data) {
-                console.log("Data received from Giphy:", data); // Debugging 
                 var resultsContainer = document.getElementById('gif-search-results');
                 resultsContainer.innerHTML = '';
                 
@@ -528,9 +534,10 @@
                     'from': username,
                     'room_name': roomName
                 }));
-                console.log("GIF sent: ", gifUrl); // Debugging 
             }
         });
+
+
     </script>
 
      <!-- Bootstrap JS and Popper.js -->

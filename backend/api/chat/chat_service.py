@@ -1,6 +1,9 @@
 from .models import ChatRoom, ReportMessage
+from .models import ChatRoom, ReportMessage
 from django.contrib.auth import get_user_model
 from django.db.models import Q
+import requests
+from django.urls import reverse
 import requests
 from django.urls import reverse
 
@@ -21,11 +24,17 @@ def getChatRoom(current_user, target_user):
 
 def messages_to_json(messages, user):
     return [message_to_json(message, user) for message in messages]
+def messages_to_json(messages, user):
+    return [message_to_json(message, user) for message in messages]
 
 def message_to_json(message, user=None):
     if message.is_image:
             upload = message.imageupload_set.first()
             src = upload.image.url
+    elif message.is_video:
+            upload = message.videoupload_set.first()
+            src = upload.video.url
+
     elif message.is_video:
             upload = message.videoupload_set.first()
             src = upload.video.url
