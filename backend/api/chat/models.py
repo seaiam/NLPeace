@@ -16,8 +16,8 @@ class ChatRoom(models.Model):
 
     @property
     def has_sent_message(self):
-        return Message.objects.filter(room_id=self, author=self.user1).exists() or \
-               Message.objects.filter(room_id=self, author=self.user1).exists()
+        return (Message.objects.filter(room_id=self, author=self.user1).exists() or 
+               Message.objects.filter(room_id=self, author=self.user1).exists())
         
     
     
