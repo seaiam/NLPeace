@@ -21,6 +21,14 @@ class ChatRoom(models.Model):
         return (Message.objects.filter(room_id=self, author=self.user1).exists() or 
                Message.objects.filter(room_id=self, author=self.user2).exists())
     
+    def sent_first_message(self):
+        has_messages=Message.objects.filter(room_id=self).exists()
+        if has_messages:
+            first_message = Message.objects.filter(room_id=self).order_by('timestamp').first()
+            return first_message.author
+        else:
+            return None
+    
     
  
 class Message(models.Model):
