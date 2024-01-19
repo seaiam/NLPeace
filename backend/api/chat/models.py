@@ -12,15 +12,17 @@ class ChatRoom(models.Model):
     room_name = models.AutoField(primary_key=True, unique=True)
     user1 = models.ForeignKey(User,related_name='user1',on_delete=models.CASCADE)
     user2 = models.ForeignKey(User,related_name='user2',on_delete=models.CASCADE)
+    initiated_by_user1 = models.BooleanField(default=False)
+    initiated_by_user2 = models.BooleanField(default=False)
 
 
     @property
     def has_sent_message(self):
         return (Message.objects.filter(room_id=self, author=self.user1).exists() or 
-               Message.objects.filter(room_id=self, author=self.user1).exists())
-        
+               Message.objects.filter(room_id=self, author=self.user2).exists())
     
     
+ 
 class Message(models.Model):
     author =models.ForeignKey(User,related_name='author_messages',on_delete=models.CASCADE)
     content=models.TextField()

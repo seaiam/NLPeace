@@ -19,6 +19,13 @@ def getChatRoom(current_user, target_user):
 
     return chat_room
 
+def handle_chatroom_initiation(user, chat_room):
+    if user == chat_room.user1:
+        chat_room.initiated_by_user1 = True
+    elif user == chat_room.user2:
+        chat_room.initiated_by_user2 = True
+    chat_room.save()  
+
 def messages_to_json(messages, user):
     return [message_to_json(message, user) for message in messages]
 

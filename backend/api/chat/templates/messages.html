@@ -138,7 +138,8 @@
                                             Chats
                                         </h1>
                                         {% for room in chatroom %}
-                                        {% if request.user == room.user1 %}
+                                        
+                                        {% if request.user == room.user1 and room.initiated_by_user1 %}
                                             {% with target_user=room.user2 %}
                                                 <a href="{% url 'room' target_user_id=target_user.id %}" style="color:#00001c; text-decoration: none;">
                                                     <li class="person">
@@ -162,7 +163,7 @@
                                                     </li>
                                                 </a>
                                             {% endwith %}
-                                        {% else %}
+                                        {% elif request.user == room.user2 and room.initiated_by_user2 %}
                                             {% with target_user=room.user1 %}
                                                 <a href="{% url 'room' target_user_id=target_user.id %}" style="color:#00001c; text-decoration: none;">
                                                     <li class="person">
@@ -188,6 +189,7 @@
                                             {% endwith %}
                                             
                                             
+                                      
                                         {% endif %}
                                     {% endfor %}
                                     {% else %}
