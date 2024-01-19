@@ -13,6 +13,14 @@ class ChatRoom(models.Model):
     user1 = models.ForeignKey(User,related_name='user1',on_delete=models.CASCADE)
     user2 = models.ForeignKey(User,related_name='user2',on_delete=models.CASCADE)
 
+
+    @property
+    def has_sent_message(self):
+        return Message.objects.filter(room_id=self, author=self.user1).exists() or \
+               Message.objects.filter(room_id=self, author=self.user1).exists()
+        
+    
+    
 class Message(models.Model):
     author =models.ForeignKey(User,related_name='author_messages',on_delete=models.CASCADE)
     content=models.TextField()

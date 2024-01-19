@@ -152,6 +152,13 @@
                                                         <p class="message-list">
                                                             <span class="name">{{ target_user.username }}</span>
                                                         </p>
+                                                        
+                                                        {% if room.has_sent_message %}
+                                                        <p>
+                                                            contacted
+                                                        </p>
+                                                        {% endif %}
+                                                       
                                                     </li>
                                                 </a>
                                             {% endwith %}
@@ -169,6 +176,13 @@
                                                         <p class="message-list">
                                                             <span class="name">{{ target_user.username }}</span>
                                                         </p>
+                                                       
+                                                        {% if room.has_sent_message %}
+                                                        <p>
+                                                           contacted
+                                                        </p>
+                                                        {% endif %}
+                                                       
                                                     </li>
                                                 </a>
                                             {% endwith %}
