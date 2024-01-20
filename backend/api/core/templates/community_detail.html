@@ -1,4 +1,86 @@
-<!DOCTYPE html>
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Community Page {% endblock %}
+
+
+  {% block content %}
+  {% csrf_token %}    
+  <div class="community-page">
+    <div class="box">
+        <!-- banner upload -->
+        <div class="banner">
+          {% if community.pic %}
+          <img src="{{community.pic.url}}" class="banner" alt="Community Picture">
+          {% endif %}
+
+          <label class="clickable-label" >
+            <i class="fa fa-pencil-alt edit-icon"></i>
+            <form id="profile-edit-banner-form" action="" method="POST" enctype="multipart/form-data">
+            </form>
+          </label>
+        </div>
+        <br><br><br>  
+        <div class="row">
+            <div class="col-md-4">
+                <h4 style="color:#D9D9D9;">{{ community.name }}</h4>
+            </div>
+            <div class="col-md-5">
+                    <button class="community-members" ><i class='fas fa-user-friends'></i> Members</button>                   
+            </div>
+        </div>
+        <div class = "row">
+                <div class="col-md-12 text-md-right">
+                    <button class="editButton" onclick="toggleModal('edit-community-modal')">Edit Settings</button>
+                    <div id="edit-community-modal" class="popup">
+                        <div class="popup-content">
+                            <span class="close" onclick="toggleModal('edit-community-modal')">&times;</span>
+                            <p class="Community-modalTitle">Edit Community Details</p>
+                            <form method="post" enctype="multipart/form-data">
+                                {% csrf_token %}
+                                <h1>Edit Community Name: {{ community.name }}</h1>
+                               <div class = "community-form"> {{ form.as_p }}</div>
+                                <button type="submit" id="saveBtn" class="saveButton">Save</button>
+                            </form>
+                        </div>
+                    </div>
+                    <button class="editButton" onclick="toggleModal('home-edit-bio-modal')">Start a Post</button>
+                </div>
+        </div>
+       
+      <hr>
+  
+        <div class="container">
+            <div class="communitytab-btns">
+                <button class="communitytabbutton" onclick="openPostTab(event, 'Latest')" id="defaultOpenPost">Latest</button>
+                <button class="communitytabbutton" onclick="openPostTab(event, 'Media')">Media</button>
+                <button class="communitytabbutton" onclick="openPostTab(event, 'About')">About</button>
+            </div>
+
+            <div id="Latest" class="posttabcontent">
+                {% if community_posts %}
+                <div class = "post"></div>
+                {% else %}
+                <div class="no-post">No posts in this community yet.</div>
+                {% endif %}
+            </div>
+            
+            <div id="Media" class="posttabcontent" style="display:none;">
+
+            </div>
+
+            <div id="About" class="posttabcontent" style="display:none;">
+
+            </div>
+        
+        </div>
+
+    </div>
+</div>
+    
+
+{% endblock %}
+<!-- <!DOCTYPE html>
 <html>
 <head>
     <title>{{ community.name }}</title>
@@ -34,4 +116,4 @@
 
     <a href="{% url 'home' %}">Back to Home</a>
 </body>
-</html>
+</html> -->

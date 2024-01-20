@@ -4,16 +4,16 @@ from core.models.models import Community
 class CommunityForm(forms.ModelForm):
     is_private = forms.ChoiceField(
         choices=((False, 'Public'), (True, 'Private')),
-        widget=forms.Select(attrs={'class': 'form-privacy'}),
+        widget=forms.Select(attrs={'class': 'form-community'}),
         initial=True,
-        label="Privacy"
+        label="Select a Setting"
     )
 
     class Meta:
         model = Community
         fields = ['name', 'is_private']
         widgets = {
-            'name': forms.TextInput(attrs={'class': 'form-control'}),
+            'name': forms.TextInput(attrs={'class': 'form-name'}),
         }
 
     def __init__(self, *args, **kwargs):

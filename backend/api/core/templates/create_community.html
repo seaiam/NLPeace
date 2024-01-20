@@ -1,15 +1,34 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <title>Create Community</title>
-</head>
-<body>
-    <h1>Create a New Community</h1>
-    <form method="post" enctype="multipart/form-data">
-        {% csrf_token %}
-        {{ form.as_p }}
-        <button type="submit">Create Community</button>
-    </form>
-    <a href="{% url 'home' %}">Back to Home</a>
-</body>
-</html>
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Community Page {% endblock %}
+
+{% block content %}
+
+<div class="d-flex justify-content-center align-items-center">
+        <div class = "community-container">
+            <div class = "community-items">
+                <div class = "trending-community">
+                    <h1> Trending Communities</h1>
+                </div>
+                <!--create community popup-->
+                <div class = "create-community">
+                    <button  class = "iconButton" onclick="toggleModal('create-community-modal')"> <i class="bi bi-person-plus"></i></button>
+                    <div id="create-community-modal" class="popup">
+                        <div class="popup-content">
+                            <span class="close" onclick="toggleModal('create-community-modal')">&times;</span>
+                            <p class="Community-modalTitle">Create a Community</p>
+                            <form method="post" enctype="multipart/form-data">
+                                {% csrf_token %}
+                               <div class = "community-form"> {{ form.as_p }}</div>
+                                <button type="submit" id="saveBtn" class="CreateButton">Create</button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+                <!--create community popup end-->
+            </div>
+        </div>
+</div>
+
+{% endblock %}
