@@ -777,21 +777,21 @@ img {
   margin-top: 0;
 }
 
-.icons-list{
+.icons-list{/* does not have report icon */
   color: #00001c;
   display: grid;  
   grid-template-columns: 1fr 1fr 1fr 1fr 1fr 1fr;  
   padding-bottom:10px;
 }
 
-.icons-list1{
+.icons-list1{ /* has report icon */
   color: #00001c;
   display: grid;  
   grid-template-columns: 1fr 1fr 1fr 1fr 1fr;  
   padding-bottom:10px;
 }
 
-.icons-list-2{
+.icons-list-2{/* for comments page */
   color: #00001c;
   display: grid;  
   grid-template-columns: 1fr 1fr 1fr 1fr 1fr;  
@@ -1124,6 +1124,12 @@ img {
   border-radius:100px;
   width:50px;
   margin-right: 15px;
+}
+
+.comment-picture-container{
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
 }
 
 .grid-container { 

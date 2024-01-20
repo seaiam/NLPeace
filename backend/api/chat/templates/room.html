@@ -130,7 +130,8 @@
                                 <div class="opened-user-message">
                                     <span class="name">{{target_user.username}}</span>
                                 </div>
-                                <div class="message-container">
+                                <div class="message-container" id="message-container" >
+
                                     {% if target_user.profile.messaging_is_private and not request.user in target_user.profile.followers.all and request.user != target_user %}
                                     <ul class="message-box messageContainerScroll" >
                                         <h3 style="display: flex; justify-content: center; align-items: center; margin-top:10px">
@@ -239,15 +240,17 @@
             var data = JSON.parse(e.data);
             if (data['command']==='messages'){
                 for (let i=0; i<data['messages'].length;i++){
-                    createMessage(data['messages'][i], roomName);
+                    createMessage(data['messages'][i], roomName,true);
                 }
             } else if (data['command']==='new_message'){
-                createMessage(data['message'], roomName);
+                createMessage(data['message'], roomName,true);
+            } else if (data['command']==='fetch_messages_more') {
+                for (let i=0; i<data['messages'].length;i++){
+                    createMessage(data['messages'][i], roomName,false);
+                }
             }
         };
-        
-        const createMessage = function(message, roomName) {
-            
+        const createMessage = function(message, roomName, check) {
             const author = message['author'];
             const msgListTag = document.createElement('li');
             const messageDiv = document.createElement('div');
@@ -336,13 +339,24 @@
 
                 msgListTag.appendChild(messageDiv);
                 msgListTag.appendChild(content);
+                dropdownToggle.appendChild(dropdownIcon);
+                dropdownItem.appendChild(reportLink);
+                dropdownMenu.appendChild(dropdownItem);
+                dropdownDiv.appendChild(dropdownToggle);
+                dropdownDiv.appendChild(dropdownMenu);
+
+                msgListTag.appendChild(dropdownDiv);
                 msgListTag.appendChild(dropdownDiv);
                 msgListTag.appendChild(timeDiv);
             }
 
             const chatLog = document.querySelector('.messageContainerScroll');
-            
-            chatLog.appendChild(msgListTag);
+                if (check===true){
+                    chatLog.appendChild(msgListTag);
+                } else {
+                    chatLog.insertBefore(msgListTag, chatLog.firstChild); 
+                }
+
 
             chatLog.scrollTop = chatLog.scrollHeight;
 
@@ -370,6 +384,22 @@
             }
             return element
         }
+
+        const chatContainer = document.getElementById('message-container');
+
+        chatContainer.addEventListener('scroll', () => {
+            if (chatContainer.scrollTop === 0) {
+                fetchMoreMessages();
+            }
+        }); 
+
+        const fetchMoreMessages = function() {
+            chatSocket.send(JSON.stringify({
+                'command': 'fetch_messages_more',
+                'room_id': roomName ,
+                'username': username,
+            }));
+        };
 
         const createImagePopup = function(message) {
             const popup = document.createElement('div');
@@ -474,18 +504,18 @@
         }
 
         document.addEventListener('DOMContentLoaded', function() {
-             document.getElementById('gif-search-icon-label').addEventListener('click', function() {
-             var modal = document.getElementById('gif-search-modal');
-             var gifSearchInput = document.getElementById('gif-search-input');
-             var gifSearchResults = document.getElementById('gif-search-results');
+            document.getElementById('gif-search-icon-label').addEventListener('click', function() {
+            var modal = document.getElementById('gif-search-modal');
+            var gifSearchInput = document.getElementById('gif-search-input');
+            var gifSearchResults = document.getElementById('gif-search-results');
 
-             // Clear previours searches
-             gifSearchInput.value = '';
-             gifSearchResults.innerHTML = '';
+            // Clear previours searches
+            gifSearchInput.value = '';
+            gifSearchResults.innerHTML = '';
 
-             if (modal.style.display === 'none' || modal.style.display === '') {
-                 modal.style.display = 'block';
-             } else {
+            if (modal.style.display === 'none' || modal.style.display === '') {
+                modal.style.display = 'block';
+            } else {
                 modal.style.display = 'none';
             }
             });
@@ -506,7 +536,6 @@
                 .catch(error => console.error('Error searching GIFs:', error));
             }
             function displayGifResults(data) {
-                console.log("Data received from Giphy:", data); // Debugging 
                 var resultsContainer = document.getElementById('gif-search-results');
                 resultsContainer.innerHTML = '';
                 
@@ -528,9 +557,10 @@
                     'from': username,
                     'room_name': roomName
                 }));
-                console.log("GIF sent: ", gifUrl); // Debugging 
             }
         });
+
+
     </script>
 
      <!-- Bootstrap JS and Popper.js -->
