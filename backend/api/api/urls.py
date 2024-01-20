@@ -62,7 +62,6 @@ urlpatterns = [
     path('unpin/<int:post_id>/', posting_views.unpin, name='unpin'),
     path('edit/<int:post_id>/', posting_views.edit_post, name='edit_post'),
     path('community/create/', community_views.create_community, name='create_community'),
-    path('community/edit/<int:community_id>/', community_views.edit_community, name='edit_community'),
     path('community/<int:community_id>/', community_views.community_detail, name='community_detail'),
 
 ]
