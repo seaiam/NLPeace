@@ -59,7 +59,8 @@ def profile(request):
     liked_posts = Post.objects.filter(postlike__liker=request.user).distinct().order_by('-created_at')
     saved_post_ids = [post.id for post in all_posts if not post.is_saveable_by(request.user)] # ADDED THIS
     pinned_post_ids = [post.id for post in all_posts if post.is_pinned_by(request.user)] 
-    
+    replies = [post for post in all_posts if post.parent_post is not None]
+       
     context = {
         'profile': profile,
         'posts': all_posts,
@@ -79,7 +80,8 @@ def profile(request):
         'pinned_post_ids' : pinned_post_ids,
         'pinned_posts' : pinned_posts,
         'non_pinned_posts' : non_pinned_posts,
-        'pinned_image_posts' : pinned_image_posts
+        'pinned_image_posts' : pinned_image_posts,
+        'reply_posts' : replies
         }
     return render(request, 'home.html', context)
 
