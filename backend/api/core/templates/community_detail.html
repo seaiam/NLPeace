@@ -24,18 +24,18 @@
         </div>
         <br><br><br>  
         <div class="row">
-            <div class="col-md-4">
-                <h4 style="color:#D9D9D9;">{{ community.name }}</h4>
-            </div>
-            <div class="col-md-4">
-                <h6 style="color:#D9D9D9;">{{ community.description }}</h6>
-            </div>
-            <div class="col-md-5">
-                    <button class="community-members" ><i class='fas fa-user-friends'></i> Members</button>                   
-            </div>
+                <div class="col-md-4">
+                    <h4 class="community-name">{{ community.name }}</h4>
+                </div>
+                <div class="col-md-5">
+                        <button class="community-members" ><i class='fas fa-user-friends'></i> Members</button>                   
+                </div>
         </div>
         <div class = "row">
-                <div class="col-md-12 text-md-right">
+                <div class="col-md-4">
+                    <h6 class="community-description">{{ community.description }}</h6>
+                </div>
+                <div class="col-md-8 text-md-right">
                     {% if request.user == community.admin %}
                     <button class="editButton" onclick="toggleModal('edit-community-modal')">Edit Settings</button>
                     <div id="edit-community-modal" class="popup">
@@ -86,40 +86,3 @@
     
 
 {% endblock %}
-<!-- <!DOCTYPE html>
-<html>
-<head>
-    <title>{{ community.name }}</title>
-</head>
-<body>
-    <h1>{{ community.name }}</h1>
-
-    {% if community.description %}
-        <p><strong>Description:</strong> {{ community.description }}</p>
-    {% endif %}
-
-    {% if community.pic %}
-        <img src="{{ community.pic.url }}" alt="Community Picture">
-    {% endif %}
-
-    <p><strong>Privacy:</strong> {% if community.is_private %}Private{% else %}Public{% endif %}</p>
-</p>
-
-    <h2>Posts</h2>
-    {% if community_posts %}
-        <ul>
-            {% for post in community_posts %}
-                <li>{{ post.post.content }} - Posted by {{ post.post.user.username }}</li>
-            {% endfor %}
-        </ul>
-    {% else %}
-        <p>No posts in this community yet.</p>
-    {% endif %}
-
-    {% if request.user == community.admin %}
-        <a href="{% url 'edit_community' community_id=community.id %}">Edit Community</a>
-    {% endif %}
-
-    <a href="{% url 'home' %}">Back to Home</a>
-</body>
-</html> -->

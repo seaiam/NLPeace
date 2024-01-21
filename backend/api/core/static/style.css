@@ -1302,6 +1302,7 @@ img {
   font-size: small;
   text-align: start;
   font-size: large;
+  color: #fff;
 }
 
 .Community-modalTitle{
@@ -1344,6 +1345,10 @@ img {
   border-radius: 40px;
   transition: background-color 0.3s ease;
   font-size:x-large;
+}
+
+.community-name, .community-description{
+  color: #D9D9D9;
 }
 
 
