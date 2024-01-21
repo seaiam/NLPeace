@@ -7,41 +7,42 @@
   {% block content %}
   {% csrf_token %}    
   <div class="community-page">
-    <div class="box">
-        <!-- banner upload -->
-        <div class="banner">
-          {% if community.pic %}
-          <img src="{{community.pic.url}}" class="banner" alt="Community Picture">
-          {% endif %}
+        <div class="box">
+            <!-- banner upload -->
+            <div class="banner">
+            {% if community.pic %}
+            <img src="{{community.pic.url}}" class="banner" alt="Community Picture">
+            {% endif %}
 
-          <form id="profile-edit-banner-form" action="{% url 'community_detail' community_id=community.id %}" method="POST" enctype="multipart/form-data">
-            {% csrf_token %}
-            <label class="clickable-label" for="id_pic">
-                <i class="fa fa-pencil-alt edit-icon"></i>
-            </label>
-            <input type="file" name="pic" id="id_pic" style="display: none;" onchange="this.form.submit()">
-        </form>
-        </div>
-        <br><br><br>  
-        <div class="row">
+            <form id="profile-edit-banner-form" action="{% url 'community_detail' community_id=community.id %}" method="POST" enctype="multipart/form-data">
+                {% csrf_token %}
+                <label class="clickable-label" for="id_pic">
+                    <i class="fa fa-pencil-alt edit-icon"></i>
+                </label>
+                <input type="file" name="pic" id="id_pic" style="display: none;" onchange="this.form.submit()">
+            </form>
+            </div>
+            <br><br><br>  
+            <div class="row">
                 <div class="col-md-4">
                     <h4 class="community-name">{{ community.name }}</h4>
                 </div>
                 <div class="col-md-5">
-                        <button class="community-members" ><i class='fas fa-user-friends'></i> Members</button>                   
+                    <button class="community-members" ><i class='fas fa-user-friends'></i> Members</button>                   
                 </div>
-        </div>
-        <div class = "row">
+            </div>
+            <div class = "row">
                 <div class="col-md-4">
                     <h6 class="community-description">{{ community.description }}</h6>
                 </div>
                 <div class="col-md-8 text-md-right">
-                    {% if request.user == community.admin %}
+                        {% if request.user == community.admin %}
+                        <!--Edit community details popup-->
                     <button class="editButton" onclick="toggleModal('edit-community-modal')">Edit Settings</button>
                     <div id="edit-community-modal" class="popup">
                         <div class="popup-content">
                             <span class="close" onclick="toggleModal('edit-community-modal')">&times;</span>
-                            <p class="Community-modalTitle">Edit Community Details</p>
+                             <p class="Community-modalTitle">Edit Community Details</p>
                             <form action="{% url 'community_detail' community_id=community.id %}" method="post" enctype="multipart/form-data">
                                 {% csrf_token %}
                                 <div class = "community-form"> {{ form.as_p }}</div>
@@ -49,39 +50,40 @@
                             </form>
                         </div>
                     </div>
-                    {% endif %}
-                    <button class="editButton" onclick="toggleModal('home-edit-bio-modal')">Start a Post</button>
+                        {% endif %}
+                        <!--Edit community details popup end-->
+                        <button class="editButton" onclick="toggleModal('home-edit-bio-modal')">Start a Post</button>
                 </div>
-        </div>
-       
-      <hr>
-  
-        <div class="container">
-            <div class="communitytab-btns">
-                <button class="communitytabbutton" onclick="openPostTab(event, 'Latest')" id="defaultOpenPost">Latest</button>
-                <button class="communitytabbutton" onclick="openPostTab(event, 'Media')">Media</button>
-                <button class="communitytabbutton" onclick="openPostTab(event, 'About')">About</button>
-            </div>
-
-            <div id="Latest" class="posttabcontent">
-                {% if community_posts %}
-                <div class = "post"></div>
-                {% else %}
-                <div class="no-post">No posts in this community yet.</div>
-                {% endif %}
-            </div>
-            
-            <div id="Media" class="posttabcontent" style="display:none;">
-
-            </div>
-
-            <div id="About" class="posttabcontent" style="display:none;">
-
             </div>
         
-        </div>
+        <hr>
+    
+            <div class="container">
+                <div class="communitytab-btns">
+                    <button class="communitytabbutton" onclick="openPostTab(event, 'Latest')" id="defaultOpenPost">Latest</button>
+                    <button class="communitytabbutton" onclick="openPostTab(event, 'Media')">Media</button>
+                    <button class="communitytabbutton" onclick="openPostTab(event, 'About')">About</button>
+                </div>
 
-    </div>
+                <div id="Latest" class="posttabcontent">
+                    {% if community_posts %}
+                    <div class = "post"></div>
+                    {% else %}
+                    <div class="no-post">No posts in this community yet.</div>
+                    {% endif %}
+                </div>
+                
+                <div id="Media" class="posttabcontent" style="display:none;">
+
+                </div>
+
+                <div id="About" class="posttabcontent" style="display:none;">
+
+                </div>
+            
+            </div>
+
+        </div>
 </div>
     
 
