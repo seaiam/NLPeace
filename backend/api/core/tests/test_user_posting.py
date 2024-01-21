@@ -163,11 +163,14 @@ class LikeAndDislikeTestCase(TestCase):
         self.assertEqual(1, likes.count())
         self.assertEqual(0, dislikes.count())
     
-    def test_like_post_with_already_liked_is_removed(self):
+    def test_like_post_with_already_liked_is_removed(self): # changed to is_removed instead of is_error
         PostLike.objects.create(liker=self.user, post=self.post)
         response = self.client.get(reverse('like', args=[self.post.id]))
+        self.assertEqual(response.status_code, 302)
         self.assertEqual(0, self.post.get_number_likes())
+        self.assertEqual(0, self.post.get_number_dislikes())
         self.assertTrue(self.post.is_likeable_by(self.user))
+        self.assertTrue(self.post.is_dislikeable_by(self.user))
     
     def test_dislike_post(self):
         response = self.client.get(reverse('dislike', args=[self.post.id]))
@@ -188,10 +191,13 @@ class LikeAndDislikeTestCase(TestCase):
         self.assertEqual(0, likes.count())
         self.assertEqual(1, dislikes.count())
     
-    def test_dislike_post_with_already_disliked_is_removed(self):
+    def test_dislike_post_with_already_disliked_is_removed(self): # changed to is_removed instead of is_error
         PostDislike.objects.create(disliker=self.user, post=self.post)
         response = self.client.get(reverse('dislike', args=[self.post.id]))
+        self.assertEqual(response.status_code, 302)
+        self.assertEqual(0, self.post.get_number_likes())
         self.assertEqual(0, self.post.get_number_dislikes())
+        self.assertTrue(self.post.is_likeable_by(self.user))
         self.assertTrue(self.post.is_dislikeable_by(self.user))
 
 class RepostTestCase(TestCase):
@@ -223,10 +229,11 @@ class ReportTestCase(TestCase):
         self.post = Post.objects.create(user=self.user, content='testpost')
     
     def test_report_post(self):
-        response = self.client.post(reverse('report', args=[self.post.id]), {'category': 0})
         reports = PostReport.objects.all()
+        counts = reports.count()
+        response = self.client.post(reverse('report', args=[self.post.id]), {'category': 0})
         self.assertEqual(response.status_code, 302)
-        self.assertEqual(1, reports.count())
+        self.assertEqual(counts+1, reports.count())
 
 class PinTestCase(TestCase):
 

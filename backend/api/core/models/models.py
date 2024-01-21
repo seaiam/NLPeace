@@ -39,6 +39,13 @@ class Post(models.Model):
     def get_number_likes(self):
         return self.postlike_set.all().count()
     
+    # ADDED FOR POST UNREPORT 
+    def is_reportable_by(self, user):
+        return user not in {report.reporter for report in self.postreport_set.all()}
+    
+    def get_number_reports(self):
+        return self.postreport_set.all().count()
+    
     def get_number_dislikes(self):
         return self.postdislike_set.all().count()
     
@@ -75,6 +82,9 @@ class Post(models.Model):
                 }
             })
     
+    def is_reported_by(self, user):
+        return PostReport.objects.filter(reporter=user, post=self).exists()
+    
    
 class Repost(models.Model):
     post = models.ForeignKey(Post, null=True, on_delete=models.CASCADE, related_name='reposts')
@@ -92,7 +102,7 @@ class PostReport(models.Model):
 
     reporter = models.ForeignKey(User, on_delete=models.DO_NOTHING)
     post = models.ForeignKey(Post, on_delete=models.CASCADE)
-    category = models.IntegerField(choices=Category.choices)
+    category = models.IntegerField(choices=Category.choices, default = Category.VIOLENT_SPEECH) # todo use user input instead of default value for category
     info = models.TextField(null=True, blank=True)
     date_reported = models.DateTimeField(auto_now_add=True)
 
