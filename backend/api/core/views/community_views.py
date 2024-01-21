@@ -26,32 +26,6 @@ def create_community(request):
         form = CommunityForm()
     return render(request, 'create_community.html', {'form': form})
 
-# @login_required
-# def edit_community(request, community_id):
-#     community = get_object_or_404(Community, id=community_id, admin=request.user)
-#     if request.method == 'POST':
-#         form = CommunityForm(request.POST, request.FILES, instance=community)
-#         if form.is_valid():
-#             form.save()
-#             messages.success(request, 'Community updated successfully.')
-#             return redirect('community_detail', community_id=community.id)
-#     else:
-#         form = CommunityForm(instance=community)
-#     return render(request, 'edit_community.html', {'form': form, 'community': community})
-
-# def community_detail(request, community_id):
-#     community = get_object_or_404(Community, id=community_id)
-#     community_posts = CommunityPost.objects.filter(community=community).select_related('post')
-
-#     is_member = request.user in community.members.all()
-
-#     context = {
-#         'community': community,
-#         'community_posts': community_posts,
-#         'is_member': is_member,
-#     }
-#     return render(request, 'community_detail.html', context)
-
 
 @login_required
 def community_detail(request, community_id):
