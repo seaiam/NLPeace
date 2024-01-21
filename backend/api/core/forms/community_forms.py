@@ -11,14 +11,12 @@ class CommunityForm(forms.ModelForm):
 
     class Meta:
         model = Community
-        fields = ['name', 'is_private']
+        fields = ['name', 'is_private', 'pic', 'description'] 
         widgets = {
             'name': forms.TextInput(attrs={'class': 'form-name'}),
         }
 
     def __init__(self, *args, **kwargs):
         super(CommunityForm, self).__init__(*args, **kwargs)
-        if 'pic' in self.fields:
-            self.fields['pic'].required = False
-        if 'description' in self.fields:
-            self.fields['description'].required = False
+        self.fields['pic'].required = False
+        self.fields['description'].required = False

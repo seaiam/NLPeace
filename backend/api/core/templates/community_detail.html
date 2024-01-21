@@ -14,16 +14,21 @@
           <img src="{{community.pic.url}}" class="banner" alt="Community Picture">
           {% endif %}
 
-          <label class="clickable-label" >
-            <i class="fa fa-pencil-alt edit-icon"></i>
-            <form id="profile-edit-banner-form" action="" method="POST" enctype="multipart/form-data">
-            </form>
-          </label>
+          <form id="profile-edit-banner-form" action="{% url 'community_detail' community_id=community.id %}" method="POST" enctype="multipart/form-data">
+            {% csrf_token %}
+            <label class="clickable-label" for="id_pic">
+                <i class="fa fa-pencil-alt edit-icon"></i>
+            </label>
+            <input type="file" name="pic" id="id_pic" style="display: none;" onchange="this.form.submit()">
+        </form>
         </div>
         <br><br><br>  
         <div class="row">
             <div class="col-md-4">
                 <h4 style="color:#D9D9D9;">{{ community.name }}</h4>
+            </div>
+            <div class="col-md-4">
+                <h6 style="color:#D9D9D9;">{{ community.description }}</h6>
             </div>
             <div class="col-md-5">
                     <button class="community-members" ><i class='fas fa-user-friends'></i> Members</button>                   
@@ -31,19 +36,20 @@
         </div>
         <div class = "row">
                 <div class="col-md-12 text-md-right">
+                    {% if request.user == community.admin %}
                     <button class="editButton" onclick="toggleModal('edit-community-modal')">Edit Settings</button>
                     <div id="edit-community-modal" class="popup">
                         <div class="popup-content">
                             <span class="close" onclick="toggleModal('edit-community-modal')">&times;</span>
                             <p class="Community-modalTitle">Edit Community Details</p>
-                            <form method="post" enctype="multipart/form-data">
+                            <form action="{% url 'community_detail' community_id=community.id %}" method="post" enctype="multipart/form-data">
                                 {% csrf_token %}
-                                <h1>Edit Community Name: {{ community.name }}</h1>
-                               <div class = "community-form"> {{ form.as_p }}</div>
+                                <div class = "community-form"> {{ form.as_p }}</div>
                                 <button type="submit" id="saveBtn" class="saveButton">Save</button>
                             </form>
                         </div>
                     </div>
+                    {% endif %}
                     <button class="editButton" onclick="toggleModal('home-edit-bio-modal')">Start a Post</button>
                 </div>
         </div>
