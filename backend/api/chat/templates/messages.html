@@ -126,9 +126,9 @@
                                                
                                                 </p>
                                                 {% if user in contacted_users %}
-                                                        <p>
-                                                            contacted
-                                                        </p>
+                                                       
+                                                            <div class="contacted-user">Contacted</div>
+                                                        
                                                         {% endif %}
                                             </li>
                                         </a>
@@ -152,9 +152,7 @@
                                                         </p>
                                                         
                                                         {% if room.has_sent_message %}
-                                                        <p>
-                                                            contacted
-                                                        </p>
+                                                        <div class="contacted-user">Contacted</div>
                                                         {% endif %}
                                                        
                                                     </li>
@@ -176,9 +174,7 @@
                                                         </p>
                                                        
                                                         {% if room.has_sent_message %}
-                                                        <p>
-                                                           contacted
-                                                        </p>
+                                                        <div class="contacted-user">Contacted</div>
                                                         {% endif %}
                                                        
                                                     </li>
