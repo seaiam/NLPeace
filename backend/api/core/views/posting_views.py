@@ -39,7 +39,8 @@ def comment(request, post_id):
     likeable = post.is_likeable_by(request.user)
     dislikeable = post.is_dislikeable_by(request.user)
     saved_post_ids = [post.id for post in replies if post.is_saveable_by(request.user)]
-    reported_posts = [post for post in replies if not post.is_reportable_by(request.user)] 
+    reported_posts = [post for post in replies if not post.is_reportable_by(request.user)]
+    reportable = post.is_reportable_by(request.user)
 
     if request.method == 'POST':
         form = PostForm(request.POST, request.FILES)
@@ -59,7 +60,8 @@ def comment(request, post_id):
         'dislikes': dislikes,
         'likeable': likeable,
         'dislikeable': dislikeable,
-        'reported_posts' : reported_posts 
+        'reported_posts' : reported_posts,
+        'reportable': reportable
         }
     return render(request, 'comment.html', context)
     
