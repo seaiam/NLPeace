@@ -154,13 +154,14 @@ class ChatTest(TestCase):
     def test_existing_chatroom(self):
         self.client.login(username='testuser1', password='testpassword123')
         chatroom = ChatRoom.objects.create(user1=self.user1, user2=self.user2)
+        testmessage = Message.objects.create(author=self.user2, content=self.message, room_id=chatroom)
         response = self.client.get(reverse('messages'))
-        self.assertContains(response, 'Chats')
+        self.assertContains(response, 'testuser2')
         self.client.logout()
 
     
     def test_no_chatroom(self):
         self.client.login(username='testuser1', password='testpassword123')
         response = self.client.get(reverse('messages'))
-        self.assertContains(response, 'Please choose a chat')
+        self.assertNotContains(response, 'testuser2')
         self.client.logout()
