@@ -110,7 +110,8 @@
                                         </form>
                                     </div>
                                     <ul class="users">
-                                    {% for user in searched_users %}
+                                        {% if searched_term %}
+                                        {% for user in all_users %}
                                         <a href="{% url 'room' target_user_id=user.id %}" style = "color:#00001c; text-decoration: none;">
                                             <li class="person" >
                                                 <div class="user">
@@ -122,24 +123,20 @@
                                                 </div>
                                                 <p class="message-list">
                                                     <span class="name">{{user.username}}</span>
+                                               
                                                 </p>
+                                                {% if user in contacted_users %}
+                                                        <p>
+                                                            contacted
+                                                        </p>
+                                                        {% endif %}
                                             </li>
                                         </a>
-                                    {% endfor %}
-                                    </ul>
-                                </div>
-                            </div>
-                            <div class="col-xl-8 col-lg-8 col-md-8 col-sm-9 col-9">
-                                <div class="message-container">
-
-                                    {% if chatroom %}
-                                    <ul class="users">
-                                        <h1 style="display: flex; justify-content: center; align-items: center;">
-                                            Chats
-                                        </h1>
-                                        {% for room in chatroom %}
-                                        
-                                        {% if request.user == room.user1 and room.initiated_by_user1 or room.sent_first_message == room.user2 %}
+                                        {% endfor %}
+                                        {% else %}
+                                    
+                                        {% for room in chatroom %}    
+                                        {% if request.user == room.user1 and room.has_sent_message %}
                                             {% with target_user=room.user2 %}
                                                 <a href="{% url 'room' target_user_id=target_user.id %}" style="color:#00001c; text-decoration: none;">
                                                     <li class="person">
@@ -163,7 +160,7 @@
                                                     </li>
                                                 </a>
                                             {% endwith %}
-                                        {% elif request.user == room.user2 and room.initiated_by_user2 or room.sent_first_message == room.user1 %}
+                                        {% elif request.user == room.user2 and room.has_sent_message %}
                                             {% with target_user=room.user1 %}
                                                 <a href="{% url 'room' target_user_id=target_user.id %}" style="color:#00001c; text-decoration: none;">
                                                     <li class="person">
@@ -192,11 +189,17 @@
                                       
                                         {% endif %}
                                     {% endfor %}
-                                    {% else %}
+                                    {% endif %}
+                                    </ul>
+                                </div>
+                            </div>
+                            <div class="col-xl-8 col-lg-8 col-md-8 col-sm-9 col-9">
+                                <div class="message-container">
+
                                     <h1 style="display: flex; justify-content: center; align-items: center;">
                                         Please choose a chat
                                     </h1>
-                                    {% endif %}
+                                 
                                     
                             </div>
                         </div>

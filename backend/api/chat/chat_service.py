@@ -87,3 +87,10 @@ def get_target_user(message):
           return message.room_id.user2
      else:
           return message.room_id.user1
+
+def handle_contacted_users(user,chatroom,contacted_users): 
+    for room in chatroom:
+        if user == room.user1 and room.has_sent_message:
+            contacted_users.append(room.user2)
+        elif user == room.user2 and room.has_sent_message:
+            contacted_users.append(room.user1)
