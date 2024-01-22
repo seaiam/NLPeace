@@ -30,6 +30,12 @@ def repost(request, post_id):
 def comment(request, post_id):
     post = Post.objects.get(pk=post_id)
     replies = Post.objects.filter(parent_post=post_id)
+    reposted_post_ids = Repost.objects.filter(user=request.user).values_list('post_id', flat=True)
+    likes = [post for post in replies if post.is_likeable_by(request.user)]
+    dislikes = [post for post in replies if post.is_dislikeable_by(request.user)]
+    likeable = post.is_likeable_by(request.user)
+    dislikeable = post.is_dislikeable_by(request.user)
+    saved_post_ids = [post.id for post in replies if post.is_saveable_by(request.user)]
 
     if request.method == 'POST':
         form = PostForm(request.POST, request.FILES)
@@ -38,7 +44,18 @@ def comment(request, post_id):
             return redirect('comment', post_id=post_id)
     
     form = PostForm()
-    context = {'post': post, 'form': form, 'replies': replies}
+    context = {
+        'post': post, 
+        'form': form, 
+        'replies': replies,
+        'reportPostForm': PostReportForm(),
+        'reposted_post_ids': reposted_post_ids,
+        'saved_post_ids': saved_post_ids,
+        'likes': likes,
+        'dislikes': dislikes,
+        'likeable': likeable,
+        'dislikeable': dislikeable
+        }
     return render(request, 'comment.html', context)
     
 @login_required
@@ -64,8 +81,7 @@ def report(request, post_id):
     if request.method == 'POST':
         form = PostReportForm(request.POST)
         if form.is_valid():
-            report_post(request.user, post_id, request.POST)
-            messages.success(request, 'Post successfully reported.')
+            report_post_service(request, post_id, form)
         return redirect('home')
 
 @login_required

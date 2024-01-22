@@ -1,6 +1,7 @@
 from asgiref.sync import async_to_sync
 from channels.layers import get_channel_layer
 from django.contrib.auth import get_user_model
+from django.utils.timezone import make_aware
 from django.db import models
 from django.urls import reverse
 
@@ -44,8 +45,24 @@ class Message(models.Model):
     def __str__(self):
         return self.author.username
     
+    def more_messages(room_name, m):
+        messages=Message.objects.filter(room_id=room_name,timestamp__lt=m).order_by('timestamp').all().reverse()[:10]
+        return messages
+            
+
+
     def last_10_messages(room_name):
-        return Message.objects.filter(room_id=room_name).order_by('timestamp').all()[:10]
+        length=len(Message.objects.filter(room_id=room_name).order_by('timestamp').all())
+        left=0
+        right=0
+        if length<10:
+            left=0
+            right=length
+        elif length>=10:
+            left=length-10
+            right=length
+        messages=Message.objects.filter(room_id=room_name).order_by('timestamp').all()[left:right]
+        return messages
     
     def save(self, *args, **kwargs):
         super(Message, self).save(*args, **kwargs)

@@ -10,6 +10,7 @@ from .models import Message, ChatRoom
 User=get_user_model()
 
 class ChatConsumer(WebsocketConsumer):
+    pointer_message=Message
     
     def fetch_messages(self,data):
         user = User.objects.get(username=data['username'])
@@ -19,7 +20,29 @@ class ChatConsumer(WebsocketConsumer):
             'command': 'messages',
             'messages': messages_to_json(messages, user)
         }
+        for message in messages:
+            self.pointer_message=message
+            break
         self.send_message(content)
+        
+    def fetch_messages_more(self,data):
+        user = User.objects.get(username=data['username'])
+        room_id = data.get('room_id')
+        messages=Message.more_messages(room_id, self.pointer_message.timestamp)
+        
+        
+        if messages != -1:
+            content={
+                'command': 'fetch_messages_more',
+                'messages': messages_to_json(messages, user)
+            }
+            count=1
+            for message in messages:
+                if count==len(messages):
+                    self.pointer_message=message
+                    break
+                count+=1
+            self.send_message(content)
     
     def new_message(self,data):
         author=data['from']
@@ -37,6 +60,7 @@ class ChatConsumer(WebsocketConsumer):
     commands={
         'fetch_messages':fetch_messages,
         'new_message':new_message,
+        'fetch_messages_more': fetch_messages_more,
         
     }
     
