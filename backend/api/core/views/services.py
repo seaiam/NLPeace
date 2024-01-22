@@ -66,7 +66,7 @@ def get_user_profile(user):
     return profile
 
 def get_user_posts_and_reposts(user):
-    posts = Post.objects.filter(user=user)
+    posts = Post.objects.filter(Q(user=user) & Q(parent_post=None))
     reposts_ids = Repost.objects.filter(user=user).values_list('post_id', flat=True)
     reposts = Post.objects.filter(id__in=reposts_ids)
     all_posts = sorted(chain(posts, reposts), key=lambda post: post.created_at, reverse=True)
