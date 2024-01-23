@@ -47,9 +47,9 @@ def get_user_posts(user):
     user_ids_following = user.profile.following.values_list('id', flat=True)
     blocked = user.profile.blocked.all()
     posts = Post.objects.filter(
-        Q(user__profile__is_private=False) | 
+        (Q(user__profile__is_private=False) | 
         Q(user__in=user_ids_following) |  
-        Q(user=user) |
+        Q(user=user) ) &
         ~Q(user__in=blocked)
     ).distinct().order_by('-created_at')
     return posts
