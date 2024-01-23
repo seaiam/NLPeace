@@ -83,6 +83,9 @@ class Message(models.Model):
             return self.room_id.user2.id
         else:
             return self.room_id.user1.id
+        
+    def is_reported_by(self, user):
+        return ReportMessage.objects.filter(reporter=user, message=self).exists()
 
 
 class FileUpload(models.Model):
@@ -98,5 +101,12 @@ class ImageUpload(models.Model):
     message = models.ForeignKey(Message, on_delete=models.CASCADE, default=None)
 
 class ReportMessage(models.Model):
+    class Category(models.IntegerChoices):
+        HATE = 0, "Hate"
+        ABUSE_AND_HARASSMENT = 1, 'Abuse and harassment'
+        VIOLENT_SPEECH = 2, 'Violent speech'
     reporter = models.ForeignKey(User, on_delete=models.DO_NOTHING, default=None)
     message = models.ForeignKey(Message, on_delete=models.CASCADE, default=None)
+    category = models.IntegerField(choices=Category.choices, default=0)
+
+

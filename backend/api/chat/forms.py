@@ -1,5 +1,5 @@
 from django import forms
-from .models import FileUpload, ImageUpload, VideoUpload
+from .models import FileUpload, ImageUpload, VideoUpload, ReportMessage
 
 class FileUploadForm(forms.ModelForm):
     class Meta:
@@ -15,3 +15,9 @@ class ImageUploadForm(forms.ModelForm):
     class Meta:
         model = ImageUpload
         fields = ['image']
+
+
+class DMReportForm(forms.ModelForm):
+    class Meta:
+        model = ReportMessage
+        fields = ['category']
