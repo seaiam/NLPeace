@@ -1,6 +1,7 @@
 from asgiref.sync import async_to_sync
 from channels.layers import get_channel_layer
 from django.contrib.auth import get_user_model
+from django.utils.timezone import make_aware
 from django.db import models
 from django.urls import reverse
 
@@ -12,7 +13,25 @@ class ChatRoom(models.Model):
     room_name = models.AutoField(primary_key=True, unique=True)
     user1 = models.ForeignKey(User,related_name='user1',on_delete=models.CASCADE)
     user2 = models.ForeignKey(User,related_name='user2',on_delete=models.CASCADE)
+    initiated_by_user1 = models.BooleanField(default=False)
+    initiated_by_user2 = models.BooleanField(default=False)
 
+
+    @property
+    def has_sent_message(self):
+        return (Message.objects.filter(room_id=self, author=self.user1).exists() or 
+               Message.objects.filter(room_id=self, author=self.user2).exists())
+    
+    def sent_first_message(self):
+        has_messages=Message.objects.filter(room_id=self).exists()
+        if has_messages:
+            first_message = Message.objects.filter(room_id=self).order_by('timestamp').first()
+            return first_message.author
+        else:
+            return None
+    
+    
+ 
 class Message(models.Model):
     author =models.ForeignKey(User,related_name='author_messages',on_delete=models.CASCADE)
     content=models.TextField()
@@ -26,8 +45,24 @@ class Message(models.Model):
     def __str__(self):
         return self.author.username
     
+    def more_messages(room_name, m):
+        messages=Message.objects.filter(room_id=room_name,timestamp__lt=m).order_by('timestamp').all().reverse()[:10]
+        return messages
+            
+
+
     def last_10_messages(room_name):
-        return Message.objects.filter(room_id=room_name).order_by('timestamp').all()[:10]
+        length=len(Message.objects.filter(room_id=room_name).order_by('timestamp').all())
+        left=0
+        right=0
+        if length<10:
+            left=0
+            right=length
+        elif length>=10:
+            left=length-10
+            right=length
+        messages=Message.objects.filter(room_id=room_name).order_by('timestamp').all()[left:right]
+        return messages
     
     def save(self, *args, **kwargs):
         super(Message, self).save(*args, **kwargs)

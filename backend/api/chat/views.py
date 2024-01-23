@@ -34,14 +34,32 @@ logger = configure_logger("chat_logger")
 def index(request):
     users = User.objects.all()
     searched_term = request.GET.get('search','')
-    searched_users = User.objects.filter(username__icontains=searched_term)
-    if searched_term and not searched_users.exists():
+    chatroom = ChatRoom.objects.filter(Q(user1=request.user) | Q(user2=request.user) ).all()
+    contacted_users = []
+    
+    handle_contacted_users(request.user,chatroom,contacted_users)
+
+    contacted_searched_users = User.objects.filter(username__icontains=searched_term)
+
+    # all the other users that haven't been contacted
+    searched_users = User.objects.filter(username__icontains=searched_term).exclude(pk__in=[user.id for user in contacted_users])
+
+    # Concatenate the two lists
+    all_users = [user for user in contacted_users if user in contacted_searched_users] + list(searched_users)
+
+    if searched_term and not contacted_searched_users.exists():
         messages.warning(request, f'No user found with the username: {searched_term}')
-        return HttpResponseRedirect(request.META.get('HTTP_REFERER', '/'))
+        return redirect('messages')
+    
     context = {
         'users' : users,
         'searched_term': searched_term,
-        'searched_users': searched_users
+        'searched_users': searched_users,
+        'chatroom' : chatroom,
+        'all_users' : all_users,
+        'contacted_users' : contacted_users
+        
+       
     }   
     return render(request, "messages.html", context)
 
@@ -49,6 +67,9 @@ def index(request):
 def room(request, target_user_id):
     target_user = User.objects.filter(id = target_user_id).first()
     chat_room = getChatRoom(request.user, target_user)
+    handle_chatroom_initiation(request.user, chat_room)
+  
+
     context = {
         'room_name_json':mark_safe(json.dumps(chat_room.room_name)),
         'username':mark_safe(json.dumps(request.user.username)),

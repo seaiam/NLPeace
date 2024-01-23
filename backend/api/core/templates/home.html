@@ -215,7 +215,7 @@
 <div class="container">
     <div class="profiletab-btns">
         <button class="profiletabbutton" onclick="openPostTab(event, 'Posts')" id="defaultOpenPost">Posts</button>
-        <button class="profiletabbutton" onclick="">Replies</button>
+        <button class="profiletabbutton" onclick="openPostTab(event, 'Replies')">Replies</button>
         <button class="profiletabbutton" onclick="openPostTab(event, 'Media')">Media</button>
         <button class="profiletabbutton" onclick="openPostTab(event, 'Likes')">Likes</button>
     </div>
@@ -238,7 +238,14 @@
        
     {% endfor %}
     </div>
-    
+
+    <div id="Replies" class="posttabcontent">
+        {% for post in reply_posts %}
+            {% include "posts.html" with tab="posts" %}
+            {% empty %}           
+            <div class="no-post">No Replies available. </div>        
+        {% endfor %}
+    </div>
 
     <div id="Media" class="posttabcontent" style="display:none;">
         {% for post in pinned_image_posts %}

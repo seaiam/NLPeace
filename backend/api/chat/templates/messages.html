@@ -110,7 +110,8 @@
                                         </form>
                                     </div>
                                     <ul class="users">
-                                    {% for user in searched_users %}
+                                        {% if searched_term %}
+                                        {% for user in all_users %}
                                         <a href="{% url 'room' target_user_id=user.id %}" style = "color:#00001c; text-decoration: none;">
                                             <li class="person" >
                                                 <div class="user">
@@ -122,19 +123,80 @@
                                                 </div>
                                                 <p class="message-list">
                                                     <span class="name">{{user.username}}</span>
+                                               
                                                 </p>
+                                                {% if user in contacted_users %}
+                                                       
+                                                            <div class="contacted-user">Contacted</div>
+                                                        
+                                                        {% endif %}
                                             </li>
                                         </a>
+                                        {% endfor %}
+                                        {% else %}
+                                    
+                                        {% for room in chatroom %}    
+                                        {% if request.user == room.user1 and room.has_sent_message %}
+                                            {% with target_user=room.user2 %}
+                                                <a href="{% url 'room' target_user_id=target_user.id %}" style="color:#00001c; text-decoration: none;">
+                                                    <li class="person">
+                                                        <div class="user">
+                                                            {% if target_user.profile and target_user.profile.pic %}
+                                                                <img src="{{ target_user.profile.pic.url }}" class="reply-user-pic" alt="{{ target_user.username }}'s profile picture">
+                                                            {% else %}
+                                                                <img src="{% static 'default.jpg' %}" class="reply-user-pic" alt="{{ target_user.username }}'s profile picture" />
+                                                            {% endif %}
+                                                        </div>
+                                                        <p class="message-list">
+                                                            <span class="name">{{ target_user.username }}</span>
+                                                        </p>
+                                                        
+                                                        {% if room.has_sent_message %}
+                                                        <div class="contacted-user">Contacted</div>
+                                                        {% endif %}
+                                                       
+                                                    </li>
+                                                </a>
+                                            {% endwith %}
+                                        {% elif request.user == room.user2 and room.has_sent_message %}
+                                            {% with target_user=room.user1 %}
+                                                <a href="{% url 'room' target_user_id=target_user.id %}" style="color:#00001c; text-decoration: none;">
+                                                    <li class="person">
+                                                        <div class="user">
+                                                            {% if target_user.profile and target_user.profile.pic %}
+                                                                <img src="{{ target_user.profile.pic.url }}" class="reply-user-pic" alt="{{ target_user.username }}'s profile picture">
+                                                            {% else %}
+                                                                <img src="{% static 'default.jpg' %}" class="reply-user-pic" alt="{{ target_user.username }}'s profile picture" />
+                                                            {% endif %}
+                                                        </div>
+                                                        <p class="message-list">
+                                                            <span class="name">{{ target_user.username }}</span>
+                                                        </p>
+                                                       
+                                                        {% if room.has_sent_message %}
+                                                        <div class="contacted-user">Contacted</div>
+                                                        {% endif %}
+                                                       
+                                                    </li>
+                                                </a>
+                                            {% endwith %}
+                                            
+                                            
+                                      
+                                        {% endif %}
                                     {% endfor %}
+                                    {% endif %}
                                     </ul>
                                 </div>
                             </div>
                             <div class="col-xl-8 col-lg-8 col-md-8 col-sm-9 col-9">
                                 <div class="message-container">
+
                                     <h1 style="display: flex; justify-content: center; align-items: center;">
                                         Please choose a chat
                                     </h1>
-                                </div>
+                                 
+                                    
                             </div>
                         </div>
                     </div>

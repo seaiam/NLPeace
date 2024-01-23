@@ -1,6 +1,9 @@
 from .models import ChatRoom, ReportMessage
+from .models import ChatRoom, ReportMessage
 from django.contrib.auth import get_user_model
 from django.db.models import Q
+import requests
+from django.urls import reverse
 import requests
 from django.urls import reverse
 
@@ -19,6 +22,15 @@ def getChatRoom(current_user, target_user):
 
     return chat_room
 
+def handle_chatroom_initiation(user, chat_room):
+    if user == chat_room.user1:
+        chat_room.initiated_by_user1 = True
+    elif user == chat_room.user2:
+        chat_room.initiated_by_user2 = True
+    chat_room.save()  
+
+def messages_to_json(messages, user):
+    return [message_to_json(message, user) for message in messages]
 def messages_to_json(messages, user):
     return [message_to_json(message, user) for message in messages]
 
@@ -26,6 +38,10 @@ def message_to_json(message, user=None):
     if message.is_image:
             upload = message.imageupload_set.first()
             src = upload.image.url
+    elif message.is_video:
+            upload = message.videoupload_set.first()
+            src = upload.video.url
+
     elif message.is_video:
             upload = message.videoupload_set.first()
             src = upload.video.url
@@ -81,3 +97,10 @@ def get_target_user(message):
           return message.room_id.user2
      else:
           return message.room_id.user1
+
+def handle_contacted_users(user,chatroom,contacted_users): 
+    for room in chatroom:
+        if user == room.user1 and room.has_sent_message:
+            contacted_users.append(room.user2)
+        elif user == room.user2 and room.has_sent_message:
+            contacted_users.append(room.user1)
