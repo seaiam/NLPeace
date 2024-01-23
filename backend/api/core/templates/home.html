@@ -227,7 +227,7 @@
         {% include "posts.html" with tab="posts" %}
         {% endfor %}
 
-    {% for post in posts %}
+    {% for post in non_pinned_posts %}
       {% include "posts.html" with tab="posts" %}
         {% empty %}
         {% if pinned_posts %}
@@ -252,7 +252,7 @@
         {% include "posts.html" with tab="posts" %}
         {% endfor %}
 
-        {% for post in media_posts %}
+        {% for post in non_pinned_image_posts %}
         {% include "posts.html" with tab="media" %}
       
         {% empty %}

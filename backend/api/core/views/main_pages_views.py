@@ -60,6 +60,7 @@ def profile(request):
     pinned_posts = [post for post in all_posts if post.is_pinned_by(request.user)]
     pinned_image_posts = [post for post in all_posts if post.is_pinned_by(request.user) and post.image]
     non_pinned_posts = [post for post in all_posts if not post.is_pinned_by(request.user)]
+    non_pinned_image_posts=[post for post in all_posts if not post.is_pinned_by(request.user) and post.image]
     liked_posts = Post.objects.filter(postlike__liker=request.user).distinct().order_by('-created_at')
     saved_post_ids = [post.id for post in all_posts if not post.is_saveable_by(request.user)] # ADDED THIS
     pinned_post_ids = [post.id for post in all_posts if post.is_pinned_by(request.user)] 
@@ -89,7 +90,9 @@ def profile(request):
         'pinned_image_posts' : pinned_image_posts,
         'reply_posts' : replies,
         'reposted_post_ids': reposted_post_ids,
-        'reported_posts' : reported_posts #for post reporting
+        'reported_posts' : reported_posts, #for post reporting
+        'non_pinned_image_posts' : non_pinned_image_posts
+
         }
     return render(request, 'home.html', context)
 
@@ -103,10 +106,11 @@ def guest(request, user_id):
     likes, dislikes, _ = get_post_interactions(guest_user, all_posts)
     followers = profile.followers.all()
     following = profile.following.all()
-    pinned_posts = [post for post in all_posts if post.is_pinned_by(user=guest_user)]
-    pinned_image_posts = [post for post in all_posts if post.is_pinned_by(user=guest_user) and post.image]
-    non_pinned_posts = [post for post in all_posts if not post.is_pinned_by(user=guest_user)]
-    pinned_post_ids = [post.id for post in all_posts if post.is_pinned_by(user=guest_user)] 
+    pinned_posts = [post for post in all_posts if post.is_pinned_by(guest_user)]
+    pinned_image_posts = [post for post in all_posts if post.is_pinned_by(guest_user) and post.image]
+    non_pinned_image_posts = [post for post in all_posts if not post.is_pinned_by(guest_user) and post.image]
+    non_pinned_posts = [post for post in all_posts if not post.is_pinned_by(guest_user)]
+    pinned_post_ids = [post.id for post in all_posts if post.is_pinned_by(guest_user)] 
     liked_posts = Post.objects.filter(postlike__liker=guest_user).distinct().order_by('-created_at')
     saved_post_ids = [post.id for post in all_posts if not post.is_saveable_by(guest_user)] 
     reported_posts = [post for post in all_posts if not post.is_reportable_by(request.user)] #for post reporting
@@ -132,7 +136,8 @@ def guest(request, user_id):
         'pinned_image_posts' : pinned_image_posts,
         "pinned_post_ids" : pinned_post_ids,
         'reposted_post_ids': reposted_post_ids,
-        'reported_posts' : reported_posts #for post reporting
+        'reported_posts' : reported_posts, #for post reporting
+        'non_pinned_image_posts' : non_pinned_image_posts
         }
     return render(request,'home.html',context)
 
