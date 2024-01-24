@@ -59,5 +59,4 @@ ENV PATH="/py/bin:$PATH"
 
 USER django-user
 
-
 CMD daphne -p $PORT -b 0.0.0.0 api.asgi:application
