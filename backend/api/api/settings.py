@@ -22,18 +22,19 @@ CSRF_COOKIE_SECURE = True
 # See https://docs.djangoproject.com/en/4.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-11ng+^!+u_d((1aq1!#r$jme--r_e7p&(#!w*cjuam9ccx*hea'
+SECRET_KEY = os.getenv('SECRET_KEY')
 
+if os.getenv('ENV') == 'production':
+    ALLOWED_HOSTS = ['nlpeace-0c427559664a.herokuapp.com','https://nlpeace-0c427559664a.herokuapp.com', 'https://nlpeace.com', 'https://nlpeace.herokuapp.com']
 
-ALLOWED_HOSTS = ['nlpeace-0c427559664a.herokuapp.com','https://nlpeace-0c427559664a.herokuapp.com', 'https://nlpeace.com', 'https://nlpeace.herokuapp.com']
-
-CSRF_TRUSTED_ORIGINS = [
+    CSRF_TRUSTED_ORIGINS = [
     'https://nlpeace-0c427559664a.herokuapp.com',
     'https://nlpeace.com', 'https://nlpeace.herokuapp.com'
-]
+    ]
+else:
+    ALLOWED_HOSTS = []
 
 # Application definition
-
 INSTALLED_APPS = [
     'daphne',
     'django.contrib.admin',
@@ -162,19 +163,20 @@ MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'api','core', 'media')
 
 #SMTP Configuration
-EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
-EMAIL_HOST='smtp.gmail.com'
-EMAIL_PORT=587
-EMAIL_USE_TLS=True
-EMAIL_HOST_USER='nlpeaceinfo@gmail.com'
-EMAIL_HOST_PASSWORD='rvzc loct ymft eklm'
+EMAIL_BACKEND = os.getenv('EMAIL_BACKEND')
+EMAIL_HOST= os.getenv('EMAIL_HOST')
+EMAIL_PORT= os.getenv('EMAIL_PORT')
+EMAIL_USE_TLS= os.getenv('EMAIL_USE_TLS')
+EMAIL_HOST_USER= os.getenv('EMAIL_HOST_USER')
+EMAIL_HOST_PASSWORD= os.getenv('EMAIL_HOST_PASSWORD')
 
 #redis stuff
-REDIS_HOST = "redis" #os.environ.get('REDIS_HOST', 'localhost')
-REDIS_PORT =  "6379" #os.environ.get('REDIS_PORT', 6379)
+REDIS_HOST = os.getenv('REDIS_HOST')
+REDIS_PORT = os.getenv('REDIS_PORT')
 #EMAIL_BACKEND = "django.core.mail.backends.filebased.EmailBackend"
 #EMAIL_FILE_PATH = BASE_DIR / "sent_emails"
 # Channels
+
 ASGI_APPLICATION = "api.asgi.application"
 CHANNEL_LAYERS = {
     "default": {
@@ -185,4 +187,4 @@ CHANNEL_LAYERS = {
     },
 }
 
-GIPHY_API_KEY = '9a6zGfy6TBTv459CNi2y3KtOWkB69vOx'
+GIPHY_API_KEY = os.getenv('GIPHY_API_KEY')
