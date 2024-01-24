@@ -246,8 +246,9 @@ def save_or_unsave_post(user, post_id):
     return message
 
 def get_bookmarked_posts(user):
-    saved_posts = PostSave.objects.filter(saver=user).select_related('post').order_by('-post__created_at')
-    return [save.post for save in saved_posts]
+    saves = PostSave.objects.filter(saver=user).select_related('post').order_by('-post__created_at')
+    saved_posts = [ContentCarrier(save.post) for save in saves]
+    return mix(list(saved_posts), get_ads(user))
 
 def block_user(request_user_id, blocked_user_id):
     updated_user = Profile.objects.get(pk=request_user_id)
