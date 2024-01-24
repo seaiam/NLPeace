@@ -26,7 +26,7 @@ SECRET_KEY = 'django-insecure-11ng+^!+u_d((1aq1!#r$jme--r_e7p&(#!w*cjuam9ccx*hea
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['*']
 
 
 # Application definition
@@ -172,3 +172,15 @@ CHANNEL_LAYERS = {
 }
 
 GIPHY_API_KEY = '9a6zGfy6TBTv459CNi2y3KtOWkB69vOx'
+
+# The number of days allowed to elapse without a user mentioning a
+# topic before it is assumed they are no longer interested in it.
+INTEREST_DAYS_THRESHOLD = 10
+
+# The degree to which a user must have expressed interest in a topic for a advertisement
+# covering it to be included in the list of ads shown to them.
+TOPIC_INCLUSION_THRESHOLD = 0.7
+
+AD_MIX_RATE = 5
+
+AD_SELECTION_STRATEGY = 'constant'

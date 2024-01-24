@@ -33,6 +33,8 @@ def messages_to_json(messages, user):
     return [message_to_json(message, user) for message in messages]
 def messages_to_json(messages, user):
     return [message_to_json(message, user) for message in messages]
+def messages_to_json(messages, user):
+    return [message_to_json(message, user) for message in messages]
 
 def message_to_json(message, user=None):
     if message.is_image:
