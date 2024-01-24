@@ -224,11 +224,11 @@
     <div id="Posts" class="posttabcontent">
 
         {% for post in pinned_posts %}
-        {% include "posts.html" with carrier=post tab="posts" %}
+        {% include "posts.html" with carrier=post %}
         {% endfor %}
 
     {% for post in posts %}
-      {% include "posts.html" with carrier=post tab="posts" %}
+      {% include "posts.html" with carrier=post %}
         {% empty %}
         {% if pinned_posts %}
 
@@ -241,7 +241,7 @@
 
     <div id="Replies" class="posttabcontent">
         {% for post in reply_posts %}
-            {% include "posts.html" with carrier=post tab="posts" %}
+            {% include "posts.html" with carrier=post %}
             {% empty %}           
             <div class="no-post">No Replies available. </div>        
         {% endfor %}
@@ -249,11 +249,11 @@
 
     <div id="Media" class="posttabcontent" style="display:none;">
         {% for post in pinned_image_posts %}
-        {% include "posts.html" with carrier=post tab="posts" %}
+        {% include "posts.html" with carrier=post %}
         {% endfor %}
 
         {% for post in media_posts %}
-        {% include "posts.html" with carrier=post tab="media" %}
+        {% include "posts.html" with carrier=post %}
       
         {% empty %}
         {% if pinned_image_posts %}
