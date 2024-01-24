@@ -20,8 +20,14 @@ class Profile(models.Model):
     messaging_is_private = models.BooleanField(default=True)
 
     def insert_interests(self, interests):
-        for name in interests:
-            self.profileinterest_set.add(ProfileInterest.objects.create(profile=self, name=name.lower()))
+        for name in map(lambda n: n.lower(), interests):
+            interest = self.profileinterest_set.filter(name=name)
+            if interest.exists():
+                # Update the last_expressed field on an already existing interest.
+                interest.first().save()
+            else:
+                # Otherwise record the new interest.
+                self.profileinterest_set.add(ProfileInterest.objects.create(profile=self, name=name))
 
     def remove_interests(self, threshold):
         now = timezone.now()
