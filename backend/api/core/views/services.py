@@ -143,8 +143,8 @@ def get_liked_posts(user):
     liked_posts = list(map(lambda post: ContentCarrier(post), Post.objects.filter(postlike__liker=user).distinct().order_by('-created_at')))
     return mix(liked_posts, get_ads(user))
 
-def get_following_posts(user, users):
-    following_posts = list(map(lambda post: ContentCarrier(post), Post.objects.filter(user__in=users).order_by('-created_at')))
+def get_following_posts(user, following):
+    following_posts = list(map(lambda post: ContentCarrier(post), Post.objects.filter(user__in=following).order_by('-created_at')))
     return mix(following_posts, get_ads(user))
 
 

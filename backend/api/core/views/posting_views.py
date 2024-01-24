@@ -94,6 +94,7 @@ def report(request, post_id):
             return redirect('profile')
         return HttpResponseRedirect(request.META.get('HTTP_REFERER', '/'))
 
+
 @login_required
 def pin(request, post_id):     
     message = handle_pin(request.user, post_id)

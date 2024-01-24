@@ -74,7 +74,7 @@
     <div id="Followers" class="posttabcontent">
         <!-- Follower Posts -->
         {% for post in followPost %}
-            {% include "posts.html" with carrier=post post=post %}
+            {% include "posts.html" with carrier=post %}
         {% empty %}
             <div class="no-post">No follower posts available.</div>
         {% endfor %}

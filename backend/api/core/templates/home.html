@@ -240,7 +240,7 @@
 
     <div id="Replies" class="posttabcontent">
         {% for post in reply_posts %}
-            {% include "posts.html" with tab="posts" %}
+            {% include "posts.html" with carrier=post tab="posts" %}
             {% empty %}           
             <div class="no-post">No Replies available. </div>        
         {% endfor %}
