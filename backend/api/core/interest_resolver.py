@@ -34,7 +34,9 @@ class JaccardInterestResolver(InterestResolver):
     def get_interest_in(self, profile: Profile, ad: Advertisement) -> float:
         interests = set(map(lambda interest: interest.name, profile.profileinterest_set.all()))
         topics = set(map(lambda topic: topic.name, ad.advertisementtopic_set.all()))
-        return len(interests.intersection(topics)) / len(interests.union(topics))
+        if len(interests) or len(topics): # Otherwise we'll divide by zero.
+            return len(interests.intersection(topics)) / len(interests.union(topics))
+        return 0
 
 RESOLVERS: dict[str, InterestResolver] = {
     'constant': ConstantInterestResolver(),
