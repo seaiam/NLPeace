@@ -1,0 +1,11 @@
+[
+    {
+        "model": "core.advertisement",
+        "pk": 1,
+        "fields": {
+            "advertiser": "NLPeace",
+            "logo": "",
+            "content": "Your ad here!"
+        }
+    }
+]

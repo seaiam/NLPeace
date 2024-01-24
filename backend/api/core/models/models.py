@@ -1,6 +1,7 @@
 from django.contrib.auth.models import User
 from django.db import models
 from django.urls import reverse
+from django.utils import timezone
 
 from core.utils import attempt_send_message
 
@@ -19,15 +20,27 @@ class Profile(models.Model):
     messaging_is_private = models.BooleanField(default=True)
 
     def insert_interests(self, interests):
-        pass # TODO
+        for name in interests:
+            self.profileinterest_set.add(ProfileInterest.objects.create(profile=self, name=name.lower()))
 
     def remove_interests(self, threshold):
-        pass # TODO
+        now = timezone.now()
+        to_delete = []
+        for interest in self.profileinterest_set.all():
+            difference = now - interest.last_expressed
+            if difference.days > threshold:
+                to_delete.append(interest)
+        for interest in to_delete:
+            interest.delete()
 
 class ProfileInterest(models.Model):
-    profile = ForeignKey(Profile, on_delete=models.CASCADE)
+    profile = models.ForeignKey(Profile, on_delete=models.CASCADE)
     name = models.CharField(max_length=1024)
-    last_expressed = modesl.DateTimeField()
+    last_expressed = models.DateTimeField()
+
+    def save(self, *args, **kwargs):
+        self.last_expressed = timezone.now()
+        super(ProfileInterest, self).save(*args, **kwargs)
 
 class ProfileWarning(models.Model):
     offender = models.ForeignKey(User, related_name='offender', on_delete=models.CASCADE)
@@ -172,7 +185,12 @@ class PostPin(models.Model):
         ]
    
 class Advertisement(models.Model):
+    advertiser = models.CharField(max_length=512)
+    logo = models.ImageField(upload_to='adLogos/', null=True, blank=True)
     content = models.CharField(max_length=280)
+
+    def __str__(self):
+        return f'{self.advertiser}: {self.content}'
 
 class AdvertisementTopic(models.Model):
     ad = models.ForeignKey(Advertisement, on_delete=models.CASCADE)
