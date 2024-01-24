@@ -224,11 +224,11 @@
     <div id="Posts" class="posttabcontent">
 
         {% for post in pinned_posts %}
-        {% include "posts.html" with tab="posts" %}
+        {% include "posts.html" with carrier=post tab="posts" %}
         {% endfor %}
 
     {% for post in posts %}
-      {% include "posts.html" with tab="posts" %}
+      {% include "posts.html" with carrier=post tab="posts" %}
         {% empty %}
         {% if pinned_posts %}
 
@@ -242,11 +242,11 @@
 
     <div id="Media" class="posttabcontent" style="display:none;">
         {% for post in pinned_image_posts %}
-        {% include "posts.html" with tab="posts" %}
+        {% include "posts.html" with carrier=post tab="posts" %}
         {% endfor %}
 
         {% for post in media_posts %}
-        {% include "posts.html" with tab="media" %}
+        {% include "posts.html" with carrier=post tab="media" %}
       
         {% empty %}
         {% if pinned_image_posts %}
@@ -260,7 +260,7 @@
 
       <div id="Likes" class="posttabcontent" style="display:none;">
         {% for post in liked_posts %}
-           {% include "posts.html" with tab="likes" %}
+           {% include "posts.html" with carrier=post tab="likes" %}
             {% empty %}
             <div class="no-post">No Liked Posts available. </div>
             {% endfor %}
