@@ -16,18 +16,20 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path, include
-from core.views import authentication_views, main_pages_views, profile_views
+from core.views import authentication_views, main_pages_views, profile_views, posting_views
 from django.conf import settings
 from django.conf.urls.static import static
+
 
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('auth/', include("django.contrib.auth.urls")),
     path('accounts/login/', authentication_views.login_user, name="login"),
     path('logout_user', authentication_views.logout_user, name="logout_user"),
-    path('register_user', authentication_views.register_user, name='register_user'),
+    path('register_user/', authentication_views.register_user, name='register_user'),
     path('', main_pages_views.home, name='home'),
     path('accounts/profile/', main_pages_views.profile, name='profile'),
+    path('accounts/profile/<int:blocked_id>/', profile_views.add_block, name='add_block'),
     path('accounts/profile/updateBio/', profile_views.updateBio, name='edit_bio'),
     path('accounts/profile/updateBanner/', profile_views.updateProfileBanner, name='edit_banner'),
     path('accounts/profile/updatePic/', profile_views.updateProfilePicture, name='edit_pic'),
@@ -38,8 +40,27 @@ urlpatterns = [
     path('forget_password/', authentication_views.ForgetPassword,name='forget_password'),
     path('change_password/<token>/',authentication_views.ChangePassword,name='change_password'),
     path('user/<int:user_id>/privacy/', profile_views.privacy_settings_view, name='privacy_settings'),
-    path('comment/<int:post_id>', main_pages_views.comment, name='comment'),
-    path('report/', main_pages_views.report, name='report'),
+    path('user/<int:user_id>/messaging_settings/', profile_views.messaging_settings_view, name='messaging_settings'),
+    path('comment/<int:post_id>', posting_views.comment, name='comment'),
+    path('repost/<int:post_id>/', posting_views.repost, name='repost'),
+    path('accounts/profile/search/',profile_views.search_user,name="search_user"),
+    path('guest/<int:user_id>/', main_pages_views.guest ,name="guest"),
+    path('like/<int:post_id>/', posting_views.like, name='like'),
+    path('dislike/<int:post_id>/', posting_views.dislike, name='dislike'),
+    path('report/<int:post_id>', posting_views.report, name='report'),
+    path('follow/', profile_views.follow_user ,name="follow_user"),
+    path('unfollow/', profile_views.unfollow_user ,name="unfollow_user"),
+    path('accounts/profile/notifications', main_pages_views.notifications, name='notifications'), 
+    path('accounts/profile/notifications/delete_notification', profile_views.delete_notification, name='delete_notification'), 
+    path('accounts/profile/notifications/invite', main_pages_views.accept_decline_invite, name='accept_decline_invite'),   
+    path('guest/<int:reported_id>/reportUser/', main_pages_views.report_user, name='report_user'),
+    path('save_post/<int:post_id>/', posting_views.save_post, name='save_post'),
+    path('bookmarks/', main_pages_views.bookmarked_posts, name='bookmarked_posts'),
+    path('delete_post/', posting_views.delete_post, name='delete_post'),
+    path('chat/', include("chat.urls")),
+    path('pin/<int:post_id>/', posting_views.pin, name='pin'),
+    path('unpin/<int:post_id>/', posting_views.unpin, name='unpin'),
+    path('edit/<int:post_id>/', posting_views.edit_post, name='edit_post'),
 ]
 
 if settings.DEBUG:

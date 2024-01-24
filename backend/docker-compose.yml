@@ -34,7 +34,7 @@ services:
       sh -c "python manage.py wait_for_db &&
              python manage.py makemigrations core &&
              python manage.py migrate core &&
-             python manage.py makemigrations&&
+             python manage.py makemigrations &&
              python manage.py migrate&&
              python manage.py runserver 0.0.0.0:8000"
     environment:
@@ -42,8 +42,16 @@ services:
       - DB_NAME=devdb
       - DB_USER=devuser
       - DB_PASS=changeme
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
     depends_on:
-      - db
+      db:
+        condition: service_healthy
+  
+  redis:
+    image: "redis:alpine"
+    expose:
+      - "6379"
 
   db:
     image: postgres:16.0-alpine
@@ -53,6 +61,11 @@ services:
       - POSTGRES_DB=devdb
       - POSTGRES_USER=devuser
       - POSTGRES_PASSWORD=changeme
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -d devdb -U devuser"]
+      interval: 1s
+      timeout: 5s
+      retries: 25
 
 volumes:
   dev-db-data:

@@ -29,7 +29,7 @@ ENV PYTHONUNBUFFERED 1
 ENV DEBUG 0
 
 
-
+RUN apk add --update --no-cache libffi-dev
 
 
 COPY ./requirements.txt /tmp/requirements.txt
@@ -38,19 +38,22 @@ WORKDIR /api
 #EXPOSE 8000
 
 
-
-RUN python -m venv /py && \
+# Install libffi-dev
+RUN python -m venv /py && \ 
+    apk add --update --no-cache libffi-dev && \ 
     /py/bin/pip install --upgrade pip && \
     apk add --update --no-cache postgresql-client && \
     apk add --update --no-cache --virtual .tmp-build-deps \
         build-base postgresql-dev musl-dev && \
     /py/bin/pip install -r /tmp/requirements.txt && \
+    /py/bin/pip install -U 'channels[daphne]' && \
     rm -rf /tmp && \
     apk del .tmp-build-deps && \
     adduser \
         --disabled-password \
         --no-create-home \
         django-user
+        
 
 RUN apk add --update --no-cache bind-tools
 ENV PATH="/py/bin:$PATH"

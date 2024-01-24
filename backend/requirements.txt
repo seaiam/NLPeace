@@ -5,3 +5,9 @@ Pillow==10.0.1
 gunicorn
 whitenoise
 dj_database_url
+factory_boy
+faker
+requests
+channels_redis
+coverage
+pytest

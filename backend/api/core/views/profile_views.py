@@ -1,6 +1,4 @@
-from django.http import HttpResponseServerError
-from django.http import HttpResponseNotFound
-from django.http import HttpResponseForbidden
+from django.http import *
 from api.logger_config import configure_logger # TODO add logging statements
 from django.contrib.auth import update_session_auth_hash
 from django.shortcuts import render, redirect
@@ -9,105 +7,178 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth.forms import PasswordChangeForm
 
 from core.forms.profile_forms import *
-import uuid 
-from django.conf import settings
-from django.core.mail import send_mail
 from core.models.models import *
+from django.contrib.auth.models import User
+from django.http import HttpResponseRedirect
+from .services import *
+
+@login_required
+def add_block(request, blocked_id):
+    message = block_user(request.user.id, blocked_id)
+    messages.info(request, message)
+    return redirect('profile')
 
 @login_required
 def profile_settings(request):
+    data = get_user_notifications(request.user)
     if request.method == 'GET':
-        user = User.objects.get(pk=request.user.id)
-        if user is None:
-            return HttpResponseNotFound
-        return render(request, 'settings.html', {'user': user, 'editUsernameForm': EditUsernameForm(instance=user),'editPasswordForm': PasswordChangeForm(request.user)})
+      user = get_user_by_id(request.user.id)
+      if not user:
+        return HttpResponseNotFound()
+     
+      context = {
+        'user': user,
+        'data' : data, 
+        'editUsernameForm': EditUsernameForm(instance=user),
+        'editPasswordForm': PasswordChangeForm(request.user),
+        'privacy_form':PrivacySettingsForm(instance=user.profile),
+        'messaging_form':MessagingSettingsForm(instance=user.profile)
+      }
+    return render(request, 'settings.html', context)
     
 @login_required
 def update_username(request):
     if request.method == 'POST':
-        new_user = User.objects.get(pk=request.user.id)
-        if new_user is None:
-            return HttpResponseNotFound
-        
-        form = EditUsernameForm(request.POST, instance=new_user)
-        if form.is_valid():
-            form.save()
-            return redirect('profile')
-    return HttpResponseServerError
+        update_user_username(request.user.id, request.POST)
+        return redirect('profile')
+    return HttpResponseServerError()
+
 
 @login_required
 def update_password(request):
     if request.method == 'POST':
-        new_user = User.objects.get(pk=request.user.id)
-        if new_user is None:
-            return HttpResponseNotFound
-        
-        form = PasswordChangeForm(request.user, request.POST)
-        if form.is_valid():
-            user=form.save()
-            update_session_auth_hash(request, user)
-            return redirect('profile')
-    return HttpResponseServerError
+        update_user_password(request, request.POST)
+        return redirect('profile')
+    return HttpResponseServerError()
+
 
 @login_required
 def updateProfileBanner(request):
     if request.method == 'POST':
-        profile = Profile.objects.get_or_create(pk=request.user.id)
-        form = EditProfileBannerForm(request.POST, request.FILES, instance=profile[0])
-        if form.is_valid():
-            form.save()
+        update_user_profile_banner(request.user.id, request.POST, request.FILES)
         return redirect('profile')
-    else:
-        form = EditProfileBannerForm()
-    context = {
-        'form': form,
-    }
-    return render(request, 'newBanner.html', context)
+    return redirect('error_500')
+
 
 @login_required
 def updateBio(request):
     if request.method == 'POST':
-        profile = Profile.objects.get_or_create(pk=request.user.id)
-        form = EditBioForm(request.POST, instance=profile[0])
-        if form.is_valid():
-            form.save()
+        update_user_bio(request.user.id, request.POST)
         return redirect('profile')
-    # TODO render 500
+    return redirect('error_500')
+
 
 @login_required
 def updateProfilePicture(request):
     if request.method == 'POST':
-        profile = Profile.objects.get_or_create(pk=request.user.id)
-        form = EditProfilePicForm(request.POST, request.FILES, instance=profile[0])
-        if form.is_valid():
-            form.save()
+        update_user_profile_picture(request.user.id, request.POST, request.FILES)
         return redirect('profile')
-    else:
-        form = EditProfilePicForm()
-    context = {
-        'form': form
-    }
-    return render(request, 'newProfilepic.html', context)
+    return redirect('error_500')
 
 @login_required
 def privacy_settings_view(request, user_id):
+    if request.user.id != user_id:
+        return HttpResponseForbidden("You don't have permission to edit this user's settings.")
+    if request.method == "POST":
+        if update_privacy_settings(user_id, request.POST):
+            messages.success(request, "Privacy settings updated!")
+            return redirect('profile')
+    else:
+        form = PrivacySettingsForm(instance=request.user.profile)
+
+    return render(request, 'settings.html', {'privacy_form': form})
+
+
+@login_required
+def messaging_settings_view(request, user_id):
     user = User.objects.get(pk=user_id)
     profile_instance = user.profile
 
-    if request.user != user:  # Ensure users can only edit their own privacy settings
+    if request.user != user:  
         return HttpResponseForbidden("You don't have permission to edit this user's settings.")
 
     if request.method == "POST":
-        form = PrivacySettingsForm(request.POST, instance=profile_instance)
+        form = MessagingSettingsForm(request.POST, instance=profile_instance)
         if form.is_valid():
             form.save()
-            messages.success(request, "Privacy settings updated!")
-            return redirect('privacy_settings', user_id=user_id)
+            messages.success(request, "Messaging settings updated!")
+            return redirect('profile')
     else:
-        form = PrivacySettingsForm(instance=profile_instance)
+        form = MessagingSettingsForm(instance=profile_instance)
 
     context = {
-        'privacy_form': form
+        'messaging_form': form
     }
     
-    return render(request, 'privacy_settings.html', context)
+    return render(request, 'settings.html', context)
+
+@login_required
+def search_user(request):
+    if request.method == "POST":
+        search = request.POST.get('search')
+        searched = search_for_users(search) if search else None
+        if searched:
+            return render(request,'search_user.html',{'search':search,'searched':searched})
+
+    search = request.session.get('search')
+    if search:
+        searched = search_for_users(search)
+        return render(request,'search_user.html',{'search':search,'searched':searched})
+    else:
+        return redirect('profile')
+
+
+@login_required
+def follow_user(request):
+    if request.method == 'POST':
+        followed_user_id = request.POST.get('followed_user')
+        following_user_id = request.POST.get('following_user')
+        #Needs refactoring
+        followed_user=User.objects.get(pk=followed_user_id)
+        following_user=User.objects.get(pk=following_user_id)
+        
+        # deny the follow if the user is blocked 
+        if followed_user.profile.blocked.filter(id=following_user_id).exists():
+            messages.error(request, "You cannot follow this user because they have blocked you.")
+            return redirect('profile')
+          
+        # Handle the follow request and get response details
+        is_private, followed_username = handle_follow_request(followed_user_id, following_user_id)
+        if is_private:
+            messages.success(request, 'A follow request has been sent.')
+        else:
+            messages.success(request, f"You have started following {followed_username}.")
+
+        # Preserve the search context if it exists
+        search = request.POST.get('search')
+        if search:
+            request.session['search'] = search
+
+        return HttpResponseRedirect(request.META.get('HTTP_REFERER', '/'))
+    return HttpResponseForbidden()
+   
+@login_required
+def unfollow_user(request):
+    if request.method == 'POST':
+        unfollowed_user_id = request.POST.get('unfollowed_user')
+        unfollowing_user_id = request.POST.get('unfollowing_user')
+        unfollowed_user = User.objects.get(pk=unfollowed_user_id)
+
+        handle_unfollow_request(unfollowed_user_id, unfollowing_user_id)
+        messages.success(request, f"You have unfollowed {unfollowed_user.username}.")
+
+        search = request.POST.get('search')
+        if search:
+            request.session['search'] = search
+
+        return HttpResponseRedirect(request.META.get('HTTP_REFERER', '/'))
+    return HttpResponseForbidden()
+
+@login_required
+def delete_notification(request):
+    if request.method == "POST":
+        clicked = request.POST.get('clicked')
+        if clicked == "exit":
+            notification_id = request.POST.get('notification')
+            delete_user_notification(notification_id)
+    return HttpResponseRedirect(request.META.get('HTTP_REFERER', '/'))

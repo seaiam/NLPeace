@@ -13,31 +13,34 @@
                     <div>
                         <form method="post" id="widget-form" class="widget-post__form" enctype="multipart/form-data" name="form" aria-label="post widget">
                             {% csrf_token %}
-                            <div id="preview_image" style="display: none;">
-                                <button type="button" class="close" onclick="handleOnDeletePhotoClick()" style="color: #00001c;">&times;</button>
-                                <img class="card-img-top mb-2" src="#" />
-                            </div>
                             <div class="widget-post__content">
                             <textarea name="{{ form.content.name }}" id="post-content" class="widget-post__textarea scroller" placeholder="Start a Post...">{{ form.content.value|default:'' }}</textarea>
+                            </div>
+                            <div id="create-preview-image" style="display: none;">
+                                <button type="button" class="close" onclick="handleDeletePostImage('create-preview-image')" style="color: #00001c;">&times;</button>
+                                <img class="card-img-top mb-2" src="#" />
                             </div>
                             <div class="widget-post__options is--hidden" id="stock-options">
                             </div>
                             <div class="widget-post__actions post--actions">
                                 <div class="post-actions__attachments">
-                                    <label for="upload-image" class="post-actions__label" onclick="handleOnPhotoClick()">
+                                    <label for="create-upload-image" class="post-actions__label">
                                     <i class="fa fa-camera" sty aria-hidden="true"></i> 
                                     Photo
                                     </label>
+                                    <input type="file" id="create-upload-image" name="image" accept="image/*" style="display: none;">
                                     {{ form.image }}
                                     &nbsp; &nbsp; &nbsp; &nbsp;
 
-                                    <label for="upload-image" class="post-actions__label">
+                                    <label for="create-upload-video" class="post-actions__label">
                                         <i class="fa fa-video" aria-hidden="true"></i> 
-                                    Video
+                                        Video
                                     </label>
+                                    <input type="file" id="create-upload-video" name="video" accept="video/*" style="display: none;">
+                                    <p hidden> {{ form.video }} </p>
                                     &nbsp; &nbsp; &nbsp; &nbsp;
 
-                                    <label for="upload-image" class="post-actions__label">
+                                    <label for="upload-video" class="post-actions__label">
                                         <i class="fa fa-list-ul" aria-hidden="true"></i> 
                                     Poll
                                     </label>
@@ -54,61 +57,50 @@
     </div>
 </div>
 
-{% for post in posts %}
-<div class="d-flex justify-content-center align-items-center">
-        <div class="card" style="width: 39rem; border-radius: 30px;margin:20px 0px 20px 0px;  overflow: hidden;background: linear-gradient(to right, #F9D1C4 0%, #9BBDDD 51%, #F9D1C4 100%);">
-            <div class="card-body">
-                <div class = "row">
-                    <div class = "col-2">
-                        {% if post.user.profile and post.user.profile.pic %}
-                            <img src="{{ post.user.profile.pic.url }}" alt="{{ post.user.username }}'s profile picture" class="user-pic">
-                        {% else %}
-                            <img src="{% static 'default.jpg' %}" class="user-pic" alt="{{ post.user.username }}'s profile picture" />
-                        {% endif %}
-                    </div>
-                        <h5 class="card-title" style = "padding-bottom: 5%;">@{{ post.user.username }}</h5> 
-                </div>
-                {% if post.image %}
-                <img class="card-img-top mt-2" src="{{ post.image.url }}" alt="Post image" />
-                {% endif %}
-                <p class="card-text">{{ post.content }}</p>
-                <h6 class="card-subtitle mb-2" style ="float: right;">{{ post.created_at|date:"F d, Y H:i" }}</h6>
-                <br>
-                <hr>
-                <div class ="icons-list" >
-                    <div class="feed" ><i class="fa fa-thumbs-up" aria-hidden="true"> Likes</i></div>
-                    <div class="feed"> <i class="fa fa-comment" aria-hidden="true"> <a href="{% url 'comment' post_id=post.id %}">Comment</a></i> </div> 
-                    <div class="feed"><i class="fa fa-retweet" aria-hidden="true"> Repost</i> </div>
-                    <div class="feed post-actions__label">
-                        <i class="fa fa-flag" onclick="handleReportClick(this)" aria-hidden="true"> Report</i>
-                        <input type="hidden" value="{{ post.id }}" />
-                    </div>
-                </div>
-            </div>
-        </div>
-</div>
+<div class="container">
+    <div class="posttab-btns">
+        <button class="posttabbutton" onclick="openPostTab(event, 'All')" id="defaultOpenPost">All</button>
+        <button class="posttabbutton" onclick="openPostTab(event, 'Followers')">Following</button>
+    </div>
+    <div id="All" class="posttabcontent">
+        <!-- All Posts -->
+        {% for post in posts %}
+            {% include "posts.html" with post=post %}
+        {% empty %}
+            <div class="no-post">No posts available.</div>
+        {% endfor %}
+    </div>
 
-{% empty %}
-<li>No posts available. </li>
-{% endfor %}
-
-<div id="reportModal" class="popup">
-    <div class="popup-content">
-        <span class="close" onclick="handleReportClose()">&times;</span>
-        <p class="modalTitle">Report</p>
-        <form action="report/" method="POST">
-            {% csrf_token %}
-            {{ reportPostForm.post }}
-            <label for="{{ reportPostForm.category.id_for_label }}" class="form-outline mb-4" style="font-size:20px;">Category</label>
-            {{ reportPostForm.category }}
-            <br>
-            <label for="{{ reportPostForm.info.id_for_label }}" class="form-outline mb-4" style="font-size:20px;">Additional information</label>
-            {{ reportPostForm.info }}
-            <div class="text-md-right">
-                <button class="saveButton">Report</button>
-            </div>
-        </form>
+    <div id="Followers" class="posttabcontent">
+        <!-- Follower Posts -->
+        {% for post in followPost %}
+            {% include "posts.html" with post=post %}
+        {% empty %}
+            <div class="no-post">No follower posts available.</div>
+        {% endfor %}
     </div>
 </div>
+
+<script>
+// All posts or Followers posts tabs
+    function openPostTab(event, posttabName) {
+        var posttabcontent, posttabbutton;
+
+        posttabcontent = document.getElementsByClassName("posttabcontent");
+        for (i = 0; i < posttabcontent.length; i++) {
+            posttabcontent[i].style.display = "none";
+        }
+
+        posttabbutton = document.getElementsByClassName("posttabbutton");
+
+        for (i = 0; i < posttabbutton.length; i++) {
+            posttabbutton[i].className = posttabbutton[i].className.replace(" active", "");
+        }
+        document.getElementById(posttabName).style.display = "block";
+        event.currentTarget.classList.add("active");
+    }
+    // opening tab 1 by default
+    document.getElementById("defaultOpenPost").click();
+</script>
 
 {% endblock %}

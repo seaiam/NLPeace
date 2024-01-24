@@ -1,0 +1,24 @@
+{% extends 'base.html' %}
+
+
+{% block content %}
+
+<div class="container">
+
+    <h2 class="notification-text"> Your Bookmarked Posts </h2>
+    <div id="Posts" class="posttabcontent">
+
+        {% for post in bookmarked_posts %}
+
+        {% load static %}
+        
+        {% include "posts.html" with post=post %}
+
+        {% empty %}
+            <h4 class="notification-text"> No saved posts. </h4>
+        {% endfor %}
+
+    </div>
+</div>
+
+{% endblock %}

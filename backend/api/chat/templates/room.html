@@ -1,0 +1,598 @@
+<!-- chat/templates/chat/room.html -->
+{%load static%}
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.5.0/css/all.css" integrity="sha384-B4dIYHKNBt8Bc12p+WXckhzcICo0wtJAoU8YZTY5qE0Id1GSseTk6S+L3BlXeVIU" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.5.0/font/bootstrap-icons.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.2/font/bootstrap-icons.min.css">
+    <link rel="stylesheet"  type="text/css" href="{% static 'messages.css' %}">
+    <link rel="stylesheet" type="text/css" href="{% static 'style.css' %}">
+    <title>Chat Room</title>
+    <script>
+        function clickElement(id) {
+            const element = document.getElementById(id);
+            element.click();
+        }
+    </script>
+</head>
+<body>
+    {% include "navbar.html" %}
+    <!-- Sidebar menu -->
+    <div class="collapse d-lg-block" id="sidebarMenu">
+        {% block sidebar %}
+        <div class="sidebar">
+            <ul>
+                {% if user.is_authenticated %}
+                <li class="sidebar-item">
+                    <a href="{% url 'profile' %}">
+                        <i class="fa fa-user-circle"></i>
+                        Profile
+                    </a>
+                </li>
+                <li class="sidebar-item">
+                    <a href="{% url 'home' %}">
+                        <i class="fa fa-home"></i>
+                        Home
+                    </a>
+                </li>
+                <li class="sidebar-item">
+                    <a href="{% url 'messages' %}">
+                        <i class="fas fa-comment-dots"></i>
+                        Messages
+                    </a>
+                </li>
+                <li class="sidebar-item">
+                    <a href="{% url 'notifications' %}">
+                        <!-- user will see a red icon when the user receives a notification -->
+                        <i class="fa fa-bell icon-button">
+                            {% for notification in data %}
+                            {% if request.user.id != notification.sent_by.id %}
+                            <span class="icon-button__badge"></span>
+                            {% endif %}
+                            {%endfor%}
+                        </i>
+                        Notifications
+                    </a>
+                </li>
+                <li class="sidebar-item">
+                    <a href="{% url 'bookmarked_posts' %}">
+                        <i class="fa fa-bookmark"></i>
+                        Bookmarks
+                    </a>
+                </li>
+                <li class="sidebar-item">
+                    <a href="{% url 'profile_settings' %}">
+                        <i class="fa fa-cog"></i>
+                        Settings
+                    </a>
+                </li>
+                <li class="sidebar-item">
+                    <a href="{% url 'logout_user' %}">
+                        <i class="fas fa-sign-out-alt"></i>
+                        Log out
+                    </a>
+                </li>
+                {% endif %}
+            </ul>
+        </div>
+        {% endblock %}
+    </div>   
+
+        <div class="popup-container">
+            {% if messages %}
+            {% for message in messages %}
+            <div class="alert alert-warning alert-dismissible fade show ">
+                {{ message }}
+                <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
+                {% endfor %}
+                {% endif %}
+            </div>
+        </div>
+
+     <!-- Messaging Container -->
+     <div class="container">
+        <div class="content-wrapper">
+            <div class="row gutters">
+                <div class="col-xl-10 col-lg-12 col-md-12 col-sm-12 col-12">
+                    <div class="card m-0">
+                        <div class="row no-gutters">
+                            <div class="col-xl-4 col-lg-4 col-md-4 col-sm-3 col-3">
+                                <div class="users-container">
+                                    <div class="message-search-box">
+                                            <a href="{% url 'messages' %}">
+                                                <button type="button" class="btn btn-default p-2 rounded-circle btn-small">
+                                                <i class="fa fa-arrow-left"></i>
+                                                </button>
+                                            </a>
+                                    </div>
+                                    <ul class="users">
+                                        <li class="person" >
+                                            <div class="user">
+                                                {% if target_user.profile and target_user.profile.pic %}
+                                                <img src="{{ target_user.profile.pic.url }}" class="target_user-pic" alt="{{ target_user.username }}'s profile picture">
+                                                {% else %}
+                                                <img src="{% static 'default.jpg' %}" class="reply-user-pic" alt="{{ target_user.username }}'s profile picture" />
+                                                {% endif %}
+                                            </div>
+                                            <p class="message-list">
+                                                <span class="name">{{target_user.username}}</span>
+                                            </p>
+                                        </li>
+                                    </ul>
+                                </div>
+                            </div>
+                            <div class="col-xl-8 col-lg-8 col-md-8 col-sm-9 col-9">
+                                <div class="opened-user-message">
+                                    <span class="name">{{target_user.username}}</span>
+                                </div>
+                                <div class="message-container" id="message-container" >
+
+                                    {% if target_user.profile.messaging_is_private and not request.user in target_user.profile.followers.all and request.user != target_user %}
+                                    <ul class="message-box messageContainerScroll" >
+                                        <h3 style="display: flex; justify-content: center; align-items: center; margin-top:10px">
+                                            This user only allows messages from their followers
+                                        </h3><br>
+                                        <p style="display: flex; justify-content: center; align-items: center;" >
+                                             <a href="{% url 'guest' target_user.id %}"> Follow them on their profile</a>
+                                        </p>    
+                                    </ul>
+                                    {% else %}
+                                    <ul class="message-box messageContainerScroll" id = "chat-log" >
+                                    </ul>
+                                    {% endif %}
+                                </div>
+                                {% if not target_user.profile.messaging_is_private or request.user in target_user.profile.followers.all or target_user == request.user %}
+                                    <form method="post" id="message-form" class="widget-post__form" enctype="multipart/form-data" name="form" aria-label="post widget">
+                                        {% csrf_token %}
+                                        <div class="widget-post__content">
+                                            <textarea name="" id="chat-message-input" class="widget-post__textarea scroller" placeholder="Start a Post..."></textarea>
+                                        </div>
+                                        <div id="preview_image" style="display: none;">
+                                            <button type="button" class="close" onclick="" style="color: #00001c;">&times;</button>
+                                            <img class="card-img-top mb-2" src="#" />
+                                        </div>
+                                        <div class="widget-post__options is--hidden" id="stock-options">
+                                        </div>
+                                        <div class="widget-post__actions post--actions">
+                                            <div class="post-actions__attachments">
+                                                <label for="upload-image" class="post-actions__label"
+                                                       onclick="clickElement('{{ image_upload_form.image.id_for_label }}')">
+                                                <i class="bi bi-camera" sty aria-hidden="true"></i> 
+                                                </label>
+                                                &nbsp;
+                
+                                                <label for="upload-image" class="post-actions__label"
+                                                       onclick="clickElement('{{ file_upload_form.file.id_for_label }}')">
+                                                    <i class="bi bi-paperclip" aria-hidden="true"></i> 
+                                                </label>
+                                                &nbsp; 
+                
+                                                <label for="gif-search-icon" class="post-actions__label" id="gif-search-icon-label">
+                                                    <i class="bi bi-filetype-gif" aria-hidden="true"></i>
+                                                </label>
+                                            </div>
+                                            <div class="post-actions__widget">
+                                                <button id="chat-message-submit" type="submit" class="btn post-actions__publish">Send</button>
+                                            </div>
+                                        </div>
+                                        <div id="gif-search-modal" style="display:none;">
+                                            <input type="text" id="gif-search-input" placeholder="Search GIFs">
+                                            <button id="gif-search-submit" class="btn btn-info">Search</button>
+                                            <div id="gif-search-results"></div>
+                                        </div>
+                                    </form>
+                                {%else%}
+                                {% endif %} 
+                         
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+   
+
+    <form id="room-file-upload-form" action="{% url 'upload_file' target_user.id %}" method="POST"
+          enctype="multipart/form-data" class="d-none" >
+        {% csrf_token %}
+        {{ file_upload_form.file }}
+    </form>
+
+    <form id="room-image-upload-form" action="{% url 'upload_image' target_user.id %}" method="POST"
+          enctype="multipart/form-data" class="d-none" >
+        {% csrf_token %}
+        {{ image_upload_form.image }}
+    </form>
+
+    <div>
+        <div id="modalDmReport" class="popup">
+            <div class="popup-content">
+                <span id="dmReportClose" class="close" onclick="toggleModal('modalDmReport')">&times;</span>
+                <p class="modalTitle">DM Report</p>
+                <form id="dmReportForm" action="" method="POST">
+                    {% csrf_token %}
+                    <label for="{{ dm_report_form.category.id_for_label }}" class="form-outline mb-4" style="font-size:20px;">Category</label>
+                    {{ dm_report_form.category }}
+                    <br>
+                    <div class="text-md-right">
+                        <button id="buttonDmReport" class="saveButton">Report</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    
+    <script src="{% static 'reconnecting-websocket.js' %}"></script>
+    
+    <script>
+        const roomName={{room_name_json}};
+        const username={{username}};
+        const chatSocket = new ReconnectingWebSocket(
+            'ws://' + window.location.host + '/ws/chat/' + roomName + '/'
+        );
+
+        chatSocket.onopen = function(e) {
+            fetchMessages();
+        }; 
+
+        const fetchMessages = function() {
+            chatSocket.send(JSON.stringify({
+                'command': 'fetch_messages',
+                'room_id': roomName ,
+                'username': username,
+            }));
+        };
+
+        chatSocket.onerror = function(e){
+            console.log(e)
+        };
+
+        chatSocket.onmessage = function(e) {
+            var data = JSON.parse(e.data);
+            if (data['command']==='messages'){
+                for (let i=0; i<data['messages'].length;i++){
+                    createMessage(data['messages'][i], roomName,true);
+                }
+            } else if (data['command']==='new_message'){
+                createMessage(data['message'], roomName,true);
+            } else if (data['command']==='fetch_messages_more') {
+                for (let i=0; i<data['messages'].length;i++){
+                    createMessage(data['messages'][i], roomName,false);
+                }
+            }
+        };
+        const createMessage = function(message, roomName, check) {
+            const author = message['author'];
+            const msgListTag = document.createElement('li');
+            const messageDiv = document.createElement('div');
+            const timeDiv = document.createElement('div');
+            const dropdownDiv = document.createElement('div');
+            const dropdownToggle = document.createElement('a');
+            const dropdownIcon = document.createElement('i');
+            const dropdownMenu = document.createElement('ul');
+            const dropdownItem = document.createElement('li');
+            const reportLink = document.createElement('button');
+            const csrftoken = '{{ csrf_token }}';
+            const modalDmReport = document.getElementById("modalDmReport");
+
+            const csrftokeninput = document.createElement('input'); // data for csrf token, need to do like this
+            csrftokeninput.setAttribute('name', 'csrfmiddlewaretoken');
+            csrftokeninput.setAttribute('type', 'hidden');
+            csrftokeninput.setAttribute('value', csrftoken);
+
+            let content = getContent(message);
+            
+            // messageDiv.className = 'message-pic';
+            timeDiv.className= 'message-time';
+            // content.textContent = message.content;
+            timeDiv.textContent = new Date(message.timestamp).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+
+            if (message.gif_url!=null) {
+                const gif = content;
+                gif.className = 'chat-gif-image';
+                msgContent = document.createElement('img');
+                content = document.createElement('a');
+                gif.style.width = 'auto';
+                gif.style.height = 'auto'; 
+                content.appendChild(gif);
+                popup = createImagePopup(message);
+                document.body.appendChild(popup);
+                content.onclick = () => {
+                    popup.style.display = 'block';
+                    return true;
+                }
+                
+            } else if (message.is_image) {
+                const img = content;
+                img.className = 'message-image';
+                content = document.createElement('a');
+                content.appendChild(img);
+                popup = createImagePopup(message);
+                document.body.appendChild(popup);
+                content.onclick = () => {
+                    popup.style.display = 'block';
+                    return true;
+                }
+            } else {
+                content.className = 'message-text';
+            }
+        
+            if (author === username){
+                msgListTag.className= 'message-right';
+                msgListTag.appendChild(timeDiv);
+                msgListTag.appendChild(content);
+                msgListTag.appendChild(messageDiv);
+            } else {
+                msgListTag.className ='message-left';
+                dropdownDiv.className = 'dropdown-message';
+                dropdownToggle.className = 'hidden-arrow';
+                dropdownToggle.setAttribute('data-toggle', 'dropdown');
+                dropdownToggle.setAttribute('aria-expanded', 'false');
+                dropdownIcon.className = 'fas fa-ellipsis-v';
+                dropdownMenu.className = 'dropdown-menu';
+                reportLink.className = 'dropdown-item';
+                if (message.can_report){
+                    reportLink.innerHTML = '<i class="far fa-flag"></i>Report'
+                    reportLink.onclick = () => {   
+                        const reportForm = document.getElementById('dmReportForm');
+                        reportForm.setAttribute('action', `report_message/${message.id}`);
+                        modalDmReport.style.display = "block";
+                    }
+                }
+                else {
+                    reportLink.innerHTML = '<i class="far fa-flag"></i>Unreport'
+                    reportLink.onclick = () => {
+                        const reportForm = document.getElementById('dmReportForm');
+                        reportForm.setAttribute('action', `report_message/${message.id}`);
+                        reportForm.submit();
+                    }
+                }
+                msgListTag.appendChild(messageDiv);
+                msgListTag.appendChild(content);
+                dropdownToggle.appendChild(dropdownIcon);
+                dropdownItem.appendChild(reportLink);
+                dropdownMenu.appendChild(dropdownItem);
+                dropdownDiv.appendChild(dropdownToggle);
+                dropdownDiv.appendChild(dropdownMenu);
+
+                msgListTag.appendChild(messageDiv);
+                msgListTag.appendChild(content);
+                dropdownToggle.appendChild(dropdownIcon);
+                dropdownItem.appendChild(reportLink);
+                dropdownMenu.appendChild(dropdownItem);
+                dropdownDiv.appendChild(dropdownToggle);
+                dropdownDiv.appendChild(dropdownMenu);
+
+                msgListTag.appendChild(dropdownDiv);
+                msgListTag.appendChild(dropdownDiv);
+                msgListTag.appendChild(timeDiv);
+            }
+
+            const chatLog = document.querySelector('.messageContainerScroll');
+                if (check===true){
+                    chatLog.appendChild(msgListTag);
+                } else {
+                    chatLog.insertBefore(msgListTag, chatLog.firstChild); 
+                }
+
+
+            chatLog.scrollTop = chatLog.scrollHeight;
+
+            msgListTag.scrollIntoView(false); 
+           };
+
+        const getContent = function(message) {
+            let element = null;
+            if (message.is_file_download) {
+                element = document.createElement('a');
+                element.href = `download/${message.content}`;
+                element.textContent = message.content;
+            } else if (message.is_image) {
+                element = document.createElement('img');
+                element.src = message.src;
+            } else if (message.gif_url!=null) {
+                element = document.createElement('img');
+                element.src = message.gif_url;
+                element.className = 'chat-gif-image';
+                element.style.width = 'auto';
+                element.style.height = 'auto'; 
+            }else {
+                element = document.createElement('p');
+                element.textContent = message.content;
+            }
+            return element
+        }
+
+        const chatContainer = document.getElementById('message-container');
+
+        chatContainer.addEventListener('scroll', () => {
+            if (chatContainer.scrollTop === 0) {
+                fetchMoreMessages();
+            }
+        }); 
+
+        const fetchMoreMessages = function() {
+            chatSocket.send(JSON.stringify({
+                'command': 'fetch_messages_more',
+                'room_id': roomName ,
+                'username': username,
+            }));
+        };
+
+        const createImagePopup = function(message) {
+            const popup = document.createElement('div');
+            const content = document.createElement('div');
+            const close = document.createElement('span');
+            const img = document.createElement('img');
+            popup.id = `room-image-${message.src}`;
+            popup.classList.add('popup');
+            content.classList.add('popup-content');
+            close.classList.add('close');
+            close.innerHTML = '&times;';
+            img.src = message.src;
+            popup.appendChild(content);
+            content.appendChild(close);
+            content.appendChild(img);
+            close.onclick = () => popup.style.display = 'none';
+            return popup;
+        }
+
+        chatSocket.onclose = function(e) {
+            console.error('Chat socket closed unexpectedly');
+            const log = document.querySelector('#chat-log');
+            log.innerHTML = '';
+        };
+
+        document.querySelector('#chat-message-input').focus();
+        document.querySelector('#chat-message-input').onkeyup = function(e) {
+            if (e.key === 'Enter') {  
+                document.querySelector('#chat-message-submit').click();
+            }
+        };
+
+        document.querySelector('#chat-message-submit').onclick = function(e) {
+            e.preventDefault();
+            const messageInputDom = document.querySelector('#chat-message-input');
+            const message = messageInputDom.value;
+            
+            const messageType = message.startsWith('http://') || message.startsWith('https://') ? 'gif' : 'text';
+
+            const messageData = {
+                message: message,
+                type: messageType
+            };
+
+
+            //AJAX request to classify the message
+            fetch('/chat/classifyMessage/', {
+                method : 'POST',
+                headers : {
+                    'Content-Type' : 'application/json',
+                    'X-CSRFToken' : getCSRFToken()
+                },
+                body : JSON.stringify({ 'message' : message})
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.is_allowed) {
+                    //send message through WebSocket
+                    chatSocket.send(JSON.stringify({
+                        'command':'new_message',
+                        'message': message,
+                        'type': messageType,
+                        'from':username,
+                        'room_name': roomName
+                    }));
+                    messageInputDom.value = '';
+                } else {
+                    // Display error message
+                    alert(data.error_message);
+                }
+            })
+            .catch(error => console.error('Error: ', error));
+        };
+
+        document.querySelector('#{{ file_upload_form.file.id_for_label }}').onchange = function(e) {
+            if (e.target.files && e.target.files.length) {
+                const form = document.querySelector('#room-file-upload-form');
+                form.submit();
+            }
+        };
+
+        document.querySelector('#{{ image_upload_form.image.id_for_label }}').onchange = function(e) {
+            if (e.target.files && e.target.files.length) {
+                const form = document.querySelector('#room-image-upload-form');
+                form.submit();
+            }
+        };
+
+        function getCSRFToken() {
+            let csrfToken = null;
+            if (document.cookie && document.cookie !== '') {
+                const cookies = document.cookie.split(';');
+                for (let i = 0; i < cookies.length; i++) {
+                    const cookie = cookies[i].trim();
+                    if (cookie.substring(0, 10) === ('csrftoken=')) {
+                        csrfToken = decodeURIComponent(cookie.substring(10));
+                        break;
+                    }
+                }
+            }
+            return csrfToken;
+        }
+
+        document.addEventListener('DOMContentLoaded', function() {
+            document.getElementById('gif-search-icon-label').addEventListener('click', function() {
+            var modal = document.getElementById('gif-search-modal');
+            var gifSearchInput = document.getElementById('gif-search-input');
+            var gifSearchResults = document.getElementById('gif-search-results');
+
+            // Clear previours searches
+            gifSearchInput.value = '';
+            gifSearchResults.innerHTML = '';
+
+            if (modal.style.display === 'none' || modal.style.display === '') {
+                modal.style.display = 'block';
+            } else {
+                modal.style.display = 'none';
+            }
+            });
+            document.getElementById('gif-search-submit').addEventListener('click', function(event) {
+                event.preventDefault(); 
+                var query = document.getElementById('gif-search-input').value;
+                fetchGifs(query);
+            });
+            function fetchGifs(query) {
+                var giphyUrl = 'https://api.giphy.com/v1/gifs';
+                var apiKey = '9a6zGfy6TBTv459CNi2y3KtOWkB69vOx';
+                var url = query ? `${giphyUrl}/search?api_key=${apiKey}&q=${query}` : `${giphyUrl}/trending?api_key=${apiKey}`;
+                fetch(url)
+                .then(response => response.json())
+                .then(data => {
+                    displayGifResults(data);
+                })
+                .catch(error => console.error('Error searching GIFs:', error));
+            }
+            function displayGifResults(data) {
+                var resultsContainer = document.getElementById('gif-search-results');
+                resultsContainer.innerHTML = '';
+                
+                data.data.forEach(gif => {
+                    var img = document.createElement('img');
+                    img.src = gif.images.fixed_height.url;
+                    img.addEventListener('click', function() {
+                        sendGifMessage(gif.images.fixed_height.url);
+                        document.getElementById('gif-search-modal').style.display = 'none'; 
+                    });
+                    resultsContainer.appendChild(img);
+                });
+            }
+            function sendGifMessage(gifUrl) {
+                chatSocket.send(JSON.stringify({
+                    'command': 'new_message',
+                    'message': '', 
+                    'gif_url': gifUrl,
+                    'from': username,
+                    'room_name': roomName
+                }));
+            }
+        });
+
+
+    </script>
+
+     <!-- Bootstrap JS and Popper.js -->
+     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
+     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+     <script src="{% static 'style.js' %}" type="text/javascript"></script>
+
+</body>
+</html>

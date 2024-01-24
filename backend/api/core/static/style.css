@@ -3,6 +3,10 @@ body {
   background-color: #00001c;
 }
 
+.clickable-label {
+  cursor: pointer;
+}
+
 /* For login page */
 
 .login-box {
@@ -69,26 +73,18 @@ body {
   margin-top: 15px;
 }
 
-.fa-user-alt {
+.fa-user-alt, .fa-lock, .fa-envelope, .fa-ellipsis-h {
   color: #00001c;
 }
 
-.fa-lock {
-  color: #00001c;
-}
-
-.fa-envelope {
-  color: #00001c;
-}
-
-.login-button {
+.login-button, .passwordchange-button {
   display: flex;
   justify-content: center;
   align-items: center;
   margin-top: 90px;
 }
 
-.button1 {
+.button1, .button2 {
   background: none;
   border: 1px solid black;
   border-radius: 20px;
@@ -153,19 +149,6 @@ button:hover {
   justify-content: center;
   align-items: center;
   margin-top: 40px;
-}
-
-.button2 {
-  background: none;
-  border: 1px solid black;
-  border-radius: 20px;
-  width: 70%;
-  padding: 10px;
-  font-weight: 600;
-  transition: 0.5s;
-  background-size: 200% auto;
-  box-shadow: 0 0 20px #eee;
-  background-image: linear-gradient(to right, #F9D1C4 0%, #9BBDDD 51%, #F9D1C4 100%);
 }
 
 button:hover {
@@ -254,13 +237,6 @@ button:hover {
   justify-content: center;
 }
 
-.passwordchange-button{
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  margin-top:90px;
-}
-
 hr{
     color:#D9D9D9;
     border-color: #D9D9D9;
@@ -339,7 +315,7 @@ hr{
 
 .profile-page .box {
   margin-top: -31px;
-  margin-bottom: 26px;
+  margin-bottom: 15px;
 }
 
 .box {
@@ -347,27 +323,18 @@ hr{
   z-index: 1;
   background: #00001c;
   border-radius: 15px;
-  max-width: 620px;
+  max-width: 650px;
   margin: 0 auto 100px;
   padding: 35px;
 }
 
 /* css for user followers and following*/
-.followers {
+.followers, .following {
   color: #d9d9d9;
   text-decoration: none;
 }
 
-.following {
-  color: #d9d9d9;
-  text-decoration: none;
-}
-
-.fa-user-friends {
-  color: #d9d9d9;
-}
-
-.fa-search {
+.fa-user-friends, .fa-search, .fa-ellipsis-v, .fa-comment-dots {
   color: #d9d9d9;
 }
 
@@ -429,12 +396,23 @@ hr{
   border-radius: 100%;
 }
 
+/* Follower / Following buttons */
+.editFollowButton {
+  display: inline-block;
+  padding: 0px 4px;
+  border: none;
+  color: #D9D9D9;
+  text-align: center;
+  text-decoration: none;
+  background: none;
+}
+
 /* edit profile button */
 .row {
   align-items: center;
 }
 
-.editButton {
+.editButton, .statusButton {
   display: inline-block;
   padding: 5px 12px;
   border: none;
@@ -548,9 +526,22 @@ input[type="file"] {
   padding-right: 30px;
   padding-left: 30px;
 }
+/* Popup for follow */
 
-/* Popup for Bio */
-.popup {
+.followModal-content {
+  position: relative;
+  background-color: #00001c;
+  margin: 15% auto;
+  padding: 20px;
+  border: 1px solid #888;
+  width: 80%;
+  max-width: 500px;
+  box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2);
+}
+
+
+/* Popup for Bio and Follow */
+.popup, .followModal {
   display: none;
   position: fixed;
   z-index: 3;
@@ -616,6 +607,14 @@ input[type="file"] {
 .modalTitle {
   text-align: left;
   color: #D9D9D9;
+  font-size: 21px;
+}
+
+.no-post{
+  color: #D9D9D9;
+  font-size: larger;
+  text-align:center;
+  margin-top:30px;
 }
 
 /* Post Creation Form */
@@ -633,7 +632,7 @@ input[type="file"] {
   height: 100%;
   padding: .5em;
   border: none;
-  background-color: #D9D9D9;
+  background-color: #f2f2f2;
 }
 
 .widget-post__options {
@@ -652,6 +651,31 @@ input[type="file"] {
   cursor: pointer;
   font-size: 16px;
   color: #00001c;
+}
+
+.posttabs {
+  display: flex;
+  justify-content: space-around;
+  padding: 5px 0;
+}
+
+.posttab {
+  text-decoration: none;
+  color: #00001c; /* D9D9D9 */
+  padding: 5px 15px;
+  padding-top: 10px;
+  transition: background-color 0.3s;
+}
+
+.posttab:hover {
+  background-color: #d9d9d9;
+  text-decoration: none;
+  color: #00001c;
+}
+
+.posttab.active {
+  border-bottom: 2px solid #00001c;
+  padding-bottom: 8px;
 }
 
 .widget-post__actions {
@@ -683,6 +707,14 @@ input[type="file"] {
   border-color: #fff;
 }
 
+.post-actions__publish:hover {
+  color: #00001c;
+  background-color: transparent; 
+  border-color: #00001c; 
+  border-width: 2px;
+  transition: background-color 0.3s, color 0.3s, border-color 0.3s;
+}
+
 .scroller::-webkit-scrollbar {
   display: none;
 }
@@ -703,63 +735,35 @@ input[type="file"] {
   top: 0;
 }
 
-/* Media Queries */
-@media (max-width: 991.98px) {
-  .sidebar {
-    width: 100%;
-    height: 100%;
-    position: relative;
-    top: 0;
-  }
-}
 
 /* privacy settings page */
-.privacy-box{
-  position: absolute;
-  width: 500px;
-  height: 300px;
-  border-radius: 15px;
-  padding: 35px;
-  left: 0;
-  right: 0;
-  top: 0;
-  bottom: 0;
-  background-image: linear-gradient(0deg, #F9D1C4, #9BBDDD);
-  margin: auto;
-  overflow: auto;
-
-}
 
 .privacy-button {
   display: flex;
   justify-content: center;
   align-items: center;
   margin-top: 20px;
+  margin-bottom:10px;
 }
 
-.save-Button {
-  background: none;
-  border: 1px solid black;
-  border-radius: 20px;
-  width: 50%;
+.form-privacy {
+  
+  height: 40px;
+  background: #ffffff;
   padding: 10px;
-  font-weight: 600;
-  transition: 0.5s;
-  background-size: 200% auto;
-  box-shadow: 0 0 20px #eee;
-  background-image: linear-gradient(to right, #F9D1C4 0%, #9BBDDD 51%, #F9D1C4 100%);
+  border-color: #000;
+  border-radius: 10px;
+  margin-top:10px;
 }
 
-button:hover {
-  background-position: right center;
+.account-private{
+  color: #D9D9D9;
+  font-size: larger;
+  text-align:center;
+  margin-top:30px;
 }
 
-.profile-link {
-  padding-top: 50px;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
+
 
 /* Post feed page */
 img {
@@ -770,17 +774,32 @@ img {
   border-radius:100px;
   width:80px;
   margin-right: 15px;
+  margin-top: 0;
 }
 
-.icons-list{
-color: #00001c;
-display: grid;  
-grid-template-columns: 1fr 1fr 1fr 1fr;  
-padding-bottom:10px;
+.icons-list{/* does not have report icon */
+  color: #00001c;
+  display: grid;  
+  grid-template-columns: 1fr 1fr 1fr 1fr 1fr 1fr;  
+  padding-bottom:10px;
+}
+
+.icons-list1{ /* has report icon */
+  color: #00001c;
+  display: grid;  
+  grid-template-columns: 1fr 1fr 1fr 1fr 1fr;  
+  padding-bottom:10px;
+}
+
+.icons-list-2{/* for comments page */
+  color: #00001c;
+  display: grid;  
+  grid-template-columns: 1fr 1fr 1fr 1fr 1fr;  
+  padding-bottom:10px;
 }
 
 .feed{
-  margin-left:20%;
+  margin-left:18%;
 }
 
 hr {
@@ -790,6 +809,466 @@ hr {
 .card-subtitle{
   color: #00001c;
 }
+
+/*repost button */
+.repost-button{
+  border: none;
+  padding: 0;
+  background: none;
+  color: #00001c;
+  
+}
+button:focus {
+  outline: none;
+}
+
+.reposted-button{
+border: none;
+padding: 0;
+background: none;
+color: #0047ab;
+}
+
+.feed-reposted{
+  color:#0047ab;
+  margin-left:18%;
+}
+
+.repost-info{
+  font-style: italic;
+  margin-bottom:10px;
+  font-size: large;
+}
+
+button:focus {
+  outline: none;
+}
+
+/*bookmarks button */
+.bookmark-button{
+  border: none;
+  padding: 0;
+  background: none;
+  color: #00001c;
+  
+}
+button:focus {
+  outline: none;
+}
+
+.bookmarked-button{
+border: none;
+padding: 0;
+background: none;
+color: #0047ab;
+}
+
+.feed-bookmark{
+  color:#0047ab;
+  margin-left:18%;
+}
+
+/* seacrh-user css*/
+.search-user-text{
+  color: white;
+  text-align: center;
+}
+
+.user-button {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  /* margin-top: 20px; */
+}
+
+.follow-button {
+  background: none;
+  border: 1px solid black;
+  border-radius: 20px;
+  width: 50%;
+  padding: 10px;
+  font-weight: 600;
+  color: #00001c;
+  transition: 0.5s;
+  background-size: 200% auto;
+  box-shadow: 0 0 20px #eee;
+  background-image: linear-gradient(to right, #F9D1C4 0%, #9BBDDD 51%, #F9D1C4 100%);
+}
+
+button:hover {
+  background-position: right center;
+}
+
+.user-name{
+  /* text-decoration: none; */
+  color:#00001c;
+  font-weight: 500;
+  font-size: 150%;
+}
+
+.user-name, .user-name:visited,.user-name:hover,.user-name:active {
+  text-decoration:none;
+  color: #00001c;
+}
+
+/*notifcation page css*/
+.notificationSentBy{
+  font-weight: bold;
+  font-size: 18px;
+}
+
+/* Notification Icon */
+.icon-button {
+  position: relative;
+  font-size: 24px; 
+}
+
+.icon-button__badge {
+  position: absolute;
+  top: 0;
+  right: 0;
+  transform: translate(50%, -50%); 
+  width: 10px;
+  height: 10px;
+  background: red;
+  border-radius: 50%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.notification-close-btn {
+  position: absolute;
+  top: 0;
+  right: 10px; 
+  border: none;
+  background: transparent;
+  color: #00001c; 
+  font-size: 27px; 
+  cursor: pointer;
+  padding: 0.5rem; 
+  z-index: 2; 
+}
+
+.notification-close-btn:hover {
+  color: darkgrey; 
+}
+
+.notification-text{
+  color:#d3d3d3;
+  text-align: center;
+}
+
+
+/* Aligning Profile picture with posts*/
+.top-aligned-row {
+  align-items: start;
+}
+
+.top-aligned-row .col-2,
+.top-aligned-row .col-10 {
+  padding-top: 0;
+  margin-top: 0;
+}
+
+/* TODO we might want to rename this since it's used for links other than comment. */
+.comment-link{
+  text-decoration: none !important;
+  color: #00001c;
+}
+
+.comment-link:hover{
+  color: #00001c;
+}
+
+.like-link{
+  text-decoration: none !important;
+  color: #00001c;
+}
+
+.like-link:hover{
+  color: #00001c;
+}
+
+.post-liked, .post-disliked{
+  border: none;
+  padding: 0;
+  background: none;
+  color: #0047ab;
+  }
+
+/* settings CSS */
+.tab-btns {
+  font-size: 1.3em;
+  display:flex;
+  justify-content: center;
+  align-items: center;
+  margin-top: 20px;
+}
+
+.tabbutton {
+  background-color: transparent;
+  color: #fff;
+  border: none;
+  margin: 0 10px; 
+  cursor: pointer; 
+  outline: none;
+}
+
+.tabbutton:focus {
+  outline: none; 
+}
+
+.tabbutton.active {
+  border-bottom: 2px solid #fff;
+}
+
+.posttab-btns {
+  font-size: 1.3em;
+  display:flex;
+  justify-content: center;
+  align-items: center;
+  margin-top: 10px;
+}
+
+.posttabbutton {
+  background-color: transparent;
+  color: #fff;
+  border: none;
+  margin: 0 10px; 
+  cursor: pointer; 
+  outline: none;
+}
+
+.posttabbutton:focus {
+  outline: none; 
+}
+
+.posttabbutton.active {
+  border-bottom: 2px solid #fff;
+}
+
+.profiletab-btns {
+  font-size: 1.1em;
+  display:flex;
+  justify-content: center;
+  align-items: center;
+  margin-top: 10px;
+}
+
+.profiletabbutton {
+  background-color: transparent;
+  color: #fff;
+  border: none;
+  margin: 0 35px; 
+  cursor: pointer; 
+  outline: none;
+}
+
+.profiletabbutton:focus {
+  outline: none; 
+}
+
+.profiletabbutton.active {
+  border-bottom: 2px solid #fff;
+}
+
+
+.text-left{
+  font-weight: 900;
+  font-size: 2.0rem;
+  color: #00001c;
+  letter-spacing: 1px;
+  font-family: PT Serif;
+  margin: 10px 0px 5px 0px;
+}
+
+.edit-inputs {
+  position: relative;
+  /* display: flex; */
+  flex-direction: column;
+  align-items: flex-start;
+  margin: 10px auto;
+}
+
+.username-button {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-top: 50px;
+  margin-bottom:30px;
+}
+
+.form-username {
+  width: 50%;
+  height: 40px;
+  background: #ffffff;
+  padding: 10px;
+  border-color: #000;
+  border-radius: 10px;
+  margin-top:10px;
+}
+
+/* Replies Page */
+.reply-user-pic{
+  border-radius:50px;
+  width: 130px; 
+  height: 48px;
+}
+
+img {
+  max-width:100%;
+}
+
+.user-picture {
+  border-radius:100px;
+  width:50px;
+  margin-right: 15px;
+}
+
+.comment-picture-container{
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.grid-container { 
+  display: grid; 
+  grid-template-columns: 0fr 2fr 0.5fr; 
+} 
+
+.grid-item {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 10px; 
+}
+
+#saveBtnPrivacy {
+  white-space: nowrap;
+  min-width: 180px;
+}
+
+/* report user css */
+
+.pin-post{
+  font-style: italic ;
+  color: #00001c;
+  font-size: large;
+  font-weight: 500;
+}
+.dropdown-menu{
+  background-image: linear-gradient(0deg, #F9D1C4, #9BBDDD);
+  box-shadow: 0 0 15px 3px rgba(0, 0, 0, 0.25);
+  right: 0;
+  left: auto; 
+}
+
+.dropdown-item{
+  display: flex; 
+  align-items: center; 
+  white-space: nowrap; 
+}
+
+/* Delete and Edit Item Adjusment*/
+.delete-button, .edit-button  {
+  display: flex; 
+  align-items: center; 
+  white-space: nowrap; 
+  color: #000; 
+  margin-right: 8px; 
+  text-decoration: none;
+  background-color: transparent;
+  border: none;
+  cursor: pointer;
+  width: 100%;
+  margin-top: 10px;
+  margin-bottom: 10px;
+}
+
+.delete-button:focus, .edit-button:focus {
+  outline: none;
+  box-shadow: none;
+}
+
+/* Delete Icon Adjusment */
+.icon-spacing{
+  margin-right: 8px; 
+  margin-left: 18px; 
+}
+
+.delete-button:hover, .edit-button:hover {
+  background-color: #f0f0f0; 
+}
+
+.dropdown-item i {
+  margin-right: 8px; 
+}
+
+.delete-menu {
+  min-width: 200px; 
+}
+
+.reportButton {
+  display: inline-block;
+  padding: 5px 25px;
+  border: none;
+  background: linear-gradient(to right, #F9D1C4 0%, #9BBDDD 51%, #F9D1C4 100%);
+  color: #000;
+  text-align: center;
+  border-radius: 50px;
+  transition: background-color 0.3s ease;
+}
+
+.reportButton:hover {
+  color: #000;
+  background: linear-gradient(to right, #F9D1C4 0%, #9BBDDD 51%, #F9D1C4 100%);
+  text-decoration: none;
+}
+
+.username-link{
+  color: black;
+  text-decoration: none;
+}
+
+.username-link:hover{
+  color: #00001c;
+}
+
+
+.edit-status{
+  font-size: small;
+  color: #383938;
+  font-style: italic;
+  font-weight: bold;
+}
+
+.popup-content-edit {
+  position: relative;
+  background-color: #00001c;
+  margin: 15% auto;
+  padding: 20px;
+  border: 1px solid #888;
+  width: 80%;
+  max-width: 600px;
+  box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2);
+}
+
+.edit-post-textarea{
+  background-color: #f2f2f2;
+}
+
+.centered-video {
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+#base-notification-toast {
+  background: linear-gradient(to right, #F9D1C4 0%, #9BBDDD 51%, #F9D1C4 100%);
+
+}
+
 
 /* Media Queries */
 @media (max-width: 991.98px) { 
@@ -819,3 +1298,20 @@ hr {
         margin-top: 10px;
     }
 }
+
+@media screen and (max-width: 768px) {
+  .profiletab-btns {
+      overflow-x: auto; 
+      white-space: nowrap; 
+      font-size: 0.8em; 
+  }
+  .profiletabbutton {
+      padding: 5px 10px;
+      margin: 0 5px; 
+  }
+}
+
+
+
+
+
