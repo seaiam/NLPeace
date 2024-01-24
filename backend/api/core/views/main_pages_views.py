@@ -133,7 +133,7 @@ def guest(request, user_id):
         "pinned_post_ids" : pinned_post_ids,
         'reposted_post_ids': reposted_post_ids,
         'reported_posts' : reported_posts #for post reporting
-    }
+        }
     return render(request,'home.html',context)
 
 @login_required
