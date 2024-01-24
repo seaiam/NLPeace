@@ -1,4 +1,5 @@
 
+
 from django.conf import settings
 from django.db import migrations, models
 import django.db.models.deletion
@@ -9,8 +10,8 @@ class Migration(migrations.Migration):
     initial = True
 
     dependencies = [
-        ('auth', '0012_alter_user_first_name_max_length'),
         migrations.swappable_dependency(settings.AUTH_USER_MODEL),
+        ('auth', '0012_alter_user_first_name_max_length'),
     ]
 
     operations = [
@@ -116,14 +117,6 @@ class Migration(migrations.Migration):
             ],
         ),
         migrations.CreateModel(
-            name='PostSave',
-            fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('post', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='core.post')),
-                ('saver', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to=settings.AUTH_USER_MODEL)),
-            ],
-        ),
-        migrations.CreateModel(
             name='PostReport',
             fields=[
                 ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
@@ -175,14 +168,6 @@ class Migration(migrations.Migration):
                 ('name', models.CharField(max_length=1024)),
                 ('ad', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='core.advertisement')),
             ],
-        ),
-        migrations.AddConstraint(
-            model_name='postsave',
-            constraint=models.UniqueConstraint(fields=('saver', 'post'), name='saver_post_unique'),
-        ),
-        migrations.AddConstraint(
-            model_name='postpin',
-            constraint=models.UniqueConstraint(fields=('pinner', 'post'), name='pinner_post_unique'),
         ),
         migrations.AddConstraint(
             model_name='postsave',

@@ -1,3 +1,4 @@
+
 from django.conf import settings
 from django.db import migrations, models
 import django.db.models.deletion
@@ -48,6 +49,7 @@ class Migration(migrations.Migration):
             name='ReportMessage',
             fields=[
                 ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
+                ('category', models.IntegerField(choices=[(0, 'Hate'), (1, 'Abuse and harassment'), (2, 'Violent speech')], default=0)),
                 ('message', models.ForeignKey(default=None, on_delete=django.db.models.deletion.CASCADE, to='chat.message')),
                 ('reporter', models.ForeignKey(default=None, on_delete=django.db.models.deletion.DO_NOTHING, to=settings.AUTH_USER_MODEL)),
             ],
