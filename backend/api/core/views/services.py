@@ -7,14 +7,20 @@ from django.contrib.auth import update_session_auth_hash
 from django.contrib.auth.forms import PasswordChangeForm
 from django.db.models import Q
 from django.http import *
-from django.shortcuts import get_object_or_404, redirect
-from itertools import chain
+from django.shortcuts import get_object_or_404
+from itertools import chain, cycle
 
-from core.forms.user_forms import UserReportForm
 from core.forms.profile_forms import *
 from core.forms.posting_forms import *
+from core.interest_resolver import RESOLVERS
 from core.models.models import *
 
+
+class ContentCarrier:
+
+    def __init__(self, payload):
+        self.payload = payload
+        self.is_post = isinstance(payload, Post)
 
 def process_post_form(request, form):
     if form.is_valid():
@@ -47,29 +53,55 @@ def classify_text(text):
         return {'error': str(e)}
 
 def update_interests(user, text):
-    user.remove_interests()
-    user.insert_interests(get_interests(text))
+    profile = get_user_profile(user)
+    profile.remove_interests(settings.INTEREST_DAYS_THRESHOLD)
+    profile.insert_interests(get_interests(text))
 
 def get_interests(text):
     return get_hashtags(text) + get_sentiments(text)
 
 def get_hashtags(text):
-    return map(lambda hashtag: hashtag[1:] ,filter(lambda word: word.startswith('#'), text.split(' ')))
+    return list(map(lambda hashtag: hashtag[1:] ,filter(lambda word: word.startswith('#'), text.split(' '))))
 
 def get_sentiments(text):
     # TODO implement sentiment analysis for interest inference.
     return []
     
 def get_user_posts(user):
-    user_ids_following = user.profile.following.values_list('id', flat=True)
-    blocked = user.profile.blocked.all()
+    profile = get_user_profile(user)
+    user_ids_following = profile.following.values_list('id', flat=True)
+    blocked = profile.blocked.all()
     posts = Post.objects.filter(
         Q(user__profile__is_private=False) | 
         Q(user__in=user_ids_following) |  
         Q(user=user) |
         ~Q(user__in=blocked)
     ).distinct().order_by('-created_at')
-    return posts
+    carriers = list(map(lambda post: ContentCarrier(post), posts))
+    return mix(carriers, get_ads(user))
+
+def get_ads(user):
+    resolver = RESOLVERS[settings.AD_SELECTION_STRATEGY]
+    profile = get_user_profile(user)
+    ads = {ad: resolver.get_interest_in(profile, ad) for ad in get_all_ads()}
+    to_include = list(filter(lambda item: item[1] > settings.TOPIC_INCLUSION_THRESHOLD, ads.items()))
+    if len(to_include):
+        return list(map(lambda item: item[0], sorted(to_include, key=lambda item: item[1])))
+    return list(ads.keys())
+
+def get_all_ads():
+    ads = Advertisement.objects.all()
+    if (len(ads) > 1):
+        return list(filter(lambda ad: not ad.advertiser == 'NLPeace', ads))
+    return list(ads)
+
+def mix(posts, ads):
+    iter = cycle(ads)
+    rate = settings.AD_MIX_RATE
+    return list(chain(*[posts[i: i + rate] + [ContentCarrier(next(iter))]
+                       if len(posts[i: i + rate]) == rate
+                       else posts[i: i + rate]
+                       for i in range(0, len(posts), rate)]))
 
 def create_repost(user, post_id):
     post_to_repost = get_object_or_404(Post, id=post_id)
@@ -84,16 +116,32 @@ def get_user_posts_and_reposts(user):
     reposts_ids = Repost.objects.filter(user=user).values_list('post_id', flat=True)
     reposts = Post.objects.filter(id__in=reposts_ids)
     all_posts = sorted(chain(posts, reposts), key=lambda post: post.created_at, reverse=True)
-    return all_posts
+    carriers = list(map(lambda post: ContentCarrier(post), all_posts))
+    return mix(carriers, get_ads(user))
 
-def get_image_posts(posts):
-    return sorted([post for post in posts if post.image], key=lambda post: post.created_at, reverse=True)
+def get_image_posts(user, carriers):
+    image_posts = sorted([post for post in get_posts_from(carriers) if post.image], key=lambda post: post.created_at, reverse=True)
+    image_carriers = list(map(lambda post: ContentCarrier(post), image_posts))
+    return mix(image_carriers, get_ads(user))
 
-def get_post_interactions(user, posts):
+def get_post_interactions(user, carriers):
+    posts = get_posts_from(carriers)
     likes = [post for post in posts if post.is_likeable_by(user)]
     dislikes = [post for post in posts if post.is_dislikeable_by(user)]
     saved_post_ids = [post.id for post in posts if not post.is_saveable_by(user)]
     return likes, dislikes, saved_post_ids
+
+def get_posts_from(carriers):
+    return list(map(lambda carrier: carrier.payload, filter(lambda carrier: carrier.is_post, carriers)))
+
+def get_liked_posts(user):
+    liked_posts = list(map(lambda post: ContentCarrier(post), Post.objects.filter(postlike__liker=user).distinct().order_by('-created_at')))
+    return mix(liked_posts, get_ads(user))
+
+def get_following_posts(user, users):
+    following_posts = list(map(lambda post: ContentCarrier(post), Post.objects.filter(user__in=users).order_by('-created_at')))
+    return mix(following_posts, get_ads(user))
+
 
 def get_user_by_id(user_id):
     return User.objects.get(pk=user_id)
@@ -126,6 +174,7 @@ def process_comment_form(request, form, post_id):
             messages.error(request, message)
             return None
         elif result["prediction"][0] == 2:  # Appropriate
+            update_interests(request.user, comment_text)
             comment = form.save(commit=False)
             comment.user = request.user
             comment.parent_post = Post.objects.get(pk=post_id)
