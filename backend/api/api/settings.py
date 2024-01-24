@@ -26,9 +26,11 @@ CSRF_COOKIE_SECURE = True
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/4.2/howto/deployment/checklist/
 
+# SECURITY WARNING: keep the secret key used in production secret!
+SECRET_KEY = os.getenv('SECRET_KEY')
+
 if os.getenv('ENV') == 'production':
     ALLOWED_HOSTS = ['nlpeace-0c427559664a.herokuapp.com','https://nlpeace-0c427559664a.herokuapp.com', 'https://nlpeace.com', 'https://nlpeace.herokuapp.com']
-
 
     CSRF_TRUSTED_ORIGINS = [
     'https://nlpeace-0c427559664a.herokuapp.com',
@@ -217,7 +219,6 @@ else:
     }
 
 GIPHY_API_KEY = os.getenv('GIPHY_API_KEY')
-
 
 # The number of days allowed to elapse without a user mentioning a
 # topic before it is assumed they are no longer interested in it.
