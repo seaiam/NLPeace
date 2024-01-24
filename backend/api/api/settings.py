@@ -211,3 +211,16 @@ else:
     }
 
 GIPHY_API_KEY = os.getenv('GIPHY_API_KEY')
+
+
+# The number of days allowed to elapse without a user mentioning a
+# topic before it is assumed they are no longer interested in it.
+INTEREST_DAYS_THRESHOLD = 10
+
+# The degree to which a user must have expressed interest in a topic for a advertisement
+# covering it to be included in the list of ads shown to them.
+TOPIC_INCLUSION_THRESHOLD = 0.7
+
+AD_MIX_RATE = 5
+
+AD_SELECTION_STRATEGY = 'constant'
