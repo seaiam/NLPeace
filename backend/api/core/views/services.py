@@ -105,14 +105,17 @@ def mix(posts, ads):
 
 def create_repost(user, post_id):
     post_to_repost = get_object_or_404(Post, id=post_id)
-    Repost.objects.create(post=post_to_repost, user=user)
+    if Repost.objects.filter(post=post_to_repost, user=user).exists():
+        Repost.objects.filter(post=post_to_repost, user=user).delete()
+    else:
+        Repost.objects.create(post=post_to_repost, user=user)
 
 def get_user_profile(user):
     profile, _ = Profile.objects.get_or_create(user=user)
     return profile
 
 def get_user_posts_and_reposts(user):
-    posts = Post.objects.filter(user=user)
+    posts = Post.objects.filter(Q(user=user) & Q(parent_post=None))
     reposts_ids = Repost.objects.filter(user=user).values_list('post_id', flat=True)
     reposts = Post.objects.filter(id__in=reposts_ids)
     all_posts = sorted(chain(posts, reposts), key=lambda post: post.created_at, reverse=True)
@@ -138,8 +141,8 @@ def get_liked_posts(user):
     liked_posts = list(map(lambda post: ContentCarrier(post), Post.objects.filter(postlike__liker=user).distinct().order_by('-created_at')))
     return mix(liked_posts, get_ads(user))
 
-def get_following_posts(user, users):
-    following_posts = list(map(lambda post: ContentCarrier(post), Post.objects.filter(user__in=users).order_by('-created_at')))
+def get_following_posts(user, following):
+    following_posts = list(map(lambda post: ContentCarrier(post), Post.objects.filter(user__in=following).order_by('-created_at')))
     return mix(following_posts, get_ads(user))
 
 
@@ -214,12 +217,18 @@ def handle_dislike(user, post_id):
         #dislike post
         dislike = PostDislike.objects.create(disliker=user, post=post)
 
-def report_post(user, post_id, form_data):
-    report = PostReportForm(form_data).save(commit=False)
-    report.reporter = user
-    report.post = get_object_or_404(Post, pk=post_id)
-    report.save()
-
+def report_post_service(request, post_id, form):
+    post = get_object_or_404(Post, pk=post_id)
+    if post.is_reported_by(request.user):
+        PostReport.objects.filter(post=post, reporter=request.user).delete()
+        messages.success(request, 'Post un-reported')
+    else:
+        report = form.save(commit=False)
+        report.reporter = request.user
+        report.post = post
+        report.save()
+        messages.success(request, 'Post successfully reported.')
+    
 def report_user_service(request, reported_id, form):
     report = form.save(commit=False)
     report.reporter = request.user

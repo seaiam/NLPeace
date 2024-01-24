@@ -6,8 +6,8 @@
 <div class="container">
 
     <h2 class="notification-text"> Your Bookmarked Posts </h2>
-    <div id="All" class="posttabcontent">
-        <!-- All Posts -->
+    <div id="Posts" class="posttabcontent">
+
         {% for post in bookmarked_posts %}
 
         {% load static %}
@@ -17,6 +17,7 @@
         {% empty %}
             <h4 class="notification-text"> No saved posts. </h4>
         {% endfor %}
+
     </div>
 </div>
 

@@ -29,6 +29,7 @@ def home(request):
     data = Notifications.objects.filter(user=request.user).order_by('-id')
     following_users = request.user.profile.following.all()
     following_posts = get_following_posts(request.user, following_users)
+    reported_posts = [post.payload for post in posts if post.is_post and not post.payload.is_reportable_by(request.user)] #for post reporting
 
     context = {
         'posts': posts,
@@ -36,10 +37,13 @@ def home(request):
         'dislikes': dislikes,
         'saved_post_ids': saved_post_ids,
         'form': PostForm(),
+        'reportPostForm': PostReportForm(),
+        'reportUserForm': UserReportForm(),
         'data': data,
         'reportPostForm': PostReportForm(),
         'reposted_post_ids': reposted_post_ids,
-        'followPost': following_posts
+        'followPost': following_posts,
+        'reported_posts' : reported_posts #for post reporting
     }
     return render(request, 'index.html', context)
 
@@ -58,8 +62,11 @@ def profile(request):
     pinned_image_posts = [post for post in posts if not post.is_post or post.payload.is_pinned_by(request.user) and post.payload.image]
     non_pinned_posts = [post for post in posts if not post.is_post or  not post.payload.is_pinned_by(request.user)]
     saved_post_ids = [post.id for post in posts if post.is_post and not post.payload.is_saveable_by(request.user)] # ADDED THIS
-    pinned_post_ids = [post.id for post in posts if post.is_post and post.payload.is_pinned_by(request.user)] 
-    
+    pinned_post_ids = [post.id for post in posts if post.is_post and post.payload.is_pinned_by(request.user)]
+    reported_posts = [post.payload for post in posts if post.is_post and not post.payload.is_reportable_by(request.user)] #for post reporting
+    reposted_post_ids = Repost.objects.filter(user=request.user).values_list('post_id', flat=True)    
+    replies = Post.objects.filter(Q(user=request.user) & ~Q(parent_post = None))
+       
     context = {
         'profile': profile,
         'posts': posts,
@@ -79,8 +86,11 @@ def profile(request):
         'pinned_post_ids' : pinned_post_ids,
         'pinned_posts' : pinned_posts,
         'non_pinned_posts' : non_pinned_posts,
-        'pinned_image_posts' : pinned_image_posts
-    }
+        'pinned_image_posts' : pinned_image_posts,
+        'reply_posts' : replies,
+        'reposted_post_ids': reposted_post_ids,
+        'reported_posts' : reported_posts #for post reporting
+        }
     return render(request, 'home.html', context)
 
 @login_required
@@ -91,7 +101,7 @@ def guest(request, user_id):
     all_posts = get_user_posts_and_reposts(guest_user)
     image_posts = get_image_posts(guest_user, all_posts)
     likes, dislikes, _ = get_post_interactions(guest_user, all_posts)
-    followers = profile.followers.all()
+    followers = profile.followers.all() 
     following = profile.following.all()
     pinned_posts = [post for post in all_posts if not post.is_post or post.payload.is_pinned_by(user=guest_user)]
     pinned_image_posts = [post for post in all_posts if not post.is_post or post.payload.is_pinned_by(user=guest_user) and post.payload.image]
@@ -99,6 +109,8 @@ def guest(request, user_id):
     pinned_post_ids = [post.id for post in all_posts if post.is_post and not post.payload.is_pinned_by(user=guest_user)] 
     liked_posts = get_liked_posts(guest_user)
     saved_post_ids = [post.id for post in all_posts if post.is_post and not post.payload.is_saveable_by(guest_user)] 
+    reported_posts = [post.payload for post in all_posts if post.is_post and not post.payload.is_reportable_by(request.user)] #for post reporting
+    reposted_post_ids = Repost.objects.filter(user=request.user).values_list('post_id', flat=True)
 
     context = {
         'user': guest_user,
@@ -118,8 +130,10 @@ def guest(request, user_id):
         'pinned_posts' : pinned_posts,
         'non_pinned_posts': non_pinned_posts,
         'pinned_image_posts' : pinned_image_posts,
-        "pinned_post_ids" : pinned_post_ids
-        }
+        "pinned_post_ids" : pinned_post_ids,
+        'reposted_post_ids': reposted_post_ids,
+        'reported_posts' : reported_posts #for post reporting
+    }
     return render(request,'home.html',context)
 
 @login_required
@@ -161,6 +175,7 @@ def error_500(request):
 @login_required
 def bookmarked_posts(request):
     posts = get_bookmarked_posts(request.user)
+    reported_posts = [post for post in posts if not post.is_reportable_by(request.user)]
     likes = [post for post in posts if post.is_likeable_by(request.user)]
     dislikes = [post for post in posts if post.is_dislikeable_by(request.user)]
     saved_post_ids = [post.id for post in posts if not post.is_saveable_by(request.user)]
@@ -181,6 +196,7 @@ def bookmarked_posts(request):
         'reportPostForm': PostReportForm(),
         'reposted_post_ids': reposted_post_ids,
         'followPost' : following_posts,
+        'reported_posts' : reported_posts,
         'pinned_post_ids': pinned_post_ids
         }
     return render(request, 'bookmark.html', context)
