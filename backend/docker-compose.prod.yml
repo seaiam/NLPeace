@@ -1,0 +1,76 @@
+# MIT License
+
+# Copyright (c) 2023 Fatima El Fouladi, Anum Siddiqui, Jeff Wilgus, David Lemme, Mira Aji, Adam Qamar, Shabia Saeed, Raya Maria Lahoud , Nelly Bozorgzad, Joshua-James Nantel-Ouimet .
+
+# Permission is hereby granted, free of charge, to any person obtaining a copy
+# of this software and associated documentation files (the "Software"), to deal
+# in the Software without restriction, including without limitation the rights
+# to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+# copies of the Software, and to permit persons to whom the Software is
+# furnished to do so, subject to the following conditions:
+# The above copyright notice and this permission notice shall be included in all
+# copies or substantial portions of the Software.
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+# AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+# LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+# OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+# SOFTWARE.
+
+version: "3.9"
+
+services:
+  app:
+    build:
+      context: .
+      dockerfile: dockerfile.prod # or dockerfile.dev 
+      args:
+        - DEV=false
+    env_file:
+      - prod.env # or dev.env
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./api:/api
+    command: >
+      sh -c "python manage.py wait_for_db &&
+             python manage.py makemigrations core &&
+             python manage.py migrate core &&
+             python manage.py makemigrations &&
+             python manage.py migrate&&
+             python manage.py runserver 0.0.0.0:8000"
+    environment:
+      - DB_HOST=db
+      - DB_NAME=devdb
+      - DB_USER=devuser
+      - DB_PASS=changeme
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
+    depends_on:
+      db:
+        condition: service_healthy
+  
+  redis:
+    image: "redis:alpine"
+    expose:
+      - "6379"
+
+  db:
+    image: postgres:16.0-alpine
+    volumes:
+      - dev-db-data:/var/lib/postgresql/data\
+    environment:
+      - POSTGRES_DB=devdb
+      - POSTGRES_USER=devuser
+      - POSTGRES_PASSWORD=changeme
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -d devdb -U devuser"]
+      interval: 1s
+      timeout: 5s
+      retries: 25
+
+volumes:
+  dev-db-data:
+    
+      
