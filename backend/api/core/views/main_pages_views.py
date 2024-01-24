@@ -66,7 +66,7 @@ def profile(request):
     pinned_post_ids = [post.id for post in all_posts if post.is_pinned_by(request.user)] 
     reported_posts = [post for post in all_posts if not post.is_reportable_by(request.user)] #for post reporting
     reposted_post_ids = Repost.objects.filter(user=request.user).values_list('post_id', flat=True)    
-    replies = Post.objects.filter(Q(user=request.user) & ~Q(parent_post = None))
+    replies = [post for post in all_posts if post.parent_post is not None]
        
     context = {
         'profile': profile,
@@ -88,7 +88,7 @@ def profile(request):
         'pinned_posts' : pinned_posts,
         'non_pinned_posts' : non_pinned_posts,
         'pinned_image_posts' : pinned_image_posts,
-        'reply_posts' : replies,
+        'replies' : replies,
         'reposted_post_ids': reposted_post_ids,
         'reported_posts' : reported_posts, #for post reporting
         'non_pinned_image_posts' : non_pinned_image_posts

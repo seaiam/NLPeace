@@ -240,8 +240,8 @@
     </div>
 
     <div id="Replies" class="posttabcontent">
-        {% for post in reply_posts %}
-            {% include "posts.html" with tab="posts" %}
+        {% for post in replies %}
+            {% include "posts.html" with tab="replies" %}
             {% empty %}           
             <div class="no-post">No Replies available. </div>        
         {% endfor %}
