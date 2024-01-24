@@ -10,3 +10,22 @@ heroku container:push web --app nlpeace
 heroku container:release web --app nlpeace
 heroku run python manage.py collectstatic --noinput -c -a nlpeace
 heroku open -a nlpeace
+
+2024-01-24:
+docker build --no-cache -f Dockerfile.prod -t nlpeace:latest .
+heroku login
+heroku container:login
+docker tag nlpeace:latest registry.heroku.com/nlpeace/web
+docker push registry.heroku.com/nlpeace/web
+heroku container:release web -a nlpeace
+heroku open -a nlpeace
+
+**might need to delete postgres add-on and redownload**
+
+PYTHON COMMANDS:
+heroku run python manage.py migrate -a nlpeace
+OR
+    python manage.py makemigrations core &&
+    python manage.py migrate core &&
+    python manage.py makemigrations &&
+    python manage.py migrate"
