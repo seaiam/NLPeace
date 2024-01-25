@@ -22,9 +22,7 @@ def home(request):
 
     posts = get_user_posts(request.user)
     posts_without_ads = map(lambda carrier: carrier.payload, filter(lambda carrier: carrier.is_post, posts))
-    likes = [post for post in posts_without_ads if post.is_likeable_by(request.user)]
-    dislikes = [post for post in posts_without_ads if post.is_dislikeable_by(request.user)]
-    saved_post_ids = [post.id for post in posts_without_ads if not post.is_saveable_by(request.user)]
+    likes, dislikes, saved_post_ids = get_post_interactions(request.user, posts)
     reposted_post_ids = Repost.objects.filter(user=request.user).values_list('post_id', flat=True)
     data = Notifications.objects.filter(user=request.user).order_by('-id')
     following_users = request.user.profile.following.all()
