@@ -21,14 +21,13 @@ def home(request):
             return redirect('home')
 
     posts = get_user_posts(request.user)
-    likes = [post for post in posts if post.is_likeable_by(request.user)]
-    dislikes = [post for post in posts if post.is_dislikeable_by(request.user)]
-    saved_post_ids = [post.id for post in posts if not post.is_saveable_by(request.user)]
+    posts_without_ads = map(lambda carrier: carrier.payload, filter(lambda carrier: carrier.is_post, posts))
+    likes, dislikes, saved_post_ids = get_post_interactions(request.user, posts)
     reposted_post_ids = Repost.objects.filter(user=request.user).values_list('post_id', flat=True)
     data = Notifications.objects.filter(user=request.user).order_by('-id')
     following_users = request.user.profile.following.all()
-    following_posts = Post.objects.filter(user__in=following_users).order_by('-created_at')
-    reported_posts = [post for post in posts if not post.is_reportable_by(request.user)] #for post reporting
+    following_posts = get_following_posts(request.user, following_users)
+    reported_posts = [post.payload for post in posts if post.is_post and not post.payload.is_reportable_by(request.user)] #for post reporting
 
     context = {
         'posts': posts,
@@ -49,27 +48,27 @@ def home(request):
 @login_required
 def profile(request):
     profile = get_user_profile(request.user)
-    all_posts = get_user_posts_and_reposts(request.user)
-    image_posts = get_image_posts(all_posts)
-    likes, dislikes, saved_post_ids = get_post_interactions(request.user, all_posts)
+    posts = get_user_posts_and_reposts(request.user)
+    image_posts = get_image_posts(request.user, posts)
+    likes, dislikes, saved_post_ids = get_post_interactions(request.user, posts)
     followers = profile.followers.all()
     following = profile.following.all()
-    liked_posts = Post.objects.filter(postlike__liker=request.user).distinct().order_by('-created_at')
+    liked_posts = get_liked_posts(request.user)
     data = Notifications.objects.filter(user=request.user).order_by('-id')
     #TEMP
-    pinned_posts = [post for post in all_posts if post.is_pinned_by(request.user)]
-    pinned_image_posts = [post for post in all_posts if post.is_pinned_by(request.user) and post.image]
-    non_pinned_posts = [post for post in all_posts if not post.is_pinned_by(request.user)]
-    liked_posts = Post.objects.filter(postlike__liker=request.user).distinct().order_by('-created_at')
-    saved_post_ids = [post.id for post in all_posts if not post.is_saveable_by(request.user)] # ADDED THIS
-    pinned_post_ids = [post.id for post in all_posts if post.is_pinned_by(request.user)] 
-    reported_posts = [post for post in all_posts if not post.is_reportable_by(request.user)] #for post reporting
-    reposted_post_ids = Repost.objects.filter(user=request.user).values_list('post_id', flat=True)
-    
-    
+    pinned_posts = [post for post in posts if not post.is_post or post.payload.is_pinned_by(request.user)]
+    pinned_image_posts = [post for post in posts if not post.is_post or post.payload.is_pinned_by(request.user) and post.payload.image]
+    non_pinned_posts = [post for post in posts if not post.is_post or  not post.payload.is_pinned_by(request.user)]
+    saved_post_ids = [post.payload.id for post in posts if post.is_post and not post.payload.is_saveable_by(request.user)] # ADDED THIS
+    pinned_post_ids = [post.payload.id for post in posts if post.is_post and post.payload.is_pinned_by(request.user)]
+    reported_posts = [post.payload for post in posts if post.is_post and not post.payload.is_reportable_by(request.user)] #for post reporting
+    reposted_post_ids = Repost.objects.filter(user=request.user).values_list('post_id', flat=True)    
+    replies = [post for post in posts if post.is_post and post.payload.parent_post is not None]
+    non_pinned_image_posts=[post for post in posts if post.is_post and not post.payload.is_pinned_by(request.user) and post.payload.image]
+   
     context = {
         'profile': profile,
-        'posts': all_posts,
+        'posts': posts,
         'media_posts': image_posts,
         'likes': likes,
         'dislikes': dislikes,
@@ -87,8 +86,10 @@ def profile(request):
         'pinned_posts' : pinned_posts,
         'non_pinned_posts' : non_pinned_posts,
         'pinned_image_posts' : pinned_image_posts,
+        'replies' : replies,
         'reposted_post_ids': reposted_post_ids,
-        'reported_posts' : reported_posts #for post reporting
+        'reported_posts' : reported_posts, #for post reporting
+        'non_pinned_image_posts' : non_pinned_image_posts
         }
     return render(request, 'home.html', context)
 
@@ -98,19 +99,20 @@ def guest(request, user_id):
     profile = get_user_profile(guest_user)
     data = Notifications.objects.filter(user=request.user).order_by('-id')
     all_posts = get_user_posts_and_reposts(guest_user)
-    image_posts = get_image_posts(all_posts)
+    image_posts = get_image_posts(guest_user, all_posts)
     likes, dislikes, _ = get_post_interactions(guest_user, all_posts)
-    followers = profile.followers.all()
+    followers = profile.followers.all() 
     following = profile.following.all()
-    pinned_posts = [post for post in all_posts if post.is_pinned_by(user=guest_user)]
-    pinned_image_posts = [post for post in all_posts if post.is_pinned_by(user=guest_user) and post.image]
-    non_pinned_posts = [post for post in all_posts if not post.is_pinned_by(user=guest_user)]
-    pinned_post_ids = [post.id for post in all_posts if post.is_pinned_by(user=guest_user)] 
-    liked_posts = Post.objects.filter(postlike__liker=guest_user).distinct().order_by('-created_at')
-    saved_post_ids = [post.id for post in all_posts if not post.is_saveable_by(guest_user)] 
-    reported_posts = [post for post in all_posts if not post.is_reportable_by(request.user)] #for post reporting
+    pinned_posts = [post for post in all_posts if not post.is_post or post.payload.is_pinned_by(user=guest_user)]
+    pinned_image_posts = [post for post in all_posts if not post.is_post or post.payload.is_pinned_by(user=guest_user) and post.payload.image]
+    non_pinned_posts = [post for post in all_posts if not post.is_post or not post.payload.is_pinned_by(user=guest_user)]
+    pinned_post_ids = [post.payload.id for post in all_posts if post.is_post and  post.payload.is_pinned_by(user=guest_user)] 
+    liked_posts = get_liked_posts(guest_user)
+    saved_post_ids = [post.payload.id for post in all_posts if post.is_post and not post.payload.is_saveable_by(guest_user)] 
+    reported_posts = [post.payload for post in all_posts if post.is_post and not post.payload.is_reportable_by(request.user)] #for post reporting
     reposted_post_ids = Repost.objects.filter(user=request.user).values_list('post_id', flat=True)
-
+    replies = [post for post in all_posts if post.is_post and post.payload.parent_post is not None]
+    non_pinned_image_posts=[post for post in all_posts if post.is_post and not post.payload.is_pinned_by(request.user) and post.payload.image]
     context = {
         'user': guest_user,
         'data': data,
@@ -131,7 +133,9 @@ def guest(request, user_id):
         'pinned_image_posts' : pinned_image_posts,
         "pinned_post_ids" : pinned_post_ids,
         'reposted_post_ids': reposted_post_ids,
-        'reported_posts' : reported_posts #for post reporting
+        'replies' : replies,
+        'reported_posts' : reported_posts, #for post reporting
+        'non_pinned_image_posts' : non_pinned_image_posts
         }
     return render(request,'home.html',context)
 
@@ -174,15 +178,15 @@ def error_500(request):
 @login_required
 def bookmarked_posts(request):
     posts = get_bookmarked_posts(request.user)
-    reported_posts = [post for post in posts if not post.is_reportable_by(request.user)]
-    likes = [post for post in posts if post.is_likeable_by(request.user)]
-    dislikes = [post for post in posts if post.is_dislikeable_by(request.user)]
-    saved_post_ids = [post.id for post in posts if not post.is_saveable_by(request.user)]
+    reported_posts = [post for post in posts if post.is_post and not post.payload.is_reportable_by(request.user)]
+    likes = [post for post in posts if post.is_post and post.payload.is_likeable_by(request.user)]
+    dislikes = [post for post in posts if post.is_post and post.payload.is_dislikeable_by(request.user)]
+    saved_post_ids = [post.payload.id for post in posts if post.is_post and not post.payload.is_saveable_by(request.user)]
     reposted_post_ids = Repost.objects.filter(user=request.user).values_list('post_id', flat=True)
     data = Notifications.objects.filter(user=request.user).order_by('-id')
     following_users = request.user.profile.following.all()
     following_posts = Post.objects.filter(user__in=following_users).order_by('-created_at')
-    pinned_post_ids = [post.id for post in posts if post.is_pinned_by(request.user)] 
+    pinned_post_ids = [post.payload.id for post in posts if post.is_post and post.payload.is_pinned_by(request.user)] 
     
 
     context = {

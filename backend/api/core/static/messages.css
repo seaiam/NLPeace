@@ -102,6 +102,12 @@
     text-align: right;
     color: #00001c;
 }
+.contacted-user{
+    color:#3e3636;
+    font-style: italic;
+    font-weight: 600;
+    font-size: 14px;
+}
 
 .opened-user-message {
     width: 100%;

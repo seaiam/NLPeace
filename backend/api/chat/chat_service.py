@@ -22,6 +22,15 @@ def getChatRoom(current_user, target_user):
 
     return chat_room
 
+def handle_chatroom_initiation(user, chat_room):
+    if user == chat_room.user1:
+        chat_room.initiated_by_user1 = True
+    elif user == chat_room.user2:
+        chat_room.initiated_by_user2 = True
+    chat_room.save()  
+
+def messages_to_json(messages, user):
+    return [message_to_json(message, user) for message in messages]
 def messages_to_json(messages, user):
     return [message_to_json(message, user) for message in messages]
 def messages_to_json(messages, user):
@@ -43,12 +52,13 @@ def message_to_json(message, user=None):
         src = ''
     if user is None:
          user = get_target_user(message)
-    if user and ReportMessage.objects.filter(reporter=user, message=message).exists():
+    if user and message.is_reported_by(user):
         can_report = False
     else:
         can_report = True
     report_link = reverse('report_message', args=[message.id])
     return {
+        'id' : message.id,
         'author': message.author.username,
         'content': message.content,
         'timestamp': str(message.timestamp),
@@ -89,3 +99,10 @@ def get_target_user(message):
           return message.room_id.user2
      else:
           return message.room_id.user1
+
+def handle_contacted_users(user,chatroom,contacted_users): 
+    for room in chatroom:
+        if user == room.user1 and room.has_sent_message:
+            contacted_users.append(room.user2)
+        elif user == room.user2 and room.has_sent_message:
+            contacted_users.append(room.user1)

@@ -1,6 +1,7 @@
 from django.contrib.auth.models import User
 from django.db import models
 from django.urls import reverse
+from django.utils import timezone
 
 from core.utils import attempt_send_message
 
@@ -17,6 +18,35 @@ class Profile(models.Model):
     is_private = models.BooleanField(default=True)
     is_banned = models.BooleanField(default=False)
     messaging_is_private = models.BooleanField(default=True)
+
+    def insert_interests(self, interests):
+        for name in map(lambda n: n.lower(), interests):
+            interest = self.profileinterest_set.filter(name=name)
+            if interest.exists():
+                # Update the last_expressed field on an already existing interest.
+                interest.first().save()
+            else:
+                # Otherwise record the new interest.
+                self.profileinterest_set.add(ProfileInterest.objects.create(profile=self, name=name))
+
+    def remove_interests(self, threshold):
+        now = timezone.now()
+        to_delete = []
+        for interest in self.profileinterest_set.all():
+            difference = now - interest.last_expressed
+            if difference.days > threshold:
+                to_delete.append(interest)
+        for interest in to_delete:
+            interest.delete()
+
+class ProfileInterest(models.Model):
+    profile = models.ForeignKey(Profile, on_delete=models.CASCADE)
+    name = models.CharField(max_length=1024)
+    last_expressed = models.DateTimeField()
+
+    def save(self, *args, **kwargs):
+        self.last_expressed = timezone.now()
+        super(ProfileInterest, self).save(*args, **kwargs)
 
 class ProfileWarning(models.Model):
     offender = models.ForeignKey(User, related_name='offender', on_delete=models.CASCADE)
@@ -175,5 +205,15 @@ class PostPin(models.Model):
         constraints = [
             models.UniqueConstraint(fields=['pinner', 'post'], name='pinner_post_unique')
         ]
-
    
+class Advertisement(models.Model):
+    advertiser = models.CharField(max_length=512)
+    logo = models.ImageField(upload_to='adLogos/', null=True, blank=True)
+    content = models.CharField(max_length=280)
+
+    def __str__(self):
+        return f'{self.advertiser}: {self.content}'
+
+class AdvertisementTopic(models.Model):
+    ad = models.ForeignKey(Advertisement, on_delete=models.CASCADE)
+    name = models.CharField(max_length=1024)

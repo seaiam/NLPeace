@@ -3,6 +3,9 @@
 <div class="d-flex justify-content-center align-items-center">
     <div class="card" style="width: 39rem; border-radius: 30px;margin:20px 0px 20px 0px;  overflow: hidden;background: linear-gradient(to right, #F9D1C4 0%, #9BBDDD 51%, #F9D1C4 100%);">
         <div class="card-body">
+            {% if carrier.is_post %}
+
+            {% with post=carrier.payload %}
             
             <div class = "pin-post">
                 {% if post.id in pinned_post_ids %}
@@ -351,8 +354,36 @@
                     {% endif %}
                     </div>
                 </form>
+             
+            </div>
+            {% endif %}
+
+            {% endwith %}
+            
+            {% else %}
+
+            {% with ad=carrier.payload %}
+
+            <div class="row top-aligned-row mb-4">
+                <div class="col-2">
+                {% if ad.logo %}
+                    <img class="user-pic" src="{{ ad.logo.url }}" alt="logo" />
+                {% else %}
+                    <img class="user-pic" src="{% static 'logo_no_text.png' %}" alt="logo" />
                 {% endif %}
+                </div>
+                <div class="col-10">
+                    <div>
+                        <h6 class="card-title d-inline"><strong>{{ ad.advertiser }}</strong></h6>
+                        <span class="float-right text-muted">Sponsored</span>
+                    </div>
+                    <p class="card-text">{{ ad.content }}</p>
+                </div>
+            </div>
+
+            {% endwith %}
+            
+            {% endif %}
         </div>
-    </div>
     </div>
 </div>
