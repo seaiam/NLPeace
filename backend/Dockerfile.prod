@@ -60,4 +60,4 @@ ENV PATH="/py/bin:$PATH"
 USER django-user
 
 
-CMD gunicorn api.wsgi:application --bind 0.0.0.0:$PORT
+CMD daphne -p $PORT -b 0.0.0.0 api.asgi:application

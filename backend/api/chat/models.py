@@ -7,7 +7,11 @@ from django.urls import reverse
 
 from core.utils import attempt_send_message
 
-User=get_user_model()
+def getUserModel():
+    from django.contrib.auth import get_user_model
+    return get_user_model()
+
+User = getUserModel()
 
 class ChatRoom(models.Model):
     room_name = models.AutoField(primary_key=True, unique=True)

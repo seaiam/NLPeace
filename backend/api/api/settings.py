@@ -12,6 +12,11 @@ https://docs.djangoproject.com/en/4.2/ref/settings/
 import os
 from pathlib import Path
 import dj_database_url
+#import redis
+from urllib.parse import urlparse
+
+# SECURITY WARNING: keep the secret key used in production secret!
+SECRET_KEY = os.getenv('SECRET_KEY')
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -20,9 +25,6 @@ CSRF_COOKIE_SECURE = True
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/4.2/howto/deployment/checklist/
-
-# SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = os.getenv('SECRET_KEY')
 
 if os.getenv('ENV') == 'production':
     ALLOWED_HOSTS = ['nlpeace-0c427559664a.herokuapp.com','https://nlpeace-0c427559664a.herokuapp.com', 'https://nlpeace.com', 'https://nlpeace.herokuapp.com']
@@ -81,7 +83,7 @@ TEMPLATES = [
 ]
 
 WSGI_APPLICATION = 'api.wsgi.application'
-# ASGI_APPLICATION = "api.asgi.application"
+ASGI_APPLICATION = "api.asgi.application"
 MESSAGE_STORAGE = 'django.contrib.messages.storage.session.SessionStorage'
 
 
@@ -145,6 +147,7 @@ USE_TZ = True
 STATIC_URL = '/static/'
 STATICFILES_DIR=[
     os.path.join(BASE_DIR,'static')
+    #os.path.join(BASE_DIR, 'chat/static')
 ]
 STATICFILES_STORAGE = 'whitenoise.storage.CompressedStaticFilesStorage'
 WHITENOISE_MAX_AGE = 31536000  # 1 year in seconds
@@ -170,20 +173,41 @@ EMAIL_HOST_USER= os.getenv('EMAIL_HOST_USER')
 EMAIL_HOST_PASSWORD= os.getenv('EMAIL_HOST_PASSWORD')
 
 #redis stuff
+# Redis configuration
+REDIS_URL = os.environ.get('REDIS_URL', 'redis://localhost:6379')
+REDIS_TLS_URL = os.environ.get('REDIS_TLS_URL', 'redis://localhost:6379')
+#redis_instance = redis.StrictRedis.from_url(REDIS_URL)
+
 REDIS_HOST = os.getenv('REDIS_HOST')
 REDIS_PORT = os.getenv('REDIS_PORT')
-#EMAIL_BACKEND = "django.core.mail.backends.filebased.EmailBackend"
-#EMAIL_FILE_PATH = BASE_DIR / "sent_emails"
-# Channels
 
-ASGI_APPLICATION = "api.asgi.application"
-CHANNEL_LAYERS = {
-    "default": {
-        "BACKEND": "channels_redis.core.RedisChannelLayer",
-        "CONFIG": {
-            "hosts": [(REDIS_HOST, int(REDIS_PORT))],#"hosts": [("127.0.0.1", 6379)],
+# Channels
+if os.getenv('ENV') == 'production':
+    redis_url = urlparse(REDIS_TLS_URL)
+    redis_host = redis_url.hostname
+    redis_port = redis_url.port
+    redis_password = redis_url.password
+
+    ASGI_APPLICATION = "api.asgi.application"
+    CHANNEL_LAYERS = {
+        "default": {
+            "BACKEND": "channels_redis.core.RedisChannelLayer",
+            "CONFIG": {
+                "hosts": [REDIS_TLS_URL],
+            },
         },
-    },
-}
+    }
+    if redis_password:
+        CHANNEL_LAYERS["default"]["CONFIG"]["password"] = redis_password
+else:
+    ASGI_APPLICATION = "api.asgi.application"
+    CHANNEL_LAYERS = {
+        "default": {
+            "BACKEND": "channels_redis.core.RedisChannelLayer",
+            "CONFIG": {
+                "hosts": [(REDIS_HOST, int(REDIS_PORT))],#"hosts": [("127.0.0.1", 6379)],
+            },
+        },
+    }
 
 GIPHY_API_KEY = os.getenv('GIPHY_API_KEY')

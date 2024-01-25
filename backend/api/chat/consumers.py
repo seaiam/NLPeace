@@ -5,9 +5,10 @@ from channels.generic.websocket import WebsocketConsumer
 from django.contrib.auth import get_user_model
 
 from .chat_service import message_to_json, messages_to_json
-from .models import Message, ChatRoom
+from .models import Message, ChatRoom, getUserModel
 
-User=get_user_model()
+
+User = getUserModel()
 
 class ChatConsumer(WebsocketConsumer):
     pointer_message=Message

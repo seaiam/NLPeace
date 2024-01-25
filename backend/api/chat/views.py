@@ -20,14 +20,14 @@ from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_POST
 from django.http import JsonResponse
 from .chat_service import *
-from .models import Message, ReportMessage
+from .models import Message, ReportMessage, getUserModel
 from core.utils import attempt_send_message
 
 
 FILE_PATH_PATTERN = r'.*/(?P<filename>.+)$'
 
 
-User = get_user_model()
+User = getUserModel()
 
 logger = configure_logger("chat_logger")
 
