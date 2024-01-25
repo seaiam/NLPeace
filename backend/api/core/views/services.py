@@ -72,9 +72,9 @@ def get_user_posts(user):
     user_ids_following = profile.following.values_list('id', flat=True)
     blocked = profile.blocked.all()
     posts = Post.objects.filter(
-        Q(user__profile__is_private=False) | 
+        (Q(user__profile__is_private=False) | 
         Q(user__in=user_ids_following) |  
-        Q(user=user) |
+        Q(user=user)) &
         ~Q(user__in=blocked)
     ).distinct().order_by('-created_at')
     carriers = list(map(lambda post: ContentCarrier(post), posts))
@@ -118,7 +118,8 @@ def get_user_posts_and_reposts(user):
     posts = Post.objects.filter(Q(user=user) & Q(parent_post=None))
     reposts_ids = Repost.objects.filter(user=user).values_list('post_id', flat=True)
     reposts = Post.objects.filter(id__in=reposts_ids)
-    all_posts = sorted(chain(posts, reposts), key=lambda post: post.created_at, reverse=True)
+    replies = Post.objects.filter(Q(user=user) & ~Q(parent_post=None))
+    all_posts = sorted(chain(posts, reposts, replies), key=lambda post: post.created_at, reverse=True)
     carriers = list(map(lambda post: ContentCarrier(post), all_posts))
     return mix(carriers, get_ads(user))
 
