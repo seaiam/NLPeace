@@ -226,20 +226,22 @@
         {% include "posts.html" with carrier=post %}
         {% endfor %}
 
-    {% for post in posts %}
+    {% for post in non_pinned_posts %}
+    {% if post not in replies %}
       {% include "posts.html" with carrier=post %}
+      {% endif %}
         {% empty %}
         {% if pinned_posts %}
 
         {% else %}
         <div class="no-post">No posts available. </div>
         {% endif %}
-       
+    
     {% endfor %}
     </div>
 
     <div id="Replies" class="posttabcontent">
-        {% for post in reply_posts %}
+        {% for post in replies %}
             {% include "posts.html" with carrier=post %}
             {% empty %}           
             <div class="no-post">No Replies available. </div>        
@@ -251,7 +253,7 @@
         {% include "posts.html" with carrier=post %}
         {% endfor %}
 
-        {% for post in media_posts %}
+        {% for post in non_pinned_image_posts %}
         {% include "posts.html" with carrier=post %}
       
         {% empty %}
