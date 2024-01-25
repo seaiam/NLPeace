@@ -29,6 +29,7 @@ CSRF_COOKIE_SECURE = True
 if os.getenv('ENV') == 'production':
     ALLOWED_HOSTS = ['nlpeace-0c427559664a.herokuapp.com','https://nlpeace-0c427559664a.herokuapp.com', 'https://nlpeace.com', 'https://nlpeace.herokuapp.com']
 
+
     CSRF_TRUSTED_ORIGINS = [
     'https://nlpeace-0c427559664a.herokuapp.com',
     'https://nlpeace.com', 'https://nlpeace.herokuapp.com'
