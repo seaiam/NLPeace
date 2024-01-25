@@ -3,6 +3,9 @@
 <div class="d-flex justify-content-center align-items-center">
     <div class="card" style="width: 39rem; border-radius: 30px;margin:20px 0px 20px 0px;  overflow: hidden;background: linear-gradient(to right, #F9D1C4 0%, #9BBDDD 51%, #F9D1C4 100%);">
         <div class="card-body">
+            {% if carrier.is_post %}
+
+            {% with post=carrier.payload %}
             
             <div class = "pin-post">
                 {% if post.id in pinned_post_ids %}
@@ -234,11 +237,13 @@
                 </form>
 
                 {% if post in reported_posts %}
-                        <form method="post" action="{% url 'report_post' post.id %}">
-                            {% csrf_token %}
-                            <div class="feed-reposted">  <button type="submit" class = "reposted-button"><i class="fa fa-flag" aria-hidden="true"></button></i> </div>
-                        </form>
-                    {% else %}
+                <form method="post" action="{% url 'report' post.id %}">
+                    {% csrf_token %}
+                    <!-- To force form validity we need a dummy value for the required 'category' field -->
+                    <input id="{{ reportPostForm.category.id_for_label }}" type="hidden" name="category" value="0" />
+                    <div class="feed-reposted"><button type="submit" class = "reposted-button"><i class="fa fa-flag" aria-hidden="true"></button></i></div>
+                </form>
+                {% else %}
 
                 <div class="feed post-actions__label">
                     {% with counter=forloop.counter|stringformat:"s" %}
@@ -325,8 +330,36 @@
                         </div>
                     {% endif %}
                 </form>
+             
+            </div>
+            {% endif %}
+
+            {% endwith %}
+            
+            {% else %}
+
+            {% with ad=carrier.payload %}
+
+            <div class="row top-aligned-row mb-4">
+                <div class="col-2">
+                {% if ad.logo %}
+                    <img class="user-pic" src="{{ ad.logo.url }}" alt="logo" />
+                {% else %}
+                    <img class="user-pic" src="{% static 'logo_no_text.png' %}" alt="logo" />
                 {% endif %}
+                </div>
+                <div class="col-10">
+                    <div>
+                        <h6 class="card-title d-inline"><strong>{{ ad.advertiser }}</strong></h6>
+                        <span class="float-right text-muted">Sponsored</span>
+                    </div>
+                    <p class="card-text">{{ ad.content }}</p>
+                </div>
+            </div>
+
+            {% endwith %}
+            
+            {% endif %}
         </div>
-    </div>
     </div>
 </div>

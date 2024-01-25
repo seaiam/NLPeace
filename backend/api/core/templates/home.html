@@ -215,7 +215,7 @@
 <div class="container">
     <div class="profiletab-btns">
         <button class="profiletabbutton" onclick="openPostTab(event, 'Posts')" id="defaultOpenPost">Posts</button>
-        <button class="profiletabbutton" onclick="">Replies</button>
+        <button class="profiletabbutton" onclick="openPostTab(event, 'Replies')">Replies</button>
         <button class="profiletabbutton" onclick="openPostTab(event, 'Media')">Media</button>
         <button class="profiletabbutton" onclick="openPostTab(event, 'Likes')">Likes</button>
     </div>
@@ -224,29 +224,38 @@
     <div id="Posts" class="posttabcontent">
 
         {% for post in pinned_posts %}
-        {% include "posts.html" with tab="posts" %}
+        {% include "posts.html" with carrier=post %}
         {% endfor %}
 
-    {% for post in posts %}
-      {% include "posts.html" with tab="posts" %}
+    {% for post in non_pinned_posts %}
+    {% if post not in replies %}
+      {% include "posts.html" with carrier=post %}
+      {% endif %}
         {% empty %}
         {% if pinned_posts %}
 
         {% else %}
         <div class="no-post">No posts available. </div>
         {% endif %}
-       
+    
     {% endfor %}
     </div>
-    
+
+    <div id="Replies" class="posttabcontent">
+        {% for post in replies %}
+            {% include "posts.html" with carrier=post %}
+            {% empty %}           
+            <div class="no-post">No Replies available. </div>        
+        {% endfor %}
+    </div>
 
     <div id="Media" class="posttabcontent" style="display:none;">
         {% for post in pinned_image_posts %}
-        {% include "posts.html" with tab="posts" %}
+        {% include "posts.html" with carrier=post %}
         {% endfor %}
 
-        {% for post in media_posts %}
-        {% include "posts.html" with tab="media" %}
+        {% for post in non_pinned_image_posts %}
+        {% include "posts.html" with carrier=post %}
       
         {% empty %}
         {% if pinned_image_posts %}
@@ -260,7 +269,7 @@
 
       <div id="Likes" class="posttabcontent" style="display:none;">
         {% for post in liked_posts %}
-           {% include "posts.html" with tab="likes" %}
+           {% include "posts.html" with carrier=post tab="likes" %}
             {% empty %}
             <div class="no-post">No Liked Posts available. </div>
             {% endfor %}

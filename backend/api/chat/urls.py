@@ -12,6 +12,6 @@ urlpatterns = [
     path("<int:target_user_id>/upload_video", views.upload_video, name="upload_video"),
     path("download/<str:path>", views.download, name="download"),
     path("classifyMessage/", views.classifyMessage, name="classifyMessage"),
-    path("<int:message_id>/report_message", views.report_message, name="report_message"),
+    path("report_message/<int:message_id>", views.report_message, name="report_message"),
     path('search-giphy/', views.search_giphy, name='search_giphy'),
 ]
