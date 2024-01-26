@@ -57,6 +57,7 @@ def profile(request):
     liked_posts = get_liked_posts(request.user)
     data = Notifications.objects.filter(user=request.user).order_by('-id')
     #TEMP
+<<<<<<< HEAD
     liked_posts = Post.objects.filter(postlike__liker=request.user).distinct().order_by('-created_at')
     saved_post_ids = [post.id for post in all_posts if not post.is_saveable_by(request.user)] # ADDED THIS
     reported_posts = [post for post in all_posts if not post.is_reportable_by(request.user)] #for post reporting
@@ -70,6 +71,15 @@ def profile(request):
     reported_posts = [post.payload for post in posts if post.is_post and not post.payload.is_reportable_by(request.user)] #for post reporting
     reposted_post_ids = Repost.objects.filter(user=request.user).values_list('post_id', flat=True)    
     
+=======
+    pinned_posts = [post for post in posts if not post.is_post or post.payload.is_pinned_by(request.user)]
+    pinned_image_posts = [post for post in posts if not post.is_post or post.payload.is_pinned_by(request.user) and post.payload.image]
+    non_pinned_posts = [post for post in posts if not post.is_post or  not post.payload.is_pinned_by(request.user)]
+    saved_post_ids = [post.payload.id for post in posts if post.is_post and not post.payload.is_saveable_by(request.user)] # ADDED THIS
+    pinned_post_ids = [post.payload.id for post in posts if post.is_post and post.payload.is_pinned_by(request.user)]
+    reported_posts = [post.payload for post in posts if post.is_post and not post.payload.is_reportable_by(request.user)] #for post reporting
+    reposted_post_ids = Repost.objects.filter(user=request.user).values_list('post_id', flat=True)    
+>>>>>>> main
     replies = [post for post in posts if post.is_post and post.payload.parent_post is not None]
     non_pinned_image_posts=[post for post in posts if post.is_post and not post.payload.is_pinned_by(request.user) and post.payload.image]
    
@@ -111,6 +121,7 @@ def guest(request, user_id):
     likes, dislikes, _ = get_post_interactions(guest_user, all_posts)
     followers = profile.followers.all() 
     following = profile.following.all()
+<<<<<<< HEAD
     reported_posts = [post for post in all_posts if not post.is_reportable_by(request.user)] #for post reporting
     reposted_post_ids = Repost.objects.filter(user=request.user).values_list('post_id', flat=True)
     pinned_posts = [post for post in all_posts if not post.is_post or post.payload.is_pinned_by(user=guest_user)]
@@ -121,6 +132,16 @@ def guest(request, user_id):
     saved_post_ids = [post.payload.id for post in all_posts if post.is_post and not post.payload.is_saveable_by(guest_user)] 
     reported_posts = [post.payload for post in all_posts if post.is_post and not post.payload.is_reportable_by(request.user)] #for post reporting
     reposted_post_ids = Repost.objects.filter(user=request.user).values_list('post_id', flat=True)
+=======
+    pinned_posts = [post for post in all_posts if not post.is_post or post.payload.is_pinned_by(user=guest_user)]
+    pinned_image_posts = [post for post in all_posts if not post.is_post or post.payload.is_pinned_by(user=guest_user) and post.payload.image]
+    non_pinned_posts = [post for post in all_posts if not post.is_post or not post.payload.is_pinned_by(user=guest_user)]
+    pinned_post_ids = [post.payload.id for post in all_posts if post.is_post and  post.payload.is_pinned_by(user=guest_user)] 
+    liked_posts = get_liked_posts(guest_user)
+    saved_post_ids = [post.payload.id for post in all_posts if post.is_post and not post.payload.is_saveable_by(guest_user)] 
+    reported_posts = [post.payload for post in all_posts if post.is_post and not post.payload.is_reportable_by(request.user)] #for post reporting
+    reposted_post_ids = Repost.objects.filter(user=request.user).values_list('post_id', flat=True)
+>>>>>>> main
     replies = [post for post in all_posts if post.is_post and post.payload.parent_post is not None]
     non_pinned_image_posts=[post for post in all_posts if post.is_post and not post.payload.is_pinned_by(request.user) and post.payload.image]
     context = {

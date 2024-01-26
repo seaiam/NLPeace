@@ -1,5 +1,4 @@
 
-
 from django.conf import settings
 from django.db import migrations, models
 import django.db.models.deletion
@@ -88,6 +87,7 @@ class Migration(migrations.Migration):
             name='ProfileInterest',
             fields=[
 <<<<<<< HEAD
+<<<<<<< HEAD
                 ('user', models.OneToOneField(on_delete=django.db.models.deletion.RESTRICT, primary_key=True, serialize=False, to=settings.AUTH_USER_MODEL)),
                 ('bio', models.TextField(blank=True, null=True)),
                 ('banner', models.ImageField(blank=True, null=True, upload_to='profileBanners/')),
@@ -101,6 +101,8 @@ class Migration(migrations.Migration):
                 ('followers', models.ManyToManyField(blank=True, related_name='followers', to=settings.AUTH_USER_MODEL)),
                 ('following', models.ManyToManyField(blank=True, related_name='following', to=settings.AUTH_USER_MODEL)),
 =======
+=======
+>>>>>>> main
                 ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
                 ('name', models.CharField(max_length=1024)),
                 ('last_expressed', models.DateTimeField()),

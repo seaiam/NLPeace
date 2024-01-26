@@ -1,7 +1,6 @@
 import requests
 
 from api.logger_config import configure_logger # TODO add logging statements
-
 from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth import update_session_auth_hash
