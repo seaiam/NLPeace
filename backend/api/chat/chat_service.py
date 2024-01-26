@@ -1,9 +1,6 @@
 from .models import ChatRoom, ReportMessage
 from .models import ChatRoom, ReportMessage
-from django.contrib.auth import get_user_model
 from django.db.models import Q
-import requests
-from django.urls import reverse
 import requests
 from django.urls import reverse
 
@@ -29,8 +26,6 @@ def handle_chatroom_initiation(user, chat_room):
         chat_room.initiated_by_user2 = True
     chat_room.save()  
 
-def messages_to_json(messages, user):
-    return [message_to_json(message, user) for message in messages]
 def messages_to_json(messages, user):
     return [message_to_json(message, user) for message in messages]
 

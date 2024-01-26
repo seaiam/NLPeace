@@ -26,9 +26,6 @@ CSRF_COOKIE_SECURE = True
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/4.2/howto/deployment/checklist/
 
-# SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = os.getenv('SECRET_KEY')
-
 if os.getenv('ENV') == 'production':
     ALLOWED_HOSTS = ['nlpeace-0c427559664a.herokuapp.com','https://nlpeace-0c427559664a.herokuapp.com', 'https://nlpeace.com', 'https://nlpeace.herokuapp.com']
 
@@ -186,6 +183,7 @@ REDIS_URL = os.environ.get('REDIS_URL', 'redis://localhost:6379')
 REDIS_TLS_URL = os.environ.get('REDIS_TLS_URL', 'redis://localhost:6379')
 #redis_instance = redis.StrictRedis.from_url(REDIS_URL)
 
+
 # Channels
 if os.getenv('ENV') == 'production':
     redis_url = urlparse(os.environ.get('REDIS_URL', ''))
@@ -208,6 +206,7 @@ if os.getenv('ENV') == 'production':
 else:
     REDIS_HOST = os.getenv('REDIS_HOST')
     REDIS_PORT = os.getenv('REDIS_PORT')
+
     ASGI_APPLICATION = "api.asgi.application"
     CHANNEL_LAYERS = {
         "default": {
