@@ -86,8 +86,6 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='ProfileInterest',
             fields=[
-<<<<<<< HEAD
-<<<<<<< HEAD
                 ('user', models.OneToOneField(on_delete=django.db.models.deletion.RESTRICT, primary_key=True, serialize=False, to=settings.AUTH_USER_MODEL)),
                 ('bio', models.TextField(blank=True, null=True)),
                 ('banner', models.ImageField(blank=True, null=True, upload_to='profileBanners/')),
