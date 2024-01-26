@@ -38,13 +38,13 @@ else:
 
 # Application definition
 INSTALLED_APPS = [
-    'daphne',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'daphne',
     'core',
     'core.tests',
     'api',
@@ -178,12 +178,9 @@ REDIS_URL = os.environ.get('REDIS_URL', 'redis://localhost:6379')
 REDIS_TLS_URL = os.environ.get('REDIS_TLS_URL', 'redis://localhost:6379')
 #redis_instance = redis.StrictRedis.from_url(REDIS_URL)
 
-REDIS_HOST = os.getenv('REDIS_HOST')
-REDIS_PORT = os.getenv('REDIS_PORT')
-
 # Channels
 if os.getenv('ENV') == 'production':
-    redis_url = urlparse(REDIS_TLS_URL)
+    redis_url = urlparse(os.environ.get('REDIS_URL', ''))
     redis_host = redis_url.hostname
     redis_port = redis_url.port
     redis_password = redis_url.password
@@ -193,13 +190,16 @@ if os.getenv('ENV') == 'production':
         "default": {
             "BACKEND": "channels_redis.core.RedisChannelLayer",
             "CONFIG": {
-                "hosts": [REDIS_TLS_URL],
+                "hosts": [(redis_host, redis_port)],
+                "password": redis_password,
             },
         },
     }
     if redis_password:
         CHANNEL_LAYERS["default"]["CONFIG"]["password"] = redis_password
 else:
+    REDIS_HOST = os.getenv('REDIS_HOST')
+    REDIS_PORT = os.getenv('REDIS_PORT')
     ASGI_APPLICATION = "api.asgi.application"
     CHANNEL_LAYERS = {
         "default": {

@@ -1,5 +1,4 @@
-from .models import ChatRoom, ReportMessage
-from .models import ChatRoom, ReportMessage
+from .models import ChatRoom
 from django.db.models import Q
 import requests
 from django.urls import reverse

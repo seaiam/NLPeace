@@ -11,3 +11,4 @@ channels_redis
 coverage
 pytest
 daphne
+redis

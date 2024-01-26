@@ -7,11 +7,7 @@ from django.urls import reverse
 
 from core.utils import attempt_send_message
 
-def getUserModel():
-    from django.contrib.auth import get_user_model
-    return get_user_model()
-
-User = getUserModel()
+User = get_user_model()
 
 class ChatRoom(models.Model):
     room_name = models.AutoField(primary_key=True, unique=True)
@@ -112,5 +108,3 @@ class ReportMessage(models.Model):
     reporter = models.ForeignKey(User, on_delete=models.DO_NOTHING, default=None)
     message = models.ForeignKey(Message, on_delete=models.CASCADE, default=None)
     category = models.IntegerField(choices=Category.choices, default=0)
-
-
