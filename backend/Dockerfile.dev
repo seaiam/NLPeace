@@ -24,13 +24,9 @@
 FROM python:3.10.13-alpine3.18
 LABEL maintainer="SOEN490"
 
-<<<<<<< HEAD
 ENV PYTHONDONTWRITEBYTECODE 1
 ENV PYTHONUNBUFFERED 1
 ENV DEBUG 0
-=======
-ENV PYTHONUNBUFFERED 1
->>>>>>> 5289d9c (BACKEND modified docker scripts to differentiate dev/prod)
 
 
 RUN apk add --update --no-cache libffi-dev
@@ -39,10 +35,7 @@ RUN apk add --update --no-cache libffi-dev
 COPY ./requirements.txt /tmp/requirements.txt
 COPY ./api /api
 WORKDIR /api
-<<<<<<< HEAD
-=======
 EXPOSE 8000
->>>>>>> 5289d9c (BACKEND modified docker scripts to differentiate dev/prod)
 
 
 # Install libffi-dev
