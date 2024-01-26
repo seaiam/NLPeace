@@ -38,13 +38,13 @@ else:
 
 # Application definition
 INSTALLED_APPS = [
-    'daphne',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'daphne',
     'core',
     'core.tests',
     'api',
@@ -182,8 +182,6 @@ EMAIL_HOST_PASSWORD= os.getenv('EMAIL_HOST_PASSWORD')
 REDIS_URL = os.environ.get('REDIS_URL', 'redis://localhost:6379')
 REDIS_TLS_URL = os.environ.get('REDIS_TLS_URL', 'redis://localhost:6379')
 #redis_instance = redis.StrictRedis.from_url(REDIS_URL)
-
-
 # Channels
 if os.getenv('ENV') == 'production':
     redis_url = urlparse(os.environ.get('REDIS_URL', ''))
@@ -206,7 +204,6 @@ if os.getenv('ENV') == 'production':
 else:
     REDIS_HOST = os.getenv('REDIS_HOST')
     REDIS_PORT = os.getenv('REDIS_PORT')
-
     ASGI_APPLICATION = "api.asgi.application"
     CHANNEL_LAYERS = {
         "default": {

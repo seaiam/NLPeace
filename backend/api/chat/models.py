@@ -9,7 +9,6 @@ from core.utils import attempt_send_message
 
 User = get_user_model()
 
-
 class ChatRoom(models.Model):
     room_name = models.AutoField(primary_key=True, unique=True)
     user1 = models.ForeignKey(User,related_name='user1',on_delete=models.CASCADE)
