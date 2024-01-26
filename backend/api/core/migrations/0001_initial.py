@@ -100,9 +100,6 @@ class Migration(migrations.Migration):
                 ('follow_requests', models.ManyToManyField(blank=True, related_name='follow_requests', to=settings.AUTH_USER_MODEL)),
                 ('followers', models.ManyToManyField(blank=True, related_name='followers', to=settings.AUTH_USER_MODEL)),
                 ('following', models.ManyToManyField(blank=True, related_name='following', to=settings.AUTH_USER_MODEL)),
-=======
-=======
->>>>>>> main
                 ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
                 ('name', models.CharField(max_length=1024)),
                 ('last_expressed', models.DateTimeField()),
@@ -115,7 +112,6 @@ class Migration(migrations.Migration):
                 ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
                 ('post', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='core.post')),
                 ('saver', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to=settings.AUTH_USER_MODEL)),
->>>>>>> 9eb6913 (Merge branch 'main' into T5/add-ads/235)
             ],
         ),
         migrations.CreateModel(
