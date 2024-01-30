@@ -24,7 +24,9 @@
 FROM python:3.10.13-alpine3.18
 LABEL maintainer="SOEN490"
 
+ENV PYTHONDONTWRITEBYTECODE 1
 ENV PYTHONUNBUFFERED 1
+ENV DEBUG 0
 
 
 RUN apk add --update --no-cache libffi-dev

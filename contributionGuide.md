@@ -22,6 +22,7 @@ If the commit warrants more details than a short descriptive title, a body shoul
 <br><br>
 
 
+
 #Example
 <br>
 [#3] Add UML diagram for database classes

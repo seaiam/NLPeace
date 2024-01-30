@@ -26,10 +26,9 @@ from core.utils import attempt_send_message
 
 FILE_PATH_PATTERN = r'.*/(?P<filename>.+)$'
 
+logger = configure_logger("chat_logger")
 
 User = get_user_model()
-
-logger = configure_logger("chat_logger")
 
 def index(request):
     users = User.objects.all()

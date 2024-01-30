@@ -12,13 +12,15 @@ def register_user(request):
     if request.method == 'POST':
         if register_new_user(request, request.POST):
             messages.success(request, "Registration Successful!")
-            return redirect('profile')
+            return redirect('profile')  # Redirect to 'profile' on successful registration
+        else:
+            form = UserRegistrationForm(request.POST)
+            messages.error(request, "Registration Error!")
     else:
         form = UserRegistrationForm()
-        context = {
-        'form': form
-        }
-        return render(request, 'registration/register.html', context)
+
+    context = {'form': form}
+    return render(request, 'registration/register.html', context)
 
 def login_user(request):
     if request.method == "POST":

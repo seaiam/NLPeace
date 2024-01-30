@@ -11,26 +11,32 @@ https://docs.djangoproject.com/en/4.2/ref/settings/
 """
 import os
 from pathlib import Path
+import dj_database_url
+#import redis
+from urllib.parse import urlparse
+
+# SECURITY WARNING: keep the secret key used in production secret!
+SECRET_KEY = os.getenv('SECRET_KEY')
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 AUTH_PROFILE_MODULE = 'core.Profile'
-
+CSRF_COOKIE_SECURE = True
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/4.2/howto/deployment/checklist/
 
-# SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-11ng+^!+u_d((1aq1!#r$jme--r_e7p&(#!w*cjuam9ccx*hea'
+if os.getenv('ENV') == 'production':
+    ALLOWED_HOSTS = ['nlpeace-0c427559664a.herokuapp.com','https://nlpeace-0c427559664a.herokuapp.com', 'https://nlpeace.com', 'https://nlpeace.herokuapp.com']
 
-# SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
-
-ALLOWED_HOSTS = []
-
+    CSRF_TRUSTED_ORIGINS = [
+    'https://nlpeace-0c427559664a.herokuapp.com',
+    'https://nlpeace.com', 'https://nlpeace.herokuapp.com'
+    ]
+else:
+    ALLOWED_HOSTS = []
 
 # Application definition
-
 INSTALLED_APPS = [
     'daphne',
     'django.contrib.admin',
@@ -46,10 +52,11 @@ INSTALLED_APPS = [
 ]
 
 MIDDLEWARE = [
+    'django.middleware.csrf.CsrfViewMiddleware',
     'django.middleware.security.SecurityMiddleware',
+    'whitenoise.middleware.WhiteNoiseMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
-    'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
@@ -76,28 +83,32 @@ TEMPLATES = [
 ]
 
 WSGI_APPLICATION = 'api.wsgi.application'
-# ASGI_APPLICATION = "api.asgi.application"
+ASGI_APPLICATION = "api.asgi.application"
 MESSAGE_STORAGE = 'django.contrib.messages.storage.session.SessionStorage'
 
 
 # Database
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases
-
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.postgresql',
-        'HOST': 'db',
-        'NAME': 'devdb',
-        'USER': 'devuser',
-        'PASSWORD': 'changeme',
-        'PORT': '5432'
-        # 'HOST': os.environ.get('DB_HOST'),
-        # 'NAME': os.environ.get('DB_NAME'),
-        # 'USER': os.environ.get('DB_USER'),
-        # 'PASSWORD': os.environ.get('DB_PASS'),
+if 'DATABASE_URL' in os.environ:
+    DEBUG = True
+    #Heroku prod db
+    DATABASES = {'default': dj_database_url.config(default=os.environ.get('DATABASE_URL'))}
+else:
+    DEBUG = True
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.postgresql',
+            'HOST': 'db',
+            'NAME': 'devdb',
+            'USER': 'devuser',
+            'PASSWORD': 'changeme',
+            'PORT': '5432'
+            # 'HOST': os.environ.get('DB_HOST'),
+            # 'NAME': os.environ.get('DB_NAME'),
+            # 'USER': os.environ.get('DB_USER'),
+            # 'PASSWORD': os.environ.get('DB_PASS'),
+        }
     }
-}
-
 
 # Password validation
 # https://docs.djangoproject.com/en/4.2/ref/settings/#auth-password-validators
@@ -132,11 +143,17 @@ USE_TZ = True
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/4.2/howto/static-files/
+STATICFILES_STORAGE = 'whitenoise.storage.CompressedStaticFilesStorage'
+WHITENOISE_MAX_AGE = 31536000  # 1 year in seconds
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
+WHITENOISE_MANIFEST_STRICT = False
 
 STATIC_URL = 'static/'
 STATICFILES_DIR=[
     os.path.join(BASE_DIR,'static')
 ]
+
+
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field
@@ -148,30 +165,51 @@ MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'api','core', 'media')
 
 #SMTP Configuration
-EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
-EMAIL_HOST='smtp.gmail.com'
-EMAIL_PORT=587
-EMAIL_USE_TLS=True
-EMAIL_HOST_USER='nlpeaceinfo@gmail.com'
-EMAIL_HOST_PASSWORD='rvzc loct ymft eklm'
+EMAIL_BACKEND = os.getenv('EMAIL_BACKEND')
+EMAIL_HOST= os.getenv('EMAIL_HOST')
+EMAIL_PORT= os.getenv('EMAIL_PORT')
+EMAIL_USE_TLS= os.getenv('EMAIL_USE_TLS')
+EMAIL_HOST_USER= os.getenv('EMAIL_HOST_USER')
+EMAIL_HOST_PASSWORD= os.getenv('EMAIL_HOST_PASSWORD')
 
 #redis stuff
-REDIS_HOST = "redis" #os.environ.get('REDIS_HOST', 'localhost')
-REDIS_PORT =  "6379" #os.environ.get('REDIS_PORT', 6379)
-#EMAIL_BACKEND = "django.core.mail.backends.filebased.EmailBackend"
-#EMAIL_FILE_PATH = BASE_DIR / "sent_emails"
+# Redis configuration
+REDIS_URL = os.environ.get('REDIS_URL', 'redis://localhost:6379')
+REDIS_TLS_URL = os.environ.get('REDIS_TLS_URL', 'redis://localhost:6379')
+#redis_instance = redis.StrictRedis.from_url(REDIS_URL)
 # Channels
-ASGI_APPLICATION = "api.asgi.application"
-CHANNEL_LAYERS = {
-    "default": {
-        "BACKEND": "channels_redis.core.RedisChannelLayer",
-        "CONFIG": {
-            "hosts": [(REDIS_HOST, int(REDIS_PORT))],#"hosts": [("127.0.0.1", 6379)],
-        },
-    },
-}
+if os.getenv('ENV') == 'production':
+    redis_url = urlparse(os.environ.get('REDIS_URL', ''))
+    redis_host = redis_url.hostname
+    redis_port = redis_url.port
+    redis_password = redis_url.password
 
-GIPHY_API_KEY = '9a6zGfy6TBTv459CNi2y3KtOWkB69vOx'
+    ASGI_APPLICATION = "api.asgi.application"
+    CHANNEL_LAYERS = {
+        "default": {
+            "BACKEND": "channels_redis.core.RedisChannelLayer",
+            "CONFIG": {
+                "hosts": [(redis_host, redis_port)],
+                "password": redis_password,
+            },
+        },
+    }
+    if redis_password:
+        CHANNEL_LAYERS["default"]["CONFIG"]["password"] = redis_password
+else:
+    REDIS_HOST = os.getenv('REDIS_HOST')
+    REDIS_PORT = os.getenv('REDIS_PORT')
+    ASGI_APPLICATION = "api.asgi.application"
+    CHANNEL_LAYERS = {
+        "default": {
+            "BACKEND": "channels_redis.core.RedisChannelLayer",
+            "CONFIG": {
+                "hosts": [(REDIS_HOST, int(REDIS_PORT))],#"hosts": [("127.0.0.1", 6379)],
+            },
+        },
+    }
+
+GIPHY_API_KEY = os.getenv('GIPHY_API_KEY')
 
 # The number of days allowed to elapse without a user mentioning a
 # topic before it is assumed they are no longer interested in it.

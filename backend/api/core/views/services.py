@@ -7,10 +7,11 @@ from django.contrib.auth import update_session_auth_hash
 from django.contrib.auth.forms import PasswordChangeForm
 from django.db.models import Q
 from django.http import *
-from django.shortcuts import get_object_or_404
+from django.shortcuts import get_object_or_404, redirect
+from itertools import chain
 from itertools import chain, cycle
-
 from core.forms.profile_forms import *
+from core.forms.user_forms import UserReportForm
 from core.forms.posting_forms import *
 from core.interest_resolver import RESOLVERS
 from core.models.models import *
