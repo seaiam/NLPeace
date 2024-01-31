@@ -308,7 +308,7 @@ hr{
 }
 
 /* Profile Page css */
-.profile-page {
+.profile-page{
   padding: 4% 0 0;
   margin: auto;
 }
@@ -397,7 +397,7 @@ hr{
 }
 
 /* Follower / Following buttons */
-.editFollowButton {
+.editFollowButton, .community-members {
   display: inline-block;
   padding: 0px 4px;
   border: none;
@@ -1048,7 +1048,7 @@ button:hover {
   border-bottom: 2px solid #fff;
 }
 
-.profiletab-btns {
+.profiletab-btns, .communitytab-btns{
   font-size: 1.1em;
   display:flex;
   justify-content: center;
@@ -1056,7 +1056,7 @@ button:hover {
   margin-top: 10px;
 }
 
-.profiletabbutton {
+.profiletabbutton, .communitytabbutton {
   background-color: transparent;
   color: #fff;
   border: none;
@@ -1268,6 +1268,100 @@ img {
   background: linear-gradient(to right, #F9D1C4 0%, #9BBDDD 51%, #F9D1C4 100%);
 
 }
+
+/* COMMUNITY USER STORY */
+
+.community-container{
+  display: grid;  
+  grid-template-columns: 2fr 0fr; 
+}
+
+.community-items{
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.trending-community{
+  text-align: center;
+  color: #fff;
+}
+
+.create-community{
+  text-align: center;
+  color: #fff;
+  font-size: xx-large;
+  margin-left:30px;
+}
+
+.bi-person-plus{
+  color: #fff;
+}
+
+.community-form{
+  font-size: small;
+  text-align: start;
+  font-size: large;
+  color: #fff;
+}
+
+.Community-modalTitle{
+  text-align: center;
+  color: #D9D9D9;
+  font-size:30px;
+}
+
+.form-community {
+  width: 30%;
+  height: 30px;
+  border-color: #000;
+  border-radius: 5px;
+  margin-top:10px;
+  margin-left: 2%;
+}
+
+.form-name {
+  width: 50%;
+  height: 30px;
+  border-color: #000;
+  border-radius: 5px;
+  margin-top:10px;
+  margin-left: 2%;
+}
+
+.iconButton{
+  border: none;
+  padding: 0;
+  background: none;
+}
+
+.CreateButton {
+  display: inline-block;
+  padding: 2px 60px;
+  border: none;
+  background: linear-gradient(to right, #F9D1C4 0%, #9BBDDD 51%, #F9D1C4 100%);
+  color: #000;
+  text-align: center;
+  border-radius: 40px;
+  transition: background-color 0.3s ease;
+  font-size:x-large;
+}
+
+.community-name, .community-description{
+  color: #D9D9D9;
+}
+
+ .community-members {
+  display: inline-block;
+  padding: 0px 4px;
+  border: none;
+  color: #D9D9D9;
+  text-align: center;
+  text-decoration: none;
+  background: none;
+  margin-bottom:10px;
+}
+
 
 
 /* Media Queries */
