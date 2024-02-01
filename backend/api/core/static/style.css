@@ -1363,11 +1363,22 @@ img {
 }
 
 .community-title, .members{
-
   color: #00001c;
-
 }
 
+/* Community Banner */
+.community-banner {
+  background-color: #919196;
+  height: 150px;
+  border-radius: 20px;
+  position: relative;
+  z-index: 0;
+}
+
+.community-banner img {
+  width: 100%;
+  object-fit: cover;
+}
 
 
 /* Media Queries */
