@@ -7,7 +7,7 @@ from django.db.models import Q
 from django.shortcuts import get_object_or_404
 from django.http import *
 from core.forms.community_forms import CommunityForm
-from core.models.models import Community, CommunityPost
+from core.models.community_models import Community, CommunityPost
 from django.http import HttpResponseRedirect
 from .services import *
 
@@ -25,7 +25,6 @@ def create_community(request):
     else:
         form = CommunityForm()
     return render(request, 'create_community.html', {'form': form})
-
 
 @login_required
 def community_detail(request, community_id):

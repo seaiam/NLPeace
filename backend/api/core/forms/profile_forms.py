@@ -1,5 +1,5 @@
 from django import forms
-from core.models.models import Profile, User
+from core.models.profile_models import Profile, User
 
 class EditBioForm(forms.ModelForm):
     class Meta:
@@ -34,6 +34,7 @@ class PrivacySettingsForm(forms.ModelForm):
     class Meta:
         model = Profile
         fields = ['is_private'] 
+
 class MessagingSettingsForm(forms.ModelForm):
     messaging_is_private = forms.ChoiceField(
         choices=((False, 'Everyone'), (True, 'Followers')),
