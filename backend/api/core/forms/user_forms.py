@@ -1,7 +1,7 @@
 from django.contrib.auth.forms import UserCreationForm
 from django.core.exceptions import ValidationError
 from django import forms
-from core.models.models import User , UserReport
+from core.models.profile_models import User , UserReport
 
 class UserRegistrationForm(UserCreationForm):
     email = forms.EmailField(label='Email',widget=forms.EmailInput(attrs={'class': 'form-login', 'autofocus': 'autofocus'}))

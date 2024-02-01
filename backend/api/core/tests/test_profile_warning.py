@@ -1,7 +1,7 @@
 from django.contrib.admin import AdminSite
 from django.test import TestCase
 from core.admin import UserAdmin
-from core.models.models import Notifications, ProfileWarning, User
+from core.models.profile_models import Notifications, ProfileWarning, User
 from unittest.mock import Mock
 
 def mock_formset(instances):

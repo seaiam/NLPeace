@@ -1,7 +1,7 @@
 
 from django.test import TestCase
 from django.urls import reverse
-from core.models.models import User , Profile
+from core.models.profile_models import User , Profile
 from django.core.exceptions import ObjectDoesNotExist
 
 class UserLoginTest(TestCase):

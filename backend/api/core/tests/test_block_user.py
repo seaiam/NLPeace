@@ -1,7 +1,7 @@
 from django.test import TestCase
 from django.urls import reverse
 from django.contrib.auth.models import User
-from core.models.models import *
+from core.models.profile_models import Profile
 
 
 class TestBlockUser(TestCase):

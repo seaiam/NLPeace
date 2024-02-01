@@ -1,7 +1,8 @@
 from django.contrib import admin
 from django.contrib.auth.models import User
 
-from core.models.models import Notifications, Post, PostReport, Profile, ProfileWarning, UserReport
+from core.models.profile_models import Notifications, Profile, ProfileWarning, UserReport
+from core.models.post_models import Post, PostReport
 
 class ProfileInline(admin.TabularInline):
     model = Profile
