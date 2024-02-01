@@ -9,15 +9,22 @@
     <div class = "community-items">
         <div class="row">
             <div class= "col-md-9">
-                <h1 class = "trending-community"> Trending Communities</h1>
+                <h2 class = "trending-community">Trending Communities</h2>
             </div>
                 
             <div class= "col-md-3">
-                <button class = "iconCommunity" onclick="toggleModal('create-community-modal')" title="My Community"> <i class="bi bi-list"></i></button>
                 <button class = "iconCommunity" onclick="toggleModal('create-community-modal')" title="Create Community"> <i class="bi bi-person-plus" style="margin-left: 10px;"></i></button>
+                <button class = "iconCommunity" onclick="toggleModal('create-community-modal')" title="My Community"> <i class="bi bi-list"></i></button>
             </div>
            
-        </div>            
+        </div> 
+        <br>
+        <div class="d-flex justify-content-center align-items-center">
+            <form class="form-inline" method="POST" action="">
+                <input class="form-control mr-sm-2 community-search" type="search" placeholder="Search" aria-label="Search" name="search"  id="" style="width: 36rem;">
+            </form>
+        </div>
+    </div>           
         <!--create community popup-->
         <div id="create-community-modal" class="popup">
             <div class="popup-content">
@@ -31,15 +38,9 @@
             </div>
         </div>  
         <!--create community popup end-->
-    </div>
 </div>
 <br>
-<div class="d-flex justify-content-center align-items-center">
-    <form class="form-inline" method="POST" action="">
-        <input class="form-control mr-sm-2 community-search" type="search" placeholder="Search" aria-label="Search" name="search"  id="" style="width: 36rem;">
-    </form>
-</div>
-<br>
+
 <div class="d-flex justify-content-center align-items-center">
     <div class="card" style="width: 37rem; border-radius: 20px;margin:20px 0px 20px 0px;  overflow: hidden;background: linear-gradient(to right, #F9D1C4 0%, #9BBDDD 51%, #F9D1C4 100%);">
         <div class="card-body">
