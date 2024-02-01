@@ -1,7 +1,7 @@
 from django.test import TestCase
 from django.urls import reverse
-from django.core.files.uploadedfile import SimpleUploadedFile
-from core.models.models import Community, User
+from core.models.community_models import Community
+from core.models.profile_models import User
 from core.forms.community_forms import CommunityForm
 
 class CommunityTestCase(TestCase):

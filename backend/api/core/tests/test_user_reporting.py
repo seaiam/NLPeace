@@ -1,6 +1,6 @@
 from django.test import TestCase
 from django.urls import reverse
-from core.models.models import User , UserReport
+from core.models.profile_models import User , UserReport
 
 class ReportTestCase(TestCase):
     def setUp(self):

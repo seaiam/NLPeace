@@ -7,15 +7,12 @@ from django.contrib.auth import update_session_auth_hash
 from django.contrib.auth.forms import PasswordChangeForm
 from django.db.models import Q
 from django.http import *
-from django.shortcuts import get_object_or_404, redirect
-from itertools import chain
+from django.shortcuts import get_object_or_404
 from itertools import chain, cycle
-from core.forms.profile_forms import *
-from core.forms.user_forms import UserReportForm
-from core.forms.posting_forms import *
+from core.forms.profile_forms import EditBioForm, EditUsernameForm, EditProfilePicForm, EditProfileBannerForm, PrivacySettingsForm
 from core.interest_resolver import RESOLVERS
-from core.models.models import *
-
+from core.models.post_models import Post, Repost, PostReport, PostLike, PostDislike, PostSave, PostPin, Advertisement
+from core.models.profile_models import Profile, Notifications, User
 
 class ContentCarrier:
 

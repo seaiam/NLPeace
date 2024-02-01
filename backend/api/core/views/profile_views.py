@@ -7,7 +7,7 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth.forms import PasswordChangeForm
 
 from core.forms.profile_forms import *
-from core.models.models import *
+from core.models.profile_models import Profile
 from django.contrib.auth.models import User
 from django.http import HttpResponseRedirect
 from .services import *

@@ -1,12 +1,10 @@
 from django.test import TestCase
 from django.urls import reverse
 from django.contrib.auth.models import User 
-from core.models.models import  Profile
 from django.core.files.uploadedfile import SimpleUploadedFile
-from django.db.utils import IntegrityError
-from core.models.models import Post, PostDislike, PostLike, PostReport,PostPin, Profile
 from core.forms.posting_forms import PostForm
-from core.models.models import Repost
+from core.models.post_models import Post, Repost, PostDislike, PostLike, PostReport, PostPin
+from core.models.profile_models import Profile
 from django.core.exceptions import ObjectDoesNotExist
 
 class PostTestCase(TestCase):

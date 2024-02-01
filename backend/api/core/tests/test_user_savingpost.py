@@ -1,7 +1,6 @@
 from django.test import TestCase
 from django.contrib.auth.models import User
-from core.models.models import Post, PostSave
-from core.models.models import Profile 
+from core.models.post_models import Post, PostSave
 from django.db.utils import IntegrityError
 from django.urls import reverse
 

@@ -1,7 +1,7 @@
 from abc import ABC, abstractmethod
 
-from core.models.models import Advertisement, Profile
-
+from core.models.profile_models import  Profile
+from core.models.post_models import Advertisement
 
 class InterestResolver(ABC):
 
