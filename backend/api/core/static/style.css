@@ -1272,29 +1272,24 @@ img {
 /* COMMUNITY USER STORY */
 
 .community-container{
-  display: grid;  
-  grid-template-columns: 2fr 0fr; 
-}
-
-.community-items{
   display: flex;
-  align-items: center;
   justify-content: center;
 }
 
 .trending-community{
-  text-align: center;
   color: #fff;
 }
 
-.create-community{
-  text-align: center;
+.iconCommunity{
+  text-align: right;
   color: #fff;
   font-size: xx-large;
-  margin-left:30px;
+  border: none;
+  padding: 0;
+  background: none;
 }
 
-.bi-person-plus{
+.bi-person-plus, .bi-list{
   color: #fff;
 }
 
@@ -1327,12 +1322,6 @@ img {
   border-radius: 5px;
   margin-top:10px;
   margin-left: 2%;
-}
-
-.iconButton{
-  border: none;
-  padding: 0;
-  background: none;
 }
 
 .CreateButton {
@@ -1381,7 +1370,7 @@ img {
 }
 
 .community-search{
-  width: 36rem; 
+  width: 100%; 
   border-radius: 40px;
 }
 
