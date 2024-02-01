@@ -1281,16 +1281,21 @@ img {
 }
 
 .iconCommunity{
-  text-align: right;
   color: #fff;
   font-size: xx-large;
   border: none;
   padding: 0;
   background: none;
+  float: right; 
+  margin-left: 10px; 
 }
 
 .bi-person-plus, .bi-list{
   color: #fff;
+}
+
+.col-md-4.text-right {
+  text-align: right;
 }
 
 .community-form{
