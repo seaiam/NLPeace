@@ -5,8 +5,7 @@ from django.urls import reverse
 from io import BytesIO
 from PIL import Image
 from chat.models import ChatRoom, Message, ReportMessage
-from core.models.models import User
-from core.models.models import *
+from core.models.profile_models import User, Profile
 
 class ChatTest(TestCase):
     

@@ -7,7 +7,8 @@ from django.http import *
 from core.forms.user_forms import UserReportForm
 from core.forms.profile_forms import EditProfileBannerForm, EditProfilePicForm, EditBioForm
 from core.forms.posting_forms import PostForm, PostReportForm
-from core.models.models import Post, Repost, PostReport
+from core.models.post_models import Post, Repost, PostReport
+from core.models.profile_models import Notifications
 from .services import *
 
 def home(request):

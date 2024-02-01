@@ -1,5 +1,5 @@
 from django import forms
-from core.models.models import Community
+from core.models.community_models import Community
 
 class CommunityForm(forms.ModelForm):
     is_private = forms.ChoiceField(
