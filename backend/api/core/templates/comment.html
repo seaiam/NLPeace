@@ -387,13 +387,16 @@
                     </div>
                     <div class="grid-item" >
                         {% if reply in likes %}
-                            <a href="{% url 'like' reply.id %}" class="like-link">
-                                <i class="far fa-thumbs-up" aria-hidden="true"></i> 
-                            </a>
-                            {% else %}
-                            <a href="{% url 'like' reply.id %}" class="post-liked like-link">
-                                <i class="far fa-thumbs-up" aria-hidden="true"></i>
-                            </a>
+                        <a href="{% url 'like' reply.id %}" class="like-link">
+                            <i class="far fa-thumbs-up" aria-hidden="true"></i> 
+                        </a>
+                        {% else %}
+                        <a href="{% url 'like' reply.id %}" class="post-liked like-link">
+                            <i class="far fa-thumbs-up" aria-hidden="true"></i>
+                        </a>
+                        {% endif %}
+                        {% if reply.get_number_likes > 0 %}
+                        <span class="dislike-count">{{ reply.get_number_likes }}</span>
                         {% endif %}
                         &nbsp;
                         {% if reply in dislikes  %}
@@ -405,9 +408,17 @@
                             <i class="far fa-thumbs-down" aria-hidden="true"></i> 
                         </a>
                         {% endif %} 
+                        {% if reply.get_number_dislikes > 0 %}
+                        <span class="dislike-count">{{ reply.get_number_dislikes }}</span>
+                        {% endif %}
                         &nbsp;&nbsp;
                       
                         <a class="comment-link" href="{% url 'comment' post_id=reply.id %}"><i class="far fa-comment" aria-hidden="true"></i></a>
+                        {% if reply.get_number_comments > 0 %}
+                        <span class="dislike-count">{{ reply.get_number_comments }}</span>
+                        {% endif %}
+
+
                         {% if reply in reported_posts %}
                         <form method="post" action="{% url 'report' reply.id %}">
                             {% csrf_token %}
