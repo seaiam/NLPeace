@@ -456,7 +456,7 @@ def  handle_admin_join(community_id, joiner_id, action):
         notification_message = f"You have joined {community.name}."
         CommunityNotifications.objects.create(
             notifications=notification_message, 
-            receiver=joiner, 
+            receiver=joiner,
             community=community, 
             type="")
     else:
