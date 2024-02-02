@@ -12,7 +12,7 @@ from itertools import chain, cycle
 from core.forms.profile_forms import EditBioForm, EditUsernameForm, EditProfilePicForm, EditProfileBannerForm, PrivacySettingsForm
 from core.interest_resolver import RESOLVERS
 from core.models.post_models import Post, Repost, PostReport, PostLike, PostDislike, PostSave, PostPin, Advertisement
-from core.models.profile_models import Profile, Notifications, User
+from core.models.profile_models import Profile, Notifications, User, CommunityNotifications
 from core.models.community_models import Community
 
 class ContentCarrier:
@@ -150,7 +150,9 @@ def get_user_by_id(user_id):
     return User.objects.get(pk=user_id)
 
 def get_user_notifications(user):
-    return Notifications.objects.filter(user=user).order_by('-id')
+    personal_notifications = Notifications.objects.filter(user = user).order_by('-id')
+    community_notifications = CommunityNotifications.objects.filter(receiver = user).order_by('-id')
+    return community_notifications, personal_notifications
     
 def handle_invitation(followed_user_pk, following_user_pk, action):
     followed_user = User.objects.get(pk=followed_user_pk)
@@ -358,8 +360,12 @@ def handle_unfollow_request(unfollowed_user_id, unfollowing_user_id):
         unfollowing_user.profile.following.remove(unfollowed_user)
 
 def delete_user_notification(notification_id):
-    notification = Notifications.objects.get(pk=notification_id)
-    notification.delete()
+    try:
+        notification =  Notifications.objects.get(pk=notification_id)
+        notification.delete()
+    except Notifications.DoesNotExist:
+        community_notification =  CommunityNotifications.objects.get(pk=notification_id)
+        community_notification.delete()
 
 def delete_user_post(user_id, post_id):
     post = Post.objects.get(pk=post_id)
@@ -417,10 +423,11 @@ def handle_join_request(community_to_join_id, requester_id):
         community_to_join.members.add(requester)
         notification_message = f"{requester.username} has joined {community_to_join.name}"
 
-    Notifications.objects.create(
+    CommunityNotifications.objects.create(
         notifications = notification_message, 
-        user = community_to_join.admin, 
+        receiver = community_to_join.admin, 
         sent_by = requester, 
+        community = community_to_join,
         type="join" if is_private else ""
     )
 
@@ -433,8 +440,25 @@ def handle_leave_request(community_to_leave_id, requester_id):
     if community_to_leave.is_private:
         if community_to_leave.join_requests.filter(id = requester_id).exists():
             community_to_leave.join_requests.remove(requester)
-            Notifications.objects.filter(user=community_to_leave.admin, sent_by=requester, type="join").delete()
+            CommunityNotifications.objects.filter(receiver=community_to_leave.admin, sent_by=requester, type="join").delete()
         else:
             community_to_leave.members.remove(requester)
     else:
         community_to_leave.members.remove(requester)
+
+def  handle_admin_join(community_id, joiner_id, action):
+    community = Community.objects.get(pk=community_id)
+    joiner = User.objects.get(pk=joiner_id)
+    notification = CommunityNotifications.objects.get(receiver = community.admin, sent_by = joiner, type = "join",community = community)
+    if action == "accept":
+        community.join_requests.remove(joiner)
+        community.members.add(joiner)
+        notification_message = f"You have joined {community.name}."
+        CommunityNotifications.objects.create(
+            notifications=notification_message, 
+            receiver=joiner, 
+            community=community, 
+            type="")
+    else:
+        community.join_requests.remove(joiner)
+    notification.delete()

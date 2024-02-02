@@ -85,3 +85,22 @@ def leave_community(request):
 
         return HttpResponseRedirect(request.META.get('HTTP_REFERER', '/'))
     return HttpResponseForbidden()
+
+@login_required
+def accept_decline_join(request):
+    if request.method == 'POST':
+        community_id = request.POST.get('joined_community_id')
+        joiner_id = request.POST.get('joiner_id')
+        action = request.POST.get('action')
+        handle_admin_join(community_id, joiner_id, action)
+        if action == "accept":
+            messages.success(request, f"Join request accepted.")
+        else:
+            messages.info(request, "Join request declined.")
+    
+    community_notifications, personal_notifications = get_user_notifications(request.user)
+    context = {
+        'community_notifications': community_notifications,
+        'personal_notifications': personal_notifications
+    }
+    return render(request, 'notifications.html', context)

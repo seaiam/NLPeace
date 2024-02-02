@@ -10,7 +10,7 @@
 <br>
 <!-- Profile Notifications Tab -->
 <div id="Profile" class="tabcontent">
-    {% for notification in data %}
+    {% for notification in personal_notifications %}
     {% if request.user.id != notification.sent_by.id %}
     <div class="container">
         <div class="d-flex align-items-center justify-content-center">
@@ -61,33 +61,53 @@
 
 <!-- Communities Notifications Tab -->
 <div id="Communities" class="tabcontent">
+    {% for notification in community_notifications %}
+    {% if request.user.id != notification.sent_by.id %}
     <div class="container">
         <div class="d-flex align-items-center justify-content-center">
             <div class="card" style="width: 45rem; margin: 20px 0px 20px 0px; overflow: hidden; background: linear-gradient(to right, #F9D1C4 0%, #9BBDDD 51%, #F9D1C4 100%); border-radius:15px;">
                 <div class="card-body">
-                
-                <form id="myForm" action="" method="POST">
-                    {% csrf_token %}
-                    <button type="submit" name="clicked" value="exit" id="submit-button" class="notification-close-btn">&#10006;</button>
-                    <input type="hidden" name="notification" value="" readonly/>
-                </form>
-                    <i class="fa fa-bell"></i><span class="notificationSentBy"><br></span>
+                    {% if notification.type != "join" %}
+                        <form id="myForm" action="{% url 'delete_notification' %}" method="POST">
+                            {% csrf_token %}
+                            <button type="submit" name="clicked" value="exit" id="submit-button" class="notification-close-btn">&#10006;</button>
+                            <input type="hidden" name="notification" value="{{ notification.id }}" readonly/>
+                        </form>
+                    {% endif %}
+                    <i class="fa fa-bell"></i><span class="notificationSentBy"> {{notification.notifications}}<br></span>
                     <div class="row">
                         <div class="col-6">
                             <br>
-                            <img src="" alt="profile picture" class="user-pic">
-                            <img src="{% static 'default.jpg' %}" class="user-pic" alt="profile picture" />
-                            <a href="" class="user-name"></a>
+                            <!-- show joined community info  -->
+                            {% if notification.type != "join" %}
+                                {% if  notification.community.pic %}
+                                <img src="{{ notification.community.pic.url }}" alt="{{ notification.community.name }}'s  picture" class="user-pic">
+                                {% else %}
+                                <img src="{% static 'default.jpg' %}" class="user-pic" alt="{{ notification.community.name }}'s  picture" />
+                                {% endif %}
+                                <a href="{% url 'community_detail' notification.community.id %}" class="user-name">{{ notification.community.name}}</a>
+                            {% else %}
+                            <!-- show requester info  -->
+                                {% if notification.sent_by.profile and notification.sent_by.profile.pic %}
+                                <img src="{{ notification.sent_by.profile.pic.url }}" alt="{{ notification.sent_by.username }}'s profile picture" class="user-pic">
+                                {% else %}
+                                <img src="{% static 'default.jpg' %}" class="user-pic" alt="{{ notification.sent_by.username }}'s profile picture" />
+                                {% endif %}
+                                <a href="{% url 'guest' notification.sent_by.id %}" class="user-name">{{ notification.sent_by.username }}</a>
+                            {% endif %}
                         </div>
                         <div class="col-6">
                             <br>
                             <div class="user-button">
-                    
-                                    <form method="POST" action="{% url 'accept_decline_invite' %}">
+                                {% if notification.type == "join"  %}
+                                    <form method="POST" action="{% url 'accept_decline_join' %}">
+                                        {% csrf_token %}
+                                        <input type="hidden" name="joined_community_id" value="{{ notification.community.id }}" readonly/>
+                                        <input type="hidden" name="joiner_id" value="{{ notification.sent_by.id }}" readonly/>
                                         <button type="submit" class="btn post-actions__publish" name="action" value="accept">Accept</button>
                                         <button type="submit" class="btn post-actions__publish" name="action" value="decline">Decline</button>
                                     </form>
-                   
+                                {% endif %}
                             </div>
                         </div>
                     </div>
@@ -96,6 +116,8 @@
             </div>
         </div>
     </div>
+    {% endif %}
+    {% endfor %}
 </div>
 
 
