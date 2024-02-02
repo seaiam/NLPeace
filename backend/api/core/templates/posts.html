@@ -182,7 +182,6 @@
             {% if post.user.id != request.user.id %}
             <div class ="icons-list" >
                 <div class="feed" >
-                    <span class="like-count">{{ post.get_number_likes }}</span>
                     {% if post in likes %}
                         <a href="{% url 'like' post.id %}" class="like-link">
                             <i class="far fa-thumbs-up" aria-hidden="true"></i> 
@@ -192,9 +191,12 @@
                             <i class="far fa-thumbs-up" aria-hidden="true"></i>
                         </a>
                     {% endif %}
+                    {% if post.get_number_likes > 0 %}
+                    <span class="dislike-count">{{ post.get_number_likes }}</span>
+                    {% endif %}
                 </div>
+
                 <div class="feed" >
-                    <span class="dislike-count">{{ post.get_number_dislikes }}</span>
                     {% if post in dislikes  %}
                         <a href="{% url 'dislike' post.id %}" class="like-link">
                             <i class="far fa-thumbs-down" aria-hidden="true"></i> 
@@ -204,36 +206,47 @@
                         <i class="far fa-thumbs-down" aria-hidden="true"></i> 
                     </a>
                     {% endif %} 
+                    {% if post.get_number_dislikes > 0 %}
+                    <span class="dislike-count">{{ post.get_number_dislikes }}</span>
+                    {% endif %}
                 </div>
 
                 <div class="feed">
                     <a class="comment-link" href="{% url 'comment' post_id=post.id %}"><i class="far fa-comment" aria-hidden="true"></i></a>
-                 </div> 
+                    {% if post.get_number_comments > 0 %}
+                    <span class="like-count">{{ post.get_number_comments }}</span>
+                   {% endif %}
+                </div> 
+
 
                 <form method="post" action="{% url 'save_post' post.id %}">
                     {% csrf_token %}
-                    {% if post.id in saved_post_ids %}
-                        <div class="feed-bookmark"> <!--DOES NOT USE THIS BUTTON-->
+                    <div class="feed-bookmark">
+                    {% if post.id in saved_post_ids %}  <!--DOES NOT USE THIS BUTTON-->
                             <button type="submit" class = "bookmarked-button"><i class="far fa-bookmark" aria-hidden="true"></i> </button>
-                        </div>
                     {% else %}
-                        <div class="feed"> <!--ONLY USES THIS BUTTON-->
                             <button type="submit" class = "bookmark-button"> <i class="far fa-bookmark" aria-hidden="true"></i> </button>
-                        </div>
                     {% endif %}
-                </form>
 
+                    {% if post.get_number_saves > 0%}
+                        <span class="bookmark-button">{{ post.get_number_saves }}</span>
+                    {% endif %}
+                    </div>
+                </form>
+            
                 <form method="post" action="{% url 'repost' post.id %}">
                     {% csrf_token %}
+                    <div class="feed-reposted">  
                     {% if post.id in reposted_post_ids %}
-                        <div class="feed-reposted">  
                             <button type="submit" class = "reposted-button"><i class="fa fa-retweet" aria-hidden="true"></i></button>
-                        </div>
                     {% else %}
-                        <div class="feed">
                             <button type="submit" class = "repost-button"><i class="fa fa-retweet" aria-hidden="true"></i></button>
-                        </div>
                     {% endif %}
+
+                    {% if post.get_number_reposts > 0 %}
+                    <span class="bookmark-button">{{ post.get_number_reposts }}</span>
+                    {% endif %}
+                    </div>
                 </form>
 
                 {% if post in reported_posts %}
@@ -276,59 +289,70 @@
             
             <div class ="icons-list1" >
                 <div class="feed" >
-                    <span class="like-count">{{ post.get_number_likes }}</span>
                     {% if post in likes %}
                         <a href="{% url 'like' post.id %}" class="like-link">
                             <i class="far fa-thumbs-up" aria-hidden="true"></i> 
                         </a>
-                    {% else %}
+                        {% else %}
                         <a href="{% url 'like' post.id %}" class="post-liked like-link">
                             <i class="far fa-thumbs-up" aria-hidden="true"></i>
                         </a>
                     {% endif %}
+                    {% if post.get_number_likes > 0 %}
+                    <span class="dislike-count">{{ post.get_number_likes }}</span>
+                    {% endif %}
                 </div>
                 
                 <div class="feed" >
-                    <span class="dislike-count">{{ post.get_number_dislikes }}</span>
                     {% if post in dislikes  %}
                         <a href="{% url 'dislike' post.id %}" class="like-link">
                             <i class="far fa-thumbs-down" aria-hidden="true"></i> 
                         </a>
                     {% else %}
-                        <a href="{% url 'dislike' post.id %}" class="post-disliked like-link">
-                            <i class="far fa-thumbs-down" aria-hidden="true"></i> 
-                        </a>   
+                    <a href="{% url 'dislike' post.id %}" class="post-disliked like-link">
+                        <i class="far fa-thumbs-down" aria-hidden="true"></i> 
+                    </a>
                     {% endif %} 
+                    {% if post.get_number_dislikes > 0 %}
+                    <span class="dislike-count">{{ post.get_number_dislikes }}</span>
+                    {% endif %}
                 </div>
 
                 <div class="feed">
                     <a class="comment-link" href="{% url 'comment' post_id=post.id %}"><i class="far fa-comment" aria-hidden="true"></i></a>
-                 </div> 
+                    {% if post.get_number_comments > 0 %}
+                    <span class="like-count">{{ post.get_number_comments }}</span>
+                   {% endif %}
+                </div> 
 
                 <form method="post" action="{% url 'save_post' post.id %}">
                     {% csrf_token %}
-                    {% if post.id in saved_post_ids %}
-                        <div class="feed-bookmark">
+                    <div class="feed-bookmark">
+                    {% if post.id in saved_post_ids %}  <!--DOES NOT USE THIS BUTTON-->
                             <button type="submit" class = "bookmarked-button"><i class="far fa-bookmark" aria-hidden="true"></i> </button>
-                            </div>
                     {% else %}
-                        <div class="feed">
                             <button type="submit" class = "bookmark-button"> <i class="far fa-bookmark" aria-hidden="true"></i> </button>
-                        </div>
                     {% endif %}
+
+                    {% if post.get_number_saves > 0%}
+                        <span class="bookmark-button">{{ post.get_number_saves }}</span>
+                    {% endif %}
+                    </div>
                 </form>
 
                 <form method="post" action="{% url 'repost' post.id %}">
                     {% csrf_token %}
+                    <div class="feed-reposted">  
                     {% if post.id in reposted_post_ids %}
-                        <div class="feed-reposted">  <!--DOES NOT USE THIS BUTTON-->
-                            <button type="submit" class = "reposted-button"><i class="fa fa-retweet" aria-hidden="true"></i></button> 
-                        </div>
+                            <button type="submit" class = "reposted-button"><i class="fa fa-retweet" aria-hidden="true"></i></button>
                     {% else %}
-                        <div class="feed"> <!--ONLY USES THIS BUTTON-->
                             <button type="submit" class = "repost-button"><i class="fa fa-retweet" aria-hidden="true"></i></button>
-                        </div>
                     {% endif %}
+
+                    {% if post.get_number_reposts > 0 %}
+                    <span class="bookmark-button">{{ post.get_number_reposts }}</span>
+                    {% endif %}
+                    </div>
                 </form>
              
             </div>

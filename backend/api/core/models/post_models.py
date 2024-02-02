@@ -26,6 +26,12 @@ class Post(models.Model):
     def get_number_dislikes(self):
         return self.postdislike_set.all().count()
     
+    def get_number_comments(self):
+        return Post.objects.filter(parent_post=self).count()
+    
+    def get_number_reposts(self):
+        return self.reposts.all().count()
+    
     def is_likeable_by(self, user):
         return user not in {like.liker for like in self.postlike_set.all()}
     
