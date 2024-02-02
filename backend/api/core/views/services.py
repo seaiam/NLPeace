@@ -13,6 +13,7 @@ from core.forms.profile_forms import EditBioForm, EditUsernameForm, EditProfileP
 from core.interest_resolver import RESOLVERS
 from core.models.post_models import Post, Repost, PostReport, PostLike, PostDislike, PostSave, PostPin, Advertisement
 from core.models.profile_models import Profile, Notifications, User
+from core.models.community_models import Community
 
 class ContentCarrier:
 
@@ -403,3 +404,37 @@ def handle_edit_post(request,form, post, remove_image, parent_post):
     else:
         messages.error(request, "There was an error editing your post. Try again.")
     return post
+
+def handle_join_request(community_to_join_id, requester_id):
+    community_to_join = Community.objects.get(pk = community_to_join_id)
+    requester = User.objects.get(pk = requester_id)
+    is_private = community_to_join.is_private
+
+    if is_private:
+        community_to_join.join_requests.add(requester)
+        notification_message = f"{requester.username} wants to join {community_to_join.name}"
+    else:
+        community_to_join.members.add(requester)
+        notification_message = f"{requester.username} has joined {community_to_join.name}"
+
+    Notifications.objects.create(
+        notifications = notification_message, 
+        user = community_to_join.admin, 
+        sent_by = requester, 
+        type="join" if is_private else ""
+    )
+
+    return is_private
+
+def handle_leave_request(community_to_leave_id, requester_id):
+    community_to_leave = Community.objects.get(pk = community_to_leave_id)
+    requester = User.objects.get(pk = requester_id)
+
+    if community_to_leave.is_private:
+        if community_to_leave.join_requests.filter(id = requester_id).exists():
+            community_to_leave.join_requests.remove(requester)
+            Notifications.objects.filter(user=community_to_leave.admin, sent_by=requester, type="join").delete()
+        else:
+            community_to_leave.members.remove(requester)
+    else:
+        community_to_leave.members.remove(requester)

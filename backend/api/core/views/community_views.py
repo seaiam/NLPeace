@@ -24,7 +24,12 @@ def create_community(request):
             return redirect('community_detail', community_id=community.id)
     else:
         form = CommunityForm()
-    return render(request, 'create_community.html', {'form': form})
+    communities = Community.objects.all()[:10]
+    context = {
+        'form': form,
+        'communities': communities
+    }
+    return render(request, 'create_community.html', context)
 
 @login_required
 def community_detail(request, community_id):
@@ -53,3 +58,30 @@ def community_detail(request, community_id):
         'form': form  
     }
     return render(request, 'community_detail.html', context)
+
+@login_required
+def join_community(request):
+    if request.method == 'POST':
+        community_to_join_id = request.POST.get('community_id')
+        requester_id = request.POST.get('requester_id')
+        is_private = handle_join_request(community_to_join_id, requester_id)
+        if is_private:
+            messages.success(request, 'A join request has been sent.')
+        else:
+            community_to_join = Community.objects.get(pk = community_to_join_id)
+            messages.success(request, f"You have joined {community_to_join.name}.")
+        return HttpResponseRedirect(request.META.get('HTTP_REFERER', '/'))
+    return HttpResponseForbidden()
+   
+@login_required
+def leave_community(request):
+    if request.method == 'POST':
+
+        community_to_leave_id = request.POST.get('community_id')
+        requester_id = request.POST.get('requester_id')
+        handle_leave_request(community_to_leave_id, requester_id)
+        community_to_leave = Community.objects.get(pk = community_to_leave_id)
+        messages.success(request, f"You have left {community_to_leave.name}.")
+
+        return HttpResponseRedirect(request.META.get('HTTP_REFERER', '/'))
+    return HttpResponseForbidden()

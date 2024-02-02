@@ -63,7 +63,8 @@ urlpatterns = [
     path('edit/<int:post_id>/', posting_views.edit_post, name='edit_post'),
     path('community/create/', community_views.create_community, name='create_community'),
     path('community/<int:community_id>/', community_views.community_detail, name='community_detail'),
-
+    path('join/', community_views.join_community ,name="join_community"),
+    path('leave/', community_views.leave_community ,name="leave_community"),
 ]
 
 if settings.DEBUG:
