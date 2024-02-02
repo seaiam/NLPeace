@@ -16,7 +16,7 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path, include
-from core.views import authentication_views, main_pages_views, profile_views, posting_views
+from core.views import authentication_views, main_pages_views, profile_views, posting_views, community_views
 from django.conf import settings
 from django.conf.urls.static import static
 
@@ -61,6 +61,9 @@ urlpatterns = [
     path('pin/<int:post_id>/', posting_views.pin, name='pin'),
     path('unpin/<int:post_id>/', posting_views.unpin, name='unpin'),
     path('edit/<int:post_id>/', posting_views.edit_post, name='edit_post'),
+    path('community/create/', community_views.create_community, name='create_community'),
+    path('community/<int:community_id>/', community_views.community_detail, name='community_detail'),
+
 ]
 
 if settings.DEBUG:

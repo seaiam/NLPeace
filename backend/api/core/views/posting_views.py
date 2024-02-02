@@ -7,7 +7,7 @@ from django.db.models import Q
 from django.shortcuts import get_object_or_404
 from django.http import *
 from core.forms.posting_forms import PostForm, PostReportForm
-from core.models.models import Post
+from core.models.post_models import Post
 from django.http import HttpResponseRedirect
 from .services import *
 
@@ -93,6 +93,7 @@ def report(request, post_id):
         if referer and 'profile' in referer.lower():
             return redirect('profile')
         return HttpResponseRedirect(request.META.get('HTTP_REFERER', '/'))
+
 
 @login_required
 def pin(request, post_id):     

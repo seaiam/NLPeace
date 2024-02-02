@@ -2,9 +2,13 @@ django==4.2.5
 djangorestframework==3.14.0
 psycopg2==2.9.9
 Pillow==10.0.1
+whitenoise
+dj_database_url
 factory_boy
 faker
 requests
 channels_redis
 coverage
 pytest
+daphne
+redis

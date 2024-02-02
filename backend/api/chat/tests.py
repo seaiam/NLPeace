@@ -6,7 +6,7 @@ from django.urls import path
 
 from .consumers import NotificationConsumer
 from .models import ChatRoom, Message, User
-from core.models.models import Post
+from core.models.post_models import Post
 
 # We use a 'purely functional' style for asyn tests as suggested here: https://stackoverflow.com/a/61600142.
 @pytest.mark.asyncio

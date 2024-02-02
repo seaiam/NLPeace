@@ -79,14 +79,14 @@
 
 <div id="Messaging" class="tabcontent">
     <div class = "d-flex align-items-center justify-content-center">
-        <div class="card" style="width: 50rem; border-radius: 30px; margin:50px; overflow: hidden;background: linear-gradient(to right, #F9D1C4 0%, #9BBDDD 51%, #F9D1C4 100%);">
+        <div class="card" style="width: 40rem; border-radius: 30px; margin:50px; overflow: hidden;background: linear-gradient(to right, #F9D1C4 0%, #9BBDDD 51%, #F9D1C4 100%);">
             <div class="card-body">
                 <form action={% url 'messaging_settings' user_id=request.user.id %} method="POST" name="messaging_form" >
                     {% csrf_token %}
                         <div class="text-left">Allow Message Requests From: </div>
                         {{ messaging_form.messaging_is_private }}
                             <div class = "privacy-button">
-                                <button id="saveBtnPrivacy" class="btn post-actions__publish">Save Messaging Settings</button>
+                                <button type="submit" class="btn post-actions__publish">Save</button>
                             </div>
                 </form>
             </div>

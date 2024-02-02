@@ -24,8 +24,11 @@ services:
   app:
     build:
       context: .
+      dockerfile: dockerfile.prod # or dockerfile.dev 
       args:
-        - DEV=true
+        - DEV=false
+    env_file:
+      - prod.env # or dev.env
     ports:
       - "8000:8000"
     volumes:
@@ -35,9 +38,7 @@ services:
              python manage.py makemigrations core &&
              python manage.py migrate core &&
              python manage.py makemigrations &&
-             python manage.py migrate &&
-             python manage.py loaddata fixtures.json &&
-             python manage.py runserver 0.0.0.0:8000"
+             python manage.py migrate"
     environment:
       - DB_HOST=db
       - DB_NAME=devdb
