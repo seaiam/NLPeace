@@ -151,7 +151,7 @@ def notifications(request):
 
 @login_required
 def accept_decline_invite(request):
-    data = get_user_notifications(request.user)
+    community_notifications, personal_notifications  = get_user_notifications(request.user)
     if request.method == 'POST':
         followed_user_pk = request.POST.get('followed_user')
         following_user_pk = request.POST.get('following_user')
