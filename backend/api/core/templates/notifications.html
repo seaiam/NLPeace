@@ -89,7 +89,11 @@
                                 {% else %}
                                 <img src="{% static 'default.jpg' %}" class="community-pic" alt="{{ notification.community.name }}'s  picture" />
                                 {% endif %}
+                                {% if notification.sent_by == joiner %}
+                                <a href="{% url 'community_detail' notification.community.id %}" class="community-name">You have joined {{ notification.community.name }}</a>
+                                {% else %}
                                 <a href="{% url 'community_detail' notification.community.id %}" class="community-name">@{{ notification.sent_by.username }} has joined {{ notification.community.name }}</a>
+                                {% endif %}
                             {% else %}
                             <!-- show requester info  -->
                                 {% if notification.sent_by.profile and notification.sent_by.profile.pic %}
