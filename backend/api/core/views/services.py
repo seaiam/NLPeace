@@ -418,10 +418,10 @@ def handle_join_request(community_to_join_id, requester_id):
 
     if is_private:
         community_to_join.join_requests.add(requester)
-        notification_message = f"{requester.username} wants to join {community_to_join.name}"
+        notification_message = f"Your community has received a new join request."
     else:
         community_to_join.members.add(requester)
-        notification_message = f"{requester.username} has joined {community_to_join.name}"
+        notification_message = f"Your community has a new member."
 
     CommunityNotifications.objects.create(
         notifications = notification_message, 
@@ -453,7 +453,7 @@ def  handle_admin_join(community_id, joiner_id, action):
     if action == "accept":
         community.join_requests.remove(joiner)
         community.members.add(joiner)
-        notification_message = f"You have joined {community.name}."
+        notification_message = f"Your request to join {community.name} has been approved by the admin."
         CommunityNotifications.objects.create(
             notifications=notification_message, 
             receiver=joiner,
