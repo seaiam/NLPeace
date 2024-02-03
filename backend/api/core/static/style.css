@@ -1378,6 +1378,21 @@ img {
   border-radius: 40px;
 }
 
+.community-pic {
+  border-radius: 15px;
+  width:80px;
+  margin-right: 15px;
+  margin-top: 0;
+  height: 80px;
+}
+
+.community-name{
+  color:#00001c;
+  font-weight: 500;
+  font-size: 150%;
+  white-space: nowrap;
+}
+
 /* Media Queries */
 @media (max-width: 991.98px) { 
     .sidebar {

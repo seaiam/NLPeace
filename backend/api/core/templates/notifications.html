@@ -74,18 +74,22 @@
                             <input type="hidden" name="notification" value="{{ notification.id }}" readonly/>
                         </form>
                     {% endif %}
+                    {% if notification.type == "join" %}
                     <i class="fa fa-bell"></i><span class="notificationSentBy"> {{notification.notifications}}<br></span>
+                    {% else %}
+                    <i class="fa fa-bell"></i><span class="notificationSentBy"> {{notification.notifications}}<br></span>
+                    {% endif %}
                     <div class="row">
-                        <div class="col-6">
+                        <div class="col-7">
                             <br>
                             <!-- show joined community info  -->
                             {% if notification.type != "join" %}
                                 {% if  notification.community.pic %}
-                                <img src="{{ notification.community.pic.url }}" alt="{{ notification.community.name }}'s  picture" class="user-pic">
+                                <img src="{{ notification.community.pic.url }}" alt="{{ notification.community.name }}'s  picture" class="community-pic">
                                 {% else %}
-                                <img src="{% static 'default.jpg' %}" class="user-pic" alt="{{ notification.community.name }}'s  picture" />
+                                <img src="{% static 'default.jpg' %}" class="community-pic" alt="{{ notification.community.name }}'s  picture" />
                                 {% endif %}
-                                <a href="{% url 'community_detail' notification.community.id %}" class="user-name">{{ notification.community.name}}</a>
+                                <a href="{% url 'community_detail' notification.community.id %}" class="community-name">@{{notification.notifications}}</a>
                             {% else %}
                             <!-- show requester info  -->
                                 {% if notification.sent_by.profile and notification.sent_by.profile.pic %}
@@ -93,10 +97,10 @@
                                 {% else %}
                                 <img src="{% static 'default.jpg' %}" class="user-pic" alt="{{ notification.sent_by.username }}'s profile picture" />
                                 {% endif %}
-                                <a href="{% url 'guest' notification.sent_by.id %}" class="user-name">{{ notification.sent_by.username }}</a>
+                                <a href="{% url 'guest' notification.sent_by.id %}" class="user-name">@{{ notification.sent_by.username }}</a>
                             {% endif %}
                         </div>
-                        <div class="col-6">
+                        <div class="col-5">
                             <br>
                             <div class="user-button">
                                 {% if notification.type == "join"  %}
