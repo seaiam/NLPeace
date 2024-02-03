@@ -458,7 +458,7 @@ def  handle_admin_join(community_id, joiner_id, action):
             notifications=notification_message, 
             receiver=joiner,
             community=community, 
-            type="")
+            type="accepted")
     else:
         community.join_requests.remove(joiner)
     notification.delete()
