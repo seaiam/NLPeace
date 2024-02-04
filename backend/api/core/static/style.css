@@ -1048,7 +1048,7 @@ button:hover {
   border-bottom: 2px solid #fff;
 }
 
-.profiletab-btns, .communitytab-btns{
+.profiletab-btns{
   font-size: 1.1em;
   display:flex;
   justify-content: center;
@@ -1056,7 +1056,7 @@ button:hover {
   margin-top: 10px;
 }
 
-.profiletabbutton, .communitytabbutton {
+.profiletabbutton {
   background-color: transparent;
   color: #fff;
   border: none;
@@ -1355,8 +1355,19 @@ img {
   margin-bottom:10px;
 }
 
-.community-title, .members{
+.community-title{
   color: #00001c;
+  font-weight: 600;
+}
+
+.members{
+  color: #00001c;
+}
+
+.post-actions__community {
+  display: grid;  
+  grid-template-columns: 1fr 1.2fr 1fr; 
+  float:left;
 }
 
 /* Community Banner */
