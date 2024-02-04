@@ -1,6 +1,7 @@
 from django.contrib.auth.models import User
 from django.db import models
 from django.utils import timezone
+from core.models.community_models import Community
 
 class Profile(models.Model):
     user = models.OneToOneField(User, on_delete=models.RESTRICT, primary_key=True)
@@ -61,6 +62,16 @@ class Notifications(models.Model):
     type=models.CharField(null=True,blank=True)
 
     
+    def __str__(self):
+        return str(self.notifications)
+
+class CommunityNotifications(models.Model):
+    notifications = models.TextField()
+    receiver = models.ForeignKey(User,on_delete=models.CASCADE,related_name="receiver",null=True,blank=True)
+    sent_by = models.ForeignKey(User,on_delete=models.CASCADE,related_name='requester',null=True,blank=True)
+    community =  models.ForeignKey(Community,on_delete=models.CASCADE,related_name='community')
+    type = models.CharField(null=True,blank=True)
+
     def __str__(self):
         return str(self.notifications)
 

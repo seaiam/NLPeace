@@ -10,6 +10,7 @@ class Community(models.Model):
     admin = models.ForeignKey(User, on_delete=models.CASCADE, related_name='administered_communities')
     is_private = models.BooleanField(default=True)
     pic = models.ImageField(upload_to='communityPics/', null=True, blank=True)
+    join_requests = models.ManyToManyField(User, related_name='join_requests', blank=True)
         
 class CommunityPost(models.Model):
     post = models.ForeignKey(Post, on_delete=models.CASCADE)

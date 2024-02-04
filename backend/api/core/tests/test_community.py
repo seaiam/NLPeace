@@ -72,3 +72,46 @@ class CommunityTestCase(TestCase):
         # check that community name not changed
         community.refresh_from_db()
         self.assertNotEqual(community.name, 'Unauthorized Update')
+
+class CommunityJoinTest(TestCase):
+
+    def setUp(self):
+
+        self.admin = User.objects.create_user(username = "admin", password = "password")
+        self.joiner = User.objects.create_user(username = "joiner", password = "password")
+        self.public_community = Community.objects.create(name = "public", admin = self.admin, is_private = False)
+        self.private_community = Community.objects.create(name = "private", admin = self.admin)
+        self.client.login(username = "joiner", password = "password")
+    
+    def test_join_public_community(self):
+
+        response = self.client.post(reverse('join_community'), {
+            'community_id': self.public_community.id,
+            'requester_id': self.joiner.id
+        },follow = True)
+        
+        self.assertContains(response, f"You have joined {self.public_community.name}.")
+        self.assertIn(self.joiner, list(self.public_community.members.all()))
+    
+    def test_join_private_community(self):
+
+        response = self.client.post(reverse('join_community'), {
+            'community_id': self.private_community.id,
+            'requester_id': self.joiner.id
+        },follow = True)
+        
+        self.assertContains(response, "A join request has been sent.")
+        self.assertIn(self.joiner, list(self.private_community.join_requests.all()))
+
+        self.client.logout()
+        self.client.login(username = "admin", password = "password")
+
+        response = self.client.post(reverse('accept_decline_join'), {
+            'joined_community_id': self.private_community.id,
+            'joiner_id': self.joiner.id,
+            'action': "accept"
+        },follow = True)
+        
+        self.assertContains(response, "Join request accepted.")
+        self.assertIn(self.joiner, list(self.private_community.members.all()))
+        self.assertNotIn(self.joiner, list(self.private_community.join_requests.all()))

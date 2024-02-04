@@ -142,12 +142,16 @@ def guest(request, user_id):
 
 @login_required
 def notifications(request):
-    data = get_user_notifications(request.user)
-    return render(request, 'notifications.html', {'data': data})
+    community_notifications, personal_notifications = get_user_notifications(request.user)
+    context = {
+        'community_notifications': community_notifications,
+        'personal_notifications': personal_notifications
+    }
+    return render(request, 'notifications.html', context)
 
 @login_required
 def accept_decline_invite(request):
-    data = get_user_notifications(request.user)
+    community_notifications, personal_notifications  = get_user_notifications(request.user)
     if request.method == 'POST':
         followed_user_pk = request.POST.get('followed_user')
         following_user_pk = request.POST.get('following_user')
@@ -157,7 +161,11 @@ def accept_decline_invite(request):
             messages.success(request, f"Follow request accepted.")
         else:
             messages.info(request, "Follow request declined.")
-    return render(request, 'notifications.html', {'data': data})
+    context = {
+        'community_notifications': community_notifications,
+        'personal_notifications': personal_notifications
+    }
+    return render(request, 'notifications.html', context)
 
 @login_required
 def report_user(request, reported_id):
