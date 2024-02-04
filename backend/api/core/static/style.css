@@ -1355,6 +1355,10 @@ img {
   margin-bottom:10px;
 }
 
+.name-link:hover {
+  color: #000;
+}
+
 .community-title{
   color: #00001c;
   font-weight: 600;

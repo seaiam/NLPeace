@@ -47,7 +47,7 @@
             <br>
             <div class="row">
                 <div class="col-md-8">
-                    <a href="{% url 'community_detail' community_id=community.id %}"><h4 class="community-title">{{community.name}}</h4></a> 
+                    <a class ="name-link" href="{% url 'community_detail' community_id=community.id %}"><h4 class="community-title">{{community.name}}</h4></a> 
                     <h6 class="members">{{community.members.count}} Members</h6>    
                 </div>
                 <div class="col-md-4 text-md-right">
