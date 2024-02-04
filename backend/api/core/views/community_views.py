@@ -16,6 +16,7 @@ from collections import namedtuple
 
 @login_required
 def create_community(request):
+    data = Notifications.objects.filter(user=request.user).order_by('-id')
     if request.method == 'POST':
         form = CommunityForm(request.POST, request.FILES)
         if form.is_valid():
@@ -29,6 +30,7 @@ def create_community(request):
         form = CommunityForm()
     communities = Community.objects.all()[:10]
     context = {
+        'data':data,
         'form': form,
         'communities': communities
     }
