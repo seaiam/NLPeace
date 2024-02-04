@@ -131,3 +131,17 @@ def create_community_post(request, community_id):
 
     community_posts = CommunityPost.objects.filter(community=community)
     return render(request, 'community_detail.html', {'form': form, 'community': community, 'community_posts': community_posts})
+
+@login_required
+def search_community(request):
+    if request.method == "POST" :
+        searched=request.POST.get('search')
+        communities = Community.objects.filter(name__icontains=searched)
+        context = {'communities': communities}
+        if communities:
+            return render(request, 'community_list.html', context)
+        else:
+            messages.error(request, f"The community '{searched}' does not exist.")
+            return redirect('create_community')
+    return HttpResponseRedirect(request.META.get('HTTP_REFERER', '/'))
+        
