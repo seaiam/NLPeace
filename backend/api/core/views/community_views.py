@@ -143,5 +143,5 @@ def search_community(request):
         else:
             messages.error(request, f"The community '{searched}' does not exist.")
             return redirect('create_community')
-    return HttpResponseRedirect(request.META.get('HTTP_REFERER', '/'))
+    return redirect('create_community')
         
