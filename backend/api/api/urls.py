@@ -66,6 +66,8 @@ urlpatterns = [
     path('join/', community_views.join_community ,name="join_community"),
     path('leave/', community_views.leave_community ,name="leave_community"),
     path('accounts/profile/notifications/join', community_views.accept_decline_join, name='accept_decline_join'),   
+    path('search/', community_views.search_community, name='search_community'),
+
     
 ]
 

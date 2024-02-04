@@ -104,3 +104,17 @@ def accept_decline_join(request):
         'personal_notifications': personal_notifications
     }
     return render(request, 'notifications.html', context)
+
+@login_required
+def search_community(request):
+    if request.method == "POST" :
+        searched=request.POST.get('search')
+        communities = Community.objects.filter(name__icontains=searched)
+        context = {'communities': communities}
+        if communities:
+            return render(request, 'community_list.html', context)
+        else:
+            messages.error(request, f"The community '{searched}' does not exist.")
+            return redirect('create_community')
+    return HttpResponseRedirect(request.META.get('HTTP_REFERER', '/'))
+        
