@@ -73,7 +73,9 @@
                         {% csrf_token %}
                         <input type="hidden" name="community_id" value="{{ community.id }}" readonly/>
                         <input type="hidden" name="requester_id" value="{{ request.user.id }}" readonly/>
+                        {% if request.user != community.admin %}
                         <button type="submit" class="btn post-actions__publish">Join</button>
+                        {% endif %}
                     </form>
                 {% endif %}
                 </div>  
