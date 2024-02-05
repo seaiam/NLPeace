@@ -73,6 +73,26 @@ class CommunityTestCase(TestCase):
         community.refresh_from_db()
         self.assertNotEqual(community.name, 'Unauthorized Update')
 
+    def test_search_community(self):
+        # Create a test community
+        community = Community.objects.create(name='Test', admin=self.user, is_private=True)
+
+        # Make a POST request to the search_community view with the search parameter
+        response = self.client.post(reverse('search_community'), {'search': 't'})
+
+        # Check if the response contains the community name
+        self.assertContains(response, 'Test')
+
+    
+    def test_search_community_nonexistent(self):
+        
+
+        # Make a POST request to the search_community view with the search parameter
+        response = self.client.post(reverse('search_community'), {'search': 'm'})
+        self.assertRedirects(response, reverse('create_community'))
+
+
+
 class CommunityJoinTest(TestCase):
 
     def setUp(self):
