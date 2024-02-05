@@ -70,16 +70,19 @@ def get_sentiments(text):
     # TODO implement sentiment analysis for interest inference.
     return []
     
-def get_user_posts(user):
+def get_user_posts(user, word):
     profile = get_user_profile(user)
     user_ids_following = profile.following.values_list('id', flat=True)
     blocked = profile.blocked.all()
-    posts = Post.objects.filter(
+    posts = list(Post.objects.filter(
         (Q(user__profile__is_private=False) | 
         Q(user__in=user_ids_following) |  
         Q(user=user)) &
         ~Q(user__in=blocked)
-    ).distinct().order_by('-created_at')
+    ).distinct().order_by('-created_at'))
+    if word is not None:
+        hashtag = get_object_or_404(Hashtag, content=word)
+        posts = [post for post in posts if post.is_tagged_by(hashtag)]
     carriers = list(map(lambda post: ContentCarrier(post), posts))
     return mix(carriers, get_ads(user))
 
