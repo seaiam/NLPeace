@@ -139,7 +139,7 @@ class PostPin(models.Model):
         ]
 
 class Hashtag(models.Model):
-    content = models.CharField(max_length=280)
+    content = models.CharField(max_length=280, unique=True)
 
 class HashtagInstance(models.Model):
     post = models.ForeignKey(Post, on_delete=models.CASCADE)
