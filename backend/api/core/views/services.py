@@ -57,7 +57,7 @@ def update_interests_and_hashtags(post):
     profile.remove_interests(settings.INTEREST_DAYS_THRESHOLD)
     profile.insert_interests(hashtags)
     for content in hashtags:
-        hashtag = Hashtag.objects.create(content=content)
+        hashtag = Hashtag.objects.get_or_create(content=content)[0]
         HashtagInstance.objects.create(post=post, hashtag=hashtag)
 
 def get_interests(text):
@@ -186,11 +186,11 @@ def process_comment_form(request, form, post_id):
             messages.error(request, message)
             return None
         elif result["prediction"][0] == 2:  # Appropriate
-            update_interests_and_hashtags(request.user, comment_text)
             comment = form.save(commit=False)
             comment.user = request.user
             comment.parent_post = Post.objects.get(pk=post_id)
             comment.save()
+            update_interests_and_hashtags(comment)
             return comment
     return None
 
