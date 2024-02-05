@@ -63,6 +63,7 @@ urlpatterns = [
     path('edit/<int:post_id>/', posting_views.edit_post, name='edit_post'),
     path('community/create/', community_views.create_community, name='create_community'),
     path('community/<int:community_id>/', community_views.community_detail, name='community_detail'),
+    path('community/<int:community_id>/create_community_post/', community_views.create_community_post, name='create_community_post'),
     path('join/', community_views.join_community ,name="join_community"),
     path('leave/', community_views.leave_community ,name="leave_community"),
     path('accounts/profile/notifications/join', community_views.accept_decline_join, name='accept_decline_join'),   
