@@ -21,13 +21,22 @@ def home(request):
         if post:
             return redirect('home')
 
-    posts = get_user_posts(request.user)
+    
+    carriers = get_user_posts(request.user)
+    # filtering out community post in home page
+    posts = [carrier for carrier in carriers if (not hasattr(carrier.payload, 'is_community_post')) or (hasattr(carrier.payload, 'is_community_post') and not carrier.payload.is_community_post())]
+
     posts_without_ads = map(lambda carrier: carrier.payload, filter(lambda carrier: carrier.is_post, posts))
     likes, dislikes, saved_post_ids = get_post_interactions(request.user, posts)
     reposted_post_ids = Repost.objects.filter(user=request.user).values_list('post_id', flat=True)
     data = Notifications.objects.filter(user=request.user).order_by('-id')
     following_users = request.user.profile.following.all()
-    following_posts = get_following_posts(request.user, following_users)
+    
+    following_carriers = get_following_posts(request.user, following_users)
+    # filtering out community post in home page
+    following_posts = [carrier for carrier in following_carriers if (not hasattr(carrier.payload, 'is_community_post')) or (hasattr(carrier.payload, 'is_community_post') and not carrier.payload.is_community_post())]
+
+
     reported_posts = [post.payload for post in posts if post.is_post and not post.payload.is_reportable_by(request.user)] #for post reporting
 
     context = {
