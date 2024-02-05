@@ -67,6 +67,10 @@ class Post(models.Model):
     
     def is_reported_by(self, user):
         return PostReport.objects.filter(reporter=user, post=self).exists()
+    
+    def is_tagged_by(self, hashtag):
+        return HashtagInstance.objects.filter(post=self, hashtag=hashtag).exists()
+
    
 class Repost(models.Model):
     post = models.ForeignKey(Post, null=True, on_delete=models.CASCADE, related_name='reposts')
@@ -126,6 +130,13 @@ class PostPin(models.Model):
         constraints = [
             models.UniqueConstraint(fields=['pinner', 'post'], name='pinner_post_unique')
         ]
+
+class Hashtag(models.Model):
+    content = models.CharField(max_length=280)
+
+class HashtagInstance(models.Model):
+    post = models.ForeignKey(Post, on_delete=models.CASCADE)
+    hashtag = models.ForeignKey(Hashtag, null=True, on_delete=models.SET_NULL)
     
 class Advertisement(models.Model):
     advertiser = models.CharField(max_length=512)
