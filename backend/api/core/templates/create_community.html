@@ -44,9 +44,11 @@
 <div class="d-flex justify-content-center align-items-center">
     <div class="card" style="width: 37rem; border-radius: 20px;margin:20px 0px 20px 0px;  overflow: hidden;background: linear-gradient(to right, #F9D1C4 0%, #9BBDDD 51%, #F9D1C4 100%);">
         <div class="card-body">
+            {% if community.pic %}
             <div class="community-banner">
                 <img src="{{community.pic.url}}" class="community-banner" alt="communityBanner">
             </div>
+            {% endif %}
             <br>
             <div class="row">
                 <div class="col-md-8">
