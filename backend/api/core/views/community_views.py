@@ -144,14 +144,22 @@ def create_community_post(request, community_id):
 def search_community(request):
     if request.method == "POST" :
         search=request.POST.get('search')
-        communities = Community.objects.filter(name__icontains=search)
-        context = {'search':search,'communities': communities}
+        if search:
+         communities = Community.objects.filter(name__icontains=search)  
+        form = CommunityForm(request.POST, request.FILES)
+        if form.is_valid():
+         community = form.save(commit=False)
+         community.admin = request.user
+         community.is_private = form.cleaned_data['is_private'] == 'True'
+         community.save()
+         messages.success(request, 'Community created successfully.')
+         return redirect('community_detail', community_id=community.id)   
+        context = {'search':search,'communities':communities,'form':form}
         if communities:
             return render(request, 'community_list.html', context)
         else:
             messages.error(request, f"The community '{search}' does not exist.")
-            return redirect('create_community')
-         
+            return redirect('create_community')     
     search = request.session.get('search')
     if search:
         communities = Community.objects.filter(name__icontains=search)
