@@ -8,8 +8,11 @@ from django.shortcuts import get_object_or_404
 from django.http import *
 from core.forms.community_forms import CommunityForm
 from core.models.community_models import Community, CommunityPost
+from core.models.post_models import Post
+from core.forms.posting_forms import PostForm
 from django.http import HttpResponseRedirect
 from .services import *
+from collections import namedtuple
 
 @login_required
 def create_community(request):
@@ -34,7 +37,10 @@ def create_community(request):
 @login_required
 def community_detail(request, community_id):
     community = get_object_or_404(Community, id=community_id)
-    community_posts = CommunityPost.objects.filter(community=community).select_related('post')
+    community_posts = CommunityPost.objects.filter(community=community)
+    Carrier = namedtuple('Carrier', ['is_post', 'payload'])
+    community_carriers = [Carrier(is_post=True, payload=cp.post) for cp in community_posts]
+    
     is_member = request.user in community.members.all()
     
     if request.method == 'POST':
@@ -53,7 +59,7 @@ def community_detail(request, community_id):
 
     context = {
         'community': community,
-        'community_posts': community_posts,
+        'community_posts': community_carriers,
         'is_member': is_member,
         'form': form  
     }
