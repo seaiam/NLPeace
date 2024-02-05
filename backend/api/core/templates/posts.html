@@ -1,4 +1,5 @@
 {% load static %}
+{% load nlpeace_core_filters %}
 
 <div class="d-flex justify-content-center align-items-center">
     <div class="card" style="width: 39rem; border-radius: 30px;margin:20px 0px 20px 0px;  overflow: hidden;background: linear-gradient(to right, #F9D1C4 0%, #9BBDDD 51%, #F9D1C4 100%);">
@@ -157,7 +158,7 @@
                         <a href="{% url 'comment' post.parent_post.id %}" style="color:#00008B; text-decoration: none;">Replied to {{ post.parent_post.user.username}}'s post:</a><br>
                     </i>
                     {% endif %}
-                        {{ post.content }}
+                        {{ post.content|render_post|safe }}
                     </p>
                 </div>
             </div>
