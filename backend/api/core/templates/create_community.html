@@ -22,7 +22,7 @@
         <div class="d-flex justify-content-center align-items-center">
             <form class="form-inline" method="POST" action="{% url 'search_community' %}">
                 {% csrf_token %}
-                <input class="form-control mr-sm-2 community-search" type="search" placeholder="Search" aria-label="Search" name="search"  id="" style="width: 36rem;">
+                <input class="form-control mr-sm-2 community-search" type="search" placeholder="Search" aria-label="Search" name="search"  id="" style="width: 36rem;" value="{{ search }}">
               
             </form>
         </div>
