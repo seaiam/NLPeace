@@ -1,8 +1,12 @@
+import re
+
 from django.contrib.auth.models import User
 from django.db import models
 from django.urls import reverse
 
 from core.utils import attempt_send_message
+
+whitespace_pattern = re.compile(r'(\S+)')
 
 class Post(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
@@ -70,6 +74,9 @@ class Post(models.Model):
     
     def is_tagged_by(self, hashtag):
         return HashtagInstance.objects.filter(post=self, hashtag=hashtag).exists()
+    
+    def get_words(self):
+        return whitespace_pattern.split(self.content)
 
    
 class Repost(models.Model):

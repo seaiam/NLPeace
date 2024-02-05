@@ -11,7 +11,7 @@ from django.shortcuts import get_object_or_404
 from itertools import chain, cycle
 from core.forms.profile_forms import EditBioForm, EditUsernameForm, EditProfilePicForm, EditProfileBannerForm, PrivacySettingsForm
 from core.interest_resolver import RESOLVERS
-from core.models.post_models import Post, Repost, PostReport, PostLike, PostDislike, PostSave, PostPin, Advertisement
+from core.models.post_models import Advertisement, Hashtag, HashtagInstance, Post, PostLike, PostDislike, PostPin, PostReport, PostSave, Repost
 from core.models.profile_models import Profile, Notifications, User, CommunityNotifications
 from core.models.community_models import Community
 
@@ -30,10 +30,10 @@ def process_post_form(request, form):
             messages.error(request, message)
             return None
         elif result["prediction"][0] == 2:  # Appropriate
-            update_interests(request.user, tweet_text)
             post = form.save(commit=False)
             post.user = request.user
             post.save()
+            update_interests_and_hashtags(post)
             return post
     return None
 
@@ -51,16 +51,20 @@ def classify_text(text):
         # Handle request exception
         return {'error': str(e)}
 
-def update_interests(user, text):
-    profile = get_user_profile(user)
+def update_interests_and_hashtags(post):
+    hashtags = get_hashtags(post)
+    profile = get_user_profile(post.user)
     profile.remove_interests(settings.INTEREST_DAYS_THRESHOLD)
-    profile.insert_interests(get_interests(text))
+    profile.insert_interests(hashtags)
+    for content in hashtags:
+        hashtag = Hashtag.objects.create(content=content)
+        HashtagInstance.objects.create(post=post, hashtag=hashtag)
 
 def get_interests(text):
     return get_hashtags(text) + get_sentiments(text)
 
-def get_hashtags(text):
-    return list(map(lambda hashtag: hashtag[1:] ,filter(lambda word: word.startswith('#'), text.split(' '))))
+def get_hashtags(post):
+    return list(map(lambda hashtag: hashtag[1:] ,filter(lambda word: word.startswith('#'), post.get_words())))
 
 def get_sentiments(text):
     # TODO implement sentiment analysis for interest inference.
@@ -179,7 +183,7 @@ def process_comment_form(request, form, post_id):
             messages.error(request, message)
             return None
         elif result["prediction"][0] == 2:  # Appropriate
-            update_interests(request.user, comment_text)
+            update_interests_and_hashtags(request.user, comment_text)
             comment = form.save(commit=False)
             comment.user = request.user
             comment.parent_post = Post.objects.get(pk=post_id)
