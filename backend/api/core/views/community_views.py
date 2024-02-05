@@ -72,6 +72,10 @@ def join_community(request):
     if request.method == 'POST':
         community_to_join_id = request.POST.get('community_id')
         requester_id = request.POST.get('requester_id')
+         # Preserve the search context if it exists
+        search = request.POST.get('search')
+        if search:
+          request.session['search'] = search
         is_private = handle_join_request(community_to_join_id, requester_id)
         if is_private:
             messages.success(request, 'A join request has been sent.')
@@ -84,13 +88,15 @@ def join_community(request):
 @login_required
 def leave_community(request):
     if request.method == 'POST':
-
         community_to_leave_id = request.POST.get('community_id')
         requester_id = request.POST.get('requester_id')
+        # Preserve the search context if it exists
+        search = request.POST.get('search')
+        if search:
+          request.session['search'] = search
         handle_leave_request(community_to_leave_id, requester_id)
         community_to_leave = Community.objects.get(pk = community_to_leave_id)
         messages.success(request, f"You have left {community_to_leave.name}.")
-
         return HttpResponseRedirect(request.META.get('HTTP_REFERER', '/'))
     return HttpResponseForbidden()
 
@@ -137,13 +143,21 @@ def create_community_post(request, community_id):
 @login_required
 def search_community(request):
     if request.method == "POST" :
-        searched=request.POST.get('search')
-        communities = Community.objects.filter(name__icontains=searched)
-        context = {'communities': communities}
+        search=request.POST.get('search')
+        communities = Community.objects.filter(name__icontains=search)
+        context = {'search':search,'communities': communities}
         if communities:
             return render(request, 'community_list.html', context)
         else:
-            messages.error(request, f"The community '{searched}' does not exist.")
+            messages.error(request, f"The community '{search}' does not exist.")
             return redirect('create_community')
-    return redirect('create_community')
+         
+    search = request.session.get('search')
+    if search:
+        communities = Community.objects.filter(name__icontains=search)
+        context = {'search':search, 'communities': communities}
+        return render(request,'community_list.html',context)
+    else:
+        return redirect('create_community')
+   
         

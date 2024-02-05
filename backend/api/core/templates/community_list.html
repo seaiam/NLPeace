@@ -17,10 +17,10 @@
             <form class="form-inline" method="POST" action="{% url 'search_community' %}">
                 {% csrf_token %}
                 <input class="form-control mr-sm-2 community-search" type="search" placeholder="Search" aria-label="Search" name="search"  id="" style="width: 36rem;">
+               
             </form>
         </div>
     </div>
-
     <!-- Display communities -->
     {% for community in communities %}
     <div class="d-flex justify-content-center align-items-center">
@@ -41,6 +41,7 @@
                             {% csrf_token %}
                             <input type="hidden" name="community_id" value="{{community.id}}" readonly/>
                             <input type="hidden" name="requester_id" value="{{request.user.id}}" readonly/>
+                            <input type="hidden" name="search" value="{{ search }}" readonly/>
                             <button type="submit" class="btn post-actions__publish">Leave</button>
                         </form>
                         {% elif request.user in community.join_requests.all %}
@@ -48,6 +49,7 @@
                             {% csrf_token %}
                             <input type="hidden" name="community_id" value="{{ community.id }}" readonly/>
                             <input type="hidden" name="requester_id" value="{{ request.user.id }}" readonly/>
+                            <input type="hidden" name="search" value="{{ search }}" readonly/>
                             <button type="submit" class="btn post-actions__publish">Requested</button>
                         </form>
                         {% else %}
@@ -55,6 +57,7 @@
                             {% csrf_token %}
                             <input type="hidden" name="community_id" value="{{ community.id }}" readonly/>
                             <input type="hidden" name="requester_id" value="{{ request.user.id }}" readonly/>
+                            <input type="hidden" name="search" value="{{ search }}" readonly/>
                             {% if request.user != community.admin %}
                             <button type="submit" class="btn post-actions__publish">Join</button>
                             {% endif %}
