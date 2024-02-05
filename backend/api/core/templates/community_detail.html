@@ -66,10 +66,10 @@
                                             <div class="row">
                                                 <div class="col">
                                                     <div>
-                                                        <form method="post" id="widget-form" class="widget-post__form" enctype="multipart/form-data" name="form" aria-label="post widget">
+                                                        <form method="post" action="{% url 'create_community_post' community.id %}" id="widget-form" class="widget-post__form" enctype="multipart/form-data" name="form" aria-label="post widget">
                                                             {% csrf_token %}
                                                             <div class="widget-post__content">
-                                                            <textarea name="{{ form.content.name }}" id="post-content" class="widget-post__textarea scroller" placeholder="Start a Post...">{{ form.content.value|default:'' }}</textarea>
+                                                            <textarea name="content" id="post-content" class="widget-post__textarea scroller" placeholder="Start a Post...">{{ form.content.value|default:'' }}</textarea>
                                                             </div>
                                                             <div id="create-preview-image" style="display: none;">
                                                                 <button type="button" class="close" onclick="handleDeletePostImage('create-preview-image')" style="color: #00001c;">&times;</button>
@@ -118,7 +118,7 @@
                         </div> 
                          <!--popup end-->
                 </div>
-            </div>
+            </div> 
         
            <hr>
 
@@ -131,12 +131,16 @@
             
             
                 <div id="Post" class="posttabcontent">
-                    {% if community_posts %}
-                    <div class = "post"></div>
-                    {% else %}
-                    <div class="no-post">No posts in this community yet.</div>
-                    {% endif %}
+                    <!-- Community Specific Posts -->
+                    {% for carrier in community_posts %}
+                        {% if carrier.is_post %}
+                        {% include "posts.html" with post=carrier.payload  %}
+                        {% endif %}
+                    {% empty %}
+                        <div class="no-post">No posts in this community yet.</div>
+                    {% endfor %}
                 </div>
+                
 
                 <div id="Media" class="posttabcontent" style="display:none;">
                 
