@@ -1367,6 +1367,11 @@ img {
   float:left;
 }
 
+.community-private{
+  color: #D9D9D9;
+  font-size: larger;
+}
+
 /* Community Banner */
 .community-banner {
   background-color: #919196;

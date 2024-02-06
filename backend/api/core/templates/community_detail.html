@@ -35,6 +35,7 @@
                 <div class="col-md-6">
                     <h6 class="community-description">{{ community.description }}</h6>
                 </div>
+                {% if request.user == community.admin or not community.is_private %}
                 <div class="col-md-6 text-md-right">
                         {% if request.user == community.admin %}
                         <!--Edit community details popup-->
@@ -151,6 +152,9 @@
                 </div>
                
             </div>
+            {%else%}
+            <div class="community-private">This community is private</div>
+            {% endif %}
 
         </div>
 </div>
