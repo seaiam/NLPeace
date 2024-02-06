@@ -119,11 +119,8 @@ def search_community(request):
         search=request.POST.get('search')
         if search:
          communities = Community.objects.filter(name__icontains=search)  
-        form = CommunityForm(request.POST, request.FILES)
-        if form.is_valid():
-         community=handle_form(request,form)
-         return redirect('community_detail', community_id=community.id)   
-        context = {'search':search,'communities':communities,'form':form}
+         
+        context = {'search':search,'communities':communities,'form': CommunityForm(request.POST, request.FILES)}
         if communities:
             return render(request, 'community_list.html', context)
         else:
@@ -132,11 +129,7 @@ def search_community(request):
     search = request.session.get('search')
     if search:
         communities = Community.objects.filter(name__icontains=search)
-        form = CommunityForm(request.POST, request.FILES)
-        if form.is_valid():
-         community=handle_form(request,form)
-         return redirect('community_detail', community_id=community.id) 
-        context = {'search':search, 'communities': communities, 'form':form}
+        context = {'search':search, 'communities': communities, 'form': CommunityForm(request.POST, request.FILES)}
         return render(request,'community_list.html',context)
     else:
         return redirect('create_community')
