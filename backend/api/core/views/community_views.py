@@ -148,11 +148,7 @@ def search_community(request):
          communities = Community.objects.filter(name__icontains=search)  
         form = CommunityForm(request.POST, request.FILES)
         if form.is_valid():
-         community = form.save(commit=False)
-         community.admin = request.user
-         community.is_private = form.cleaned_data['is_private'] == 'True'
-         community.save()
-         messages.success(request, 'Community created successfully.')
+         community=handle_form(request,form)
          return redirect('community_detail', community_id=community.id)   
         context = {'search':search,'communities':communities,'form':form}
         if communities:
@@ -163,7 +159,11 @@ def search_community(request):
     search = request.session.get('search')
     if search:
         communities = Community.objects.filter(name__icontains=search)
-        context = {'search':search, 'communities': communities}
+        form = CommunityForm(request.POST, request.FILES)
+        if form.is_valid():
+         community=handle_form(request,form)
+         return redirect('community_detail', community_id=community.id) 
+        context = {'search':search, 'communities': communities, 'form':form}
         return render(request,'community_list.html',context)
     else:
         return redirect('create_community')
