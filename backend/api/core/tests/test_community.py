@@ -123,26 +123,24 @@ class CommunityPostTestCase(TestCase):
         self.user = User.objects.create_user(username='testuser', password='password')
         self.other_user = User.objects.create_user(username='otheruser', password='password')
 
-        # Creating a community and a post
+        # Creating a community
         self.community = Community.objects.create(name='Test Community', admin=self.user, is_private=False)
         self.client.login(username='testuser', password='password')
 
     def test_create_community_post(self):
-        # Simulate creating a post
         response = self.client.post(reverse('create_community_post', kwargs={'community_id': self.community.id}), {
             'content': 'Test Post Content',
-            # include other fields as per your PostForm
         })
 
         # Check that the post was created and redirected
         self.assertEqual(response.status_code, 302)
 
-        # Check that CommunityPost entry was created
+        # Check that CommunityPost entry was created in the db
         self.assertEqual(CommunityPost.objects.count(), 1)
         
         community_post = CommunityPost.objects.first()
         self.assertEqual(community_post.community, self.community)
-        self.assertEqual(community_post.post.content, 'Test Post Content')  # Adjust field as per your Post model
+        self.assertEqual(community_post.post.content, 'Test Post Content') 
         self.assertEqual(community_post.post.user, self.user)
     
   
