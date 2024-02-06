@@ -470,10 +470,3 @@ def  handle_admin_join(community_id, joiner_id, action):
         community.join_requests.remove(joiner)
     notification.delete()
 
-def handle_form(request,form):
-     community = form.save(commit=False)
-     community.admin = request.user
-     community.is_private = form.cleaned_data['is_private'] == 'True'
-     community.save()
-     messages.success(request, 'Community created successfully.')
-     return community

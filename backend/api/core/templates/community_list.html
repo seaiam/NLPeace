@@ -29,7 +29,7 @@
             <div class="popup-content">
                 <span class="close" onclick="toggleModal('create-community-modal')">&times;</span>
                 <p class="Community-modalTitle">Create a Community</p>
-                <form method="post" enctype="multipart/form-data">
+                <form method="post" enctype="multipart/form-data" action="{% url 'create_community' %}">
                     {% csrf_token %}
                     <div class = "community-form"> {{ form.as_p }}</div>
                     <button type="submit" id="saveBtn" class="CreateButton">Create</button>
