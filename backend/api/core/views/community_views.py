@@ -118,8 +118,7 @@ def search_community(request):
     if request.method == "POST" :
         search=request.POST.get('search')
         if search:
-         communities = Community.objects.filter(name__icontains=search)  
-         
+         communities = Community.objects.filter(name__icontains=search)         
         context = {'search':search,'communities':communities,'form': CommunityForm(request.POST, request.FILES)}
         if communities:
             return render(request, 'community_list.html', context)
