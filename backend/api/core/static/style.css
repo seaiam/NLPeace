@@ -1333,8 +1333,14 @@ img {
   font-size:x-large;
 }
 
-.community-Name, .community-description{
+.community-Name{
   color: #D9D9D9;
+}
+
+.community-description{
+  color: #D9D9D9;
+  word-wrap: break-word;
+  max-width: 100%; 
 }
 
  .community-members {
@@ -1370,6 +1376,7 @@ img {
 .community-private{
   color: #D9D9D9;
   font-size: larger;
+  margin-top:20px;
 }
 
 /* Community Banner */
