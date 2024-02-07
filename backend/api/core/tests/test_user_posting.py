@@ -3,7 +3,7 @@ from django.urls import reverse
 from django.contrib.auth.models import User 
 from django.core.files.uploadedfile import SimpleUploadedFile
 from core.forms.posting_forms import PostForm
-from core.models.post_models import Post, Repost, PostDislike, PostLike, PostReport, PostPin
+from core.models.post_models import Hashtag, HashtagInstance, Post, Repost, PostDislike, PostLike, PostReport, PostPin
 from core.models.profile_models import Profile
 from django.core.exceptions import ObjectDoesNotExist
 
@@ -95,6 +95,31 @@ class PostTestCase(TestCase):
         #assert post is NOT shown on another user's profile
         otherProfile = self.client.get(reverse('guest',kwargs = {'user_id': otherId}))
         self.assertNotContains(otherProfile, 'Post on profile')
+    
+    def test_post_with_new_hashtag_creates_new_hashtage_and_instance_entities(self):
+        count = Hashtag.objects.count()
+        self.client.post(reverse('home'), {'content': '#test'})
+        self.assertEqual(count + 1, Hashtag.objects.count())
+        post = self.user.post_set.first()
+        hashtag = Hashtag.objects.get(content='test')
+        self.assertTrue(HashtagInstance.objects.filter(post=post, hashtag=hashtag).exists())
+    
+    def test_post_with_existing_hashtag_does_not_create_new_hashtag_entity(self):
+        self.client.post(reverse('home'), {'content': '#test'})
+        count = Hashtag.objects.filter(content='test').count()
+        self.client.post(reverse('home'), {'content': '#test'})
+        self.assertEqual(count, Hashtag.objects.filter(content='test').count())
+    
+    def test_filtering_posts_on_hashtag_excludes_entities_without_selection(self):
+        hashtag = Hashtag.objects.create(content='test')
+        tagged = Post.objects.create(user=self.user, content='#test')
+        instance = HashtagInstance.objects.create(post=tagged, hashtag=hashtag)
+        untagged = Post.objects.create(user=self.user, content='test')
+        response = self.client.get(reverse('home_with_word', args=['test']))
+        posts = list(map(lambda carrier: carrier.payload, filter(lambda carrier: carrier.is_post, response.context['posts'])))
+        self.assertIn(tagged, posts)
+        self.assertNotIn(untagged, posts)
+        self.assertContains(response, 'Showing posts tagged with #test')
     
 class CommentTestCase(TestCase):
 

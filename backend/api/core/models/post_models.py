@@ -1,8 +1,12 @@
+import re
+
 from django.contrib.auth.models import User
 from django.db import models
 from django.urls import reverse
 
 from core.utils import attempt_send_message
+
+whitespace_pattern = re.compile(r'(\S+)')
 
 class Post(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
@@ -71,6 +75,12 @@ class Post(models.Model):
     def is_community_post(self):
         from .community_models import CommunityPost #had to import here to avoid circular import issue
         return CommunityPost.objects.filter(post=self).exists()
+    def is_tagged_by(self, hashtag):
+        return HashtagInstance.objects.filter(post=self, hashtag=hashtag).exists()
+    
+    def get_words(self):
+        return whitespace_pattern.split(self.content)
+
    
 class Repost(models.Model):
     post = models.ForeignKey(Post, null=True, on_delete=models.CASCADE, related_name='reposts')
@@ -130,6 +140,13 @@ class PostPin(models.Model):
         constraints = [
             models.UniqueConstraint(fields=['pinner', 'post'], name='pinner_post_unique')
         ]
+
+class Hashtag(models.Model):
+    content = models.CharField(max_length=280, unique=True)
+
+class HashtagInstance(models.Model):
+    post = models.ForeignKey(Post, on_delete=models.CASCADE)
+    hashtag = models.ForeignKey(Hashtag, null=True, on_delete=models.SET_NULL)
     
 class Advertisement(models.Model):
     advertiser = models.CharField(max_length=512)

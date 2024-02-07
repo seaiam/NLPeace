@@ -11,9 +11,7 @@ const addFormSubmitListener = (formid, inputid) => {
 }
 
 const toggleModal = (id) => {
-    console.log(id)
     const modal = document.getElementById(id);
-    console.log(modal)
     if (modal.style.display === "" || modal.style.display === "none") {
         modal.style.display = "block";
     } else {
