@@ -45,6 +45,12 @@ class Message(models.Model):
     def __str__(self):
         return self.author.username
     
+    def change_message_to_deleted(passed_room_id):
+        print(passed_room_id)
+        message=Message.objects.get(pk=passed_room_id)
+        message.content='DELETED'
+        message.save()
+    
     def more_messages(room_name, m):
         messages=Message.objects.filter(room_id=room_name,timestamp__lt=m).order_by('timestamp').all().reverse()[:10]
         return messages

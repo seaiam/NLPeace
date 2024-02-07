@@ -331,9 +331,55 @@
         
             if (author === username){
                 msgListTag.className= 'message-right';
+              
+                dropdownDiv.className = 'dropdown-message';
+                dropdownToggle.className = 'hidden-arrow';
+                dropdownToggle.setAttribute('data-toggle', 'dropdown');
+                dropdownToggle.setAttribute('aria-expanded', 'false');
+                dropdownIcon.className = 'fas fa-ellipsis-v';
+                dropdownMenu.className = 'dropdown-menu';
+                reportLink.className = 'dropdown-item';
+
                 msgListTag.appendChild(timeDiv);
+                msgListTag.appendChild(dropdownDiv);
+                msgListTag.appendChild(dropdownDiv);
                 msgListTag.appendChild(content);
+                dropdownToggle.appendChild(dropdownIcon);
+                dropdownItem.appendChild(reportLink);
+                dropdownMenu.appendChild(dropdownItem);
+                dropdownDiv.appendChild(dropdownToggle);
+                dropdownDiv.appendChild(dropdownMenu);
+
                 msgListTag.appendChild(messageDiv);
+                msgListTag.appendChild(content);
+                dropdownToggle.appendChild(dropdownIcon);
+                dropdownItem.appendChild(reportLink);
+                dropdownMenu.appendChild(dropdownItem);
+                dropdownDiv.appendChild(dropdownToggle);
+                dropdownDiv.appendChild(dropdownMenu);
+
+                
+                msgListTag.appendChild(messageDiv);
+
+                reportLink.innerHTML = '<i class="bi bi-trash"></i>Delete'
+                reportLink.onclick = () => {   
+
+                    const messageContentElement = msgListTag.querySelector('.message-text'); 
+
+                    if (messageContentElement) {
+                        messageContentElement.textContent = "DELETED"; 
+                    } else {
+                        const imageElement = msgListTag.querySelector('img');
+                        if (imageElement) {
+                            const deletedText = document.createElement('p');
+                            deletedText.textContent = "DELETED";
+                            msgListTag.replaceChild(deletedText, imageElement);
+                        }
+                    }
+                    delteMessage(message.id)
+                }
+
+
             } else {
                 msgListTag.className ='message-left';
                 dropdownDiv.className = 'dropdown-message';
@@ -430,6 +476,16 @@
                 'username': username,
             }));
         };
+
+        const delteMessage = function(id) {
+            chatSocket.send(JSON.stringify({
+                'command': 'delete_message',
+                'id': id,
+                'room_id': roomName ,
+                'username': username,
+            }));
+        };
+        
 
         const createImagePopup = function(message) {
             const popup = document.createElement('div');
