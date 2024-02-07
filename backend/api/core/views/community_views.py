@@ -9,7 +9,7 @@ from django.http import *
 from core.forms.community_forms import CommunityForm
 from core.models.community_models import Community, CommunityPost
 from core.models.post_models import Post
-from core.forms.posting_forms import PostForm
+from core.forms.posting_forms import PostForm, PostReportForm
 from django.http import HttpResponseRedirect
 from .services import *
 from collections import namedtuple
@@ -40,6 +40,9 @@ def community_detail(request, community_id):
     community_posts = CommunityPost.objects.filter(community=community)
     Carrier = namedtuple('Carrier', ['is_post', 'payload'])
     community_carriers = [Carrier(is_post=True, payload=cp.post) for cp in community_posts]
+    likes, dislikes, saved_post_ids = get_post_interactions(request.user, community_carriers)
+    reposted_post_ids = Repost.objects.filter(user=request.user).values_list('post_id', flat=True)
+    reported_posts = [post.payload for post in community_carriers if post.is_post and not post.payload.is_reportable_by(request.user)]
     
     is_member = request.user in community.members.all()
     
@@ -61,7 +64,13 @@ def community_detail(request, community_id):
         'community': community,
         'community_posts': community_carriers,
         'is_member': is_member,
-        'form': form  
+        'form': form,
+        'likes': likes,
+        'dislikes': dislikes,
+        'saved_post_ids': saved_post_ids,
+        'reported_posts' : reported_posts,
+        'reportPostForm': PostReportForm(),
+        'reposted_post_ids': reposted_post_ids,
     }
     return render(request, 'community_detail.html', context)
 
