@@ -39,11 +39,17 @@
                                     <input type="file" id="create-upload-video" name="video" accept="video/*" style="display: none;">
                                     <p hidden> {{ form.video }} </p>
                                     &nbsp; &nbsp; &nbsp; &nbsp;
-
-                                    <label for="upload-video" class="post-actions__label">
+                    
+                                    <label for="poll-icon" class="post-actions__label" id="poll-icon">
                                         <i class="fa fa-list-ul" aria-hidden="true"></i> 
-                                    Poll
+                                        Poll
                                     </label>
+
+                                    <div id="poll-choices-section" style="display: none;">
+                                        <label for="id_poll_choices">Number of Choices:</label>
+                                        {{ form.poll_choices }}
+                                        <div id="choice-fields"></div>
+                                    </div>
                                 </div>
                                 <div class="post-actions__widget">
                                 <button type="submit" class="btn post-actions__publish">Post</button>
@@ -102,5 +108,33 @@
     // opening tab 1 by default
     document.getElementById("defaultOpenPost").click();
 </script>
+
+<script>
+document.getElementById('id_poll_choices').addEventListener('change', function() {
+    var numChoices = parseInt(this.value);
+    var choiceFieldsContainer = document.getElementById('choice-fields');
+    choiceFieldsContainer.innerHTML = ''; 
+    for (var i = 1; i <= numChoices; i++) {
+        var input = document.createElement('input');
+        input.type = 'text';
+        input.name = 'choice_' + i;
+        input.placeholder = 'Choice ' + i;
+        choiceFieldsContainer.appendChild(input);
+    }
+});
+</script>
+
+<script>
+    const pollIcon = document.getElementById("poll-icon");
+    const pollChoicesSection = document.getElementById("poll-choices-section");
+
+    pollIcon.addEventListener("click", function() {
+        if (pollChoicesSection.style.display === "none") {
+            pollChoicesSection.style.display = "block";
+        } else {
+            pollChoicesSection.style.display = "none";
+        }
+    });
+</script> 
 
 {% endblock %}

@@ -18,6 +18,11 @@ def home(request):
         form = PostForm(request.POST, request.FILES)
         post = process_post_form(request, form)
         if post:
+            #storing the number of options and choices of a created poll
+            poll_choices = form.cleaned_data.get('poll_choices')
+            for i in range(1, poll_choices + 1):
+                choice_text = form.cleaned_data.get(f'choice_{i}')
+                PollChoice.objects.create(post=post, choice_text=choice_text)
             return redirect('home')
 
     posts = get_user_posts(request.user)
@@ -27,8 +32,7 @@ def home(request):
     data = Notifications.objects.filter(user=request.user).order_by('-id')
     following_users = request.user.profile.following.all()
     following_posts = get_following_posts(request.user, following_users)
-    reported_posts = [post.payload for post in posts if post.is_post and not post.payload.is_reportable_by(request.user)] #for post reporting
-
+    reported_posts = [post.payload for post in posts if post.is_post and not post.payload.is_reportable_by(request.user)] #for post reporting 
     context = {
         'posts': posts,
         'likes': likes,
