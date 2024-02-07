@@ -7,42 +7,72 @@
   {% block content %}
   {% csrf_token %}    
   <div class="community-page">
-        <div class="box">
-            <!-- banner upload -->
-            <div class="banner">
-            {% if community.pic %}
-            <img src="{{community.pic.url}}" class="banner" alt="Community Picture">
-            {% endif %}
+    <div class="box">
+        <!-- banner upload -->
+        <div class="banner">
+        {% if community.pic %}
+        <img src="{{community.pic.url}}" class="banner" alt="Community Picture">
+        {% endif %}
 
-            <form id="profile-edit-banner-form" action="{% url 'community_detail' community_id=community.id %}" method="POST" enctype="multipart/form-data">
-                {% csrf_token %}
-                <label class="clickable-label" for="id_pic">
-                    <i class="fa fa-pencil-alt edit-icon"></i>
-                </label>
-                <input type="file" name="pic" id="id_pic" style="display: none;" onchange="this.form.submit()">
-            </form>
+        <form id="profile-edit-banner-form" action="{% url 'community_detail' community_id=community.id %}" method="POST" enctype="multipart/form-data">
+            {% csrf_token %}
+            <label class="clickable-label" for="id_pic">
+                <i class="fa fa-pencil-alt edit-icon"></i>
+            </label>
+            <input type="file" name="pic" id="id_pic" style="display: none;" onchange="this.form.submit()">
+        </form>
+        </div>
+        <br><br><br>  
+        <div class="row">
+            <div class="col-md-4">
+                <h4 class="community-Name">{{ community.name }}</h4>
             </div>
-            <br><br><br>  
-            <div class="row">
-                <div class="col-md-4">
-                    <h4 class="community-name">{{ community.name }}</h4>
-                </div>
-                <div class="col-md-8 text-md-right">
-                    <button class="community-members" ><i class='fas fa-user-friends'></i> Members</button>                   
-                </div>
+            <div class="col-md-8 text-md-right">
+                <button class="community-members" ><i class='fas fa-user-friends'></i> {{community.members.count}} Members</button>                   
             </div>
-            <div class = "row">
-                <div class="col-md-6">
-                    <h6 class="community-description">{{ community.description }}</h6>
-                </div>
-                <div class="col-md-6 text-md-right">
-                        {% if request.user == community.admin %}
-                        <!--Edit community details popup-->
-                    <button class="editButton" onclick="toggleModal('edit-community-modal')">Edit Settings</button>
+        </div>
+        <div class = "row">
+            <div class="col-md-6">
+                <h6 class="community-description">{{ community.description }}</h6>
+                {% if community.is_private and request.user not in community.members.all and request.user != community.admin %}
+                <div class="community-private">This community is private</div> 
+                {% endif %}
+            </div>
+     
+            <div class="col-md-6 text-md-right" style = "display: flex;justify-content: end;">
+                {% if request.user in community.members.all %}
+                <form method="POST" action="{% url 'leave_community' %}">
+                    {% csrf_token %}
+                    <input type="hidden" name="community_id" value="{{community.id}}" readonly/>
+                    <input type="hidden" name="requester_id" value="{{request.user.id}}" readonly/>
+                    <button type="submit" class="statusButton">Leave</button> &nbsp;
+                </form>
+                {% elif request.user in community.join_requests.all %}
+                    <form method="POST" action="{% url 'leave_community' %}">
+                        {% csrf_token %}
+                        <input type="hidden" name="community_id" value="{{ community.id }}" readonly/>
+                        <input type="hidden" name="requester_id" value="{{ request.user.id }}" readonly/>
+                        <button type="submit" class="statusButton">Requested</button>
+                    </form>
+                {% else %}
+                <form method="POST" action="{% url 'join_community' %}">
+                    {% csrf_token %}
+                    <input type="hidden" name="community_id" value="{{ community.id }}" readonly/>
+                    <input type="hidden" name="requester_id" value="{{ request.user.id }}" readonly/>
+                    {% if request.user != community.admin %}
+                    <button type="submit" class="statusButton">Join</button>
+                    {% endif %}
+                </form>
+                {% endif %}
+
+                {% if request.user == community.admin or not community.is_private or request.user in community.members.all %}
+                    {% if request.user == community.admin %}
+                    <!--Edit community details popup-->
+                    <button class="editButton" onclick="toggleModal('edit-community-modal')">Edit Settings</button>&nbsp;
                     <div id="edit-community-modal" class="popup">
                         <div class="popup-content">
                             <span class="close" onclick="toggleModal('edit-community-modal')">&times;</span>
-                             <p class="Community-modalTitle">Edit Community Details</p>
+                            <p class="Community-modalTitle">Edit Community Details</p>
                             <form action="{% url 'community_detail' community_id=community.id %}" method="post" enctype="multipart/form-data">
                                 {% csrf_token %}
                                 <div class = "community-form"> {{ form.as_p }}</div>
@@ -50,41 +80,110 @@
                             </form>
                         </div>
                     </div>
-                        {% endif %}
-                        <!--Edit community details popup end-->
-                        <button class="editButton" onclick="toggleModal('home-edit-bio-modal')">Start a Post</button>
-                </div>
+                    {% endif %}
+                    <!--popup end-->
+                    <!--Start a post details popup-->
+                    {% if request.user == community.admin or request.user in community.members.all %}
+                    <button class="editButton" onclick="toggleModal('start-a-post')">Start a Post</button>&nbsp;
+                    {% endif %}
+                    <div id="start-a-post" class="popup">
+                        <div class="popup-content">
+                            <span class="close" onclick="toggleModal('start-a-post')">&times;</span>
+                            <p class="Community-modalTitle"> Create Post</p>
+                        
+                            <!--post box -->
+                            <div class="d-flex justify-content-center align-items-center">   
+                                <div class="card" style="width: 39rem; background: linear-gradient(to right, #F9D1C4 0%, #9BBDDD 51%, #F9D1C4 100%);  border-radius: 15px; margin-bottom:30px;">
+                                    <div class="card-body">
+                                        <div class="row">
+                                            <div class="col">
+                                                <div>
+                                                    <form method="post" action="{% url 'create_community_post' community.id %}" id="widget-form" class="widget-post__form" enctype="multipart/form-data" name="form" aria-label="post widget">
+                                                        {% csrf_token %}
+                                                        <div class="widget-post__content">
+                                                        <textarea name="content" id="post-content" class="widget-post__textarea scroller" placeholder="Start a Post...">{{ form.content.value|default:'' }}</textarea>
+                                                        </div>
+                                                        <div id="create-preview-image" style="display: none;">
+                                                            <button type="button" class="close" onclick="handleDeletePostImage('create-preview-image')" style="color: #00001c;">&times;</button>
+                                                            <img class="card-img-top mb-2" src="#" />
+                                                        </div>
+                                                        <div class="widget-post__options is--hidden" id="stock-options">
+                                                        </div>
+                                                        <div class="widget-post__actions post--actions">
+                                                            <div class="post-actions__community">
+                                                                <div>
+                                                                <label for="create-upload-image" class="post-actions__label">
+                                                                <i class="fa fa-camera" sty aria-hidden="true"></i> 
+                                                                Photo
+                                                                </label>
+                                                                <input type="file" id="create-upload-image" name="image" accept="image/*" style="display: none;">
+                                                                {{ form.image }}
+                                                                </div>
+                                                                <div style =" margin-left:5px;">
+                                                                <label for="create-upload-video" class="post-actions__label">
+                                                                    <i class="fa fa-video" aria-hidden="true"></i> 
+                                                                    Video
+                                                                </label>
+                                                                <input type="file" id="create-upload-video" name="video" accept="video/*" style="display: none;">
+                                                                <p hidden> {{ form.video }} </p>
+                                                                </div>
+                                                                <div>
+                                                                <label for="upload-video" class="post-actions__label">
+                                                                    <i class="fa fa-list-ul" aria-hidden="true"></i> 
+                                                                Poll
+                                                                </label>
+                                                               </div>
+                                                            </div>
+                                                            <div class="post-actions__widget">
+                                                            <button type="submit" class="btn post-actions__publish">Post</button>
+                                                            </div>
+                                                        </div>
+                                                    </form>
+                                                </div> 
+                                            </div>    
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <!--end here-->
+                        </div>
+                    </div> 
+                     <!--popup end-->
+            </div>
+        </div> 
+    
+       <hr>
+
+        <div class="container">
+            <div class="profiletab-btns">
+                <button class="profiletabbutton" onclick="openPostTab(event, 'Latest')" id="defaultOpenPost">Latest</button>
+                <button class="profiletabbutton" onclick="openPostTab(event, 'Media')">Media</button>
+                <button class="profiletabbutton" onclick="openPostTab(event, 'About')">About</button>
             </div>
         
-        <hr>
-    
-            <div class="container">
-                <div class="communitytab-btns">
-                    <button class="communitytabbutton" onclick="openPostTab(event, 'Latest')" id="defaultOpenPost">Latest</button>
-                    <button class="communitytabbutton" onclick="openPostTab(event, 'Media')">Media</button>
-                    <button class="communitytabbutton" onclick="openPostTab(event, 'About')">About</button>
-                </div>
-
-                <div id="Latest" class="posttabcontent">
-                    {% if community_posts %}
-                    <div class = "post"></div>
-                    {% else %}
-                    <div class="no-post">No posts in this community yet.</div>
+            <div id="Latest" class="posttabcontent">
+                <!-- Community Specific Posts -->
+                {% for carrier in community_posts %}
+                    {% if carrier.is_post %}
+                    {% include "posts.html" with post=carrier.payload  %}
                     {% endif %}
-                </div>
-                
-                <div id="Media" class="posttabcontent" style="display:none;">
-
-                </div>
-
-                <div id="About" class="posttabcontent" style="display:none;">
-
-                </div>
+                {% empty %}
+                    <div class="no-post">No posts in this community yet.</div>
+                {% endfor %}
+            </div>
+            
+            <div id="Media" class="posttabcontent" style="display:none;">
             
             </div>
-
+        
+            <div id="About" class="posttabcontent">
+               
+            </div>
+           
         </div>
+       
+        {% endif %}
+    </div>
 </div>
-    
 
 {% endblock %}

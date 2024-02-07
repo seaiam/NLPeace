@@ -8,15 +8,12 @@
 <div class = "community-container">
     <div class = "community-items">
         <div class="row">
-            <div class= "col-md-9">
+            <div class= "col-md-10">
                 <h2 class = "trending-community">Trending Communities</h2>
-            </div>
-                
-            <div class= "col-md-3">
+            </div>  
+            <div class= "col-md-2">
                 <button class = "iconCommunity" onclick="toggleModal('create-community-modal')" title="Create Community"> <i class="bi bi-person-plus" style="margin-left: 10px;"></i></button>
-                <button class = "iconCommunity" onclick="toggleModal('create-community-modal')" title="My Community"> <i class="bi bi-list"></i></button>
             </div>
-           
         </div> 
         <br>
         <div class="d-flex justify-content-center align-items-center">
@@ -50,7 +47,7 @@
             <br>
             <div class="row">
                 <div class="col-md-8">
-                    <h4 class="community-title">{{community.name}}</h4>
+                    <a class ="name-link" href="{% url 'community_detail' community_id=community.id %}"><h4 class="community-title">{{community.name}}</h4></a> 
                     <h6 class="members">{{community.members.count}} Members</h6>    
                 </div>
                 <div class="col-md-4 text-md-right">

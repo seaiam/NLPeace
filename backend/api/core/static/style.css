@@ -791,13 +791,6 @@ img {
   padding-bottom:10px;
 }
 
-.icons-list-2{/* for comments page */
-  color: #00001c;
-  display: grid;  
-  grid-template-columns: 1fr 1fr 1fr 1fr 1fr;  
-  padding-bottom:10px;
-}
-
 .feed{
   margin-left:18%;
 }
@@ -1048,7 +1041,7 @@ button:hover {
   border-bottom: 2px solid #fff;
 }
 
-.profiletab-btns, .communitytab-btns{
+.profiletab-btns{
   font-size: 1.1em;
   display:flex;
   justify-content: center;
@@ -1056,7 +1049,7 @@ button:hover {
   margin-top: 10px;
 }
 
-.profiletabbutton, .communitytabbutton {
+.profiletabbutton {
   background-color: transparent;
   color: #fff;
   border: none;
@@ -1340,8 +1333,14 @@ img {
   font-size:x-large;
 }
 
-.community-name, .community-description{
+.community-Name{
   color: #D9D9D9;
+}
+
+.community-description{
+  color: #D9D9D9;
+  word-wrap: break-word;
+  max-width: 100%; 
 }
 
  .community-members {
@@ -1355,8 +1354,29 @@ img {
   margin-bottom:10px;
 }
 
-.community-title, .members{
+.name-link:hover {
+  color: #000;
+}
+
+.community-title{
   color: #00001c;
+  font-weight: 600;
+}
+
+.members{
+  color: #00001c;
+}
+
+.post-actions__community {
+  display: grid;  
+  grid-template-columns: 1fr 1.2fr 1fr; 
+  float:left;
+}
+
+.community-private{
+  color: #D9D9D9;
+  font-size: larger;
+  margin-top:20px;
 }
 
 /* Community Banner */

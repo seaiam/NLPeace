@@ -72,6 +72,9 @@ class Post(models.Model):
     def is_reported_by(self, user):
         return PostReport.objects.filter(reporter=user, post=self).exists()
     
+    def is_community_post(self):
+        from .community_models import CommunityPost #had to import here to avoid circular import issue
+        return CommunityPost.objects.filter(post=self).exists()
     def is_tagged_by(self, hashtag):
         return HashtagInstance.objects.filter(post=self, hashtag=hashtag).exists()
     
