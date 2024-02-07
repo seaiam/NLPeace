@@ -4,6 +4,7 @@ from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import login_required
 from django.db.models import Q
 from django.http import *
+from django.urls import reverse
 from core.forms.user_forms import UserReportForm
 from core.forms.profile_forms import EditProfileBannerForm, EditProfilePicForm, EditBioForm
 from core.forms.posting_forms import PostForm, PostReportForm
@@ -11,7 +12,7 @@ from core.models.post_models import Post, Repost, PostReport
 from core.models.profile_models import Notifications
 from .services import *
 
-def home(request):
+def home(request, word=None):
     if not request.user.is_authenticated:
         return redirect('login')
       
@@ -21,7 +22,7 @@ def home(request):
         if post:
             return redirect('home')
 
-    posts = get_user_posts(request.user)
+    posts = get_user_posts(request.user, word)
     posts_without_ads = map(lambda carrier: carrier.payload, filter(lambda carrier: carrier.is_post, posts))
     likes, dislikes, saved_post_ids = get_post_interactions(request.user, posts)
     reposted_post_ids = Repost.objects.filter(user=request.user).values_list('post_id', flat=True)
@@ -42,7 +43,8 @@ def home(request):
         'reportPostForm': PostReportForm(),
         'reposted_post_ids': reposted_post_ids,
         'followPost': following_posts,
-        'reported_posts' : reported_posts #for post reporting
+        'reported_posts' : reported_posts, #for post reporting
+        'word': word,
     }
     return render(request, 'index.html', context)
 
@@ -212,3 +214,7 @@ def bookmarked_posts(request):
         'pinned_post_ids': pinned_post_ids
         }
     return render(request, 'bookmark.html', context)
+
+@login_required
+def hashtag_search(request, word):
+    return redirect(reverse('home_with_word', args=[word]))
