@@ -28,6 +28,7 @@ urlpatterns = [
     path('logout_user', authentication_views.logout_user, name="logout_user"),
     path('register_user/', authentication_views.register_user, name='register_user'),
     path('', main_pages_views.home, name='home'),
+    path('<str:word>', main_pages_views.home, name='home_with_word'),
     path('accounts/profile/', main_pages_views.profile, name='profile'),
     path('accounts/profile/<int:blocked_id>/', profile_views.add_block, name='add_block'),
     path('accounts/profile/updateBio/', profile_views.updateBio, name='edit_bio'),
@@ -67,7 +68,7 @@ urlpatterns = [
     path('join/', community_views.join_community ,name="join_community"),
     path('leave/', community_views.leave_community ,name="leave_community"),
     path('accounts/profile/notifications/join', community_views.accept_decline_join, name='accept_decline_join'),   
-    
+    path('hashtag_search/<str:word>/', main_pages_views.hashtag_search, name='hashtag_search'),
 ]
 
 if settings.DEBUG:

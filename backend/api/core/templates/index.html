@@ -57,6 +57,10 @@
     </div>
 </div>
 
+{% if word %}
+<p class="text-center text-white">Showing posts tagged with #{{ word }}</p>
+{% endif %}
+
 <div class="container">
     <div class="posttab-btns">
         <button class="posttabbutton" onclick="openPostTab(event, 'All')" id="defaultOpenPost">All</button>
