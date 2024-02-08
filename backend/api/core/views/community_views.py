@@ -117,6 +117,8 @@ def accept_decline_join(request):
 def search_community(request):
     if request.method == "POST" :
         search=request.POST.get('search')
+        if search == "":
+            return redirect('create_community')
         if search:
          communities = Community.objects.filter(name__icontains=search)  
          
