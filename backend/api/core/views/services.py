@@ -469,3 +469,4 @@ def  handle_admin_join(community_id, joiner_id, action):
     else:
         community.join_requests.remove(joiner)
     notification.delete()
+

@@ -7,12 +7,18 @@
   {% block content %}
   {% csrf_token %}    
   <div class="community-page">
-    <div class="box">
-        <!-- banner upload -->
-        <div class="banner">
-        {% if community.pic %}
-        <img src="{{community.pic.url}}" class="banner" alt="Community Picture">
-        {% endif %}
+        <div class="box">
+            <!-- banner upload -->
+            <div class="banner">
+            {% if community.pic %}
+            <img src="{{community.pic.url}}" class="banner" alt="Community Picture">
+            {% else %}
+            <div class="community-banner">
+            <img src="{% static 'defaultBanner.jpg' %}" width="100%" class="banner" alt="communityBanner" />
+            </div>
+            {% endif %}
+            
+           
 
         <form id="profile-edit-banner-form" action="{% url 'community_detail' community_id=community.id %}" method="POST" enctype="multipart/form-data">
             {% csrf_token %}
