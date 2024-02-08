@@ -365,7 +365,9 @@
                 reportLink.onclick = () => {   
 
                     const messageContentElement = msgListTag.querySelector('.message-text'); 
+                  
 
+                        
                     if (messageContentElement) {
                         messageContentElement.textContent = "DELETED"; 
                     } else {
@@ -381,7 +383,15 @@
                                 msgListTag.appendChild(existingTextOrNewElement);
                             }
                         }
+                        
                     }
+                    const linkElements = msgListTag.querySelectorAll('a.message-text');
+                    linkElements.forEach(linkElement => {
+                        const span = document.createElement('span'); 
+                        span.textContent = linkElement.textContent; 
+                        span.className = 'message-text'; 
+                        linkElement.parentNode.replaceChild(span, linkElement); 
+                    });
                     delteMessage(message.id)
                 }
 

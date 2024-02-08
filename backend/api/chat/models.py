@@ -46,10 +46,11 @@ class Message(models.Model):
         return self.author.username
     
     def change_message_to_deleted(passed_room_id):
-        print(passed_room_id)
         message=Message.objects.get(pk=passed_room_id)
         message.content='DELETED'
         message.is_image=False
+        message.is_file_download=False
+        message.is_video=False
         message.save()
     
     def more_messages(room_name, m):
@@ -98,7 +99,9 @@ class Message(models.Model):
 class FileUpload(models.Model):
     file = models.FileField(upload_to='messageFiles')
     message = models.ForeignKey(Message, on_delete=models.CASCADE, default=None)
-    
+
+def delete():
+    file = None
 class VideoUpload(models.Model):
     video = models.FileField(upload_to='messageVideos')
     message = models.ForeignKey(Message, on_delete=models.CASCADE, default=None)
