@@ -17,6 +17,7 @@ from collections import namedtuple
 @login_required
 def create_community(request):
     data = Notifications.objects.filter(user=request.user).order_by('-id')
+    data = Notifications.objects.filter(user=request.user).order_by('-id')
     if request.method == 'POST':
         form = CommunityForm(request.POST, request.FILES)
         if form.is_valid():
@@ -30,6 +31,7 @@ def create_community(request):
         form = CommunityForm()
     communities = Community.objects.all()[:10]
     context = {
+        'data':data,
         'data':data,
         'form': form,
         'communities': communities
@@ -76,6 +78,10 @@ def join_community(request):
         search = request.POST.get('search')
         if search:
           request.session['search'] = search
+         # Preserve the search context if it exists
+        search = request.POST.get('search')
+        if search:
+          request.session['search'] = search
         is_private = handle_join_request(community_to_join_id, requester_id)
         if is_private:
             messages.success(request, 'A join request has been sent.')
@@ -90,6 +96,10 @@ def leave_community(request):
     if request.method == 'POST':
         community_to_leave_id = request.POST.get('community_id')
         requester_id = request.POST.get('requester_id')
+        # Preserve the search context if it exists
+        search = request.POST.get('search')
+        if search:
+          request.session['search'] = search
         # Preserve the search context if it exists
         search = request.POST.get('search')
         if search:
@@ -139,6 +149,28 @@ def create_community_post(request, community_id):
 
     community_posts = CommunityPost.objects.filter(community=community)
     return render(request, 'community_detail.html', {'form': form, 'community': community, 'community_posts': community_posts})
+
+@login_required
+def search_community(request):
+    if request.method == "POST" :
+        search=request.POST.get('search')
+        if search:
+         communities = Community.objects.filter(name__icontains=search)         
+        context = {'search':search,'communities':communities,'form': CommunityForm(request.POST, request.FILES)}
+        if communities:
+            return render(request, 'community_list.html', context)
+        else:
+            messages.error(request, f"The community '{search}' does not exist.")
+            return redirect('create_community')     
+    search = request.session.get('search')
+    if search:
+        communities = Community.objects.filter(name__icontains=search)
+        context = {'search':search, 'communities': communities, 'form': CommunityForm(request.POST, request.FILES)}
+        return render(request,'community_list.html',context)
+    else:
+        return redirect('create_community')
+   
+        
 
 @login_required
 def search_community(request):
