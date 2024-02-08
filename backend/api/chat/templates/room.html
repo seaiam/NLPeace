@@ -371,9 +371,15 @@
                     } else {
                         const imageElement = msgListTag.querySelector('img');
                         if (imageElement) {
-                            const deletedText = document.createElement('p');
-                            deletedText.textContent = "DELETED";
-                            msgListTag.replaceChild(deletedText, imageElement);
+                            imageElement.remove();
+                
+                            const existingTextOrNewElement = msgListTag.querySelector('.message-text') || document.createElement('p');
+                            existingTextOrNewElement.className = 'message-text'; 
+                            existingTextOrNewElement.textContent = "DELETED"; 
+                
+                            if (!existingTextOrNewElement.parentNode) {
+                                msgListTag.appendChild(existingTextOrNewElement);
+                            }
                         }
                     }
                     delteMessage(message.id)

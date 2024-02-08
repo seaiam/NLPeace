@@ -49,6 +49,7 @@ class Message(models.Model):
         print(passed_room_id)
         message=Message.objects.get(pk=passed_room_id)
         message.content='DELETED'
+        message.is_image=False
         message.save()
     
     def more_messages(room_name, m):
