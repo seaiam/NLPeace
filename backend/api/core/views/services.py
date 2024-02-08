@@ -13,7 +13,7 @@ from core.forms.profile_forms import EditBioForm, EditUsernameForm, EditProfileP
 from core.interest_resolver import RESOLVERS
 from core.models.post_models import Advertisement, Hashtag, HashtagInstance, Post, PostLike, PostDislike, PostPin, PostReport, PostSave, Repost
 from core.models.profile_models import Profile, Notifications, User, CommunityNotifications
-from core.models.community_models import Community
+from core.models.community_models import Community, CommunityPost
 
 class ContentCarrier:
 
@@ -78,8 +78,9 @@ def get_user_posts(user, word):
         (Q(user__profile__is_private=False) | 
         Q(user__in=user_ids_following) |  
         Q(user=user)) &
-        ~Q(user__in=blocked)
+        ~Q(user__in=blocked) 
     ).distinct().order_by('-created_at'))
+    posts = [post for post in posts if not post.is_community_post() and post.parent_post is None]
     if word is not None:
         hashtag = get_object_or_404(Hashtag, content=word)
         posts = [post for post in posts if post.is_tagged_by(hashtag)]
@@ -122,9 +123,11 @@ def get_user_profile(user):
 
 def get_user_posts_and_reposts(user):
     posts = Post.objects.filter(Q(user=user) & Q(parent_post=None))
+    posts = [post for post in posts if not post.is_community_post() and post.parent_post is None]
     reposts_ids = Repost.objects.filter(user=user).values_list('post_id', flat=True)
     reposts = Post.objects.filter(id__in=reposts_ids)
     replies = Post.objects.filter(Q(user=user) & ~Q(parent_post=None))
+    replies = [post for post in replies if not post.is_community_post()]
     all_posts = sorted(chain(posts, reposts, replies), key=lambda post: post.created_at, reverse=True)
     carriers = list(map(lambda post: ContentCarrier(post), all_posts))
     return mix(carriers, get_ads(user))
@@ -190,6 +193,10 @@ def process_comment_form(request, form, post_id):
             comment.user = request.user
             comment.parent_post = Post.objects.get(pk=post_id)
             comment.save()
+            if (comment.parent_post.is_community_post()):
+                parent_community_post = CommunityPost.objects.get(post=comment.parent_post)
+                CommunityPost.objects.create(community=parent_community_post.community, post=comment)
+            
             update_interests_and_hashtags(comment)
             return comment
     return None
