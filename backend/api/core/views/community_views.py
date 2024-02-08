@@ -171,25 +171,3 @@ def search_community(request):
         return redirect('create_community')
    
         
-
-@login_required
-def search_community(request):
-    if request.method == "POST" :
-        search=request.POST.get('search')
-        if search:
-         communities = Community.objects.filter(name__icontains=search)         
-        context = {'search':search,'communities':communities,'form': CommunityForm(request.POST, request.FILES)}
-        if communities:
-            return render(request, 'community_list.html', context)
-        else:
-            messages.error(request, f"The community '{search}' does not exist.")
-            return redirect('create_community')     
-    search = request.session.get('search')
-    if search:
-        communities = Community.objects.filter(name__icontains=search)
-        context = {'search':search, 'communities': communities, 'form': CommunityForm(request.POST, request.FILES)}
-        return render(request,'community_list.html',context)
-    else:
-        return redirect('create_community')
-   
-        
