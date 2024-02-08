@@ -154,6 +154,8 @@ def create_community_post(request, community_id):
 def search_community(request):
     if request.method == "POST" :
         search=request.POST.get('search')
+        if search == "":
+            return redirect('create_community')
         if search:
          communities = Community.objects.filter(name__icontains=search)         
         context = {'search':search,'communities':communities,'form': CommunityForm(request.POST, request.FILES)}
