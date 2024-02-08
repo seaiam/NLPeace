@@ -231,10 +231,18 @@
     padding-left:10px;
     margin-top:7px;
  }
- 
+
  .message-container li.message-left .dropdown-message .fa-ellipsis-v{
      color: #00001c;
  }
+.message-container li.message-right .dropdown-message {
+    padding-right:10px;
+    margin-top:7px;
+ }
+ .message-container li.message-right .dropdown-message .fa-ellipsis-v{
+     color: #00001c;
+ }
+ 
 
  .report-dm-button  {
     display: flex; 
