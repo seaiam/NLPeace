@@ -348,8 +348,8 @@ class EditPostTestCase(TestCase):
         
 class ProfilePostCreationTestCase(TestCase):
     def setUp(self):
-        self.user = User.objects.create_user(username='testuser1', password='password')
-        self.client.login(username='testuser2', password='password')
+        self.user = User.objects.create_user(username='testuser', password='password')
+        self.client.login(username='testuser', password='password')
 
     def test_create_post_from_profile(self):
         post_content = 'This is a test post from profile'
