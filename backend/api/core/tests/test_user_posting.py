@@ -344,3 +344,22 @@ class EditPostTestCase(TestCase):
         self.assertEqual(response.status_code, 302)  
         self.assertEquals(self.post2.content, self.original_text)
         self.assertFalse(self.post2.is_edited)
+        
+        
+class ProfilePostCreationTestCase(TestCase):
+    def setUp(self):
+        self.user = User.objects.create_user(username='testuser', password='password')
+        self.client.login(username='testuser', password='password')
+
+    def test_create_post_from_profile(self):
+        post_content = 'This is a test post from profile'
+        response = self.client.post(reverse('profile'), {
+            'content': post_content,
+        }, follow=True)
+
+        self.assertRedirects(response, reverse('profile'))
+
+        self.assertEqual(Post.objects.count(), 1)
+        post = Post.objects.first()
+        self.assertEqual(post.content, post_content)
+        self.assertEqual(post.user, self.user)

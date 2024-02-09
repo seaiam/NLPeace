@@ -59,6 +59,13 @@ def home(request, word=None):
 
 @login_required
 def profile(request):
+    
+    if request.method == 'POST':
+        form = PostForm(request.POST, request.FILES)
+        post = process_post_form(request, form)
+        if post:
+            return redirect('profile')
+    
     profile = get_user_profile(request.user)
     posts = get_user_posts_and_reposts(request.user)
     image_posts = get_image_posts(request.user, posts)
@@ -87,6 +94,7 @@ def profile(request):
         'saved_post_ids': saved_post_ids,
         'liked_posts': liked_posts,
         'data': data,
+        'form': PostForm(),
         'editBannerForm': EditProfileBannerForm(instance=profile),
         'editPicForm': EditProfilePicForm(instance=profile),
         'editBioForm': EditBioForm(instance=profile),
