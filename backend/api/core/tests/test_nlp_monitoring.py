@@ -7,6 +7,7 @@ from django.contrib.messages.storage.session import SessionStorage
 
 from django.contrib.auth.models import User
 from django.contrib.messages import get_messages
+from core.models.models import *
 from core.forms.posting_forms import PostForm
 from core.views.services import process_post_form, classify_text
 
@@ -109,3 +110,26 @@ class PostProcessingTest(TestCase):
             messages = list(get_messages(request))
             self.assertEqual(len(messages), 1)
             self.assertIn('offensive language', str(messages[0]))
+
+    @patch('core.views.services.classify_text')
+    def test_poll_choices_creation(self, mock_classify_text):
+        mock_classify_text.return_value = {"prediction": [2]}  # Appropriate content
+
+        request = self.factory.post('/home/', self.form_data)
+        request.user = self.user
+        form = PostForm(data=self.form_data)
+
+        def dummy_get_response(request):
+            return None
+
+        middleware = SessionMiddleware(dummy_get_response)
+        middleware.process_request(request)
+        request.session.save()
+
+        messages = SessionStorage(request)
+        setattr(request, '_messages', messages)
+
+        if form.is_valid():
+            process_post_form(request, form)
+            # Check if the correct number of PollChoice objects are created
+            self.assertEqual(PollChoice.objects.count(), self.form_data['poll_choices'])
