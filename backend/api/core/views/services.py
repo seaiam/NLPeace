@@ -80,7 +80,7 @@ def get_user_posts(user, word):
         Q(user=user)) &
         ~Q(user__in=blocked) 
     ).distinct().order_by('-created_at'))
-    posts = [post for post in posts if not post.is_community_post() and post.parent_post is None]
+    posts = [post for post in posts if not post.is_community_post()]
     if word is not None:
         hashtag = get_object_or_404(Hashtag, content=word)
         posts = [post for post in posts if post.is_tagged_by(hashtag)]
