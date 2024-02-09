@@ -135,7 +135,6 @@ class CommentTestCase(TestCase):
         self.assertEqual(self.post.replies.count(), 1) #testing that we have 1 reply in the database
         comment = self.post.replies.first()
         self.assertEqual(comment.content, 'Test comment') #testing the content of the comment
-        login_success = self.client.login(username=self.user.username, password=self.user.password)
         response = self.client.get(reverse('home'))
         self.assertContains(response, f"Replied to {self.user.username}'s post:")
 
