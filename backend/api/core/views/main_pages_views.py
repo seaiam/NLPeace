@@ -18,11 +18,6 @@ def home(request):
         form = PostForm(request.POST, request.FILES)
         post = process_post_form(request, form)
         if post:
-            #storing the number of options and choices of a created poll
-            poll_choices = form.cleaned_data.get('poll_choices')
-            for i in range(1, poll_choices + 1):
-                choice_text = form.cleaned_data.get(f'choice_{i}')
-                PollChoice.objects.create(post=post, choice_text=choice_text)
             return redirect('home')
 
     posts = get_user_posts(request.user)

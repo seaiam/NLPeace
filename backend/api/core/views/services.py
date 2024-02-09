@@ -32,6 +32,20 @@ def process_post_form(request, form):
             messages.error(request, message)
             return None
         elif result["prediction"][0] == 2:  # Appropriate
+            #handle poll choices
+            poll_choices = form.cleaned_data.get('poll_choices')
+            for i in range(1, poll_choices + 1):
+                choice_text = form.cleaned_data.get(f'choice_{i}')
+                #pass text to nlp model
+                choice_result = classify_text(choice_text)
+                if choice_result["prediction"][0] in [1,0] : #offensive or hate speech in choice text
+                    message = 'This post contains offensive language and is not allowed on our platform.' if result["prediction"][0] == 1 else 'This post contains hateful language and is not allowed on our platform.'
+                    messages.error(request, message)
+                    return None
+                elif result["prediction"][0] == 2:
+                    PollChoice.objects.create(post=post, choice_text=choice_text)
+            
+            #save post
             update_interests(request.user, tweet_text)
             post = form.save(commit=False)
             post.user = request.user
