@@ -10,6 +10,7 @@ from core.forms.profile_forms import EditProfileBannerForm, EditProfilePicForm, 
 from core.forms.posting_forms import PostForm, PostReportForm
 from core.models.post_models import Post, Repost, PostReport
 from core.models.profile_models import Notifications
+from core.models.community_models import CommunityPost
 from .services import *
 
 def home(request, word=None):
@@ -119,6 +120,20 @@ def guest(request, user_id):
     profile = get_user_profile(guest_user)
     data = Notifications.objects.filter(user=request.user).order_by('-id')
     all_posts = get_user_posts_and_reposts(guest_user)
+    
+    filtered_posts = []
+    current_user = request.user 
+    for carrier in all_posts:
+        post = carrier.payload
+        if post.is_community_post():
+            community_post = CommunityPost.objects.get(post=post)
+            if not community_post.community.is_private or current_user in community_post.community.members.all() or current_user == guest_user.user:
+                filtered_posts.append(carrier)
+        else:
+            filtered_posts.append(carrier)
+
+    all_posts = filtered_posts
+
     image_posts = get_image_posts(guest_user, all_posts)
     likes, dislikes, _ = get_post_interactions(guest_user, all_posts)
     followers = profile.followers.all() 
