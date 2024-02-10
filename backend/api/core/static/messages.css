@@ -120,6 +120,13 @@
     margin-top:50px;
 }
 
+.opened-user-pic {
+    margin-right: 10px; 
+    width: 50px; 
+    height: 50px; 
+    border-radius: 50%; 
+}
+
 .opened-user-message span {
     line-height: 100%;
 }
@@ -323,6 +330,14 @@ ul {
     transform: translate(-50%, -50%);
     width: 90%;
     max-width: 1200px;
+}
+
+.profile-link {
+    color: black;
+}
+
+.profile-link:hover, .profile-link:focus {
+    color: black; 
 }
 
 #gif-search-modal {
