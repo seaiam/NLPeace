@@ -108,29 +108,13 @@
                         <div class="row no-gutters">
                             <div class="col-xl-4 col-lg-4 col-md-4 col-sm-3 col-3">
                                 <div class="users-container">
-                                    <div class="message-search-box">
+                                    <div class="return">
                                             <a href="{% url 'messages' %}">
                                                 <button type="button" class="btn btn-default p-2 rounded-circle btn-small">
                                                 <i class="fa fa-arrow-left"></i>
                                                 </button>
                                             </a>
                                     </div>
-                                    <ul class="users">
-                                        <li class="person" >
-                                            <div class="user">
-                                                {% if target_user.profile and target_user.profile.pic %}
-                                                <img src="{{ target_user.profile.pic.url }}" class="target_user-pic" alt="{{ target_user.username }}'s profile picture">
-                                                {% else %}
-                                                <img src="{% static 'default.jpg' %}" class="reply-user-pic" alt="{{ target_user.username }}'s profile picture" />
-                                                {% endif %}
-                                            </div>
-                                            <p class="message-list">
-                                                <a href="{% url 'guest' target_user.id %}" class="profile-link">
-                                                    <span class="name">{{ target_user.username }}</span>
-                                                </a>
-                                            </p>
-                                        </li>
-                                    </ul>
                                 </div>
                             </div>
                             <div class="col-xl-8 col-lg-8 col-md-8 col-sm-9 col-9">
