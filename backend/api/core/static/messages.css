@@ -346,6 +346,14 @@ ul {
     color: black; 
 }
 
+.popup-container {
+    position: fixed; 
+    top: 0;
+    left: 0; 
+    width: 100%; 
+    z-index: 1050; 
+}
+
 #gif-search-modal {
     position: absolute; 
     bottom: 0;

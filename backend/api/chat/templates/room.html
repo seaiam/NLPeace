@@ -213,7 +213,7 @@
         <div id="modalDmReport" class="popup">
             <div class="popup-content">
                 <span id="dmReportClose" class="close" onclick="toggleModal('modalDmReport')">&times;</span>
-                <p class="modalTitle">DM Report</p>
+                <p class="modalTitle">Report Message</p>
                 <form id="dmReportForm" action="" method="POST">
                     {% csrf_token %}
                     <label for="{{ dm_report_form.category.id_for_label }}" class="form-outline mb-4" style="font-size:20px;">Category</label>
