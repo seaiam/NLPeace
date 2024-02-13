@@ -34,8 +34,33 @@
                 <h4 class="community-Name">{{ community.name }}</h4>
             </div>
             <div class="col-md-8 text-md-right">
-                <button class="community-members" ><i class='fas fa-user-friends'></i> {{community.members.count}} Members</button>                   
+                <button class="community-members" onclick="toggleModal('community-members-modal')"><i class='fas fa-user-friends'></i> {{community.members.count}} Members</button>                   
             </div>
+             <!-- community member's list popup-->
+            <div id="community-members-modal" class="popup">
+            <div class="popup-content">
+                <span class="close" onclick="toggleModal('community-members-modal')">&times;</span>
+                <p class="Community-modalTitle">Members List</p>
+                <form method="post" enctype="multipart/form-data" action="">
+                    <div class="container">
+                        <div class="d-flex align-items-center justify-content-center">
+                            <div class="card-body">
+                                <div class="row">
+                                    <div class="col-3"> 
+                                        <img src="{% static 'default.jpg' %}" class="user-pic" alt="{{ result.username }}'s profile picture" />
+                                    </div>  
+                                    <div class="col-9">
+                                        <a href="" class="user-name" style = "color: #ffffff;">user 1</a>    
+                                    </div>              
+                                </div>
+                                <hr>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>  
+        <!-- end-->
         </div>
         <div class = "row">
             <div class="col-md-6">
