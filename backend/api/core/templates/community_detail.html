@@ -75,6 +75,10 @@
                     {% if request.user == community.admin %}
                     <!--Edit community details popup-->
                     <button class="editButton" onclick="toggleModal('edit-community-modal')">Edit Settings</button>&nbsp;
+                    <form method="POST" action="{% url 'delete_community' community.id %}" onsubmit="return confirm('Are you sure you want to delete this community? This cannot be undone!');">
+                        {% csrf_token %}
+                        <button type="submit" class="deleteButton" >Delete</button>
+                    </form>
                     <div id="edit-community-modal" class="popup">
                         <div class="popup-content">
                             <span class="close" onclick="toggleModal('edit-community-modal')">&times;</span>
