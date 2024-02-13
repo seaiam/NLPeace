@@ -175,7 +175,7 @@ def search_community(request):
 @login_required
 def delete_community(request, community_id):
     if request.method == 'POST':
-        success, message = delete_community_service(community_id, request.user)
+        success, message = handle_delete_community(community_id, request.user)
         if success:
             messages.success(request, message)
             return redirect('create_community')  
