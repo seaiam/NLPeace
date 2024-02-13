@@ -37,29 +37,34 @@
                 <button class="community-members" onclick="toggleModal('community-members-modal')"><i class='fas fa-user-friends'></i> {{community.members.count}} Members</button>                   
             </div>
              <!-- community member's list popup-->
+             {% if request.user == community.admin %}
             <div id="community-members-modal" class="popup">
             <div class="popup-content">
                 <span class="close" onclick="toggleModal('community-members-modal')">&times;</span>
                 <p class="Community-modalTitle">Members List</p>
-                <form method="post" enctype="multipart/form-data" action="">
+                <form method="post" enctype="multipart/form-data" >
+                    {% csrf_token %}
+                    {% for member in members %}
                     <div class="container">
                         <div class="d-flex align-items-center justify-content-center">
                             <div class="card-body">
                                 <div class="row">
                                     <div class="col-3"> 
-                                        <img src="{% static 'default.jpg' %}" class="user-pic" alt="{{ result.username }}'s profile picture" />
+                                        <img src="{% static 'default.jpg' %}" class="user-pic" alt="{{ member.username }}'s profile picture" />
                                     </div>  
                                     <div class="col-9">
-                                        <a href="" class="user-name" style = "color: #ffffff;">user 1</a>    
+                                        <a href= "{% url 'guest' user_id=member.id %}" class="user-name" style = "color: #ffffff;"> {{member.username}} </a>    
                                     </div>              
                                 </div>
                                 <hr>
                             </div>
                         </div>
                     </div>
+                    {% endfor %}
                 </form>
             </div>
         </div>  
+        {% endif %}
         <!-- end-->
         </div>
         <div class = "row">
