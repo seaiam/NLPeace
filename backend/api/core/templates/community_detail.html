@@ -50,7 +50,11 @@
                             <div class="card-body">
                                 <div class="row">
                                     <div class="col-3"> 
+                                        {% if member.profile and member.profile.pic %}
+                                        <img src="{{ member.profile.pic.url }}" alt="{{ member.username }}'s profile picture" class="user-pic">
+                                        {% else %}
                                         <img src="{% static 'default.jpg' %}" class="user-pic" alt="{{ member.username }}'s profile picture" />
+                                        {% endif %}
                                     </div>  
                                     <div class="col-9">
                                         <a href= "{% url 'guest' user_id=member.id %}" class="user-name" style = "color: #ffffff;"> {{member.username}} </a>    
