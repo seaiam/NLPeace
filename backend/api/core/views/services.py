@@ -13,7 +13,7 @@ from core.forms.profile_forms import EditBioForm, EditUsernameForm, EditProfileP
 from core.interest_resolver import RESOLVERS
 from core.models.post_models import Advertisement, Hashtag, HashtagInstance, Post, PostLike, PostDislike, PostPin, PostReport, PostSave, Repost
 from core.models.profile_models import Profile, Notifications, User, CommunityNotifications
-from core.models.community_models import Community
+from core.models.community_models import Community, CommunityPost
 
 class ContentCarrier:
 
@@ -486,7 +486,14 @@ def handle_delete_community(community_id, user):
                 sent_by=user,
                 type='community_deleted'
             )
+
+        community_posts = CommunityPost.objects.filter(community=community)
+        for community_post in community_posts:
+            community_post.post.delete()
+            community_post.delete()
+
         community.delete()
+        
         return True, f"The community '{community.name}' has been successfully deleted."
     except Community.DoesNotExist:
         return False, "Community not found."
