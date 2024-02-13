@@ -470,3 +470,15 @@ def  handle_admin_join(community_id, joiner_id, action):
         community.join_requests.remove(joiner)
     notification.delete()
 
+def handle_delete_community(community_id, user):
+    try:
+        community = Community.objects.get(id=community_id)
+        if community.admin != user:
+            return False, "You are not allowed to delete this community."
+
+        CommunityNotifications.objects.filter(community=community).delete()
+        
+        community.delete()
+        return True, f"The community '{community.name}' has been successfully deleted."
+    except Community.DoesNotExist:
+        return False, "Community not found."
