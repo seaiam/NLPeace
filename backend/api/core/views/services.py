@@ -475,9 +475,17 @@ def handle_delete_community(community_id, user):
         community = Community.objects.get(id=community_id)
         if community.admin != user:
             return False, "You are not allowed to delete this community."
-
-        CommunityNotifications.objects.filter(community=community).delete()
         
+        all_members = community.members.all()
+        notification_message = f"The community '{community.name}' has been deleted."
+
+        for member in all_members:
+            Notifications.objects.create(
+                notifications=notification_message,
+                user=member,
+                sent_by=user,
+                type='community_deleted'
+            )
         community.delete()
         return True, f"The community '{community.name}' has been successfully deleted."
     except Community.DoesNotExist:
