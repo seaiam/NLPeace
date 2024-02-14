@@ -52,7 +52,7 @@
     transition: background-color 0.3s, color 0.3s, border-color 0.3s;
 }
 
-.users-container {
+.users-container, .list-container {
     height: 500px; 
     overflow-y: auto; 
     position: relative;
@@ -155,10 +155,12 @@
     border: 1px solid  #00001c;
 }
 
-.message-container {
+.message-container, .select-container {
     position: relative;
     padding: 1rem;
     height:500px;
+    overflow-y: auto;
+    overflow-x: hidden;
 }
 
 .message-box::-webkit-scrollbar {
@@ -228,6 +230,9 @@
     font-weight: 300;
     line-height: 150%;
     position: relative;
+    word-wrap: break-word; 
+    overflow-wrap: break-word; 
+    max-width: 80%; 
 }
 
 .message-container li.message-left .message-text {
@@ -385,65 +390,70 @@ ul {
     box-shadow: none;
 }
 
-@media (max-width: 768px) {
+/* Small screens (phones) */
+@media (max-width: 767.98px) {
     .container {
-        position: relative; 
-        top: auto; 
-        left: auto; 
-        transform: none; 
-        margin: 0 auto; 
+        width: 100%;
+        transform: none;
+        left: 0;
+        top: 0;
+        position: relative;
+        max-height: none;
     }
+    .users-container, .message-container {
+        height: auto; 
+    }
+    .message-container {
+        max-height: 400px; 
+        overflow-y: auto; 
+    }
+    .opened-user-message, .message-box, .widget-post__textarea {
+        font-size: smaller;
+    }
+    .btn-default {
+        width: 30px; 
+    }
+    
 }
 
-@media (max-width: 480px) {
+/* Small screens (tablets and above) */
+@media (min-width: 768px) and (max-width: 991.98px) {
     .container {
-        width: 95%; 
+        width: 100%;
+        transform: none;
+        left: 0;
+        top: 0;
+        position: relative;
+        max-height: none;
+    }
+    .users-container, .message-container {
+        height: auto; 
+    }
+    .message-container {
+        max-height: 600px; 
+        overflow-y: auto; 
+    }
+    .opened-user-message, .message-box, .widget-post__textarea {
+        font-size: medium;
     }
 }
 
-@media (max-width: 767px) {
-    .message-container li.message-left,
-    .message-container li.message-right {
-        flex-direction: column;
-        margin-bottom: 30px;
+/* Medium screens (desktops and above) */
+@media (min-width: 992px) {
+    .sidebar {
+        display: block; 
     }
-    .message-container li img {
-        width: 32px;
-        height: 32px;
+    .container {
+        max-width: 960px; 
     }
-    .message-container li.message-left .message-pic {
-        margin: 0 0 5px 0;
-        display: flex;
-        align-items: center;
-    }
-    .message-container li.message-left .message-time {
-        justify-content: flex-end;
-    }
-    .message-container li.message-left .message-name {
-        margin-left: 5px;
-    }
-    .message-container li.message-right .message-pic {
-        order: -1;
-        margin: 0 0 5px 0;
-        align-items: center;
-        display: flex;
-        justify-content: right;
-        flex-direction: row-reverse;
-    }
-    .message-container li.message-right .message-time {
-        justify-content: flex-start;
-        order: 2;
-    }
-    .message-container li.message-right .message-name {
-        margin-right: 5px;
-    }
-    .message-container li .message-text {
-        font-size: .8rem;
+    .users-container, .message-container {
+        height: 500px; 
     }
 }
 
-@media (max-width: 767px) {
-    .message-search-box {
-        display: none;
+/* Large screens (larger desktops and above) */
+@media (min-width: 1200px) {
+    .container {
+        max-width: 1140px; 
     }
 }
