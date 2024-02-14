@@ -16,9 +16,7 @@
             <div class="community-banner">
             <img src="{% static 'defaultBanner.jpg' %}" width="100%" class="banner" alt="communityBanner" />
             </div>
-            {% endif %}
-            
-           
+            {% endif %}                    
 
         <form id="profile-edit-banner-form" action="{% url 'community_detail' community_id=community.id %}" method="POST" enctype="multipart/form-data">
             {% csrf_token %}
@@ -39,7 +37,7 @@
              <!-- community member's list popup-->
              {% if request.user == community.admin %}
             <div id="community-members-modal" class="popup">
-            <div class="popup-content">
+            <div class="popup-content" id ="popupScroll">
                 <span class="close" onclick="toggleModal('community-members-modal')">&times;</span>
                 <p class="Community-modalTitle">Members List</p>
                 <form method="post" enctype="multipart/form-data" >
@@ -50,11 +48,13 @@
                             <div class="card-body">
                                 <div class="row">
                                     <div class="col-3"> 
+                                        <div class="user-picture">
                                         {% if member.profile and member.profile.pic %}
-                                        <img src="{{ member.profile.pic.url }}" alt="{{ member.username }}'s profile picture" class="user-pic">
+                                        <img src="{{ member.profile.pic.url }}" alt="{{ member.username }}'s profile picture" class="reply-user-pic">
                                         {% else %}
-                                        <img src="{% static 'default.jpg' %}" class="user-pic" alt="{{ member.username }}'s profile picture" />
+                                        <img src="{% static 'default.jpg' %}" class="reply-user-pic" alt="{{ member.username }}'s profile picture" />
                                         {% endif %}
+                                        </div>
                                     </div>  
                                     <div class="col-9">
                                         <a href= "{% url 'guest' user_id=member.id %}" class="user-name" style = "color: #ffffff;"> {{member.username}} </a>    
