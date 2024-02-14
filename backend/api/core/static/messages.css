@@ -413,6 +413,9 @@ ul {
     .btn-default {
         width: 30px; 
     }
+    .select-text{
+        font-size: large;
+    }
     
 }
 
