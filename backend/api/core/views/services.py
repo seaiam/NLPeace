@@ -152,7 +152,10 @@ def get_following_posts(user, following):
     following_posts = list(map(lambda post: ContentCarrier(post), Post.objects.filter(user__in=following).order_by('-created_at')))
     return mix(following_posts, get_ads(user))
 
-
+def get_user_community_posts(user):
+    community_posts = list(map(lambda post: ContentCarrier(post),filter(lambda carrier: carrier.is_community_post, community_post)))
+    return mix(community_posts, get_ads(user))
+    
 def get_user_by_id(user_id):
     return User.objects.get(pk=user_id)
 
