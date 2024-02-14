@@ -217,6 +217,7 @@
         <button class="profiletabbutton" onclick="openPostTab(event, 'Replies')">Replies</button>
         <button class="profiletabbutton" onclick="openPostTab(event, 'Media')">Media</button>
         <button class="profiletabbutton" onclick="openPostTab(event, 'Likes')">Likes</button>
+        <button class="profiletabbutton" onclick="openPostTab(event, 'CommunityPosts')">Community Posts</button>
     </div>
 
     
@@ -332,7 +333,19 @@
           <div class="account-private">This account is private</div>
           {% endif %}
    
+          <div id="CommunityPosts" class="posttabcontent">
+            <!-- Community Specific Posts -->
+            {% for post in community_posts %}
+            {{post.content}}
+            {% include "posts.html" with carrier=post tab="CommunityPosts"%}
+            {% empty %}
+                <div class="no-post">No posts in this community yet.</div>
+            {% endfor %}
+            </div>
+
+        
 </div>
+
 
     </div>
 </div>
