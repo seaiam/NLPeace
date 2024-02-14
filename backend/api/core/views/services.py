@@ -153,6 +153,9 @@ def get_following_posts(user, following):
     return mix(following_posts, get_ads(user))
 
 def get_user_community_posts(user):
+    carriers = get_user_posts_and_reposts(user)
+    posts = get_posts_from(carriers)
+    community_post= [post for post in posts if post.is_community_post()]
     community_posts = list(map(lambda post: ContentCarrier(post),filter(lambda carrier: carrier.is_community_post, community_post)))
     return mix(community_posts, get_ads(user))
     
