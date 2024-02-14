@@ -85,7 +85,8 @@ def profile(request):
     reposted_post_ids = Repost.objects.filter(user=request.user).values_list('post_id', flat=True)    
     replies = [post for post in posts if post.is_post and post.payload.parent_post is not None]
     non_pinned_image_posts=[post for post in posts if post.is_post and not post.payload.is_pinned_by(request.user) and post.payload.image]
-   
+    community_posts = get_user_community_posts(request.user) 
+
     context = {
         'profile': profile,
         'posts': posts,
@@ -110,7 +111,8 @@ def profile(request):
         'replies' : replies,
         'reposted_post_ids': reposted_post_ids,
         'reported_posts' : reported_posts, #for post reporting
-        'non_pinned_image_posts' : non_pinned_image_posts
+        'non_pinned_image_posts' : non_pinned_image_posts,
+        'community_posts' : community_posts
         }
     return render(request, 'home.html', context)
 
@@ -148,6 +150,9 @@ def guest(request, user_id):
     reposted_post_ids = Repost.objects.filter(user=request.user).values_list('post_id', flat=True)
     replies = [post for post in all_posts if post.is_post and post.payload.parent_post is not None]
     non_pinned_image_posts=[post for post in all_posts if post.is_post and not post.payload.is_pinned_by(request.user) and post.payload.image]
+    community_posts = get_user_community_posts(guest_user)
+
+
     context = {
         'user': guest_user,
         'data': data,
@@ -170,7 +175,8 @@ def guest(request, user_id):
         'reposted_post_ids': reposted_post_ids,
         'replies' : replies,
         'reported_posts' : reported_posts, #for post reporting
-        'non_pinned_image_posts' : non_pinned_image_posts
+        'non_pinned_image_posts' : non_pinned_image_posts,
+        'community_posts' : community_posts
         }
     return render(request,'home.html',context)
 
