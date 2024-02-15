@@ -400,18 +400,11 @@ ul {
         position: relative;
         max-height: none;
     }
-    .users-container, .message-container {
-        height: auto; 
-    }
-    .message-container {
-        max-height: 400px; 
-        overflow-y: auto; 
-    }
     .opened-user-message, .message-box, .widget-post__textarea {
         font-size: smaller;
     }
     .btn-default {
-        width: 30px; 
+        width: 40px; 
     }
     .select-text{
         font-size: large;
@@ -420,7 +413,7 @@ ul {
 }
 
 /* Small screens (tablets and above) */
-@media (min-width: 768px) and (max-width: 991.98px) {
+@media (min-width: 768px) and (max-width: 1025px) {
     .container {
         width: 100%;
         transform: none;
@@ -442,7 +435,7 @@ ul {
 }
 
 /* Medium screens (desktops and above) */
-@media (min-width: 992px) {
+@media (min-width: 1026px) {
     .sidebar {
         display: block; 
     }
