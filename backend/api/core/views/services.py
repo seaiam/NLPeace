@@ -13,7 +13,7 @@ from core.forms.profile_forms import EditBioForm, EditUsernameForm, EditProfileP
 from core.interest_resolver import RESOLVERS
 from core.models.post_models import Advertisement, Hashtag, HashtagInstance, Post, PostLike, PostDislike, PostPin, PostReport, PostSave, Repost
 from core.models.profile_models import Profile, Notifications, User, CommunityNotifications
-from core.models.community_models import Community
+from core.models.community_models import Community, CommunityPost
 
 class ContentCarrier:
 
@@ -155,9 +155,33 @@ def get_following_posts(user, following):
 def get_user_community_posts(user):
     carriers = get_user_posts_and_reposts(user)
     posts = get_posts_from(carriers)
-    community_post= [post for post in posts if post.is_community_post()]
-    community_posts = list(map(lambda post: ContentCarrier(post),filter(lambda carrier: carrier.is_community_post, community_post)))
-    return mix(community_posts, get_ads(user))
+    community_posts = [post for post in posts if post.is_community_post()]
+    
+    community_posts_with_names = []
+    for post in community_posts:
+        community = CommunityPost.objects.filter(post=post).first().community
+        carrier = ContentCarrier(post)
+        community_post_with_name = {'carrier': carrier, 'community_name': community.name}
+        community_posts_with_names.append(community_post_with_name)
+    
+    return mix(community_posts_with_names, get_ads(user))
+
+def get_user_posts_with_community_info(user):
+    all_posts = get_user_posts_and_reposts(user)
+    
+    posts_with_community_info = []
+
+    for post in all_posts:
+        community_post_qs = CommunityPost.objects.filter(post=post.payload if hasattr(post, 'payload') else post)
+        if community_post_qs.exists():
+            community = community_post_qs.first().community
+            post.community_name = community.name
+        else:
+            post.community_name = None
+        
+        posts_with_community_info.append(post)
+
+    return posts_with_community_info
     
 def get_user_by_id(user_id):
     return User.objects.get(pk=user_id)
