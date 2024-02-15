@@ -68,7 +68,7 @@ def profile(request):
             return redirect('profile')
     
     profile = get_user_profile(request.user)
-    posts = get_user_posts_and_reposts(request.user)
+    posts = get_user_posts_with_community_info(request.user)
     image_posts = get_image_posts(request.user, posts)
     likes, dislikes, saved_post_ids = get_post_interactions(request.user, posts)
     followers = profile.followers.all()
@@ -121,20 +121,7 @@ def guest(request, user_id):
     guest_user = get_user_by_id(user_id)
     profile = get_user_profile(guest_user)
     data = Notifications.objects.filter(user=request.user).order_by('-id')
-    all_posts = get_user_posts_and_reposts(guest_user)
-    
-    filtered_posts = []
-    current_user = request.user 
-    for carrier in all_posts:
-        post = carrier.payload
-        if post.is_community_post():
-            community_post = CommunityPost.objects.get(post=post)
-            if not community_post.community.is_private or current_user in community_post.community.members.all() or current_user == guest_user.user:
-                filtered_posts.append(carrier)
-        else:
-            filtered_posts.append(carrier)
-
-    all_posts = filtered_posts
+    all_posts = get_user_posts_with_community_info(guest_user)
 
     image_posts = get_image_posts(guest_user, all_posts)
     likes, dislikes, _ = get_post_interactions(guest_user, all_posts)
@@ -151,7 +138,8 @@ def guest(request, user_id):
     replies = [post for post in all_posts if post.is_post and post.payload.parent_post is not None]
     non_pinned_image_posts=[post for post in all_posts if post.is_post and not post.payload.is_pinned_by(request.user) and post.payload.image]
     community_posts = get_user_community_posts(guest_user)
-
+    community_posts = [post for post in all_posts if post.is_post and post.payload.is_community_post()]
+    
 
     context = {
         'user': guest_user,
