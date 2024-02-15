@@ -432,6 +432,9 @@ ul {
     .opened-user-message, .message-box, .widget-post__textarea {
         font-size: medium;
     }
+    .select-text{
+        font-size: xx-large;
+    }
 }
 
 /* Medium screens (desktops and above) */
@@ -440,15 +443,18 @@ ul {
         display: block; 
     }
     .container {
-        max-width: 960px; 
+        max-width: 800px; 
     }
     .users-container, .message-container {
         height: 500px; 
     }
+    .select-text{
+        font-size: xx-large;
+    }
 }
 
 /* Large screens (larger desktops and above) */
-@media (min-width: 1200px) {
+@media (min-width: 1251px) {
     .container {
         max-width: 1140px; 
     }
