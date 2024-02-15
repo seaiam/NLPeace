@@ -9,7 +9,7 @@ from django.db.models import Q
 from django.http import *
 from django.shortcuts import get_object_or_404
 from itertools import chain, cycle
-from core.forms.profile_forms import EditBioForm, EditUsernameForm, EditProfilePicForm, EditProfileBannerForm, PrivacySettingsForm
+from core.forms.profile_forms import EditBioForm, EditUsernameForm, EditProfilePicForm, EditProfileBannerForm, PrivacySettingsForm, NLPToggleForm
 from core.interest_resolver import RESOLVERS
 from core.models.post_models import Advertisement, Hashtag, HashtagInstance, Post, PostLike, PostDislike, PostPin, PostReport, PostSave, Repost
 from core.models.profile_models import Profile, Notifications, User, CommunityNotifications
@@ -470,3 +470,10 @@ def  handle_admin_join(community_id, joiner_id, action):
         community.join_requests.remove(joiner)
     notification.delete()
 
+def update_content_filtering_settings(user_id, form_data):
+    user = User.objects.get(pk=user_id)
+    form = NLPToggleForm(form_data, instance=user.profile)
+    if form.is_valid():
+        form.save()
+        return True
+    return False

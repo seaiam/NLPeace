@@ -16,6 +16,7 @@ class Post(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     parent_post = models.ForeignKey('self', null=True, blank=True, on_delete=models.CASCADE, related_name='replies')
     is_edited = models.BooleanField(default = False)
+    is_offensive = models.BooleanField(default=False)
 
     def get_number_likes(self):
         return self.postlike_set.all().count()
