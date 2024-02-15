@@ -217,7 +217,6 @@
         <button class="profiletabbutton" onclick="openPostTab(event, 'Replies')">Replies</button>
         <button class="profiletabbutton" onclick="openPostTab(event, 'Media')">Media</button>
         <button class="profiletabbutton" onclick="openPostTab(event, 'Likes')">Likes</button>
-        <button class="profiletabbutton" onclick="openPostTab(event, 'CommunityPosts')">Community Posts</button>
     </div>
 
     
@@ -283,15 +282,16 @@
 
     {% for post in non_pinned_posts %}
     {% if post not in replies %}
+    {% if post.community_name %}
+            <div style="color: aliceblue;">{{ post.community_name }}</div>
+        {% endif %}
       {% include "posts.html" with carrier=post %}
-      {% endif %}
+    {% endif %}
         {% empty %}
         {% if pinned_posts %}
-
         {% else %}
         <div class="no-post">No posts available. </div>
         {% endif %}
-    
     {% endfor %}
     </div>
 
@@ -333,15 +333,15 @@
           <div class="account-private">This account is private</div>
           {% endif %}
    
-          <div id="CommunityPosts" class="posttabcontent">
-            <!-- Community Specific Posts -->
+          <!-- <div id="CommunityPosts" class="posttabcontent">
+           
             {% for post in community_posts %}
             {{post.content}}
             {% include "posts.html" with carrier=post tab="CommunityPosts"%}
             {% empty %}
                 <div class="no-post">No posts in this community yet.</div>
             {% endfor %}
-            </div>
+            </div> -->
 
         
 </div>
