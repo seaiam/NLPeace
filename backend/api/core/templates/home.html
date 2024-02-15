@@ -282,9 +282,9 @@
 
     {% for post in non_pinned_posts %}
     {% if post not in replies %}
-    {% if post.community_name %}
+    <!-- {% if post.community_name %}
             <div style="color: aliceblue;">{{ post.community_name }}</div>
-        {% endif %}
+        {% endif %} -->
       {% include "posts.html" with carrier=post %}
     {% endif %}
         {% empty %}
@@ -332,17 +332,6 @@
           {%else%}
           <div class="account-private">This account is private</div>
           {% endif %}
-   
-          <!-- <div id="CommunityPosts" class="posttabcontent">
-           
-            {% for post in community_posts %}
-            {{post.content}}
-            {% include "posts.html" with carrier=post tab="CommunityPosts"%}
-            {% empty %}
-                <div class="no-post">No posts in this community yet.</div>
-            {% endfor %}
-            </div> -->
-
         
 </div>
 
