@@ -3,12 +3,20 @@ from django.urls import reverse
 from core.models.community_models import Community, CommunityPost
 from core.models.profile_models import User
 from core.forms.community_forms import CommunityForm
+from django.core.exceptions import ObjectDoesNotExist
+from core.models.profile_models import Profile
 
 class CommunityTestCase(TestCase):
     def setUp(self):
         # Creating test user and loging in
         self.user = User.objects.create_user(username='testuser', password='password')
         self.client.login(username='testuser', password='password')
+
+        try:
+            self.profile = self.user.profile  # Try to access the profile
+        except ObjectDoesNotExist:
+            # Handle the case where the profile does not exist/ create a profile
+            self.profile = Profile.objects.create(user=self.user)   
 
     def test_create_community(self):
         # creating comunity
@@ -102,7 +110,19 @@ class CommunityJoinTest(TestCase):
         self.public_community = Community.objects.create(name = "public", admin = self.admin, is_private = False)
         self.private_community = Community.objects.create(name = "private", admin = self.admin)
         self.client.login(username = "joiner", password = "password")
-    
+
+        try:
+            self.adminProfile = self.admin.profile  # Try to access the profile
+        except ObjectDoesNotExist:
+            # Handle the case where the profile does not exist/ create a profile
+            self.adminProfile = Profile.objects.create(user=self.admin)  
+
+        try:
+            self.joinerProfile = self.joiner.profile  # Try to access the profile
+        except ObjectDoesNotExist:
+            # Handle the case where the profile does not exist/ create a profile
+            self.joinerProfile = Profile.objects.create(user=self.joiner)   
+
     def test_join_public_community(self):
 
         response = self.client.post(reverse('join_community'), {
