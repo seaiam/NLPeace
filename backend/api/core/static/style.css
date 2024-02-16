@@ -893,7 +893,6 @@ button:hover {
 }
 
 .user-name{
-  /* text-decoration: none; */
   color:#00001c;
   font-weight: 500;
   font-size: 150%;
@@ -1359,6 +1358,11 @@ img {
   text-decoration: none;
   background: none;
   margin-bottom:10px;
+}
+
+#popupScroll{
+  overflow-y: scroll !important;
+  max-height: 50%;
 }
 
 .name-link:hover {

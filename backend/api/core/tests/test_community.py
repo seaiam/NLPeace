@@ -91,7 +91,33 @@ class CommunityTestCase(TestCase):
         response = self.client.post(reverse('search_community'), {'search': 'm'})
         self.assertRedirects(response, reverse('create_community'))
 
+    def test_delete_community(self):
+        community = Community.objects.create(name='Delete Test Community', admin=self.user, is_private=True)   
+        self.assertEqual(Community.objects.count(), 1)
+        response = self.client.post(reverse('delete_community', kwargs={'community_id': community.id}))
+        self.assertEqual(response.status_code, 302)
+        self.assertEqual(Community.objects.count(), 0)
 
+    def test_community_members_list(self):
+        # Create a test community
+        community = Community.objects.create(name='Test Community', admin=self.user, is_private=True)
+
+        # Add some members to the community
+        member1 = User.objects.create_user(username='member1', password='password')
+        member2 = User.objects.create_user(username='member2', password='password')
+        community.members.add(member1, member2)
+
+       
+        response = self.client.get(reverse('community_detail', kwargs={'community_id': community.id}))
+        self.assertEqual(response.status_code, 200)
+
+        # Check if the members are present in the context
+        context_members = response.context['members']
+        self.assertEqual(list(context_members), [member1, member2])
+
+        # Check if the members' usernames are present in the rendered HTML
+        self.assertContains(response, 'member1')
+        self.assertContains(response, 'member2')
 
 class CommunityJoinTest(TestCase):
 
