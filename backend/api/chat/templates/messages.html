@@ -99,8 +99,8 @@
                 <div class="col-xl-10 col-lg-12 col-md-12 col-sm-12 col-12">
                     <div class="card m-0">
                         <div class="row no-gutters">
-                            <div class="col-xl-4 col-lg-4 col-md-4 col-sm-3 col-3">
-                                <div class="users-container">
+                            <div class="col-xl-6 col-lg-6 col-md-6 col-sm-5 col-5">
+                                <div class="list-container">
                                     <div class="message-search-box">
                                         <form method="get" action="{% url 'messages' %}" >
                                                 {% csrf_token %}
@@ -128,13 +128,10 @@
                                                 </div>
                                                 <p class="message-list">
                                                     <span class="name">{{user.username}}</span>
-                                               
                                                 </p>
-                                                {% if user in contacted_users %}
-                                                       
-                                                            <div class="contacted-user">Contacted</div>
-                                                        
-                                                        {% endif %}
+                                                {% if user in contacted_users %}    
+                                                <div class="contacted-user">Contacted</div>
+                                                {% endif %}
                                             </li>
                                         </a>
                                         {% endfor %}
@@ -155,11 +152,9 @@
                                                         <p class="message-list">
                                                             <span class="name">{{ target_user.username }}</span>
                                                         </p>
-                                                        
                                                         {% if room.has_sent_message %}
                                                         <div class="contacted-user">Contacted</div>
                                                         {% endif %}
-                                                       
                                                     </li>
                                                 </a>
                                             {% endwith %}
@@ -181,29 +176,22 @@
                                                         {% if room.has_sent_message %}
                                                         <div class="contacted-user">Contacted</div>
                                                         {% endif %}
-                                                       
                                                     </li>
                                                 </a>
                                             {% endwith %}
-                                            
-                                            
-                                      
                                         {% endif %}
                                     {% endfor %}
                                     {% endif %}
                                     </ul>
                                 </div>
                             </div>
-                            <div class="col-xl-8 col-lg-8 col-md-8 col-sm-9 col-9">
-                                <div class="message-container">
-
-                                    <h1 style="display: flex; justify-content: center; align-items: center;">
+                            <div class="col-xl-6 col-lg-6 col-md-6 col-sm-7 col-7">
+                                <div class="select-container">
+                                    <h1 class="select-text" style="display: flex; justify-content: center; align-items: center;">
                                         Please choose a chat
                                     </h1>
-                                 
-                                    
+                                </div>
                             </div>
-                        </div>
                     </div>
                 </div>
             </div>
