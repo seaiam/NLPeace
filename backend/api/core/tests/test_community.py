@@ -91,6 +91,13 @@ class CommunityTestCase(TestCase):
         response = self.client.post(reverse('search_community'), {'search': 'm'})
         self.assertRedirects(response, reverse('create_community'))
 
+    def test_delete_community(self):
+        community = Community.objects.create(name='Delete Test Community', admin=self.user, is_private=True)   
+        self.assertEqual(Community.objects.count(), 1)
+        response = self.client.post(reverse('delete_community', kwargs={'community_id': community.id}))
+        self.assertEqual(response.status_code, 302)
+        self.assertEqual(Community.objects.count(), 0)
+
     def test_community_members_list(self):
         # Create a test community
         community = Community.objects.create(name='Test Community', admin=self.user, is_private=True)
