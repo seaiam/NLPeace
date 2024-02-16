@@ -54,3 +54,5 @@ def ForgetPassword(request):
         handle_forget_password(email)
         messages.success(request, "An email will be sent if a user with this email exists.")
         return redirect('/accounts/login/')
+    return render(request, 'forget_password.html')
+  
