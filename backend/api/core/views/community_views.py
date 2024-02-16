@@ -41,6 +41,7 @@ def create_community(request):
 @login_required
 def community_detail(request, community_id):
     community = get_object_or_404(Community, id=community_id)
+    members = community.members.all()
     community_posts = CommunityPost.objects.filter(community=community)
     Carrier = namedtuple('Carrier', ['is_post', 'payload'])
     community_carriers = [Carrier(is_post=True, payload=cp.post) for cp in community_posts]
@@ -63,6 +64,7 @@ def community_detail(request, community_id):
 
     context = {
         'community': community,
+        'members' : members,
         'community_posts': community_carriers,
         'is_member': is_member,
         'form': form  
