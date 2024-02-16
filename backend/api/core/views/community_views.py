@@ -172,4 +172,14 @@ def search_community(request):
     else:
         return redirect('create_community')
    
-        
+@login_required
+def delete_community(request, community_id):
+    if request.method == 'POST':
+        success, message = handle_delete_community(community_id, request.user)
+        if success:
+            messages.success(request, message)
+            return redirect('create_community')  
+        else:
+            messages.error(request, message)
+            return redirect('community_detail', community_id=community_id)
+    return redirect('community_detail', community_id=community_id)        
