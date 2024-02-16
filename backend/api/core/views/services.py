@@ -176,9 +176,11 @@ def get_user_posts_with_community_info(user):
         if community_post_qs.exists():
             community = community_post_qs.first().community
             post.community_name = community.name
+            post.community_id = community.id
         else:
             post.community_name = None
         
+            post.community_id = None
         posts_with_community_info.append(post)
 
     return posts_with_community_info

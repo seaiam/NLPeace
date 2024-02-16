@@ -7,7 +7,7 @@
 
             <div class = "community-post">
             {% if post.community_name %}
-             Posted in Community <a href="" style="color:#00008B; text-decoration: none;"><strong> {{ post.community_name }}</strong></a>
+             Posted in Community <a href="{% url 'community_detail' community_id=post.community_id %}" style="color:#00008B; text-decoration: none;"><strong> {{ post.community_name }}</strong></a>
             {% endif %}
             </div>
 
