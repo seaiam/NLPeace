@@ -68,7 +68,7 @@ def profile(request):
             return redirect('profile')
     
     profile = get_user_profile(request.user)
-    posts = get_user_posts_with_community_info(request.user)
+    posts = get_user_posts_with_community_info(request, request.user)
     image_posts = get_image_posts(request.user, posts)
     likes, dislikes, saved_post_ids = get_post_interactions(request.user, posts)
     followers = profile.followers.all()
@@ -121,7 +121,7 @@ def guest(request, user_id):
     guest_user = get_user_by_id(user_id)
     profile = get_user_profile(guest_user)
     data = Notifications.objects.filter(user=request.user).order_by('-id')
-    all_posts = get_user_posts_with_community_info(guest_user)
+    all_posts = get_user_posts_with_community_info(request, guest_user)
 
     image_posts = get_image_posts(guest_user, all_posts)
     likes, dislikes, _ = get_post_interactions(guest_user, all_posts)

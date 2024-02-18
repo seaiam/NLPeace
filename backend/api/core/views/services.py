@@ -166,22 +166,23 @@ def get_user_community_posts(user):
     
     return mix(community_posts_with_names, get_ads(user))
 
-def get_user_posts_with_community_info(user):
+def get_user_posts_with_community_info(request,user):
     all_posts = get_user_posts_and_reposts(user)
     
     posts_with_community_info = []
 
     for post in all_posts:
-        community_post_qs = CommunityPost.objects.filter(post=post.payload if hasattr(post, 'payload') else post)
-        if community_post_qs.exists():
-            community = community_post_qs.first().community
-            post.community_name = community.name
-            post.community_id = community.id
+        community_post_qs = CommunityPost.objects.filter(post=post.payload if hasattr(post, 'payload') else post).first()
+        if community_post_qs:
+            if not community_post_qs.community.is_private or request.user in community_post_qs.community.members.all() or request.user == user :
+                community = community_post_qs.community
+                post.community_name = community.name
+                post.community_id = community.id
+                posts_with_community_info.append(post)
         else:
             post.community_name = None
-        
             post.community_id = None
-        posts_with_community_info.append(post)
+            posts_with_community_info.append(post)
 
     return posts_with_community_info
     
