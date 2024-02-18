@@ -124,6 +124,7 @@ def get_user_posts_and_reposts(user):
     posts = Post.objects.filter(Q(user=user) & Q(parent_post=None))
     reposts_ids = Repost.objects.filter(user=user).values_list('post_id', flat=True)
     reposts = Post.objects.filter(id__in=reposts_ids)
+    reposts = [repost for repost in reposts if repost not in posts]
     replies = Post.objects.filter(Q(user=user) & ~Q(parent_post=None))
     all_posts = sorted(chain(posts, reposts, replies), key=lambda post: post.created_at, reverse=True)
     carriers = list(map(lambda post: ContentCarrier(post), all_posts))

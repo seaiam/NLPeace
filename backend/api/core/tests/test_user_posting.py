@@ -245,6 +245,14 @@ class RepostTestCase(TestCase):
         self.assertEqual(response.status_code, 302)  # redirect to login
         self.assertEqual(Repost.objects.count(), 0)  # repost not created in the database
 
+    def test_reposting_own_post(self):
+        # This test tests that if a user makes reposts their own posts, it doesn't show duplicated in their profile
+        self.client.login(username='testuser', password='password')
+        self.client.post(reverse('repost', kwargs={'post_id': self.post.id}))
+        response = self.client.get(reverse('profile'))
+        #this line tests that the post shows only once
+        self.assertContains(response, 'Test   post', count=1)
+
 class ReportTestCase(TestCase):
     def setUp(self):
         self.user = User.objects.create_user(username='testuser', password='password')
