@@ -71,8 +71,7 @@ urlpatterns = [
     path('hashtag_search/<str:word>/', main_pages_views.hashtag_search, name='hashtag_search'),
     path('search/', community_views.search_community, name='search_community'),
     path('community/delete/<int:community_id>/', community_views.delete_community, name='delete_community'),
-
-    
+    path('trends/', main_pages_views.trends, name='trends'),    
 ]
 
 if settings.DEBUG:
