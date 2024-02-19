@@ -1,3 +1,4 @@
+from re import T
 import requests
 
 from api.logger_config import configure_logger # TODO add logging statements
@@ -14,12 +15,15 @@ from core.interest_resolver import RESOLVERS
 from core.models.post_models import Advertisement, Hashtag, HashtagInstance, Post, PostLike, PostDislike, PostPin, PostReport, PostSave, Repost
 from core.models.profile_models import Profile, Notifications, User, CommunityNotifications
 from core.models.community_models import Community, CommunityPost
+from core.trends import Trends
 
 class ContentCarrier:
 
     def __init__(self, payload):
         self.payload = payload
         self.is_post = isinstance(payload, Post)
+
+trends = Trends()
 
 def process_post_form(request, form):
     if form.is_valid():
@@ -34,6 +38,7 @@ def process_post_form(request, form):
             post.user = request.user
             post.save()
             update_interests_and_hashtags(post)
+            trends.analyze(post)
             return post
     return None
 
@@ -498,3 +503,6 @@ def handle_delete_community(community_id, user):
         return True, f"The community '{community.name}' has been successfully deleted."
     except Community.DoesNotExist:
         return False, "Community not found."
+
+def get_trends():
+    return trends.get()
