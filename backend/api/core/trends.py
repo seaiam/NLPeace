@@ -1,23 +1,41 @@
 from cachetools import LFUCache, TTLCache
-from functools import reduce
-from typing import Iterable
+from django.conf import settings
+from itertools import chain
+from textblob import TextBlob
 
-from core.models.post_models import Post
+
+analyzers = {}
+
+def trend_analyzer(name: str):
+    def inner(analyzer):
+        analyzers[name] = analyzer
+        return analyzer
+    return inner
 
 class Trends:
 
-    def __init__(self, maxsize, threshold):
-        self._trends = LFUCache(maxsize=maxsize)
+    def __init__(self):
+        self._trends = LFUCache(maxsize=settings.TRENDS_LIMIT)
         self._counts = TTLCache(maxsize=128, ttl=3600)
-        self._threshold = threshold
+        self._threshold = settings.TRENDING_THRESHOLD
+        self._analyzers = settings.TREND_ANALYZERS
 
-    def is_trending(self, post: Post) -> bool:
-        return reduce(lambda flag, word: flag or self._trends.get(word), post.get_words(), False)
-
-    def add(self, trends: Iterable[str]) -> None:
-        # TODO preprocess post text
-        for trend in trends:
+    def add(self, post):
+        for trend in self.analyze(post):
             count = self._counts.pop(trend, 0)
             if count > self._threshold:
                 self._trends[trend] = True
             self._counts[trend] = count + 1
+    
+    def analyze(self, post):
+        return chain(*[analyzers[name](post) for name in self._analyzers])
+
+@trend_analyzer('hashtags')
+def hashtag_counter(post):
+    return filter(lambda word: word.startswith('#'), post.get_words())
+
+@trend_analyzer('nouns')
+def noun_counter(post):
+    content = post.content # TODO clean content
+    blob = TextBlob(content)
+    return blob.noun_phrases

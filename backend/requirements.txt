@@ -13,3 +13,4 @@ pytest
 daphne
 redis
 cachetools
+textblob
