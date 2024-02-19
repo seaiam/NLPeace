@@ -1,6 +1,7 @@
 from django.test import TestCase
 from django.urls import reverse
 from core.models.community_models import Community, CommunityPost
+from core.models.post_models import Post
 from core.models.profile_models import User
 from core.forms.community_forms import CommunityForm
 
@@ -188,5 +189,19 @@ class CommunityPostTestCase(TestCase):
         self.assertEqual(community_post.community, self.community)
         self.assertEqual(community_post.post.content, 'Test Post Content') 
         self.assertEqual(community_post.post.user, self.user)
+
+    def test_show_community_post_profile(self):
+        response = self.client.post(reverse('create_community_post', kwargs={'community_id': self.community.id}), {
+            'content': 'Test Post Content',
+        })
+
+
+        self.assertEqual(response.status_code, 302)
+        self.assertEqual(CommunityPost.objects.count(), 1)
+
+        # Check if the community post is displayed on the user's profile
+        response_profile = self.client.get(reverse('profile'))
+        self.assertContains(response_profile, 'Test Post Content', status_code=200)
+        self.assertContains(response_profile, 'Posted in Community', status_code=200)
     
   
