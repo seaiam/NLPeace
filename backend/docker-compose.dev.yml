@@ -34,7 +34,8 @@ services:
     volumes:
       - ./api:/api
     command: >
-      sh -c "python manage.py wait_for_db &&
+      sh -c "python -m textblob.download_corpora
+             python manage.py wait_for_db &&
              python manage.py makemigrations core &&
              python manage.py migrate core &&
              python manage.py makemigrations &&
@@ -48,6 +49,7 @@ services:
       - DB_PASS=changeme
       - REDIS_HOST=redis
       - REDIS_PORT=6379
+      - NLTK_DATA=.
     depends_on:
       db:
         condition: service_healthy
