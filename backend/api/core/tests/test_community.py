@@ -143,4 +143,20 @@ class CommunityPostTestCase(TestCase):
         self.assertEqual(community_post.post.content, 'Test Post Content') 
         self.assertEqual(community_post.post.user, self.user)
     
-  
+    def test_add_community_post_comment(self):
+        
+        community_post_response = self.client.post(reverse('create_community_post', kwargs={'community_id': self.community.id}), {'content': 'Test Post Content'}) # create community post
+        self.assertEqual(community_post_response.status_code, 302) # test if redirected
+        community_post = CommunityPost.objects.first()
+
+        community_comment_response = self.client.post(reverse('comment', args=[community_post.post.id]), {'content': 'Community Test comment'}) # create comment on community post
+        self.assertEqual(community_comment_response.status_code, 302) # test if redirected
+        self.assertEqual(community_post.post.replies.count(), 1) #testing that we have 1 reply for community_post
+        community_comment = community_post.post.replies.first()
+
+        self.assertEqual(community_comment.content, 'Community Test comment') #testing the content of the comment
+
+        self.assertTrue(community_comment.is_community_post) #test if comment is a community post
+
+
+    
