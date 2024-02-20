@@ -1417,6 +1417,12 @@ img {
   white-space: nowrap;
 }
 
+.trend-list .list-group-item
+{
+  background: linear-gradient(to right, #F9D1C4 0%, #9BBDDD 51%, #F9D1C4 100%);
+  /* border: none; */
+}
+
 /* Media Queries */
 @media (max-width: 991.98px) { 
     .sidebar {
