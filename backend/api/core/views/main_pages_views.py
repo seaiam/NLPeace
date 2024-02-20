@@ -249,9 +249,13 @@ def bookmarked_posts(request):
 
 @login_required
 def hashtag_search(request, word):
-    return redirect(reverse('home_with_word', args=[word]))
+    return redirect(reverse('home_with_word', args=[f'#{word}']))
 
 @login_required
 def trends(request):
     context = {'trends': get_trends()}
     return render(request, 'trends.html', context)
+
+@login_required
+def trend_search(request, word):
+    return redirect(reverse('home_with_word', args=[word]))
