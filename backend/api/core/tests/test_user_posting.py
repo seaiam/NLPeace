@@ -1,11 +1,12 @@
 from django.test import TestCase
 from django.urls import reverse
+from django.conf import settings
 from django.contrib.auth.models import User 
+from django.core.exceptions import ObjectDoesNotExist
 from django.core.files.uploadedfile import SimpleUploadedFile
 from core.forms.posting_forms import PostForm
 from core.models.post_models import Hashtag, HashtagInstance, Post, Repost, PostDislike, PostLike, PostReport, PostPin
 from core.models.profile_models import Profile
-from django.core.exceptions import ObjectDoesNotExist
 
 class PostTestCase(TestCase):
     def setUp(self):
@@ -113,13 +114,19 @@ class PostTestCase(TestCase):
     def test_filtering_posts_on_hashtag_excludes_entities_without_selection(self):
         hashtag = Hashtag.objects.create(content='test')
         tagged = Post.objects.create(user=self.user, content='#test')
-        instance = HashtagInstance.objects.create(post=tagged, hashtag=hashtag)
+        HashtagInstance.objects.create(post=tagged, hashtag=hashtag)
         untagged = Post.objects.create(user=self.user, content='test')
-        response = self.client.get(reverse('home_with_word', args=['test']))
+        response = self.client.get(reverse('hashtag_search', args=['test']), follow=True)
         posts = list(map(lambda carrier: carrier.payload, filter(lambda carrier: carrier.is_post, response.context['posts'])))
         self.assertIn(tagged, posts)
         self.assertNotIn(untagged, posts)
-        self.assertContains(response, 'Showing posts tagged with #test')
+        self.assertContains(response, 'Showing posts about #test')
+    
+    def test_frequently_observed_topics_are_identified_as_trends(self):
+        for _ in range(settings.TRENDING_THRESHOLD + 1):
+            self.client.post(reverse('home'), {'content': '#test'})
+        response = self.client.get(reverse('trends'))
+        self.assertContains(response, '#test')
     
 class CommentTestCase(TestCase):
 
