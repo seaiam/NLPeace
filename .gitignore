@@ -185,3 +185,7 @@ dmypy.json
 cython_debug/
 
 backend/api/api/core/media/
+# NLTK data
+backend/api/corpora
+backend/api/taggers
+backend/api/tokenizers
