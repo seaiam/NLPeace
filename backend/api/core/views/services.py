@@ -1,4 +1,3 @@
-from re import T
 import requests
 
 from api.logger_config import configure_logger # TODO add logging statements
@@ -38,7 +37,7 @@ def process_post_form(request, form):
             post.user = request.user
             post.save()
             update_interests_and_hashtags(post)
-            trends.analyze(post)
+            trends.analyze(post) # TODO this is potentially very expensive
             return post
     return None
 
@@ -90,9 +89,12 @@ def get_user_posts(user, word):
             hashtag = get_object_or_404(Hashtag, content=word[1:])
             posts = [post for post in posts if post.is_tagged_by(hashtag)]
         else:
-            posts = [post for post in posts if word in post.get_words()]
+            posts = [post for post in posts if word in normalize_words(post.get_words())]
     carriers = list(map(lambda post: ContentCarrier(post), posts))
     return mix(carriers, get_ads(user))
+
+def normalize_words(words):
+    return [word.lower() for word in words]
 
 def get_ads(user):
     resolver = RESOLVERS[settings.AD_SELECTION_STRATEGY]
