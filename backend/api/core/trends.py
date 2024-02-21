@@ -32,7 +32,7 @@ class Trends:
     def analyze(self, post):
         for trend in chain(*[analyzers[name](post) for name in self._analyzers]):
             count = self._counts.pop(trend, 0)
-            if count > self._threshold:
+            if count >= self._threshold:
                 self._trends[trend] = True
             self._counts[trend] = count + 1
     
