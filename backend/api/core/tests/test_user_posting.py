@@ -334,7 +334,7 @@ class RepostTestCase(TestCase):
         self.client.post(reverse('repost', kwargs={'post_id': self.post.id}))
         response = self.client.get(reverse('profile'))
         #this line tests that the post shows only once
-        self.assertContains(response, 'Test   post', count=1)
+        self.assertContains(response, 'Test post', count=1)
 
 class ReportTestCase(TestCase):
     def setUp(self):
