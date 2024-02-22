@@ -16,37 +16,35 @@ from .services import *
 def home(request, word=None):
     if not request.user.is_authenticated:
         return redirect('login')
-      
+    
+    profile, created = Profile.objects.get_or_create(user=request.user)
+
     if request.method == 'POST':
         form = PostForm(request.POST, request.FILES)
         post = process_post_form(request, form)
         if post:
             return redirect('home')
-        
-    if request.user.is_authenticated:
-        allows_offensive = request.user.profile.allows_offensive
-    else:
-        allows_offensive = False
-
     
-    carriers = get_user_posts(request.user, word, allows_offensive)
+    carriers = get_user_posts(request.user, word, profile.allows_offensive)
     # filtering out community post in home page
     posts = [carrier for carrier in carriers if (not hasattr(carrier.payload, 'is_community_post')) or (hasattr(carrier.payload, 'is_community_post') and not carrier.payload.is_community_post())]
 
     posts_without_ads = map(lambda carrier: carrier.payload, filter(lambda carrier: carrier.is_post, posts))
-    likes, dislikes, saved_post_ids = get_post_interactions(request.user, posts, allows_offensive)
+    likes, dislikes, saved_post_ids = get_post_interactions(request.user, posts, profile.allows_offensive)
     reposted_post_ids = Repost.objects.filter(user=request.user).values_list('post_id', flat=True)
     data = Notifications.objects.filter(user=request.user).order_by('-id')
     following_users = request.user.profile.following.all()
     
-    following_carriers = get_following_posts(request.user, following_users, allows_offensive)
+    following_carriers = get_following_posts(request.user, following_users, profile.allows_offensive)
     # filtering out community post in home page
     following_posts = [carrier for carrier in following_carriers if (not hasattr(carrier.payload, 'is_community_post')) or (hasattr(carrier.payload, 'is_community_post') and not carrier.payload.is_community_post())]
 
 
     reported_posts = [post.payload for post in posts if post.is_post and not post.payload.is_reportable_by(request.user)] #for post reporting
 
-    if allows_offensive == False:
+    if profile.allows_offensive == False:
+            offensive_posts = Post.objects.filter(is_offensive=True)
+            reposted_post_ids = [id for id in reposted_post_ids if id not in offensive_posts.values_list('id', flat=True)]
             reported_posts = Post.objects.filter(id__in=[p.id for p in reported_posts]).exclude(is_offensive=True)
 
     context = {
@@ -69,6 +67,8 @@ def home(request, word=None):
 @login_required
 def profile(request):
     
+    profile, created = Profile.objects.get_or_create(user=request.user)
+
     if request.method == 'POST':
         form = PostForm(request.POST, request.FILES)
         post = process_post_form(request, form)
@@ -76,7 +76,7 @@ def profile(request):
             return redirect('profile')
         
     if request.user.is_authenticated:
-        allows_offensive = request.user.profile.allows_offensive
+        allows_offensive = profile.allows_offensive
     else:
         allows_offensive = False
     

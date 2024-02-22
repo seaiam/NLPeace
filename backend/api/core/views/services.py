@@ -87,8 +87,13 @@ def get_user_posts(user, word, allows_offensive):
     if word is not None:
         hashtag = get_object_or_404(Hashtag, content=word)
         posts = [post for post in posts if post.is_tagged_by(hashtag)]
-    if allows_offensive == False:
-        posts = Post.objects.filter(id__in=[p.id for p in posts]).exclude(is_offensive=True)
+    if not allows_offensive:
+        # Get all posts with offensive attribute set to True
+        offensive_posts = Post.objects.filter(is_offensive=True)
+        offensive_ids = [post.id for post in offensive_posts]
+        posts = [post for post in posts if post.id not in offensive_ids]
+        posts = [post for post in posts if (not post.parent_post) or (post.parent_post.id not in offensive_ids)]
+        
     carriers = list(map(lambda post: ContentCarrier(post), posts))
     return mix(carriers, get_ads(user))
 
@@ -134,7 +139,10 @@ def get_user_posts_and_reposts(user, allows_offensive):
     all_posts = sorted(chain(posts, reposts, replies), key=lambda post: post.created_at, reverse=True)
 
     if allows_offensive == False:
-        all_posts = [post for post in all_posts if not post.is_offensive]
+        # Get all posts with offensive attribute set to True
+        offensive_posts = Post.objects.filter(is_offensive=True)
+        all_posts = [post for post in posts if post.id not in offensive_posts.values_list('id', flat=True)]
+        all_posts = Post.objects.filter(id__in=[p.id for p in all_posts]).exclude(is_offensive=True)
 
     carriers = [ContentCarrier(post) for post in all_posts]
     return mix(carriers, get_ads(user))
@@ -211,8 +219,14 @@ def process_comment_form(request, form, post_id):
 
         if result["prediction"][0] in [1, 0]:  # Offensive or hate speech
             message = 'This comment contains offensive language and is not allowed on our platform.' if result["prediction"][0] == 1 else 'This comment contains hateful language and is not allowed on our platform.'
-            messages.error(request, message)
-            return None
+            messages.warning(request, message)
+            comment = form.save(commit=False)
+            comment.user = request.user
+            comment.is_offensive = True
+            comment.parent_post = Post.objects.get(pk=post_id)
+            comment.save()
+            update_interests_and_hashtags(comment)
+            return comment
         elif result["prediction"][0] == 2:  # Appropriate
             comment = form.save(commit=False)
             comment.user = request.user
@@ -437,8 +451,16 @@ def handle_edit_post(request,form, post, remove_image, parent_post):
         edited_text = form.cleaned_data['content']
         result = classify_text(edited_text)
         if result["prediction"][0] in [1, 0]:  # Offensive or hate speech
-            message = 'This edit contains offensive language and is not allowed on our platform.' if result["prediction"][0] == 1 else 'This post contains hateful language and is not allowed on our platform.'
-            messages.error(request, message)
+            message = 'This post contains offensive language. It will only be showed to users who turn off content filtering.' if result["prediction"][0] == 1 else 'This post contains hateful language. It will only be showed to users who turn off content filtering.'
+            messages.warning(request, message)
+            if remove_image and post.image:
+                post.image.delete(save=True)
+                post.image = None
+            post = form.save()
+            post.is_edited = True
+            post.is_offensive = True
+            post.parent_post = parent_post
+            post.save()
         elif result["prediction"][0] == 2:  # Appropriate
             if remove_image and post.image:
                 post.image.delete(save=True)
