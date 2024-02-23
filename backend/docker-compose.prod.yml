@@ -47,7 +47,6 @@ services:
       - DB_PASS=changeme
       - REDIS_HOST=redis
       - REDIS_PORT=6379
-      - NLTK_DATA=.
     depends_on:
       db:
         condition: service_healthy
