@@ -14,6 +14,10 @@ def register_new_user(request, form_data):
         username = form.cleaned_data['username']
         password = form.cleaned_data['password1']
         user = authenticate(request, username=username, password=password)
+        # Create a profile for the user
+        profile = Profile.objects.create(user=user)
+        profile.save()
+        
         login(request, user)
         return True
     return False
