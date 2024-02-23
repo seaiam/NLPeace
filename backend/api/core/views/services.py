@@ -9,7 +9,7 @@ from django.db.models import Q
 from django.http import *
 from django.shortcuts import get_object_or_404
 from itertools import chain, cycle
-from core.forms.profile_forms import EditBioForm, EditUsernameForm, EditProfilePicForm, EditProfileBannerForm, PrivacySettingsForm
+from core.forms.profile_forms import EditBioForm, EditUsernameForm, EditProfilePicForm, EditProfileBannerForm, PrivacySettingsForm, NLPToggleForm
 from core.interest_resolver import RESOLVERS
 from core.models.post_models import Advertisement, Hashtag, HashtagInstance, Post, PostLike, PostDislike, PostPin, PostReport, PostSave, Repost
 from core.models.profile_models import Profile, Notifications, User, CommunityNotifications
@@ -17,7 +17,6 @@ from core.models.community_models import Community, CommunityPost
 from core.trends import Trends
 
 class ContentCarrier:
-
     def __init__(self, payload):
         self.payload = payload
         self.is_post = isinstance(payload, Post)
@@ -29,9 +28,14 @@ def process_post_form(request, form):
         tweet_text = form.cleaned_data['content']
         result = classify_text(tweet_text)
         if result["prediction"][0] in [1, 0]:  # Offensive or hate speech
-            message = 'This post contains offensive language and is not allowed on our platform.' if result["prediction"][0] == 1 else 'This post contains hateful language and is not allowed on our platform.'
-            messages.error(request, message)
-            return None
+            message = 'This post contains offensive language. It will only be showed to users who turn off content filtering.' if result["prediction"][0] == 1 else 'This post contains hateful language. It will only be showed to users who turn off content filtering.'
+            messages.warning(request, message)
+            post = form.save(commit=False)
+            post.user = request.user
+            post.is_offensive = True
+            post.save()
+            update_interests_and_hashtags(post)
+            return post
         elif result["prediction"][0] == 2:  # Appropriate
             post = form.save(commit=False)
             post.user = request.user
@@ -74,7 +78,7 @@ def get_sentiments(text):
     # TODO implement sentiment analysis for interest inference.
     return []
     
-def get_user_posts(user, word):
+def get_user_posts(user, word, allows_offensive):
     profile = get_user_profile(user)
     user_ids_following = profile.following.values_list('id', flat=True)
     blocked = profile.blocked.all()
@@ -90,6 +94,15 @@ def get_user_posts(user, word):
             posts = [post for post in posts if post.is_tagged_by(hashtag)]
         else:
             posts = [post for post in posts if word in normalize_words(post.get_words())]
+        hashtag = get_object_or_404(Hashtag, content=word)
+        posts = [post for post in posts if post.is_tagged_by(hashtag)]
+    if not allows_offensive:
+        # Get all posts with offensive attribute set to True
+        offensive_posts = Post.objects.filter(is_offensive=True)
+        offensive_ids = [post.id for post in offensive_posts]
+        posts = [post for post in posts if post.id not in offensive_ids]
+        posts = [post for post in posts if (not post.parent_post) or (post.parent_post.id not in offensive_ids)]
+        
     carriers = list(map(lambda post: ContentCarrier(post), posts))
     return mix(carriers, get_ads(user))
 
@@ -130,14 +143,21 @@ def get_user_profile(user):
     profile, _ = Profile.objects.get_or_create(user=user)
     return profile
 
-def get_user_posts_and_reposts(user):
+def get_user_posts_and_reposts(user, allows_offensive):
     posts = Post.objects.filter(Q(user=user) & Q(parent_post=None))
     reposts_ids = Repost.objects.filter(user=user).values_list('post_id', flat=True)
     reposts = Post.objects.filter(id__in=reposts_ids)
     reposts = [repost for repost in reposts if repost not in posts]
     replies = Post.objects.filter(Q(user=user) & ~Q(parent_post=None))
     all_posts = sorted(chain(posts, reposts, replies), key=lambda post: post.created_at, reverse=True)
-    carriers = list(map(lambda post: ContentCarrier(post), all_posts))
+
+    if allows_offensive == False:
+        # Get all posts with offensive attribute set to True
+        offensive_posts = Post.objects.filter(is_offensive=True)
+        all_posts = [post for post in posts if post.id not in offensive_posts.values_list('id', flat=True)]
+        all_posts = Post.objects.filter(id__in=[p.id for p in all_posts]).exclude(is_offensive=True)
+
+    carriers = [ContentCarrier(post) for post in all_posts]
     return mix(carriers, get_ads(user))
 
 def get_image_posts(user, carriers):
@@ -145,22 +165,40 @@ def get_image_posts(user, carriers):
     image_carriers = list(map(lambda post: ContentCarrier(post), image_posts))
     return mix(image_carriers, get_ads(user))
 
-def get_post_interactions(user, carriers):
+def get_post_interactions(user, carriers, allows_offensive):
     posts = get_posts_from(carriers)
     likes = [post for post in posts if post.is_likeable_by(user)]
     dislikes = [post for post in posts if post.is_dislikeable_by(user)]
+
+    if allows_offensive == False:
+        posts = Post.objects.filter(id__in=[p.id for p in posts]).exclude(is_offensive=True)
+        likes = Post.objects.filter(id__in=[p.id for p in likes]).exclude(is_offensive=True)
+        dislikes = Post.objects.filter(id__in=[p.id for p in dislikes]).exclude(is_offensive=True)
+
     saved_post_ids = [post.id for post in posts if not post.is_saveable_by(user)]
     return likes, dislikes, saved_post_ids
 
 def get_posts_from(carriers):
     return list(map(lambda carrier: carrier.payload, filter(lambda carrier: carrier.is_post, carriers)))
 
-def get_liked_posts(user):
-    liked_posts = list(map(lambda post: ContentCarrier(post), Post.objects.filter(postlike__liker=user).distinct().order_by('-created_at')))
+def get_liked_posts(user, allows_offensive):
+    liked_posts_query = Post.objects.filter(postlike__liker=user).distinct().order_by('-created_at')
+    
+    if allows_offensive == False:
+        liked_posts_query = liked_posts_query.exclude(is_offensive=True)
+
+    liked_posts = [ContentCarrier(post) for post in liked_posts_query]
+
     return mix(liked_posts, get_ads(user))
 
-def get_following_posts(user, following):
-    following_posts = list(map(lambda post: ContentCarrier(post), Post.objects.filter(user__in=following).order_by('-created_at')))
+def get_following_posts(user, following, allows_offensive):
+    following_posts_query = Post.objects.filter(user__in=following).order_by('-created_at')
+    
+    if allows_offensive == False:
+        following_posts_query = following_posts_query.exclude(is_offensive=True)
+    
+    following_posts = [ContentCarrier(post) for post in following_posts_query]
+    
     return mix(following_posts, get_ads(user))
 
 
@@ -194,8 +232,14 @@ def process_comment_form(request, form, post_id):
 
         if result["prediction"][0] in [1, 0]:  # Offensive or hate speech
             message = 'This comment contains offensive language and is not allowed on our platform.' if result["prediction"][0] == 1 else 'This comment contains hateful language and is not allowed on our platform.'
-            messages.error(request, message)
-            return None
+            messages.warning(request, message)
+            comment = form.save(commit=False)
+            comment.user = request.user
+            comment.is_offensive = True
+            comment.parent_post = Post.objects.get(pk=post_id)
+            comment.save()
+            update_interests_and_hashtags(comment)
+            return comment
         elif result["prediction"][0] == 2:  # Appropriate
             comment = form.save(commit=False)
             comment.user = request.user
@@ -265,10 +309,15 @@ def save_or_unsave_post(user, post_id):
         message = 'Post unsaved.'
     return message
 
-def get_bookmarked_posts(user):
+def get_bookmarked_posts(user, allows_offensive):
     saves = PostSave.objects.filter(saver=user).select_related('post').order_by('-post__created_at')
+    
     saved_posts = [ContentCarrier(save.post) for save in saves]
-    return mix(list(saved_posts), get_ads(user))
+    
+    if allows_offensive == False:
+        saved_posts = [post for post in saved_posts if not post.payload.is_offensive]
+
+    return mix(saved_posts, get_ads(user))
 
 def block_user(request_user_id, blocked_user_id):
     updated_user = Profile.objects.get(pk=request_user_id)
@@ -415,8 +464,16 @@ def handle_edit_post(request,form, post, remove_image, parent_post):
         edited_text = form.cleaned_data['content']
         result = classify_text(edited_text)
         if result["prediction"][0] in [1, 0]:  # Offensive or hate speech
-            message = 'This edit contains offensive language and is not allowed on our platform.' if result["prediction"][0] == 1 else 'This post contains hateful language and is not allowed on our platform.'
-            messages.error(request, message)
+            message = 'This post contains offensive language. It will only be showed to users who turn off content filtering.' if result["prediction"][0] == 1 else 'This post contains hateful language. It will only be showed to users who turn off content filtering.'
+            messages.warning(request, message)
+            if remove_image and post.image:
+                post.image.delete(save=True)
+                post.image = None
+            post = form.save()
+            post.is_edited = True
+            post.is_offensive = True
+            post.parent_post = parent_post
+            post.save()
         elif result["prediction"][0] == 2:  # Appropriate
             if remove_image and post.image:
                 post.image.delete(save=True)
@@ -481,6 +538,16 @@ def  handle_admin_join(community_id, joiner_id, action):
         community.join_requests.remove(joiner)
     notification.delete()
 
+
+def update_content_filtering_settings(user_id, form_data):
+    user = User.objects.get(pk=user_id)
+    form = NLPToggleForm(form_data, instance=user.profile)
+    if form.is_valid():
+        form.save()
+        return True
+    return False
+
+  
 def handle_delete_community(community_id, user):
     try:
         community = Community.objects.get(id=community_id)

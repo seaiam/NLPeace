@@ -11,6 +11,7 @@
     <button class="tabbutton" onclick="openTab(event, 'Password')">Password</button>
     <button class="tabbutton" onclick="openTab(event, 'Privacy')">Privacy</button>
     <button class="tabbutton" onclick="openTab(event, 'Messaging')">Messaging</button>
+    <button class="tabbutton" onclick="openTab(event, 'NLPToggle')" ]>Content Filtering</button>
   </div>
 
 
@@ -95,6 +96,23 @@
     </div> 
 </div>
 
+<div id="NLPToggle" class="tabcontent">
+    <div class = "d-flex align-items-center justify-content-center">
+        <div class="card" style="width: 40rem; border-radius: 30px; margin:50px; overflow: hidden;background: linear-gradient(to right, #F9D1C4 0%, #9BBDDD 51%, #F9D1C4 100%);">
+            <div class="card-body">
+                <form action={% url 'nlp_toggle' %} method="POST" name="NLPToggle_form" >
+                    {% csrf_token %}
+                        <div class="text-left">Filter Offensive and Harmful Content: </div>
+                        {{ NLPToggle_form.allows_offensive }}
+                            <div class = "privacy-button">
+                                <button type="submit" class="btn post-actions__publish">Save</button>
+                            </div>
+                </form>
+            </div>
+        </div>
+      
+    </div> 
+</div>
  
 </div>
 
