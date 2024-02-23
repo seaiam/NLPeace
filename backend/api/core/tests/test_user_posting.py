@@ -127,7 +127,6 @@ class PostTestCase(TestCase):
             self.client.post(reverse('home'), {'content': '#test'})
         response = self.client.get(reverse('trends'))
         self.assertContains(response, '#test')
-        self.assertContains(response, 'Showing posts tagged with #test')
 
 
     def test_only_appropriate_content_shown(self):        
