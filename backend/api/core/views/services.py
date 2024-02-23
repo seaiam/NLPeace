@@ -134,7 +134,6 @@ def get_user_profile(user):
 
 def get_user_posts_and_reposts(user, allows_offensive):
     posts = Post.objects.filter(Q(user=user) & Q(parent_post=None))
-    posts = [post for post in posts if not post.is_community_post() and post.parent_post is None]
     reposts_ids = Repost.objects.filter(user=user).values_list('post_id', flat=True)
     reposts = Post.objects.filter(id__in=reposts_ids)
     reposts = [repost for repost in reposts if repost not in posts]
@@ -192,7 +191,40 @@ def get_following_posts(user, following, allows_offensive):
     
     return mix(following_posts, get_ads(user))
 
+def get_user_community_posts(user, allows_offensive):
+    carriers = get_user_posts_and_reposts(user, allows_offensive)
+    posts = get_posts_from(carriers)
+    community_posts = [post for post in posts if post.is_community_post()]
+    
+    community_posts_with_names = []
+    for post in community_posts:
+        community = CommunityPost.objects.filter(post=post).first().community
+        carrier = ContentCarrier(post)
+        community_post_with_name = {'carrier': carrier, 'community_name': community.name}
+        community_posts_with_names.append(community_post_with_name)
+    
+    return mix(community_posts_with_names, get_ads(user))
 
+def get_user_posts_with_community_info(request,user, allows_offensive):
+    all_posts = get_user_posts_and_reposts(user, allows_offensive)
+    
+    posts_with_community_info = []
+
+    for post in all_posts:
+        community_post_qs = CommunityPost.objects.filter(post=post.payload if hasattr(post, 'payload') else post).first()
+        if community_post_qs:
+            if not community_post_qs.community.is_private or request.user in community_post_qs.community.members.all() or request.user == user :
+                community = community_post_qs.community
+                post.community_name = community.name
+                post.community_id = community.id
+                posts_with_community_info.append(post)
+        else:
+            post.community_name = None
+            post.community_id = None
+            posts_with_community_info.append(post)
+
+    return posts_with_community_info
+    
 def get_user_by_id(user_id):
     return User.objects.get(pk=user_id)
 

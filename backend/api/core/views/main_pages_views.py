@@ -81,7 +81,7 @@ def profile(request):
         allows_offensive = False
     
     profile = get_user_profile(request.user)
-    posts = get_user_posts_and_reposts(request.user, allows_offensive)
+    posts = get_user_posts_with_community_info(request, request.user, allows_offensive)
     image_posts = get_image_posts(request.user, posts)
     likes, dislikes, saved_post_ids = get_post_interactions(request.user, posts, allows_offensive)
     followers = profile.followers.all()
@@ -98,7 +98,8 @@ def profile(request):
     reposted_post_ids = Repost.objects.filter(user=request.user).values_list('post_id', flat=True)    
     replies = [post for post in posts if post.is_post and post.payload.parent_post is not None]
     non_pinned_image_posts=[post for post in posts if post.is_post and not post.payload.is_pinned_by(request.user) and post.payload.image]
-   
+    community_posts = get_user_community_posts(request.user, allows_offensive) 
+
     context = {
         'profile': profile,
         'posts': posts,
@@ -123,7 +124,8 @@ def profile(request):
         'replies' : replies,
         'reposted_post_ids': reposted_post_ids,
         'reported_posts' : reported_posts, #for post reporting
-        'non_pinned_image_posts' : non_pinned_image_posts
+        'non_pinned_image_posts' : non_pinned_image_posts,
+        'community_posts' : community_posts
         }
     return render(request, 'home.html', context)
 
@@ -161,6 +163,10 @@ def guest(request, user_id):
     reposted_post_ids = Repost.objects.filter(user=request.user).values_list('post_id', flat=True)
     replies = [post for post in all_posts if post.is_post and post.payload.parent_post is not None]
     non_pinned_image_posts=[post for post in all_posts if post.is_post and not post.payload.is_pinned_by(request.user) and post.payload.image]
+    community_posts = get_user_community_posts(guest_user, False)
+    community_posts = [post for post in all_posts if post.is_post and post.payload.is_community_post()]
+    
+
     context = {
         'user': guest_user,
         'data': data,
@@ -183,7 +189,8 @@ def guest(request, user_id):
         'reposted_post_ids': reposted_post_ids,
         'replies' : replies,
         'reported_posts' : reported_posts, #for post reporting
-        'non_pinned_image_posts' : non_pinned_image_posts
+        'non_pinned_image_posts' : non_pinned_image_posts,
+        'community_posts' : community_posts
         }
     return render(request,'home.html',context)
 

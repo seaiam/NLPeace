@@ -1263,6 +1263,13 @@ img {
 
 /* COMMUNITY USER STORY */
 
+.community-post{
+  font-style: italic ;
+  color:#00008B;
+  font-size: large;
+  font-weight: 500;
+}
+
 .community-container{
   display: flex;
   justify-content: center;
