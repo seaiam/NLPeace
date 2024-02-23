@@ -16,6 +16,7 @@ class Profile(models.Model):
     is_private = models.BooleanField(default=True)
     is_banned = models.BooleanField(default=False)
     messaging_is_private = models.BooleanField(default=True)
+    allows_offensive = models.BooleanField(default=False)
 
     def insert_interests(self, interests):
         for name in map(lambda n: n.lower(), interests):

@@ -32,7 +32,8 @@ def profile_settings(request):
         'editUsernameForm': EditUsernameForm(instance=user),
         'editPasswordForm': PasswordChangeForm(request.user),
         'privacy_form':PrivacySettingsForm(instance=user.profile),
-        'messaging_form':MessagingSettingsForm(instance=user.profile)
+        'messaging_form':MessagingSettingsForm(instance=user.profile),
+        'NLPToggle_form' : NLPToggleForm(instance=user.profile)
       }
     return render(request, 'settings.html', context)
     
@@ -182,3 +183,14 @@ def delete_notification(request):
             notification_id = request.POST.get('notification')
             delete_user_notification(notification_id)
     return HttpResponseRedirect(request.META.get('HTTP_REFERER', '/'))
+
+@login_required
+def nlp_toggle(request):
+    if request.method == "POST":
+        if update_content_filtering_settings(request.user.id, request.POST):
+            messages.success(request, "Content filtering settings updated!")
+            return redirect('profile')
+    else:
+        form = NLPToggleForm(instance=request.user.profile)
+
+    return render(request, 'settings.html', {'NLPToggle_form': form})

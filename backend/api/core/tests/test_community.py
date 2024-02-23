@@ -3,12 +3,20 @@ from django.urls import reverse
 from core.models.community_models import Community, CommunityPost
 from core.models.profile_models import User
 from core.forms.community_forms import CommunityForm
+from django.core.exceptions import ObjectDoesNotExist
+from core.models.profile_models import Profile
 
 class CommunityTestCase(TestCase):
     def setUp(self):
         # Creating test user and loging in
         self.user = User.objects.create_user(username='testuser', password='password')
         self.client.login(username='testuser', password='password')
+
+        try:
+            self.profile = self.user.profile  # Try to access the profile
+        except ObjectDoesNotExist:
+            # Handle the case where the profile does not exist/ create a profile
+            self.profile = Profile.objects.create(user=self.user)   
 
     def test_create_community(self):
         # creating comunity
@@ -73,6 +81,52 @@ class CommunityTestCase(TestCase):
         community.refresh_from_db()
         self.assertNotEqual(community.name, 'Unauthorized Update')
 
+    def test_search_community(self):
+        # Create a test community
+        community = Community.objects.create(name='Test', admin=self.user, is_private=True)
+
+        # Make a POST request to the search_community view with the search parameter
+        response = self.client.post(reverse('search_community'), {'search': 't'})
+
+        # Check if the response contains the community name
+        self.assertContains(response, 'Test')
+
+    
+    def test_search_community_nonexistent(self):
+        
+
+        # Make a POST request to the search_community view with the search parameter
+        response = self.client.post(reverse('search_community'), {'search': 'm'})
+        self.assertRedirects(response, reverse('create_community'))
+
+    def test_delete_community(self):
+        community = Community.objects.create(name='Delete Test Community', admin=self.user, is_private=True)   
+        self.assertEqual(Community.objects.count(), 1)
+        response = self.client.post(reverse('delete_community', kwargs={'community_id': community.id}))
+        self.assertEqual(response.status_code, 302)
+        self.assertEqual(Community.objects.count(), 0)
+
+    def test_community_members_list(self):
+        # Create a test community
+        community = Community.objects.create(name='Test Community', admin=self.user, is_private=True)
+
+        # Add some members to the community
+        member1 = User.objects.create_user(username='member1', password='password')
+        member2 = User.objects.create_user(username='member2', password='password')
+        community.members.add(member1, member2)
+
+       
+        response = self.client.get(reverse('community_detail', kwargs={'community_id': community.id}))
+        self.assertEqual(response.status_code, 200)
+
+        # Check if the members are present in the context
+        context_members = response.context['members']
+        self.assertEqual(list(context_members), [member1, member2])
+
+        # Check if the members' usernames are present in the rendered HTML
+        self.assertContains(response, 'member1')
+        self.assertContains(response, 'member2')
+
 class CommunityJoinTest(TestCase):
 
     def setUp(self):
@@ -82,7 +136,19 @@ class CommunityJoinTest(TestCase):
         self.public_community = Community.objects.create(name = "public", admin = self.admin, is_private = False)
         self.private_community = Community.objects.create(name = "private", admin = self.admin)
         self.client.login(username = "joiner", password = "password")
-    
+
+        try:
+            self.adminProfile = self.admin.profile  # Try to access the profile
+        except ObjectDoesNotExist:
+            # Handle the case where the profile does not exist/ create a profile
+            self.adminProfile = Profile.objects.create(user=self.admin)  
+
+        try:
+            self.joinerProfile = self.joiner.profile  # Try to access the profile
+        except ObjectDoesNotExist:
+            # Handle the case where the profile does not exist/ create a profile
+            self.joinerProfile = Profile.objects.create(user=self.joiner)   
+
     def test_join_public_community(self):
 
         response = self.client.post(reverse('join_community'), {

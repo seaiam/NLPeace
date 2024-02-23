@@ -17,8 +17,10 @@
         </div> 
         <br>
         <div class="d-flex justify-content-center align-items-center">
-            <form class="form-inline" method="POST" action="">
-                <input class="form-control mr-sm-2 community-search" type="search" placeholder="Search" aria-label="Search" name="search"  id="" style="width: 36rem;">
+            <form class="form-inline" method="POST" action="{% url 'search_community' %}">
+                {% csrf_token %}
+                <input class="form-control mr-sm-2 community-search" type="search" placeholder="Search" aria-label="Search" name="search"  id="" style="width: 36rem;" value="{{ search }}">
+              
             </form>
         </div>
     </div>           
@@ -41,9 +43,15 @@
 <div class="d-flex justify-content-center align-items-center">
     <div class="card" style="width: 37rem; border-radius: 20px;margin:20px 0px 20px 0px;  overflow: hidden;background: linear-gradient(to right, #F9D1C4 0%, #9BBDDD 51%, #F9D1C4 100%);">
         <div class="card-body">
+            {% if community.pic %}
             <div class="community-banner">
                 <img src="{{community.pic.url}}" class="community-banner" alt="communityBanner">
             </div>
+            {% else %}
+            <div class="community-banner">
+            <img src="{% static 'defaultBanner.jpg' %}" width="100%" class="community-banner" alt="communityBanner" />
+            </div>
+            {% endif %}
             <br>
             <div class="row">
                 <div class="col-md-8">

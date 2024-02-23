@@ -45,3 +45,14 @@ class MessagingSettingsForm(forms.ModelForm):
     class Meta:
         model = Profile
         fields = ['messaging_is_private'] 
+
+class NLPToggleForm(forms.ModelForm):
+    allows_offensive= forms.ChoiceField(
+        choices=((False, 'on'), (True, 'off')),
+        widget=forms.Select(attrs={'class': 'form-privacy'}),
+        initial=False
+    )
+
+    class Meta:
+        model = Profile
+        fields = ['allows_offensive']
