@@ -70,6 +70,7 @@ urlpatterns = [
     path('accounts/profile/notifications/join', community_views.accept_decline_join, name='accept_decline_join'),   
     path('hashtag_search/<str:word>/', main_pages_views.hashtag_search, name='hashtag_search'),
     path('search/', community_views.search_community, name='search_community'),
+    path('accounts/profile/settings/updateContentFiltering', profile_views.nlp_toggle, name='nlp_toggle'),
     path('community/delete/<int:community_id>/', community_views.delete_community, name='delete_community'),
 
     

@@ -33,6 +33,12 @@ def repost(request, post_id):
 def comment(request, post_id):
     post = Post.objects.get(pk=post_id)
     replies = Post.objects.filter(parent_post=post_id)
+
+    #check if user allows offensive content
+    profile, created = Profile.objects.get_or_create(user=request.user)
+    if profile.allows_offensive == False:
+        replies = Post.objects.filter(id__in=[p.id for p in replies]).exclude(is_offensive=True)
+
     reposted_post_ids = Repost.objects.filter(user=request.user).values_list('post_id', flat=True)
     likes = [post for post in replies if post.is_likeable_by(request.user)]
     dislikes = [post for post in replies if post.is_dislikeable_by(request.user)]

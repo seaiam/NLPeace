@@ -4,12 +4,20 @@ from core.models.community_models import Community, CommunityPost
 from core.models.post_models import Post
 from core.models.profile_models import User
 from core.forms.community_forms import CommunityForm
+from django.core.exceptions import ObjectDoesNotExist
+from core.models.profile_models import Profile
 
 class CommunityTestCase(TestCase):
     def setUp(self):
         # Creating test user and loging in
         self.user = User.objects.create_user(username='testuser', password='password')
         self.client.login(username='testuser', password='password')
+
+        try:
+            self.profile = self.user.profile  # Try to access the profile
+        except ObjectDoesNotExist:
+            # Handle the case where the profile does not exist/ create a profile
+            self.profile = Profile.objects.create(user=self.user)   
 
     def test_create_community(self):
         # creating comunity
@@ -129,7 +137,19 @@ class CommunityJoinTest(TestCase):
         self.public_community = Community.objects.create(name = "public", admin = self.admin, is_private = False)
         self.private_community = Community.objects.create(name = "private", admin = self.admin)
         self.client.login(username = "joiner", password = "password")
-    
+
+        try:
+            self.adminProfile = self.admin.profile  # Try to access the profile
+        except ObjectDoesNotExist:
+            # Handle the case where the profile does not exist/ create a profile
+            self.adminProfile = Profile.objects.create(user=self.admin)  
+
+        try:
+            self.joinerProfile = self.joiner.profile  # Try to access the profile
+        except ObjectDoesNotExist:
+            # Handle the case where the profile does not exist/ create a profile
+            self.joinerProfile = Profile.objects.create(user=self.joiner)   
+
     def test_join_public_community(self):
 
         response = self.client.post(reverse('join_community'), {
@@ -204,4 +224,20 @@ class CommunityPostTestCase(TestCase):
         self.assertContains(response_profile, 'Test Post Content', status_code=200)
         self.assertContains(response_profile, 'Posted in Community', status_code=200)
     
-  
+    def test_add_community_post_comment(self):
+        
+        community_post_response = self.client.post(reverse('create_community_post', kwargs={'community_id': self.community.id}), {'content': 'Test Post Content'}) # create community post
+        self.assertEqual(community_post_response.status_code, 302) # test if redirected
+        community_post = CommunityPost.objects.first()
+
+        community_comment_response = self.client.post(reverse('comment', args=[community_post.post.id]), {'content': 'Community Test comment'}) # create comment on community post
+        self.assertEqual(community_comment_response.status_code, 302) # test if redirected
+        self.assertEqual(community_post.post.replies.count(), 1) #testing that we have 1 reply for community_post
+        community_comment = community_post.post.replies.first()
+
+        self.assertEqual(community_comment.content, 'Community Test comment') #testing the content of the comment
+
+        self.assertTrue(community_comment.is_community_post) #test if comment is a community post
+
+
+    
