@@ -12,3 +12,5 @@ coverage
 pytest
 daphne
 redis
+cachetools
+textblob

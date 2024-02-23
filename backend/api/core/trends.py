@@ -1,0 +1,52 @@
+import nltk
+import re
+
+from cachetools import LFUCache, TTLCache
+from django.conf import settings
+from itertools import chain
+from nltk.corpus import stopwords
+from textblob import TextBlob
+
+nltk.download('stopwords')
+
+stopwords = set(stopwords.words('english'))
+
+HASHTAG_PATTERN = re.compile(r'\B#\S+')
+
+analyzers = {}
+
+def trend_analyzer(name):
+    def inner(analyzer):
+        analyzers[name] = analyzer
+        return analyzer
+    return inner
+
+class Trends:
+
+    def __init__(self):
+        self._trends = LFUCache(maxsize=settings.TRENDS_LIMIT)
+        self._counts = TTLCache(maxsize=128, ttl=3600)
+        self._threshold = settings.TRENDING_THRESHOLD
+        self._analyzers = settings.TREND_ANALYZERS
+
+    def analyze(self, post):
+        for trend in chain(*[analyzers[name](post) for name in self._analyzers]):
+            count = self._counts.pop(trend, 0)
+            if count >= self._threshold:
+                self._trends[trend] = True
+            self._counts[trend] = count + 1
+    
+    def get(self):
+        return self._trends.keys()
+
+@trend_analyzer('hashtags')
+def hashtag_counter(post):
+    return filter(lambda word: word.startswith('#'), post.get_words())
+
+@trend_analyzer('nouns')
+def noun_counter(post):
+    blob = TextBlob(HASHTAG_PATTERN.sub('', post.content).strip())
+    for word in blob.noun_phrases:
+        stemmed = word.stem()
+        if stemmed not in stopwords:
+            yield stemmed

@@ -14,11 +14,14 @@ from core.interest_resolver import RESOLVERS
 from core.models.post_models import Advertisement, Hashtag, HashtagInstance, Post, PostLike, PostDislike, PostPin, PostReport, PostSave, Repost
 from core.models.profile_models import Profile, Notifications, User, CommunityNotifications
 from core.models.community_models import Community, CommunityPost
+from core.trends import Trends
 
 class ContentCarrier:
     def __init__(self, payload):
         self.payload = payload
         self.is_post = isinstance(payload, Post)
+
+trends = Trends()
 
 def process_post_form(request, form):
     if form.is_valid():
@@ -38,6 +41,7 @@ def process_post_form(request, form):
             post.user = request.user
             post.save()
             update_interests_and_hashtags(post)
+            trends.analyze(post) # TODO this is potentially very expensive
             return post
     return None
 
@@ -86,8 +90,11 @@ def get_user_posts(user, word, allows_offensive):
     ).distinct().order_by('-created_at'))
     posts = [post for post in posts if not post.is_community_post()]
     if word is not None:
-        hashtag = get_object_or_404(Hashtag, content=word)
-        posts = [post for post in posts if post.is_tagged_by(hashtag)]
+        if word.startswith('#'):
+            hashtag = get_object_or_404(Hashtag, content=word[1:])
+            posts = [post for post in posts if post.is_tagged_by(hashtag)]
+        else:
+            posts = [post for post in posts if word in normalize_words(post.get_words())]
     if not allows_offensive:
         # Get all posts with offensive attribute set to True
         offensive_posts = Post.objects.filter(is_offensive=True)
@@ -97,6 +104,9 @@ def get_user_posts(user, word, allows_offensive):
         
     carriers = list(map(lambda post: ContentCarrier(post), posts))
     return mix(carriers, get_ads(user))
+
+def normalize_words(words):
+    return [word.lower() for word in words]
 
 def get_ads(user):
     resolver = RESOLVERS[settings.AD_SELECTION_STRATEGY]
@@ -603,3 +613,5 @@ def handle_delete_community(community_id, user):
     except Community.DoesNotExist:
         return False, "Community not found."
 
+def get_trends():
+    return trends.get()
