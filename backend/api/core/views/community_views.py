@@ -45,7 +45,7 @@ def community_detail(request, community_id):
     community_posts = CommunityPost.objects.filter(community=community)
     Carrier = namedtuple('Carrier', ['is_post', 'payload'])
     community_carriers = [Carrier(is_post=True, payload=cp.post) for cp in community_posts]
-    likes, dislikes, saved_post_ids = get_post_interactions(request.user, community_carriers)
+    likes, dislikes, saved_post_ids = get_post_interactions(request.user, community_carriers, False)
     reposted_post_ids = Repost.objects.filter(user=request.user).values_list('post_id', flat=True)
     reported_posts = [post.payload for post in community_carriers if post.is_post and not post.payload.is_reportable_by(request.user)]
     
