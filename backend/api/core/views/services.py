@@ -91,12 +91,9 @@ def get_user_posts(user, word, allows_offensive):
     if word is not None:
         if word.startswith('#'):
             hashtag = get_object_or_404(Hashtag, content=word[1:])
-
             posts = [post for post in posts if post.is_tagged_by(hashtag)]
         else:
             posts = [post for post in posts if word in normalize_words(post.get_words())]
-            hashtag = get_object_or_404(Hashtag, content=word)
-            posts = [post for post in posts if post.is_tagged_by(hashtag)]
     if not allows_offensive:
         # Get all posts with offensive attribute set to True
         offensive_posts = Post.objects.filter(is_offensive=True)
