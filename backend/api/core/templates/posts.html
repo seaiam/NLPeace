@@ -183,15 +183,15 @@
             {% if post.user.id != request.user.id %}
             <div class ="icons-list" >
                 <div class="feed" >
-                    {% if post in likes %}
-                        <a href="{% url 'like' post.id %}" class="like-link">
-                            <i class="far fa-thumbs-up" aria-hidden="true"></i> 
-                        </a>
+                        {% if post in likes %}
+                            <a href="{% url 'like' post.id %}" class="like-link">
+                                <i class="far fa-thumbs-up" aria-hidden="true"></i> 
+                            </a>
                         {% else %}
-                        <a href="{% url 'like' post.id %}" class="post-liked like-link">
-                            <i class="far fa-thumbs-up" aria-hidden="true"></i>
-                        </a>
-                    {% endif %}
+                            <a href="{% url 'like' post.id %}" class="post-liked like-link">
+                                <i class="far fa-thumbs-up" aria-hidden="true"></i>
+                            </a>
+                        {% endif %}
                     {% if post.get_number_likes > 0 %}
                     <span class="dislike-count">{{ post.get_number_likes }}</span>
                     {% endif %}
@@ -223,7 +223,7 @@
                 <form method="post" action="{% url 'save_post' post.id %}">
                     {% csrf_token %}
                     <div class="feed-bookmark">
-                    {% if post.id in saved_post_ids %}  <!--DOES NOT USE THIS BUTTON-->
+                    {% if post.id in saved_post_ids %}
                             <button type="submit" class = "bookmarked-button"><i class="far fa-bookmark" aria-hidden="true"></i> </button>
                     {% else %}
                             <button type="submit" class = "bookmark-button"> <i class="far fa-bookmark" aria-hidden="true"></i> </button>
@@ -305,10 +305,10 @@
                 </div>
                 
                 <div class="feed" >
-                    {% if post in dislikes  %}
-                        <a href="{% url 'dislike' post.id %}" class="like-link">
-                            <i class="far fa-thumbs-down" aria-hidden="true"></i> 
-                        </a>
+                    {% if post in dislikes %}
+                    <a href="{% url 'dislike' post.id %}" class="like-link">
+                        <i class="far fa-thumbs-down" aria-hidden="true"></i> 
+                    </a>
                     {% else %}
                     <a href="{% url 'dislike' post.id %}" class="post-disliked like-link">
                         <i class="far fa-thumbs-down" aria-hidden="true"></i> 
