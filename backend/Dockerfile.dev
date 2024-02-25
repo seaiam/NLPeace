@@ -39,18 +39,22 @@ EXPOSE 8000
 
 
 # Install libffi-dev
-RUN python -m venv /py && \ 
+RUN python -m venv /py && \
+    source /py/bin/activate && \
     apk add --update --no-cache libffi-dev && \ 
+    apk add --update --no-cache libstdc++ && \
     /py/bin/pip install --upgrade pip && \
     apk add --update --no-cache postgresql-client && \
     apk add --update --no-cache --virtual .tmp-build-deps \
         build-base postgresql-dev musl-dev && \
     /py/bin/pip install -r /tmp/requirements.txt && \
     /py/bin/pip install -U 'channels[daphne]' && \
+    python -m spacy download en_core_web_sm && \
     rm -rf /tmp && \
     apk del .tmp-build-deps && \
     adduser \
         --disabled-password \
+        --no-create-home \
         django-user
         
 

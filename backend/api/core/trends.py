@@ -1,15 +1,12 @@
-import nltk
 import re
+import spacy
 
 from cachetools import LFUCache, TTLCache
 from django.conf import settings
 from itertools import chain
-from nltk.corpus import stopwords
-from textblob import TextBlob
 
-nltk.download('stopwords')
 
-stopwords = set(stopwords.words('english'))
+nlp = spacy.load('en_core_web_sm')
 
 HASHTAG_PATTERN = re.compile(r'\B#\S+')
 
@@ -45,8 +42,7 @@ def hashtag_counter(post):
 
 @trend_analyzer('nouns')
 def noun_counter(post):
-    blob = TextBlob(HASHTAG_PATTERN.sub('', post.content).strip())
-    for word in blob.noun_phrases:
-        stemmed = word.stem()
-        if stemmed not in stopwords:
-            yield stemmed
+    doc = nlp(HASHTAG_PATTERN.sub('', post.content).strip())
+    return map(lambda token: token.lemma_, doc.noun_chunks)
+        
+
