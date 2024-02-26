@@ -33,7 +33,7 @@
             </div>
             <div class="col-md-8 text-md-right">
                 <button class="community-members" onclick="toggleModal('community-members-modal')"><i class='fas fa-user-friends'></i> {{community.members.count}} Members</button>  &nbsp;  
-                {% if request.user in community.members.all or request.user == community.admin %}               
+                {% if request.user in community.members.all or not community.is_private or request.user == community.admin %}               
                 <div class="dropdown" style="float:right;">
                     <a class="hidden-arrow" type="button" data-toggle="dropdown" aria-expanded="false">
                         <i class="fas fa-ellipsis-v mb-2"></i>
