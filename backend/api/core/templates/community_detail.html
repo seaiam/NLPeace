@@ -48,7 +48,7 @@
                         </li>
                         {% endif %} 
                         {% if request.user != community.admin %}
-                        <li><a class="dropdown-item" href="#" onclick=""> <i class="far fa-flag"></i> Report Community</a></li>
+                        <li><a class="dropdown-item" href="#" onclick="toggleModal('reportModal')"> <i class="far fa-flag"></i> Report Community</a></li>
                         {% endif %} 
                     </ul>
                 </div> 
@@ -246,4 +246,22 @@
     </div>
 </div>
 
+<!--report community popup modal-->
+<div id="reportModal" class="popup">
+    <div class="popup-content">
+        <span class="close" onclick="toggleModal('reportModal')">&times;</span>
+        <p class="modalTitle">Report Community</p>
+        <form action="" method="POST">
+            {% csrf_token %}
+            <label for="{{ reportCommunityForm.category.id_for_label }}" class="form-outline mb-4" style="font-size:20px;">Reason</label>
+            {{ reportCommunityForm.reason }}
+            <br>
+            <label for="{{ reportCommunityForm.info.id_for_label }}" class="form-outline mb-4" style="font-size:20px;">Additional information</label>
+            {{ reportCommunityForm.info }}
+            <div class="text-md-right">
+                <button class="reportButton">Report</button>
+            </div>
+        </form>
+    </div>
+</div>
 {% endblock %}

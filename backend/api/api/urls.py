@@ -73,7 +73,8 @@ urlpatterns = [
     path('accounts/profile/settings/updateContentFiltering', profile_views.nlp_toggle, name='nlp_toggle'),
     path('community/delete/<int:community_id>/', community_views.delete_community, name='delete_community'),
     path('trends/', main_pages_views.trends, name='trends'),
-    path('trend_serach/<str:word>/', main_pages_views.trend_search, name='trend_search')    
+    path('trend_serach/<str:word>/', main_pages_views.trend_search, name='trend_search'),
+    path('community/<int:reported_id>/reportCommunity/', community_views.report_community, name='report_community')  
 ]
 
 if settings.DEBUG:

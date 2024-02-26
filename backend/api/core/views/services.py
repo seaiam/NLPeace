@@ -615,3 +615,9 @@ def handle_delete_community(community_id, user):
 
 def get_trends():
     return trends.get()
+
+def report_community_service(request, reported_id, form):
+    report = form.save(commit=False)
+    report.reporter = request.user
+    report.reported = get_object_or_404(Community, id=reported_id)
+    report.save()
