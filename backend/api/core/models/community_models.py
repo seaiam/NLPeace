@@ -21,8 +21,8 @@ class CommunityReport(models.Model):
         HATE_SPEECH = 0, 'Hate'
         ABUSE_AND_HARASSMENT = 1, 'Abuse and harassment'
 
-    reporter = models.ForeignKey(User, on_delete=models.DO_NOTHING,  related_name='reporter_community')
-    reported = models.ForeignKey(User, on_delete=models.CASCADE,  related_name='reported_community')
+    reporter = models.ForeignKey(User, on_delete=models.DO_NOTHING,  related_name='reporting_user')
+    reported = models.ForeignKey(Community, on_delete=models.CASCADE,  related_name='reported_community')
     reason = models.IntegerField(choices=Reason.choices)
     info = models.TextField(null=True, blank=True)
     date_reported = models.DateTimeField(auto_now_add=True)
