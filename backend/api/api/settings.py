@@ -227,4 +227,4 @@ TRENDS_LIMIT = 10
 
 TRENDING_THRESHOLD = 100
 
-TREND_ANALYZERS = ['hashtags', 'nouns']
+TREND_ANALYZERS = ['hashtags']

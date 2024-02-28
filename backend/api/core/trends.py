@@ -5,7 +5,7 @@ from cachetools import LFUCache, TTLCache
 from django.conf import settings
 from itertools import chain
 from nltk.corpus import stopwords
-from textblob import TextBlob
+
 
 nltk.download('stopwords')
 
@@ -43,10 +43,3 @@ class Trends:
 def hashtag_counter(post):
     return filter(lambda word: word.startswith('#'), post.get_words())
 
-@trend_analyzer('nouns')
-def noun_counter(post):
-    blob = TextBlob(HASHTAG_PATTERN.sub('', post.content).strip())
-    for word in blob.noun_phrases:
-        stemmed = word.stem()
-        if stemmed not in stopwords:
-            yield stemmed
