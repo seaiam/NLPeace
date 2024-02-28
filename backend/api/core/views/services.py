@@ -1,5 +1,6 @@
 import requests
-
+import langid
+from googletrans import Translator
 from api.logger_config import configure_logger # TODO add logging statements
 from django.conf import settings
 from django.contrib import messages
@@ -26,6 +27,7 @@ trends = Trends()
 def process_post_form(request, form):
     if form.is_valid():
         tweet_text = form.cleaned_data['content']
+        tweet_text = translation_service(tweet_text)
         result = classify_text(tweet_text)
         if result["prediction"][0] in [1, 0]:  # Offensive or hate speech
             message = 'This post contains offensive language. It will only be showed to users who turn off content filtering.' if result["prediction"][0] == 1 else 'This post contains hateful language. It will only be showed to users who turn off content filtering.'
@@ -261,6 +263,7 @@ def handle_invitation(followed_user_pk, following_user_pk, action):
 def process_comment_form(request, form, post_id):
     if form.is_valid():
         comment_text = form.cleaned_data['content']
+        comment_text = translation_service(comment_text)
         result = classify_text(comment_text)
 
         if result["prediction"][0] in [1, 0]:  # Offensive or hate speech
@@ -499,6 +502,7 @@ def handle_pin(user, post_id):
 def handle_edit_post(request,form, post, remove_image, parent_post):
     if form.is_valid():
         edited_text = form.cleaned_data['content']
+        edited_text = translation_service(edited_text)
         result = classify_text(edited_text)
         if result["prediction"][0] in [1, 0]:  # Offensive or hate speech
             message = 'This post contains offensive language. It will only be showed to users who turn off content filtering.' if result["prediction"][0] == 1 else 'This post contains hateful language. It will only be showed to users who turn off content filtering.'
@@ -621,3 +625,17 @@ def report_community_service(request, reported_id, form):
     report.reporter = request.user
     report.reported = get_object_or_404(Community, id=reported_id)
     report.save()
+
+def report_community_service(request, reported_id, form):
+    report = form.save(commit=False)
+    report.reporter = request.user
+    report.reported = get_object_or_404(Community, id=reported_id)
+    report.save()
+
+def translation_service(text):
+        lang, _ = langid.classify(text)
+        if lang != 'en':
+            translator = Translator()
+            translation = translator.translate(text, dest='en')
+            text = translation.text
+        return text
