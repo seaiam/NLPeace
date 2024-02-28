@@ -198,8 +198,6 @@ def delete_community(request, community_id):
 
 @login_required
 def report_community(request, reported_id):
-    print("in report")
-    print()
     if request.method == 'POST':
         form = CommunityReportForm(request.POST)
         if form.is_valid():
