@@ -38,7 +38,7 @@
                     <a class="hidden-arrow" type="button" data-toggle="dropdown" aria-expanded="false">
                         <i class="fas fa-ellipsis-v mb-2"></i>
                     </a>
-                    <ul class="dropdown-menu">
+                    <ul class="dropdown-menu dropdown-menu-right">
                         {% if request.user == community.admin %}   
                         <li>
                             <form method="POST" action="{% url 'delete_community' community.id %}" onsubmit="return confirm('Are you sure you want to delete this community? This cannot be undone!');">
