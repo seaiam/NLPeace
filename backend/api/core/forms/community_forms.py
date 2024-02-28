@@ -1,5 +1,5 @@
 from django import forms
-from core.models.community_models import Community
+from core.models.community_models import Community,CommunityReport
 
 class CommunityForm(forms.ModelForm):
     is_private = forms.ChoiceField(
@@ -20,3 +20,8 @@ class CommunityForm(forms.ModelForm):
         super(CommunityForm, self).__init__(*args, **kwargs)
         self.fields['pic'].required = False
         self.fields['description'].required = False
+
+class CommunityReportForm(forms.ModelForm):
+    class Meta:
+        model = CommunityReport
+        fields = ['reason', 'info']

@@ -6,7 +6,7 @@ from django.contrib.auth.decorators import login_required
 from django.db.models import Q
 from django.shortcuts import get_object_or_404
 from django.http import *
-from core.forms.community_forms import CommunityForm
+from core.forms.community_forms import CommunityForm,CommunityReportForm
 from core.models.community_models import Community, CommunityPost
 from core.models.post_models import Post
 from core.forms.posting_forms import PostForm, PostReportForm
@@ -71,6 +71,7 @@ def community_detail(request, community_id):
         'community_posts': community_carriers,
         'is_member': is_member,
         'form': form,
+        'reportCommunityForm': CommunityReportForm(),
         'likes': likes,
         'dislikes': dislikes,
         'saved_post_ids': saved_post_ids,
@@ -194,3 +195,14 @@ def delete_community(request, community_id):
             messages.error(request, message)
             return redirect('community_detail', community_id=community_id)
     return redirect('community_detail', community_id=community_id)        
+
+@login_required
+def report_community(request, reported_id):
+    if request.method == 'POST':
+        form = CommunityReportForm(request.POST)
+        if form.is_valid():
+            report_community_service(request, reported_id, form)
+            messages.success(request, 'Community successfully reported.')
+        else:
+            messages.error(request, 'Community not reported.')
+        return redirect('community_detail', reported_id)
