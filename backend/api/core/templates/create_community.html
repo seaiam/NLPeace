@@ -23,6 +23,12 @@
               
             </form>
         </div>
+        <div class = "container">
+            <div class="tab-btns">
+                <button class="tabbutton" onclick="showSection('all-communities')" id="defaultOpen">All Communities</button>
+                <button class="tabbutton" onclick="showSection('my-communities')">My Communities</button>
+            </div>    
+    </div>
     </div>           
         <!--create community popup-->
         <div id="create-community-modal" class="popup">
@@ -39,6 +45,8 @@
         <!--create community popup end-->
 </div>
 <br>
+
+<div id="all-communities" style="display:block;">
 {% for community in communities%}
 <div class="d-flex justify-content-center align-items-center">
     <div class="card" style="width: 37rem; border-radius: 20px;margin:20px 0px 20px 0px;  overflow: hidden;background: linear-gradient(to right, #F9D1C4 0%, #9BBDDD 51%, #F9D1C4 100%);">
@@ -88,5 +96,18 @@
         </div>
     </div>
 </div>
+</div>
+
 {% endfor %}
+
+<div id="my-communities" style="display:none;">
+</div>
+<script>
+    function showSection(sectionId) {
+        document.getElementById('all-communities').style.display = 'none';
+        document.getElementById('my-communities').style.display = 'none';
+        
+        document.getElementById(sectionId).style.display = 'block';
+    }
+    </script>
 {% endblock %}
