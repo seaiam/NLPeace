@@ -55,6 +55,14 @@ def community_detail(request, community_id):
         # Check if user is the admin of the community
         if request.user == community.admin:
             form = CommunityForm(request.POST, request.FILES, instance=community)
+
+            action = request.POST.get('action')
+            if action == "ban_user":
+             community_id = request.POST.get('community_id')
+             user_to_ban = request.POST.get('member_id')
+             handle_user_banning(community_id, user_to_ban)
+             messages.success(request, "User has been banned.")
+             
             if form.is_valid():
                 form.save()
                 messages.success(request, 'Community updated successfully.')
@@ -206,3 +214,4 @@ def report_community(request, reported_id):
         else:
             messages.error(request, 'Community not reported.')
         return redirect('community_detail', reported_id)
+

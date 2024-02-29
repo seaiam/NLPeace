@@ -47,6 +47,14 @@
                             </form>
                         </li>
                         {% endif %} 
+                        {% if request.user == community.admin and community.banned_users.exists %} 
+                        <li>
+                            <form method="POST" action="">
+                                {% csrf_token %}
+                                <button type="submit" class="dropdown-item" style = "padding-left:5px;"><i class="bi bi-trash icon-spacing"></i> Banned Users</button>
+                            </form>
+                        </li>
+                        {% endif %} 
                         {% if request.user != community.admin %}
                         <li><a class="dropdown-item" href="#" onclick="toggleModal('reportModal')"> <i class="far fa-flag"></i> Report Community</a></li>
                         {% endif %} 
@@ -78,7 +86,22 @@
                                     </div>  
                                     <div class="col-9">
                                         <a href= "{% url 'guest' user_id=member.id %}" class="user-name" style = "color: #ffffff;"> {{member.username}} </a>    
-                                    </div>              
+                                    </div> 
+                                    <div class="dropdown" style="float:right;">
+                                        <a class="hidden-arrow" type="button" data-toggle="dropdown" aria-expanded="false">
+                                            <i class="fas fa-ellipsis-v mb-2"></i>
+                                        </a>
+                                        <ul class="dropdown-menu">
+                                            <li>
+                                                <form method="POST" >
+                                                    {% csrf_token %}
+                                                    <input type="hidden" name="member_id" value="{{ member.id }}">
+                                                    <input type="hidden" name="community_id" value="{{ community.id }}">
+                                                    <button type="submit" class="dropdown-item" style = "padding-left:5px;" name="action" value="ban_user"><i class="bi bi-trash icon-spacing"> Ban User </i></button>
+                                                </form>
+                                            </li>
+                                        </ul>
+                                    </div>  
                                 </div>
                                 <hr>
                             </div>

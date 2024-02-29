@@ -639,3 +639,15 @@ def translation_service(text):
             translation = translator.translate(text, dest='en')
             text = translation.text
         return text
+
+def handle_user_banning(community_id,user_id):
+      community = Community.objects.get(id=community_id)
+      user_to_ban = User.objects.get(pk=user_id)
+      user_posts =CommunityPost.objects.filter(post__user= user_to_ban, community=community)
+      for comm_post in user_posts:
+          comm_post.post.delete()
+      user_posts.delete()
+      community.members.remove(user_to_ban)
+      community.banned_users.add(user_to_ban)
+      
+      

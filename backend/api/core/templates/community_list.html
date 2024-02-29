@@ -40,6 +40,7 @@
 <br>
     <!-- Display communities -->
     {% for community in communities %}
+    {% if request.user not in community.banned_users.all %}
     <div class="d-flex justify-content-center align-items-center">
         <div class="card" style="width: 37rem; border-radius: 20px; margin:20px 0px 20px 0px; overflow: hidden; background: linear-gradient(to right, #F9D1C4 0%, #9BBDDD 51%, #F9D1C4 100%);">
             <div class="card-body">
@@ -93,5 +94,6 @@
             </div>
         </div>
     </div>
+    {% endif %}
     {% endfor %}
 {% endblock %}
