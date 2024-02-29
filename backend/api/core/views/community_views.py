@@ -206,3 +206,11 @@ def report_community(request, reported_id):
         else:
             messages.error(request, 'Community not reported.')
         return redirect('community_detail', reported_id)
+
+@login_required
+def my_communities(request):
+    user_communities = Community.objects.filter(admin=request.user).order_by('-created_at')
+    context = {
+        'user_communities': user_communities,
+    }
+    return render(request, 'my_communities.html', context)
