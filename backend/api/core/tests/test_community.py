@@ -205,6 +205,33 @@ class CommunityJoinTest(TestCase):
         self.assertIn(self.joiner, updated_community.banned_users.all())
 
 
+    def test_handle_user_unbanning(self):
+       
+        self.client.login(username="admin", password="password") 
+        community_id = self.public_community.id
+        user_to_ban_id = self.joiner.id  
+
+        response = self.client.post(
+            reverse('community_detail', kwargs={'community_id': community_id}),
+            {
+                'action': 'ban_user',
+                'community_id': community_id,
+                'member_id': user_to_ban_id,
+            }
+        )
+        response2 = self.client.post(
+            reverse('community_detail', kwargs={'community_id': community_id}),
+            {
+                'action': 'unban_user',
+                'community_id': community_id,
+                'member_id': user_to_ban_id,
+            }
+        )
+
+        self.assertContains(response2, "User has been unbanned.")
+        
+        updated_community = Community.objects.get(id=community_id)
+        self.assertNotIn(self.joiner, updated_community.banned_users.all())
 class CommunityPostTestCase(TestCase):
     def setUp(self):
         # Creating test users
