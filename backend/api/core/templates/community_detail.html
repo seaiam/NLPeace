@@ -45,14 +45,12 @@
                                 {% csrf_token %}
                                 <button type="submit" class="dropdown-item" style = "padding-left:5px;"><i class="bi bi-trash icon-spacing"></i> Delete Community</button>
                             </form>
-                        </li>
-                        {% endif %} 
-                        {% if request.user == community.admin and community.banned_users.exists %} 
-                        <li>
-                            <form method="POST" action="">
-                                {% csrf_token %}
-                                <button type="submit" class="dropdown-item" style = "padding-left:5px;"><i class="bi bi-trash icon-spacing"></i> Banned Users</button>
-                            </form>
+                            {% if request.user == community.admin and community.banned_users.exists %} 
+                            <button type="button" onclick="toggleModal('banned-user-list-modal')" class="dropdown-item">
+                                <i class="fas fa-ban"></i>Banned Users
+                            </button> 
+                            {% endif %} 
+                      
                         </li>
                         {% endif %} 
                         {% if request.user != community.admin %}
@@ -289,4 +287,49 @@
         </form>
     </div>
 </div>
+<!--Banned member list popup-->
+<div id="banned-user-list-modal" class="popup">
+    <div class="popup-content" id ="popupScroll">
+
+        <span class="close" onclick="toggleModal('banned-user-list-modal')">&times;</span>
+        <p class="Community-modalTitle">Banned Users List</p>
+        <form method="post" enctype="multipart/form-data" >
+            {% csrf_token %}
+            {% for member in community.banned_users.all %}
+            
+            <div class="container">
+                <div class="d-flex align-items-center justify-content-center">
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-3"> 
+                                <div class="user-picture">
+                                {% if member.profile and member.profile.pic %}
+                                <img src="{{ member.profile.pic.url }}" alt="{{ member.username }}'s profile picture" class="reply-user-pic">
+                                {% else %}
+                                <img src="{% static 'default.jpg' %}" class="reply-user-pic" alt="{{ member.username }}'s profile picture" />
+                                {% endif %}
+                                </div>
+                            </div>  
+                            <div class="col-5">
+                                <a href= "{% url 'guest' user_id=member.id %}" class="user-name" style = "color: #ffffff;"> {{member.username}} </a>    
+                            </div> 
+                            <div class="col-4">
+                                <form method="POST">
+                                    {% csrf_token %}
+                                    <input type="hidden" name="member_id" value="{{ member.id }}">
+                                    <input type="hidden" name="community_id" value="{{ community.id }}">
+                                    <button class="unbanButton" name="action" value="unban_user">Unban</button>
+                                </form>
+                               
+                            </div>  
+                        </div>
+                        <hr>
+                    </div>
+                </div>
+            </div>
+          
+            {% endfor %}
+        </form>
+    </div>
+</div>  
 {% endblock %}

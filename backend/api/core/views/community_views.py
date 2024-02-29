@@ -62,7 +62,13 @@ def community_detail(request, community_id):
              user_to_ban = request.POST.get('member_id')
              handle_user_banning(community_id, user_to_ban)
              messages.success(request, "User has been banned.")
-             
+
+            if action == "unban_user":
+             community_id = request.POST.get('community_id')
+             user_to_unban = request.POST.get('member_id')
+             handle_user_unbanning(community_id, user_to_unban)
+             messages.success(request, "User has been unbanned.")
+
             if form.is_valid():
                 form.save()
                 messages.success(request, 'Community updated successfully.')

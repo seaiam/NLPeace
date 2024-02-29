@@ -649,5 +649,11 @@ def handle_user_banning(community_id,user_id):
       user_posts.delete()
       community.members.remove(user_to_ban)
       community.banned_users.add(user_to_ban)
-      
+
+def handle_user_unbanning(community_id, user_id):
+    community = Community.objects.get(id=community_id)
+    user_to_unban = User.objects.get(pk=user_id)
+    community.banned_users.remove(user_to_unban)
+
+
       
