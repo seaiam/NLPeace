@@ -32,13 +32,15 @@ def create_community(request):
     communities = Community.objects.all()[:10]
 
     user_communities = Community.objects.filter(admin=request.user).order_by('-created_at')
-  
+    joined_communities = Community.objects.filter(members=request.user).exclude(admin=request.user).order_by('-created_at')
+
     context = {
         'data':data,
         'data':data,
         'form': form,
         'communities': communities,
         'user_communities': user_communities,
+        'joined_community': joined_communities,
     }
     return render(request, 'create_community.html', context)
 
