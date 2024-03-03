@@ -27,6 +27,8 @@
             <div class="tab-btns">
                 <button class="tabbutton" onclick="showSection('all-communities')" id="defaultOpen">All Communities</button>
                 <button class="tabbutton" onclick="showSection('my-communities')">My Communities</button>
+                <button class="tabbutton" onclick="showSection('joined-communities')">Joined Communities</button>
+            
             </div>    
     </div>
     </div>           
@@ -101,12 +103,120 @@
 {% endfor %}
 
 <div id="my-communities" style="display:none;">
+{% for community in user_communities%}
+<div class="d-flex justify-content-center align-items-center">
+    <div class="card" style="width: 37rem; border-radius: 20px;margin:20px 0px 20px 0px;  overflow: hidden;background: linear-gradient(to right, #F9D1C4 0%, #9BBDDD 51%, #F9D1C4 100%);">
+        <div class="card-body">
+            {% if community.pic %}
+            <div class="community-banner">
+                <img src="{{community.pic.url}}" class="community-banner" alt="communityBanner">
+            </div>
+            {% else %}
+            <div class="community-banner">
+            <img src="{% static 'defaultBanner.jpg' %}" width="100%" class="community-banner" alt="communityBanner" />
+            </div>
+            {% endif %}
+            <br>
+            <div class="row">
+                <div class="col-md-8">
+                    <a class ="name-link" href="{% url 'community_detail' community_id=community.id %}"><h4 class="community-title">{{community.name}}</h4></a> 
+                    <h6 class="members">{{community.members.count}} Members</h6>    
+                </div>
+                <div class="col-md-4 text-md-right">
+                    {% if request.user in community.members.all %}
+                    <form method="POST" action="{% url 'leave_community' %}">
+                        {% csrf_token %}
+                        <input type="hidden" name="community_id" value="{{community.id}}" readonly/>
+                        <input type="hidden" name="requester_id" value="{{request.user.id}}" readonly/>
+                        <button type="submit" class="btn post-actions__publish">Leave</button>
+                    </form>
+                {% elif request.user in community.join_requests.all %}
+                    <form method="POST" action="{% url 'leave_community' %}">
+                        {% csrf_token %}
+                        <input type="hidden" name="community_id" value="{{ community.id }}" readonly/>
+                        <input type="hidden" name="requester_id" value="{{ request.user.id }}" readonly/>
+                        <button type="submit" class="btn post-actions__publish">Requested</button>
+                    </form>
+                {% else %}
+                    <form method="POST" action="{% url 'join_community' %}">
+                        {% csrf_token %}
+                        <input type="hidden" name="community_id" value="{{ community.id }}" readonly/>
+                        <input type="hidden" name="requester_id" value="{{ request.user.id }}" readonly/>
+                        {% if request.user != community.admin %}
+                        <button type="submit" class="btn post-actions__publish">Join</button>
+                        {% endif %}
+                    </form>
+                {% endif %}
+                </div>  
+            </div>
+        </div>
+    </div>
 </div>
+</div>
+{% endfor %}
+
+
+<div id="joined-communities" style="display:none;">
+    <h2 style="color: aliceblue;">WTFF</h2>
+    {% for community in joined_communities%}
+    <h2 style="color: aliceblue;">{{community.name}}</h2>
+    <div class="d-flex justify-content-center align-items-center">
+        <div class="card" style="width: 37rem; border-radius: 20px;margin:20px 0px 20px 0px;  overflow: hidden;background: linear-gradient(to right, #F9D1C4 0%, #9BBDDD 51%, #F9D1C4 100%);">
+            <div class="card-body">
+                {% if community.pic %}
+                <div class="community-banner">
+                    <img src="{{community.pic.url}}" class="community-banner" alt="communityBanner">
+                </div>
+                {% else %}
+                <div class="community-banner">
+                <img src="{% static 'defaultBanner.jpg' %}" width="100%" class="community-banner" alt="communityBanner" />
+                </div>
+                {% endif %}
+                <br>
+                <div class="row">
+                    <div class="col-md-8">
+                        <a class ="name-link" href="{% url 'community_detail' community_id=community.id %}"><h4 class="community-title">{{community.name}}</h4></a> 
+                        <h6 class="members">{{community.members.count}} Members</h6>    
+                    </div>
+                    <div class="col-md-4 text-md-right">
+                        {% if request.user in community.members.all %}
+                        <form method="POST" action="{% url 'leave_community' %}">
+                            {% csrf_token %}
+                            <input type="hidden" name="community_id" value="{{community.id}}" readonly/>
+                            <input type="hidden" name="requester_id" value="{{request.user.id}}" readonly/>
+                            <button type="submit" class="btn post-actions__publish">Leave</button>
+                        </form>
+                    {% elif request.user in community.join_requests.all %}
+                        <form method="POST" action="{% url 'leave_community' %}">
+                            {% csrf_token %}
+                            <input type="hidden" name="community_id" value="{{ community.id }}" readonly/>
+                            <input type="hidden" name="requester_id" value="{{ request.user.id }}" readonly/>
+                            <button type="submit" class="btn post-actions__publish">Requested</button>
+                        </form>
+                    {% else %}
+                        <form method="POST" action="{% url 'join_community' %}">
+                            {% csrf_token %}
+                            <input type="hidden" name="community_id" value="{{ community.id }}" readonly/>
+                            <input type="hidden" name="requester_id" value="{{ request.user.id }}" readonly/>
+                            {% if request.user != community.admin %}
+                            <button type="submit" class="btn post-actions__publish">Join</button>
+                            {% endif %}
+                        </form>
+                    {% endif %}
+                    </div>  
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+    {% endfor %}
+
+
 <script>
     function showSection(sectionId) {
         document.getElementById('all-communities').style.display = 'none';
-        document.getElementById('my-communities').style.display = 'none';
-        
+        document.getElementById("my-communities").style.display = 'none';
+        document.getElementById('joined-communities').style.display = 'none';
         document.getElementById(sectionId).style.display = 'block';
     }
     </script>
