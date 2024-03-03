@@ -1,6 +1,6 @@
 from django.test import TestCase
 from django.urls import reverse
-from core.models.community_models import Community, CommunityPost
+from core.models.community_models import Community, CommunityPost, CommunityReport
 from core.models.post_models import Post
 from core.models.profile_models import User
 from core.forms.community_forms import CommunityForm
@@ -239,5 +239,21 @@ class CommunityPostTestCase(TestCase):
 
         self.assertTrue(community_comment.is_community_post) #test if comment is a community post
 
+class CommunityReportTestCase(TestCase):
+
+    def setUp(self):
+            # Creating test user and loging in
+            self.user1 = User.objects.create_user(username='user1', password='password')
+            self.user2 = User.objects.create_user(username='user2', password='password')
+
+            # Creating a community
+            self.community = Community.objects.create(name='Test Community', admin=self.user1, is_private=False)
+
+    def test_report_community(self):
+            self.client.login(username='user2', password='password')
+            community_response = self.client.post(reverse('report_community', args=[self.community.id]), {'reported_community': self.community.id, 'reason': 0})
+            reports = CommunityReport.objects.all()
+            self.assertEqual(community_response.status_code, 302)
+            self.assertEqual(1, reports.count())
 
     

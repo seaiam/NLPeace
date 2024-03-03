@@ -15,4 +15,18 @@ class Community(models.Model):
 class CommunityPost(models.Model):
     post = models.ForeignKey(Post, on_delete=models.CASCADE)
     community = models.ForeignKey(Community, on_delete=models.CASCADE)
+
+class CommunityReport(models.Model):
+    class Reason(models.IntegerChoices):
+        HATE_SPEECH = 0, 'Hate'
+        ABUSE_AND_HARASSMENT = 1, 'Abuse and harassment'
+
+    reporter = models.ForeignKey(User, on_delete=models.DO_NOTHING,  related_name='reporting_user')
+    reported = models.ForeignKey(Community, on_delete=models.CASCADE,  related_name='reported_community')
+    reason = models.IntegerField(choices=Reason.choices)
+    info = models.TextField(null=True, blank=True)
+    date_reported = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f'{self.reporter.username} -- {CommunityReport.Reason(self.reason).name} -- {self.date_reported}' 
   

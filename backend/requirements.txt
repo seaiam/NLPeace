@@ -14,3 +14,5 @@ daphne
 redis
 cachetools
 spacy
+langid
+googletrans==4.0.0-rc1
