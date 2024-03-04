@@ -424,9 +424,21 @@ hr{
   text-decoration: none;
 }
 
-.editButton:hover {
+.editButton:hover, .postButton:hover {
   color: black;
   background: linear-gradient(to right, #F9D1C4 0%, #9BBDDD 51%, #F9D1C4 100%);
+  text-decoration: none;
+}
+
+.postButton {
+  display: inline-block;
+  padding: 5px 21px;
+  border: none;
+  background: linear-gradient(to right, #F9D1C4 0%, #9BBDDD 51%, #F9D1C4 100%);
+  color: #000;
+  text-align: center;
+  border-radius: 50px;
+  transition: background-color 0.3s ease;
   text-decoration: none;
 }
 
@@ -1296,14 +1308,14 @@ img {
   text-align: right;
 }
 
-.community-form{
+.community-form {
   font-size: small;
   text-align: start;
   font-size: large;
   color: #fff;
 }
 
-.Community-modalTitle{
+.Community-modalTitle, .post-modalTitle {
   text-align: center;
   color: #D9D9D9;
   font-size:30px;
