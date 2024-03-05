@@ -40,7 +40,7 @@ def create_community(request):
         'form': form,
         'communities': communities,
         'user_communities': user_communities,
-        'joined_community': joined_communities,
+        'joined_communities': joined_communities,
     }
     return render(request, 'create_community.html', context)
 
