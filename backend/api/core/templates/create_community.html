@@ -58,7 +58,7 @@
 {% for community in user_communities%}
     {% include "communities.html" with community=community %}
 {% empty %}
-    <div class="d-flex justify-content-center align-items-center">
+    <div class="d-flex justify-content-center align-items-center white-text">
             NO OWNED COMMUNITIES
     </div>  
 {% endfor %}
@@ -69,7 +69,7 @@
 {% for community in joined_communities%}
         {% include "communities.html" with community=community %}
     {% empty %}
-    <div class="d-flex justify-content-center align-items-center">
+    <div class="d-flex justify-content-center align-items-center white-text">
             NO JOINED COMMUNITIES
     </div>  
 {% endfor %}
