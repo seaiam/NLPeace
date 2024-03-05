@@ -25,10 +25,9 @@
         </div>
         <div class = "container">
             <div class="tab-btns">
-                <button class="tabbutton" onclick="showSection('all-communities')" id="defaultOpen">All Communities</button>
-                <button class="tabbutton" onclick="showSection('my-communities')">My Communities</button>
-                <button class="tabbutton" onclick="showSection('joined-communities')">Joined Communities</button>
-            
+                <button class="tabbutton" onclick="openTab(event, 'all-communities')" id="defaultOpen">All Communities</button>
+                <button class="tabbutton" onclick="openTab(event, 'my-communities')">My Communities</button>
+                <button class="tabbutton" onclick="openTab(event, 'joined-communities')">Joined Communities</button>
             </div>    
     </div>
     </div>           
@@ -48,13 +47,13 @@
 </div>
 <br>
 
-<div id="all-communities" style="display:block;">
+<div id="all-communities" class="tabcontent" style="display:block;">
     {% for community in communities%}
     {% include "communities.html" with community=community %}
     {% endfor %}
 </div>
 
-<div id="my-communities" style="display:none;"> 
+<div id="my-communities" class="tabcontent" style="display:none;"> 
 {% for community in user_communities%}
     {% include "communities.html" with community=community %}
 {% empty %}
@@ -65,7 +64,7 @@
 </div>  
 
 
-<div id="joined-communities" style="display:none;">
+<div id="joined-communities" class="tabcontent" style="display:none;">
 {% for community in joined_communities%}
         {% include "communities.html" with community=community %}
     {% empty %}
@@ -76,11 +75,24 @@
 </div>
 
 <script>
-    function showSection(sectionId) {
-        document.getElementById('all-communities').style.display = 'none';
-        document.getElementById("my-communities").style.display = 'none';
-        document.getElementById('joined-communities').style.display = 'none';
-        document.getElementById(sectionId).style.display = 'block';
+    function openTab(event, tabName) {           
+        var tabcontent, tabbutton;
+    
+        tabcontent = document.getElementsByClassName("tabcontent");
+        for (i = 0; i < tabcontent.length; i++) {
+            tabcontent[i].style.display = "none";
+        }
+    
+        tabbutton = document.getElementsByClassName("tabbutton");
+    
+        for (i = 0; i < tabbutton.length; i++) {
+            tabbutton[i].className = tabbutton[i].className.replace(" active", "");
+        }
+        document.getElementById(tabName).style.display = "block";
+        event.currentTarget.classList.add("active");
+    
     }
-    </script>
+    // opening tab 1 by default
+    document.getElementById("defaultOpen").click();
+</script>
 {% endblock %}
