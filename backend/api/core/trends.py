@@ -1,12 +1,9 @@
 import re
-import spacy
 
 from cachetools import LFUCache, TTLCache
 from django.conf import settings
 from itertools import chain
-
-
-nlp = spacy.load('en_core_web_sm')
+from core.utils import nlp
 
 HASHTAG_PATTERN = re.compile(r'\B#\S+')
 

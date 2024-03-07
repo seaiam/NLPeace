@@ -16,6 +16,7 @@ from core.models.post_models import Advertisement, Hashtag, HashtagInstance, Pos
 from core.models.profile_models import Profile, Notifications, User, CommunityNotifications
 from core.models.community_models import Community, CommunityPost
 from core.trends import Trends
+from core.utils import nlp
 
 class ContentCarrier:
     def __init__(self, payload):
@@ -108,7 +109,7 @@ def get_user_posts(user, word, allows_offensive):
     return mix(carriers, get_ads(user))
 
 def normalize_words(words):
-    return [word.lower() for word in words]
+    return [token.lemma_ for word in words for token in nlp(word)]
 
 def get_ads(user):
     resolver = RESOLVERS[settings.AD_SELECTION_STRATEGY]
