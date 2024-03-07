@@ -128,6 +128,18 @@ class CommunityTestCase(TestCase):
         self.assertContains(response, 'member1')
         self.assertContains(response, 'member2')
 
+    def test_owned_communities(self):
+        Community.objects.create(name='User Community 1', admin=self.user, is_private=False)
+        Community.objects.create(name='User Community 2', admin=self.user, is_private=True)
+        other_user = User.objects.create_user(username='otheruser', password='password')
+        Community.objects.create(name='Other User Community', admin=other_user, is_private=False)
+        
+        response = self.client.get(reverse('create_community'))
+        self.assertEqual(len(response.context['user_communities']), 2)
+        community_names = [community.name for community in response.context['user_communities']]
+        self.assertIn('User Community 1', community_names)
+        self.assertIn('User Community 2', community_names)
+
 class CommunityJoinTest(TestCase):
 
     def setUp(self):
