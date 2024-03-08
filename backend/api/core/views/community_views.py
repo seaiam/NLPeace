@@ -103,8 +103,12 @@ def community_detail(request, community_id):
 def join_community(request):
     if request.method == 'POST':
         community_to_join_id = request.POST.get('community_id')
+        community = get_object_or_404(Community, id=community_to_join_id)
         requester_id = request.POST.get('requester_id')
          # Preserve the search context if it exists
+        if request.user in community.banned_users.all():
+         messages.success(request, "This community can't be joined because you have been banned from it.")
+         return redirect('create_community')
         search = request.POST.get('search')
         if search:
           request.session['search'] = search
