@@ -51,6 +51,10 @@ def community_detail(request, community_id):
     
     is_member = request.user in community.members.all()
     
+    if request.user in community.banned_users.all():
+         messages.success(request, "This community can't be accessed because you have been banned from it.")
+         return redirect('create_community')
+
     if request.method == 'POST':
         # Check if user is the admin of the community
         if request.user == community.admin:
