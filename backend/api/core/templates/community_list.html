@@ -22,7 +22,7 @@
                 <input class="form-control mr-sm-2 community-search" type="search" placeholder="Search" aria-label="Search" name="search"  id="" style="width: 36rem;" value="{{ search }}">
             </form>
         </div>
-    </div>
+        </div>
         <!--create community popup-->
         <div id="create-community-modal" class="popup">
             <div class="popup-content">
@@ -39,61 +39,29 @@
 </div>
 <br>
     <!-- Display communities -->
-    {% for community in communities %}
-    {% if request.user not in community.banned_users.all %}
-    <div class="d-flex justify-content-center align-items-center">
-        <div class="card" style="width: 37rem; border-radius: 20px; margin:20px 0px 20px 0px; overflow: hidden; background: linear-gradient(to right, #F9D1C4 0%, #9BBDDD 51%, #F9D1C4 100%);">
-            <div class="card-body">
-                {% if community.pic %}
-                <div class="community-banner">
-                    <img src="{{community.pic.url}}" class="community-banner" alt="communityBanner">
-                </div>
-                {% else %}
-                <div class="community-banner">
-                <img src="{% static 'defaultBanner.jpg' %}" width="100%" class="community-banner" alt="communityBanner" />
-                </div>
-                {% endif %}
-                <br>
-                <div class="row">
-                    <div class="col-md-8">
-                        <a href="{% url 'community_detail' community_id=community.id %}">
-                        <h4 class="community-title">{{community.name}}</h4>
-                        </a>
-                        <h6 class="members">{{community.members.count}} Members</h6>    
-                    </div>
-                    <div class="col-md-4 text-md-right">
-                        {% if request.user in community.members.all %}
-                        <form method="POST" action="{% url 'leave_community' %}">
-                            {% csrf_token %}
-                            <input type="hidden" name="community_id" value="{{community.id}}" readonly/>
-                            <input type="hidden" name="requester_id" value="{{request.user.id}}" readonly/>
-                            <input type="hidden" name="search" value="{{ search }}" readonly/>
-                            <button type="submit" class="btn post-actions__publish">Leave</button>
-                        </form>
-                        {% elif request.user in community.join_requests.all %}
-                        <form method="POST" action="{% url 'leave_community' %}">
-                            {% csrf_token %}
-                            <input type="hidden" name="community_id" value="{{ community.id }}" readonly/>
-                            <input type="hidden" name="requester_id" value="{{ request.user.id }}" readonly/>
-                            <input type="hidden" name="search" value="{{ search }}" readonly/>
-                            <button type="submit" class="btn post-actions__publish">Requested</button>
-                        </form>
-                        {% else %}
-                        <form method="POST" action="{% url 'join_community' %}">
-                            {% csrf_token %}
-                            <input type="hidden" name="community_id" value="{{ community.id }}" readonly/>
-                            <input type="hidden" name="requester_id" value="{{ request.user.id }}" readonly/>
-                            <input type="hidden" name="search" value="{{ search }}" readonly/>
-                            {% if request.user != community.admin %}
-                            <button type="submit" class="btn post-actions__publish">Join</button>
-                            {% endif %}
-                        </form>
-                        {% endif %}
-                    </div>  
-                </div>
-            </div>
-        </div>
-    </div>
-    {% endif %}
+<div id="all-communities" style="display:block;">
+    {% for community in communities%}
+    {% include "communities.html" with community=community %}
     {% endfor %}
+</div>
+<div id="my-communities" style="display:none;">
+    {% for community in user_communities%}
+    {% include "communities.html" with community=community %}
+{% empty %}
+    <div class="d-flex justify-content-center align-items-center">
+            NO OWNED COMMUNITIES
+    </div>  
+{% endfor %}
+</div>
+
+    <script>
+        function showSection(sectionId) {
+            // Hide all sections
+            document.getElementById('all-communities').style.display = 'none';
+            document.getElementById('my-communities').style.display = 'none';
+            
+            // Show the selected section
+            document.getElementById(sectionId).style.display = 'block';
+        }
+        </script>
 {% endblock %}

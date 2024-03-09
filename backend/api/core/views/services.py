@@ -223,16 +223,19 @@ def get_user_posts_with_community_info(request,user, allows_offensive):
     posts_with_community_info = []
 
     for post in all_posts:
-        community_post_qs = CommunityPost.objects.filter(post=post.payload if hasattr(post, 'payload') else post).first()
-        if community_post_qs:
-            if not community_post_qs.community.is_private or request.user in community_post_qs.community.members.all() or request.user == user :
-                community = community_post_qs.community
-                post.community_name = community.name
-                post.community_id = community.id
+        if post.is_post:
+            community_post_qs = CommunityPost.objects.filter(post=post.payload if hasattr(post, 'payload') else post).first()
+            if community_post_qs:
+                if not community_post_qs.community.is_private or request.user in community_post_qs.community.members.all() or request.user == user :
+                    community = community_post_qs.community
+                    post.community_name = community.name
+                    post.community_id = community.id
+                    posts_with_community_info.append(post)
+            else:
+                post.community_name = None
+                post.community_id = None
                 posts_with_community_info.append(post)
         else:
-            post.community_name = None
-            post.community_id = None
             posts_with_community_info.append(post)
 
     return posts_with_community_info
