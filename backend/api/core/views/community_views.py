@@ -57,10 +57,28 @@ def community_detail(request, community_id):
     
     is_member = request.user in community.members.all()
     
+    if request.user in community.banned_users.all():
+         messages.success(request, "This community can't be accessed because you have been banned from it.")
+         return redirect('create_community')
+
     if request.method == 'POST':
         # Check if user is the admin of the community
         if request.user == community.admin:
             form = CommunityForm(request.POST, request.FILES, instance=community)
+
+            action = request.POST.get('action')
+            if action == "ban_user":
+             community_id = request.POST.get('community_id')
+             user_to_ban = request.POST.get('member_id')
+             handle_user_banning(community_id, user_to_ban)
+             messages.success(request, "User has been banned.")
+
+            if action == "unban_user":
+             community_id = request.POST.get('community_id')
+             user_to_unban = request.POST.get('member_id')
+             handle_user_unbanning(community_id, user_to_unban)
+             messages.success(request, "User has been unbanned.")
+
             if form.is_valid():
                 form.save()
                 messages.success(request, 'Community updated successfully.')
@@ -91,8 +109,12 @@ def community_detail(request, community_id):
 def join_community(request):
     if request.method == 'POST':
         community_to_join_id = request.POST.get('community_id')
+        community = get_object_or_404(Community, id=community_to_join_id)
         requester_id = request.POST.get('requester_id')
          # Preserve the search context if it exists
+        if request.user in community.banned_users.all():
+         messages.success(request, "This community can't be joined because you have been banned from it.")
+         return redirect('create_community')
         search = request.POST.get('search')
         if search:
           request.session['search'] = search
@@ -212,3 +234,4 @@ def report_community(request, reported_id):
         else:
             messages.error(request, 'Community not reported.')
         return redirect('community_detail', reported_id)
+

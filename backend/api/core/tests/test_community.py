@@ -7,6 +7,7 @@ from core.forms.community_forms import CommunityForm
 from django.core.exceptions import ObjectDoesNotExist
 from core.models.profile_models import Profile
 
+
 class CommunityTestCase(TestCase):
     def setUp(self):
         # Creating test user and loging in
@@ -210,7 +211,54 @@ class CommunityJoinTest(TestCase):
         self.assertIn(self.joiner, list(self.private_community.members.all()))
         self.assertNotIn(self.joiner, list(self.private_community.join_requests.all()))
 
+    def test_handle_user_banning(self):
+       
+        self.client.login(username="admin", password="password") 
+        community_id = self.public_community.id
+        user_to_ban_id = self.joiner.id  
 
+        response = self.client.post(
+            reverse('community_detail', kwargs={'community_id': community_id}),
+            {
+                'action': 'ban_user',
+                'community_id': community_id,
+                'member_id': user_to_ban_id,
+            }
+        )
+
+        self.assertContains(response, "User has been banned.")
+        
+        updated_community = Community.objects.get(id=community_id)
+        self.assertIn(self.joiner, updated_community.banned_users.all())
+
+
+    def test_handle_user_unbanning(self):
+       
+        self.client.login(username="admin", password="password") 
+        community_id = self.public_community.id
+        user_to_ban_id = self.joiner.id  
+
+        response = self.client.post(
+            reverse('community_detail', kwargs={'community_id': community_id}),
+            {
+                'action': 'ban_user',
+                'community_id': community_id,
+                'member_id': user_to_ban_id,
+            }
+        )
+        response2 = self.client.post(
+            reverse('community_detail', kwargs={'community_id': community_id}),
+            {
+                'action': 'unban_user',
+                'community_id': community_id,
+                'member_id': user_to_ban_id,
+            }
+        )
+
+        self.assertContains(response2, "User has been unbanned.")
+        
+        updated_community = Community.objects.get(id=community_id)
+        self.assertNotIn(self.joiner, updated_community.banned_users.all())
 class CommunityPostTestCase(TestCase):
     def setUp(self):
         # Creating test users
