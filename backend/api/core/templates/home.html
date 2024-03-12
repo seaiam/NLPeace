@@ -43,6 +43,7 @@
               </div>
               <div class="col-md-6">
                 {% if profile.user.id != request.user.id %}
+                {% if not profile.is_private or profile.user in request.user.profile.following.all|dictsort:"id" %}
               <div class="dropdown" style="float:right;">
                 <a class="hidden-arrow" type="button" data-toggle="dropdown" aria-expanded="false">
                     <i class="fas fa-ellipsis-v mt-4"></i>
@@ -56,6 +57,7 @@
                   {% endif %}
                 </ul>
               </div>
+              {% endif %}   
               <div style="float:right;">
                 <a href="{% url 'room' profile.user.id %}" class="hidden-arrow" type="button" aria-expanded="false">
                     <i class="fas fa-comment-dots mt-4 mr-3"></i>
