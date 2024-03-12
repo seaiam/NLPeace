@@ -66,6 +66,12 @@
             <div class="popup-content" id ="popupScroll">
                 <span class="close" onclick="toggleModal('community-members-modal')">&times;</span>
                 <p class="Community-modalTitle">Members List</p>
+                <!--search community member-->
+                <div class="ml-auto">
+                    <form class="form-inline" method="POST" action="">
+                        <input class="form-control mr-sm-2 community-member-search" style="width: 36rem; height:20%;" type="search" placeholder="Search" aria-label="Search" name="search"  id="search-input">
+                    </form>
+                </div>
                 <form method="post" enctype="multipart/form-data" >
                     {% csrf_token %}
                     {% for member in members %}
