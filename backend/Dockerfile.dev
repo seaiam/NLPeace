@@ -21,44 +21,23 @@
 # SOFTWARE.
 
 # Pull official base python image
-FROM python:3.10.13-alpine3.18
+FROM python:3.10.13
 LABEL maintainer="SOEN490"
 
 ENV PYTHONDONTWRITEBYTECODE 1
 ENV PYTHONUNBUFFERED 1
 ENV DEBUG 0
 
-
-RUN apk add --update --no-cache libffi-dev
-
-
 COPY ./requirements.txt /tmp/requirements.txt
 COPY ./api /api
 WORKDIR /api
 EXPOSE 8000
 
-
-# Install libffi-dev
-RUN python -m venv /py && \
-    source /py/bin/activate && \
-    apk add --update --no-cache libffi-dev && \ 
-    apk add --update --no-cache libstdc++ && \
-    /py/bin/pip install --upgrade pip && \
-    apk add --update --no-cache postgresql-client && \
-    apk add --update --no-cache --virtual .tmp-build-deps \
-        build-base postgresql-dev musl-dev && \
-    /py/bin/pip install -r /tmp/requirements.txt && \
-    /py/bin/pip install -U 'channels[daphne]' && \
-    python -m spacy download en_core_web_sm && \
-    rm -rf /tmp && \
-    apk del .tmp-build-deps && \
-    adduser \
-        --disabled-password \
-        --no-create-home \
-        django-user
+RUN python -m venv /py
+RUN /py/bin/pip install --upgrade pip
+RUN /py/bin/pip install -r /tmp/requirements.txt
+RUN /py/bin/pip install -U 'channels[daphne]'
+RUN rm -rf /tmp
         
 
-RUN apk add --update --no-cache bind-tools
 ENV PATH="/py/bin:$PATH"
-
-USER django-user
