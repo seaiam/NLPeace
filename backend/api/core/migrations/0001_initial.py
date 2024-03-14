@@ -34,6 +34,7 @@ class Migration(migrations.Migration):
                 ('is_private', models.BooleanField(default=True)),
                 ('pic', models.ImageField(blank=True, null=True, upload_to='communityPics/')),
                 ('admin', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='administered_communities', to=settings.AUTH_USER_MODEL)),
+                ('banned_users', models.ManyToManyField(related_name='banned_users', to=settings.AUTH_USER_MODEL)),
                 ('join_requests', models.ManyToManyField(blank=True, related_name='join_requests', to=settings.AUTH_USER_MODEL)),
                 ('members', models.ManyToManyField(related_name='communities', to=settings.AUTH_USER_MODEL)),
             ],

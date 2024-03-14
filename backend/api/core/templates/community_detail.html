@@ -45,6 +45,12 @@
                                 {% csrf_token %}
                                 <button type="submit" class="dropdown-item" style = "padding-left:5px;"><i class="bi bi-trash icon-spacing"></i> Delete Community</button>
                             </form>
+                            {% if request.user == community.admin and community.banned_users.exists %} 
+                            <button type="button" onclick="toggleModal('banned-user-list-modal')" class="dropdown-item">
+                                <i class="fas fa-ban"></i>Banned Users
+                            </button> 
+                            {% endif %} 
+                      
                         </li>
                         {% endif %} 
                         {% if request.user != community.admin %}
@@ -76,9 +82,26 @@
                                         {% endif %}
                                         </div>
                                     </div>  
-                                    <div class="col-9">
+                                    <div class="col-7">
                                         <a href= "{% url 'guest' user_id=member.id %}" class="user-name" style = "color: #ffffff;"> {{member.username}} </a>    
-                                    </div>              
+                                    </div> 
+                                    <div class="col-2">
+                                        <div class="dropdown" style="float:right;">
+                                            <a class="hidden-arrow" type="button" data-toggle="dropdown" aria-expanded="false">
+                                                <i class="fas fa-ellipsis-h" style = "color: #ffffff;"></i>
+                                            </a>
+                                            <ul class="dropdown-menu dropdown-menu-right">
+                                                <li>
+                                                    <form method="POST" >
+                                                        {% csrf_token %}
+                                                        <input type="hidden" name="member_id" value="{{ member.id }}">
+                                                        <input type="hidden" name="community_id" value="{{ community.id }}">
+                                                        <button type="submit" class="dropdown-item"  name="action" value="ban_user"><i class="fa fa-ban"></i> Ban User </button>
+                                                    </form>
+                                                </li>
+                                            </ul>
+                                        </div> 
+                                    </div>  
                                 </div>
                                 <hr>
                             </div>
@@ -264,4 +287,49 @@
         </form>
     </div>
 </div>
+<!--Banned member list popup-->
+<div id="banned-user-list-modal" class="popup">
+    <div class="popup-content" id ="popupScroll">
+
+        <span class="close" onclick="toggleModal('banned-user-list-modal')">&times;</span>
+        <p class="Community-modalTitle">Banned Users List</p>
+        <form method="post" enctype="multipart/form-data" >
+            {% csrf_token %}
+            {% for member in community.banned_users.all %}
+            
+            <div class="container">
+                <div class="d-flex align-items-center justify-content-center">
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-3"> 
+                                <div class="user-picture">
+                                {% if member.profile and member.profile.pic %}
+                                <img src="{{ member.profile.pic.url }}" alt="{{ member.username }}'s profile picture" class="reply-user-pic">
+                                {% else %}
+                                <img src="{% static 'default.jpg' %}" class="reply-user-pic" alt="{{ member.username }}'s profile picture" />
+                                {% endif %}
+                                </div>
+                            </div>  
+                            <div class="col-5">
+                                <a href= "{% url 'guest' user_id=member.id %}" class="user-name" style = "color: #ffffff;"> {{member.username}} </a>    
+                            </div> 
+                            <div class="col-4">
+                                <form method="POST">
+                                    {% csrf_token %}
+                                    <input type="hidden" name="member_id" value="{{ member.id }}">
+                                    <input type="hidden" name="community_id" value="{{ community.id }}">
+                                    <button class="unbanButton" name="action" value="unban_user">Unban</button>
+                                </form>
+                               
+                            </div>  
+                        </div>
+                        <hr>
+                    </div>
+                </div>
+            </div>
+          
+            {% endfor %}
+        </form>
+    </div>
+</div>  
 {% endblock %}
