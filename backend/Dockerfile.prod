@@ -32,7 +32,10 @@ COPY ./requirements.txt /tmp/requirements.txt
 COPY ./api /api
 WORKDIR /api
 
+SHELL [ "/bin/bash", "-c" ]
+
 RUN python -m venv /py 
+RUN source /py/bin/activate
 RUN /py/bin/pip install --upgrade pip
 RUN /py/bin/pip install -r /tmp/requirements.txt
 RUN /py/bin/pip install -U 'channels[daphne]'
