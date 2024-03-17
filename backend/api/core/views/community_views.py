@@ -13,6 +13,7 @@ from core.forms.posting_forms import PostForm, PostReportForm
 from django.http import HttpResponseRedirect
 from .services import *
 from collections import namedtuple
+from django.template.loader import render_to_string
 
 @login_required
 def create_community(request):
@@ -60,6 +61,20 @@ def community_detail(request, community_id):
     if request.user in community.banned_users.all():
          messages.success(request, "This community can't be accessed because you have been banned from it.")
          return redirect('create_community')
+    
+    if request.method == 'GET':
+        search_query = request.GET.get('search', None)
+        if search_query:
+            members = search_for_users(search_query).filter(communities=community)
+    
+    if request.method == 'POST' and request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+        print("AJAX request received")
+        search_query = request.POST.get('search', '')
+        print("Search query:", search_query)
+        members = search_for_users(search_query).filter(communities=community)
+        html = render_to_string('members_list_partial.html', {'members': members}, request=request)
+        
+        return JsonResponse({'html': html})
 
     if request.method == 'POST':
         # Check if user is the admin of the community
