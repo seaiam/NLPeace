@@ -62,18 +62,22 @@
             </div>
              <!-- community member's list popup-->
              {% if request.user == community.admin %}
+            
             <div id="community-members-modal" class="popup">
             <div class="popup-content" id ="popupScroll">
                 <span class="close" onclick="toggleModal('community-members-modal')">&times;</span>
                 <p class="Community-modalTitle">Members List</p>
                 <!--search community member-->
                 <div class="ml-auto">
-                    <form class="form-inline" method="POST" action="">
-                        <input class="form-control mr-sm-2 community-member-search" style="width: 36rem; height:20%;" type="search" placeholder="Search" aria-label="Search" name="search"  id="search-input">
+                    <form id="search-form" class="form-inline" method="GET" action="">
+                        <input class="form-control mr-sm-2 community-member-search" style="width: 36rem; height:20%;" type="search" placeholder="Search" aria-label="Search" name="search" id="search-input">
+                        {% csrf_token %}
                     </form>
                 </div>
+               
                 <form method="post" enctype="multipart/form-data" >
                     {% csrf_token %}
+                    <div id="members-list-container">
                     {% for member in members %}
                     <div class="container">
                         <div class="d-flex align-items-center justify-content-center">
@@ -116,7 +120,8 @@
                     {% endfor %}
                 </form>
             </div>
-        </div>  
+            </div>  
+            </div>
         {% endif %}
         <!-- end-->
         </div>
