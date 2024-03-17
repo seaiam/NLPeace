@@ -343,4 +343,60 @@
         </form>
     </div>
 </div>  
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        document.getElementById('search-form').addEventListener('submit', function(e) {
+            console.log("Form submitted");
+            e.preventDefault();
+            var formData = new FormData(this);
+            formData.append('csrfmiddlewaretoken', '{{ csrf_token }}');
+            var currentUrl = window.location.pathname;
+            fetch(currentUrl, {
+                method: 'POST',
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest' //so that django recognize AJAX 
+                },
+                body: formData,
+            })
+            .then(response => response.json())
+            .then(data => {
+                
+                document.getElementById('members-list-container').innerHTML = data.html;
+            })
+            .catch(error => console.error('Error:', error));
+        });
+
+        function toggleModal(modalId) {
+            console.log("toggleModal called for:", modalId);
+            var modal = document.getElementById(modalId);
+            var isModalOpen = modal.style.display === "block";
+
+            modal.style.display = isModalOpen ? "none" : "block";
+
+            if (!isModalOpen) {
+                var searchInput = document.getElementById('search-input');
+                searchInput.value = ''; 
+                
+                
+                var formData = new FormData();
+                formData.append('search', ''); 
+                formData.append('csrfmiddlewaretoken', document.querySelector('[name=csrfmiddlewaretoken]').value);
+                
+                fetch(window.location.pathname, {
+                    method: 'POST',
+                    headers: {
+                        'X-Requested-With': 'XMLHttpRequest'
+                    },
+                    body: formData,
+                })
+                .then(response => response.json())
+                .then(data => {
+                    console.log("Response data:", data);
+                    document.getElementById('members-list-container').innerHTML = data.html;
+                })
+                .catch(error => console.error('Error:', error));
+        }
+    }
+});
+    </script>
 {% endblock %}
