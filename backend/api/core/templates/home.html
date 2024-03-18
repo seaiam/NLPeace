@@ -177,8 +177,54 @@
           {% if request.user == profile.user or not profile.is_private or profile.user in request.user.profile.following.all|dictsort:"id" %}
           <div class="col-md-4 text-md-right">
             {% if request.user == profile.user%}
+
+            <button id="connection" class="editButton" onclick = "connectWeb3Wallet()"></button>
             <button class="postButton" onclick="toggleModal('start-a-post')">Post</button>
             <button class="editButton" onclick="toggleModal('home-edit-bio-modal')">Edit Profile</button>
+            <script src="{% static 'web3auth/js/web3auth.js' %}"></script>
+            <script src="https://cdn.jsdelivr.net/npm/web3@4.6.0/dist/web3.min.js"></script>
+            <script src="https://cdn.jsdelivr.net/npm/web3-eth@4.5.0/lib/commonjs/validation.min.js"></script>
+            <script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js" integrity="sha512-8Q6Y9XnTbOE+JNvjBQwJ2H8S+UV4uA6hiRykhdtIyDYZ2TprdNmWOUaKdGzOhyr4dCyk287OejbPvwl7lrfqrQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+            <script>
+
+                let walletAddress="";
+
+                async function connectWeb3Wallet() {
+                    if (typeof window != "undefined" && typeof window.ethereum != "undefined") {
+                        try {
+                            if (walletAddress.startsWith("0x")) {       // all eth wallets start with 0x   
+                                walletAddress = "";     // if wallet already connected, remove address if button is pressed again
+                            } else {
+                            const accounts = await window.ethereum.request({method: "eth_requestAccounts"}); // opens MetaMask prompt to sign in with wallet
+                            walletAddress = accounts[0];
+                            console.log(accounts[0]);
+                            }
+                            connectionStatus()
+                            } catch (err) {
+                            console.error(err.message);
+                            }
+                    } else {
+                        console.log("No wallet detected");
+                    }
+                };
+           
+                window.onload = connectionStatus;   // happens when window loads
+                
+             
+                async function connectionStatus() {   // change text of the button 
+                    var button = document.getElementById("connection");
+                    var connection;
+                    
+                    if (walletAddress.length > 0){
+                        connection = "Wallet connected"
+                    } else {
+                        connection = "Connect wallet";
+                    }
+                    button.innerText = connection;
+                    }
+
+            </script>
+            
             {% endif %}
              <!--Start a post popup-->
              <div id="start-a-post" class="popup">
