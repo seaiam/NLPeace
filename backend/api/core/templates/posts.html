@@ -298,11 +298,17 @@
             <div class ="icons-list1" >
                 <div class="feed" >
                     {% if post in likes %}
-                        <a href="{% url 'like' post.id %}" class="like-link">
+                        <!-- <a href="{% url 'like' post.id %}" class="like-link">
+                            <i class="far fa-thumbs-up" aria-hidden="true"></i> 
+                        </a> -->
+                        <a href="javascript:void(0);" class="like-link" onclick="likePost('{{ post.id }}')">
                             <i class="far fa-thumbs-up" aria-hidden="true"></i> 
                         </a>
                         {% else %}
-                        <a href="{% url 'like' post.id %}" class="post-liked like-link">
+                        <!-- <a href="{% url 'like' post.id %}" class="post-liked like-link">
+                            <i class="far fa-thumbs-up" aria-hidden="true"></i>
+                        </a> -->
+                        <a href="javascript:void(0);" class="post-liked like-link" onclick="likePost('{{ post.id }}')">
                             <i class="far fa-thumbs-up" aria-hidden="true"></i>
                         </a>
                     {% endif %}
@@ -395,3 +401,29 @@
         </div>
     </div>
 </div>
+<script>
+    function likePost(postId) {
+    const csrftoken = document.querySelector('[name=csrfmiddlewaretoken]').value; 
+    fetch(`/like/${postId}/`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRFToken': csrftoken
+        },
+        body: JSON.stringify({ 'postId': postId })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.liked) {
+            // Updating like count
+            const likeLink = document.querySelector(`.like-link[onclick="likePost(${postId})"]`);
+            const likeCountSpan = likeLink.nextSibling;
+            likeLink.classList.toggle('post-liked');
+            likeCountSpan.textContent = data.likes_count;
+        }
+    })
+    .catch(error => console.error('Error:', error));
+}
+
+</script> 
+    
