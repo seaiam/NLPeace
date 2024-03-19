@@ -1,5 +1,9 @@
+import spacy
+
 from asgiref.sync import async_to_sync
 from channels.layers import get_channel_layer
+
+nlp = spacy.load('en_core_web_sm')
 
 def attempt_send_message(group, message):
     """
