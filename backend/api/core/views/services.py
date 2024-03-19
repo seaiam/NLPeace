@@ -306,7 +306,8 @@ def handle_like(user, post_id):
         PostLike.objects.filter(liker=user, post=post).delete()
     else:
         #like post
-        like = PostLike.objects.create(liker=user, post=post)
+        PostLike.objects.create(liker=user, post=post)
+    return post.get_number_likes()
 
 def handle_dislike(user, post_id):
     post = get_object_or_404(Post, id=post_id)

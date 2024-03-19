@@ -81,9 +81,8 @@ def like(request, post_id):
     # if referer and 'profile' in referer.lower():
     #     return redirect('profile')
     # return HttpResponseRedirect(request.META.get('HTTP_REFERER', '/'))
-    handle_like(request.user, post_id)
-    post = Post.objects.get(pk=post_id) 
-    return JsonResponse({'liked': True, 'likes_count': post.get_number_likes()})
+    likes = handle_like(request.user, post_id)
+    return JsonResponse({'liked': True, 'likes_count': likes})
 
 @login_required
 def dislike(request, post_id):
