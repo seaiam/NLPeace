@@ -37,10 +37,20 @@ stop_words = set(stopwords.words('english'))
 import spacy
 nlp = spacy.load('en_core_web_sm', disable=['parser', 'ner'])
 
-def import_data():
-    df = pd.read_csv('data/labeled_data.csv')
+def import_hate_data():
+    df = pd.read_csv('data/hatespeech.csv')
     # Keep only the 'tweet' and 'class' columns
     df = df[['tweet', 'class']]
+    return df
+
+def import_bot_data():
+    df = pd.read_csv('data/bot.csv')
+    #Keep only the 'tweet' and label columns
+    df = df[['Tweet', 'Bot Label']]
+    return df
+
+def import_emotion_data():
+    df = pd.read_csv('data/emotion.csv')
     return df
 
 def preprocess(text):
