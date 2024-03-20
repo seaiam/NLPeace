@@ -139,6 +139,7 @@ def create_repost(user, post_id):
         Repost.objects.filter(post=post_to_repost, user=user).delete()
     else:
         Repost.objects.create(post=post_to_repost, user=user)
+    return post_to_repost.get_number_reposts()    
 
 def get_user_profile(user):
     profile, _ = Profile.objects.get_or_create(user=user)
