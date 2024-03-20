@@ -14,3 +14,4 @@ class PostReportForm(forms.ModelForm):
     class Meta:
         model = PostReport
         fields = ['category', 'info']
+        

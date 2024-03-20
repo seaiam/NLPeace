@@ -16,30 +16,36 @@ from .services import *
 def home(request, word=None):
     if not request.user.is_authenticated:
         return redirect('login')
-      
+    
+    profile, created = Profile.objects.get_or_create(user=request.user)
+
     if request.method == 'POST':
         form = PostForm(request.POST, request.FILES)
         post = process_post_form(request, form)
         if post:
             return redirect('home')
-
     
-    carriers = get_user_posts(request.user, word)
+    carriers = get_user_posts(request.user, word, profile.allows_offensive)
     # filtering out community post in home page
     posts = [carrier for carrier in carriers if (not hasattr(carrier.payload, 'is_community_post')) or (hasattr(carrier.payload, 'is_community_post') and not carrier.payload.is_community_post())]
 
     posts_without_ads = map(lambda carrier: carrier.payload, filter(lambda carrier: carrier.is_post, posts))
-    likes, dislikes, saved_post_ids = get_post_interactions(request.user, posts)
+    likes, dislikes, saved_post_ids = get_post_interactions(request.user, posts, profile.allows_offensive)
     reposted_post_ids = Repost.objects.filter(user=request.user).values_list('post_id', flat=True)
     data = Notifications.objects.filter(user=request.user).order_by('-id')
     following_users = request.user.profile.following.all()
     
-    following_carriers = get_following_posts(request.user, following_users)
+    following_carriers = get_following_posts(request.user, following_users, profile.allows_offensive)
     # filtering out community post in home page
     following_posts = [carrier for carrier in following_carriers if (not hasattr(carrier.payload, 'is_community_post')) or (hasattr(carrier.payload, 'is_community_post') and not carrier.payload.is_community_post())]
 
 
     reported_posts = [post.payload for post in posts if post.is_post and not post.payload.is_reportable_by(request.user)] #for post reporting
+
+    if profile.allows_offensive == False:
+            offensive_posts = Post.objects.filter(is_offensive=True)
+            reposted_post_ids = [id for id in reposted_post_ids if id not in offensive_posts.values_list('id', flat=True)]
+            reported_posts = Post.objects.filter(id__in=[p.id for p in reported_posts]).exclude(is_offensive=True)
 
     context = {
         'posts': posts,
@@ -61,19 +67,26 @@ def home(request, word=None):
 @login_required
 def profile(request):
     
+    profile, created = Profile.objects.get_or_create(user=request.user)
+
     if request.method == 'POST':
         form = PostForm(request.POST, request.FILES)
         post = process_post_form(request, form)
         if post:
             return redirect('profile')
+        
+    if request.user.is_authenticated:
+        allows_offensive = profile.allows_offensive
+    else:
+        allows_offensive = False
     
     profile = get_user_profile(request.user)
-    posts = get_user_posts_and_reposts(request.user)
+    posts = get_user_posts_with_community_info(request, request.user, allows_offensive)
     image_posts = get_image_posts(request.user, posts)
-    likes, dislikes, saved_post_ids = get_post_interactions(request.user, posts)
+    likes, dislikes, saved_post_ids = get_post_interactions(request.user, posts, allows_offensive)
     followers = profile.followers.all()
     following = profile.following.all()
-    liked_posts = get_liked_posts(request.user)
+    liked_posts = get_liked_posts(request.user, allows_offensive)
     data = Notifications.objects.filter(user=request.user).order_by('-id')
     #TEMP
     pinned_posts = [post for post in posts if not post.is_post or post.payload.is_pinned_by(request.user)]
@@ -85,7 +98,8 @@ def profile(request):
     reposted_post_ids = Repost.objects.filter(user=request.user).values_list('post_id', flat=True)    
     replies = [post for post in posts if post.is_post and post.payload.parent_post is not None]
     non_pinned_image_posts=[post for post in posts if post.is_post and not post.payload.is_pinned_by(request.user) and post.payload.image]
-   
+    community_posts = get_user_community_posts(request.user, allows_offensive) 
+
     context = {
         'profile': profile,
         'posts': posts,
@@ -110,7 +124,8 @@ def profile(request):
         'replies' : replies,
         'reposted_post_ids': reposted_post_ids,
         'reported_posts' : reported_posts, #for post reporting
-        'non_pinned_image_posts' : non_pinned_image_posts
+        'non_pinned_image_posts' : non_pinned_image_posts,
+        'community_posts' : community_posts
         }
     return render(request, 'home.html', context)
 
@@ -119,7 +134,7 @@ def guest(request, user_id):
     guest_user = get_user_by_id(user_id)
     profile = get_user_profile(guest_user)
     data = Notifications.objects.filter(user=request.user).order_by('-id')
-    all_posts = get_user_posts_and_reposts(guest_user)
+    all_posts = get_user_posts_and_reposts(guest_user, False)
     
     filtered_posts = []
     current_user = request.user 
@@ -135,19 +150,23 @@ def guest(request, user_id):
     all_posts = filtered_posts
 
     image_posts = get_image_posts(guest_user, all_posts)
-    likes, dislikes, _ = get_post_interactions(guest_user, all_posts)
+    likes, dislikes, _ = get_post_interactions(guest_user, all_posts, False)
     followers = profile.followers.all() 
     following = profile.following.all()
     pinned_posts = [post for post in all_posts if not post.is_post or post.payload.is_pinned_by(user=guest_user)]
     pinned_image_posts = [post for post in all_posts if not post.is_post or post.payload.is_pinned_by(user=guest_user) and post.payload.image]
     non_pinned_posts = [post for post in all_posts if not post.is_post or not post.payload.is_pinned_by(user=guest_user)]
     pinned_post_ids = [post.payload.id for post in all_posts if post.is_post and  post.payload.is_pinned_by(user=guest_user)] 
-    liked_posts = get_liked_posts(guest_user)
+    liked_posts = get_liked_posts(guest_user, False)
     saved_post_ids = [post.payload.id for post in all_posts if post.is_post and not post.payload.is_saveable_by(guest_user)] 
     reported_posts = [post.payload for post in all_posts if post.is_post and not post.payload.is_reportable_by(request.user)] #for post reporting
     reposted_post_ids = Repost.objects.filter(user=request.user).values_list('post_id', flat=True)
     replies = [post for post in all_posts if post.is_post and post.payload.parent_post is not None]
     non_pinned_image_posts=[post for post in all_posts if post.is_post and not post.payload.is_pinned_by(request.user) and post.payload.image]
+    community_posts = get_user_community_posts(guest_user, False)
+    community_posts = [post for post in all_posts if post.is_post and post.payload.is_community_post()]
+    
+
     context = {
         'user': guest_user,
         'data': data,
@@ -170,7 +189,8 @@ def guest(request, user_id):
         'reposted_post_ids': reposted_post_ids,
         'replies' : replies,
         'reported_posts' : reported_posts, #for post reporting
-        'non_pinned_image_posts' : non_pinned_image_posts
+        'non_pinned_image_posts' : non_pinned_image_posts,
+        'community_posts' : community_posts
         }
     return render(request,'home.html',context)
 
@@ -220,7 +240,7 @@ def error_500(request):
 
 @login_required
 def bookmarked_posts(request):
-    posts = get_bookmarked_posts(request.user)
+    posts = get_bookmarked_posts(request.user, request.user.profile.allows_offensive)
     reported_posts = [post for post in posts if post.is_post and not post.payload.is_reportable_by(request.user)]
     likes = [post for post in posts if post.is_post and post.payload.is_likeable_by(request.user)]
     dislikes = [post for post in posts if post.is_post and post.payload.is_dislikeable_by(request.user)]
@@ -249,4 +269,13 @@ def bookmarked_posts(request):
 
 @login_required
 def hashtag_search(request, word):
+    return redirect(reverse('home_with_word', args=[f'#{word}']))
+
+@login_required
+def trends(request):
+    context = {'trends': get_trends()}
+    return render(request, 'trends.html', context)
+
+@login_required
+def trend_search(request, word):
     return redirect(reverse('home_with_word', args=[word]))

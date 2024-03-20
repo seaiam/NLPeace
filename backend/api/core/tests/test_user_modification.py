@@ -1,6 +1,8 @@
 from django.test import TestCase
 from django.urls import reverse
 from django.contrib.auth.models import User
+from django.core.exceptions import ObjectDoesNotExist
+from core.models.profile_models import Profile
 
 class EditBioFormTest(TestCase):
     def setUp(self):
@@ -9,6 +11,12 @@ class EditBioFormTest(TestCase):
         self.username = 'testuser'
         self.password = 'testpassword123'
         self.user = User.objects.create_user(username=self.username, email=self.email, password=self.password)
+
+        try:
+            self.profile = self.user.profile  # Try to access the profile
+        except ObjectDoesNotExist:
+            # Handle the case where the profile does not exist/ create a profile
+            self.profile = Profile.objects.create(user=self.user)   
 
     def test_change_username_authenticated(self):
         self.client.login(username='testuser', password='testpassword123')

@@ -2,6 +2,8 @@ from .models import ChatRoom
 from django.db.models import Q
 import requests
 from django.urls import reverse
+import langid
+from googletrans import Translator
 
 #We get the chat room that is mapped to the two users in question
 def getChatRoom(current_user, target_user):
@@ -78,6 +80,7 @@ def classify_message(message_text):
         return {'error': str(e)}
     
 def process_message(message):
+    message = translation_service(message)
     result = classify_message(message)
     if result["prediction"][0] in [1, 0]:  # Offensive or hate speech
         error_message = 'This message contains offensive language and is not allowed on our platform.' if result["prediction"][0] == 1 else 'This message contains hateful language and is not allowed on our platform.'
@@ -98,3 +101,11 @@ def handle_contacted_users(user,chatroom,contacted_users):
             contacted_users.append(room.user2)
         elif user == room.user2 and room.has_sent_message:
             contacted_users.append(room.user1)
+
+def translation_service(text):
+        lang, _ = langid.classify(text)
+        if lang != 'en':
+            translator = Translator()
+            translation = translator.translate(text, dest='en')
+            text = translation.text
+        return text
