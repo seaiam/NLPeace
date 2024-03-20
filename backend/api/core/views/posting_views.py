@@ -75,12 +75,6 @@ def comment(request, post_id):
 @login_required
 @require_POST
 def like(request, post_id):
-    # handle_like(request.user, post_id)
-
-    # referer = request.META.get('HTTP_REFERER')
-    # if referer and 'profile' in referer.lower():
-    #     return redirect('profile')
-    # return HttpResponseRedirect(request.META.get('HTTP_REFERER', '/'))
     likes = handle_like(request.user, post_id)
     return JsonResponse({'liked': True, 'likes_count': likes})
 

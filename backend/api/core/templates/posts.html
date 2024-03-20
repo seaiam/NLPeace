@@ -191,17 +191,19 @@
             <div class ="icons-list" >
                 <div class="feed" >
                         {% if post in likes %}
-                            <a href="{% url 'like' post.id %}" class="like-link">
+                            <a href="javascript:void(0);" class="like-link" data-post-id="{{ post.id }}" onclick="likePost('{{ post.id }}')">
                                 <i class="far fa-thumbs-up" aria-hidden="true"></i> 
                             </a>
                         {% else %}
-                            <a href="{% url 'like' post.id %}" class="post-liked like-link">
+                            <a href="javascript:void(0);" class="post-liked like-link" data-post-id="{{ post.id }}" onclick="likePost('{{ post.id }}')">
                                 <i class="far fa-thumbs-up" aria-hidden="true"></i>
                             </a>
                         {% endif %}
-                    {% if post.get_number_likes > 0 %}
-                    <span class="dislike-count">{{ post.get_number_likes }}</span>
-                    {% endif %}
+                        {% if post.get_number_likes > 0 %}
+                        <span class="dislike-count">{{ post.get_number_likes }}</span>
+                        {% else %}
+                        <span class="dislike-count"></span>
+                        {% endif %}
                 </div>
 
                 <div class="feed" >
@@ -298,16 +300,10 @@
             <div class ="icons-list1" >
                 <div class="feed" >
                     {% if post in likes %}
-                        <!-- <a href="{% url 'like' post.id %}" class="like-link">
-                            <i class="far fa-thumbs-up" aria-hidden="true"></i> 
-                        </a> -->
                         <a href="javascript:void(0);" class="like-link" data-post-id="{{ post.id }}" onclick="likePost('{{ post.id }}')">
                             <i class="far fa-thumbs-up" aria-hidden="true"></i> 
                         </a>
                         {% else %}
-                        <!-- <a href="{% url 'like' post.id %}" class="post-liked like-link">
-                            <i class="far fa-thumbs-up" aria-hidden="true"></i>
-                        </a> -->
                         <a href="javascript:void(0);" class="post-liked like-link" data-post-id="{{ post.id }}" onclick="likePost('{{ post.id }}')">
                             <i class="far fa-thumbs-up" aria-hidden="true"></i>
                         </a>
@@ -430,6 +426,5 @@
         })
         .catch(error => console.error('Error:', error));
     }
-
 </script> 
     
