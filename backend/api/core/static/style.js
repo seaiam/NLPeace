@@ -104,3 +104,107 @@ window.onclick = function(event) {
 
 // opening tab 1 by default
 document.getElementById("defaultOpenPost").click();
+
+// Post interactions
+function likePost(postId) {
+    const csrftoken = document.querySelector('[name=csrfmiddlewaretoken]').value; 
+    fetch(`/like/${postId}/`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRFToken': csrftoken
+        },
+        body: JSON.stringify({ 'postId': postId })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.liked) {
+            // Updating like count
+            const likeLink = document.querySelector(`.like-link[data-post-id="${postId}"]`);
+            const likeCountSpan = likeLink.nextSibling.nextSibling;
+            likeLink.classList.toggle('post-liked');
+            likeCountSpan.textContent = "";
+            if (data.likes_count > 0) {
+                likeCountSpan.textContent = data.likes_count;
+            }
+            console.log(likeCountSpan)
+        }
+    })
+    .catch(error => console.error('Error:', error));
+}
+
+function dislikePost(postId) {
+    const csrftoken = document.querySelector('[name=csrfmiddlewaretoken]').value; 
+    fetch(`/dislike/${postId}/`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRFToken': csrftoken
+        },
+        body: JSON.stringify({ 'postId': postId })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.disliked) {
+            // Updating dislike count
+            const dislikeLink = document.querySelector(`.dislike-link[data-post-id="${postId}"]`);
+            const dislikeCountSpan = dislikeLink.nextSibling.nextSibling;
+            dislikeLink.classList.toggle('post-disliked');
+            dislikeCountSpan.textContent = "";
+            if (data.dislikes_count > 0) {
+                dislikeCountSpan.textContent = data.dislikes_count;
+            }
+            console.log(dislikeCountSpan)
+        }
+    })
+    .catch(error => console.error('Error:', error));
+}
+
+function savePost(postId) {
+const csrftoken = document.querySelector('[name=csrfmiddlewaretoken]').value; 
+fetch(`/save_post/${postId}/`, {
+    method: 'POST',
+    headers: {
+        'Content-Type': 'application/json',
+        'X-CSRFToken': csrftoken
+    },
+    body: JSON.stringify({ 'postId': postId })
+})
+.then(response => response.json())
+.then(data => {
+    const saveButton = document.querySelector(`.bookmark-button[data-post-id="${postId}"]`);
+    const saveCountSpan = saveButton.nextSibling.nextSibling;
+    saveButton.classList.toggle('bookmarked-button');
+    saveCountSpan.textContent = (data.saves_count > 0) ? data.saves_count : "";
+    if (!data.saved) {
+        saveButton.classList.remove('bookmarked-button'); 
+    }
+})
+.catch(error => console.error('Error:', error));
+}
+
+function repostPost(postId) {
+const csrftoken = document.querySelector('[name=csrfmiddlewaretoken]').value; 
+fetch(`/repost/${postId}/`, {
+    method: 'POST',
+    headers: {
+        'Content-Type': 'application/json',
+        'X-CSRFToken': csrftoken
+    },
+    body: JSON.stringify({ 'postId': postId })
+})
+.then(response => response.json())
+.then(data => {
+    if (data.reposted) {
+        // Updating repost count
+        const repostButton = document.querySelector(`.repost-button[data-post-id="${postId}"]`);
+        const repostCountSpan = repostButton.nextSibling;
+        repostButton.classList.toggle('reposted-button');
+        repostCountSpan.textContent = "";
+        if (data.reposts_count > 0) {
+            repostCountSpan.textContent = data.reposts_count;
+        }
+    }
+})
+.catch(error => console.error('Error:', error));
+}

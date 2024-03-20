@@ -4,7 +4,6 @@
 <div class="d-flex justify-content-center align-items-center">
     <div class="card" style="width: 39rem; border-radius: 30px;margin:20px 0px 20px 0px;  overflow: hidden;background: linear-gradient(to right, #F9D1C4 0%, #9BBDDD 51%, #F9D1C4 100%);">
         <div class="card-body">
-
             <div class = "community-post">
             {% if post.community_name %}
              Posted in Community <a href="{% url 'community_detail' community_id=post.community_id %}" style="color:#00008B; text-decoration: none;"><strong> {{ post.community_name }}</strong></a>
@@ -12,14 +11,13 @@
             </div>
 
             {% if carrier.is_post %}
-
             {% with post=carrier.payload %}
             
             <div class = "pin-post">
                 {% if post.id in pinned_post_ids %}
                 <i class="bi bi-pin"></i> Pinned
                 {% endif %}
-                </div>
+            </div>
         
             {% if post.user.id == request.user.id %}
             <div class="dropdown-delete" style="position: absolute; top: 1px; right: 20px; z-index: 1000;">
@@ -41,10 +39,8 @@
                         </li>
                       
                         {% if post.id in pinned_post_ids %}
-
                         <li><a class="dropdown-item" href="{% url 'unpin' post.id %}"><i class="bi bi-pin"></i>Unpin post</a></li>
                         {% else %}
-
                         <li><a class="dropdown-item" href="{% url 'pin' post.id %}"><i class="bi bi-pin"></i>Pin to your profile</a></li>
 
                    {% endif %}
@@ -177,7 +173,6 @@
                     Your browser does not support the video tag.
                 </video>
                 {% endif %}
-
             </div>
 
             {% if post.image %}
@@ -410,108 +405,4 @@
         </div>
     </div>
 </div>
-<script>
-    function likePost(postId) {
-        const csrftoken = document.querySelector('[name=csrfmiddlewaretoken]').value; 
-        fetch(`/like/${postId}/`, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'X-CSRFToken': csrftoken
-            },
-            body: JSON.stringify({ 'postId': postId })
-        })
-        .then(response => response.json())
-        .then(data => {
-            if (data.liked) {
-                // Updating like count
-                const likeLink = document.querySelector(`.like-link[data-post-id="${postId}"]`);
-                const likeCountSpan = likeLink.nextSibling.nextSibling;
-                likeLink.classList.toggle('post-liked');
-                likeCountSpan.textContent = "";
-                if (data.likes_count > 0) {
-                    likeCountSpan.textContent = data.likes_count;
-                }
-                console.log(likeCountSpan)
-            }
-        })
-        .catch(error => console.error('Error:', error));
-    }
-    function dislikePost(postId) {
-        const csrftoken = document.querySelector('[name=csrfmiddlewaretoken]').value; 
-        fetch(`/dislike/${postId}/`, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'X-CSRFToken': csrftoken
-            },
-            body: JSON.stringify({ 'postId': postId })
-        })
-        .then(response => response.json())
-        .then(data => {
-            if (data.disliked) {
-                // Updating dislike count
-                const dislikeLink = document.querySelector(`.dislike-link[data-post-id="${postId}"]`);
-                const dislikeCountSpan = dislikeLink.nextSibling.nextSibling;
-                dislikeLink.classList.toggle('post-disliked');
-                dislikeCountSpan.textContent = "";
-                if (data.dislikes_count > 0) {
-                    dislikeCountSpan.textContent = data.dislikes_count;
-                }
-                console.log(dislikeCountSpan)
-            }
-        })
-        .catch(error => console.error('Error:', error));
-    }
-
-    function savePost(postId) {
-    const csrftoken = document.querySelector('[name=csrfmiddlewaretoken]').value; 
-    fetch(`/save_post/${postId}/`, {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-            'X-CSRFToken': csrftoken
-        },
-        body: JSON.stringify({ 'postId': postId })
-    })
-    .then(response => response.json())
-    .then(data => {
-        const saveButton = document.querySelector(`.bookmark-button[data-post-id="${postId}"]`);
-        const saveCountSpan = saveButton.nextSibling.nextSibling;
-        saveButton.classList.toggle('bookmarked-button');
-        saveCountSpan.textContent = (data.saves_count > 0) ? data.saves_count : "";
-        if (!data.saved) {
-            saveButton.classList.remove('bookmarked-button'); 
-        }
-    })
-    .catch(error => console.error('Error:', error));
-}
-
-function repostPost(postId) {
-    const csrftoken = document.querySelector('[name=csrfmiddlewaretoken]').value; 
-    fetch(`/repost/${postId}/`, {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-            'X-CSRFToken': csrftoken
-        },
-        body: JSON.stringify({ 'postId': postId })
-    })
-    .then(response => response.json())
-    .then(data => {
-        if (data.reposted) {
-            // Updating repost count
-            const repostButton = document.querySelector(`.repost-button[data-post-id="${postId}"]`);
-            const repostCountSpan = repostButton.nextSibling;
-            repostButton.classList.toggle('reposted-button');
-            repostCountSpan.textContent = "";
-            if (data.reposts_count > 0) {
-                repostCountSpan.textContent = data.reposts_count;
-            }
-        }
-    })
-    .catch(error => console.error('Error:', error));
-}
-
-</script> 
     
