@@ -131,9 +131,9 @@ def edit_post(request, post_id):
         return render(request, '401.html', status=401)
 
 @login_required
+@require_POST
 def save_post(request, post_id):
-    if request.method == 'POST':
-        message = save_or_unsave_post(request.user, post_id)
-        messages.info(request, message)
-        return HttpResponseRedirect(request.META.get('HTTP_REFERER', '/'))
-    return HttpResponseForbidden('Invalid request method.')
+    message, saved, saves_count = save_or_unsave_post(request.user, post_id)
+    messages.info(request, message)
+    return JsonResponse({'saved': saved, 'saves_count': saves_count})
+

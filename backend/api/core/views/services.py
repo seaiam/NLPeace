@@ -346,13 +346,15 @@ def report_user_service(request, reported_id, form):
 
 def save_or_unsave_post(user, post_id):
     post = get_object_or_404(Post, pk=post_id)
+    saved = False
     post_save, created = PostSave.objects.get_or_create(saver=user, post=post)
     if created:
         message = 'Post saved successfully.'
+        saved = True
     else:
         post_save.delete()
         message = 'Post unsaved.'
-    return message
+    return message, saved, post.get_number_saves()
 
 def get_bookmarked_posts(user, allows_offensive):
     saves = PostSave.objects.filter(saver=user).select_related('post').order_by('-post__created_at')

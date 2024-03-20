@@ -870,7 +870,7 @@ color: #0047ab;
 }
 
 .feed-bookmark{
-  color:#0047ab;
+  
   margin-left:18%;
 }
 
@@ -986,7 +986,7 @@ button:hover {
   color: #00001c;
 }
 
-.like-link, .dislike-link{
+.like-link, .dislike-link, .bookmark-button{
   text-decoration: none !important;
   color: #00001c;
 }
@@ -995,7 +995,7 @@ button:hover {
   color: #00001c;
 }
 
-.post-liked, .post-disliked{
+.post-liked, .post-disliked, .bookmarked-button{
   border: none;
   padding: 0;
   background: none;
