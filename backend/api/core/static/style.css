@@ -986,7 +986,7 @@ button:hover {
   color: #00001c;
 }
 
-.like-link, .dislike-link, .bookmark-button{
+.like-link, .dislike-link, .bookmark-button, .dislike-count, .save-count, .repost-count{
   text-decoration: none !important;
   color: #00001c;
 }

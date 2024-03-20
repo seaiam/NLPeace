@@ -123,6 +123,7 @@ function likePost(postId) {
             const likeLink = document.querySelector(`.like-link[data-post-id="${postId}"]`);
             const likeCountSpan = likeLink.nextSibling.nextSibling;
             likeLink.classList.toggle('post-liked');
+            likeCountSpan.classList.toggle('post-liked');
             likeCountSpan.textContent = "";
             if (data.likes_count > 0) {
                 likeCountSpan.textContent = data.likes_count;
@@ -150,6 +151,7 @@ function dislikePost(postId) {
             const dislikeLink = document.querySelector(`.dislike-link[data-post-id="${postId}"]`);
             const dislikeCountSpan = dislikeLink.nextSibling.nextSibling;
             dislikeLink.classList.toggle('post-disliked');
+            dislikeCountSpan.classList.toggle('post-disliked');
             dislikeCountSpan.textContent = "";
             if (data.dislikes_count > 0) {
                 dislikeCountSpan.textContent = data.dislikes_count;
@@ -175,6 +177,7 @@ fetch(`/save_post/${postId}/`, {
     const saveButton = document.querySelector(`.bookmark-button[data-post-id="${postId}"]`);
     const saveCountSpan = saveButton.nextSibling.nextSibling;
     saveButton.classList.toggle('bookmarked-button');
+    saveCountSpan.classList.toggle('bookmarked-button');
     saveCountSpan.textContent = (data.saves_count > 0) ? data.saves_count : "";
     if (!data.saved) {
         saveButton.classList.remove('bookmarked-button'); 
@@ -198,8 +201,9 @@ fetch(`/repost/${postId}/`, {
     if (data.reposted) {
         // Updating repost count
         const repostButton = document.querySelector(`.repost-button[data-post-id="${postId}"]`);
-        const repostCountSpan = repostButton.nextSibling;
+        const repostCountSpan = repostButton.nextSibling.nextSibling;
         repostButton.classList.toggle('reposted-button');
+        repostCountSpan.classList.toggle('reposted-button');
         repostCountSpan.textContent = "";
         if (data.reposts_count > 0) {
             repostCountSpan.textContent = data.reposts_count;
