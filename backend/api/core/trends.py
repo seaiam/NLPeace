@@ -1,15 +1,9 @@
-import nltk
 import re
 
 from cachetools import LFUCache, TTLCache
 from django.conf import settings
 from itertools import chain
-from nltk.corpus import stopwords
-
-
-nltk.download('stopwords')
-
-stopwords = set(stopwords.words('english'))
+from core.utils import nlp
 
 HASHTAG_PATTERN = re.compile(r'\B#\S+')
 
@@ -42,4 +36,10 @@ class Trends:
 @trend_analyzer('hashtags')
 def hashtag_counter(post):
     return filter(lambda word: word.startswith('#'), post.get_words())
+
+@trend_analyzer('nouns')
+def noun_counter(post):
+    doc = nlp(HASHTAG_PATTERN.sub('', post.content).strip())
+    return map(lambda token: token.lemma_, doc.noun_chunks)
+        
 
