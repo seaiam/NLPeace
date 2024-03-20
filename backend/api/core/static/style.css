@@ -986,12 +986,12 @@ button:hover {
   color: #00001c;
 }
 
-.like-link{
+.like-link, .dislike-link{
   text-decoration: none !important;
   color: #00001c;
 }
 
-.like-link:hover{
+.like-link:hover, .dislike-link:hover{
   color: #00001c;
 }
 

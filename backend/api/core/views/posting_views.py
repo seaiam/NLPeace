@@ -79,13 +79,10 @@ def like(request, post_id):
     return JsonResponse({'liked': True, 'likes_count': likes})
 
 @login_required
+@require_POST
 def dislike(request, post_id):
-    handle_dislike(request.user, post_id)
-
-    referer = request.META.get('HTTP_REFERER')
-    if referer and 'profile' in referer.lower():
-        return redirect('profile')
-    return HttpResponseRedirect(request.META.get('HTTP_REFERER', '/'))
+    dislikes = handle_dislike(request.user, post_id)
+    return JsonResponse({'disliked': True, 'dislikes_count': dislikes})
 
 @login_required
 def report(request, post_id):

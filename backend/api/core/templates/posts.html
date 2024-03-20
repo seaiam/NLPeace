@@ -208,17 +208,19 @@
 
                 <div class="feed" >
                     {% if post in dislikes  %}
-                        <a href="{% url 'dislike' post.id %}" class="like-link">
+                        <a href="javascript:void(0);" class="dislike-link" data-post-id="{{ post.id }}" onclick="dislikePost('{{ post.id }}')">
                             <i class="far fa-thumbs-down" aria-hidden="true"></i> 
                         </a>
                     {% else %}
-                    <a href="{% url 'dislike' post.id %}" class="post-disliked like-link">
-                        <i class="far fa-thumbs-down" aria-hidden="true"></i> 
-                    </a>
+                        <a href="javascript:void(0);" class="post-disliked dislike-link" data-post-id="{{ post.id }}" onclick="dislikePost('{{ post.id }}')">
+                            <i class="far fa-thumbs-down" aria-hidden="true"></i> 
+                        </a>
                     {% endif %} 
                     {% if post.get_number_dislikes > 0 %}
                     <span class="dislike-count">{{ post.get_number_dislikes }}</span>
-                    {% endif %}
+                    {% else %}
+                    <span class="dislike-count"></span>
+                    {% endif %}                    
                 </div>
 
                 <div class="feed">
@@ -296,7 +298,7 @@
             </div>
 
             {% else %}
-            
+            <!--Profile Page Posts Interactions-->
             <div class ="icons-list1" >
                 <div class="feed" >
                     {% if post in likes %}
@@ -317,17 +319,19 @@
                 
                 <div class="feed" >
                     {% if post in dislikes %}
-                    <a href="{% url 'dislike' post.id %}" class="like-link">
+                    <a href="javascript:void(0);" class="dislike-link" data-post-id="{{ post.id }}" onclick="dislikePost('{{ post.id }}')">
                         <i class="far fa-thumbs-down" aria-hidden="true"></i> 
                     </a>
                     {% else %}
-                    <a href="{% url 'dislike' post.id %}" class="post-disliked like-link">
+                    <a href="javascript:void(0);" class="post-disliked dislike-link" data-post-id="{{ post.id }}" onclick="dislikePost('{{ post.id }}')">
                         <i class="far fa-thumbs-down" aria-hidden="true"></i> 
                     </a>
                     {% endif %} 
                     {% if post.get_number_dislikes > 0 %}
                     <span class="dislike-count">{{ post.get_number_dislikes }}</span>
-                    {% endif %}
+                    {% else %}
+                    <span class="dislike-count"></span>
+                    {% endif %}                    
                 </div>
 
                 <div class="feed">
@@ -422,6 +426,32 @@
                     likeCountSpan.textContent = data.likes_count;
                 }
                 console.log(likeCountSpan)
+            }
+        })
+        .catch(error => console.error('Error:', error));
+    }
+    function dislikePost(postId) {
+        const csrftoken = document.querySelector('[name=csrfmiddlewaretoken]').value; 
+        fetch(`/dislike/${postId}/`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': csrftoken
+            },
+            body: JSON.stringify({ 'postId': postId })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.disliked) {
+                // Updating dislike count
+                const dislikeLink = document.querySelector(`.dislike-link[data-post-id="${postId}"]`);
+                const dislikeCountSpan = dislikeLink.nextSibling.nextSibling;
+                dislikeLink.classList.toggle('post-disliked');
+                dislikeCountSpan.textContent = "";
+                if (data.dislikes_count > 0) {
+                    dislikeCountSpan.textContent = data.dislikes_count;
+                }
+                console.log(dislikeCountSpan)
             }
         })
         .catch(error => console.error('Error:', error));

@@ -323,7 +323,8 @@ def handle_dislike(user, post_id):
         PostDislike.objects.filter(disliker=user, post=post).delete()
     else:
         #dislike post
-        dislike = PostDislike.objects.create(disliker=user, post=post)
+        PostDislike.objects.create(disliker=user, post=post)
+    return post.get_number_dislikes()    
 
 def report_post_service(request, post_id, form):
     post = get_object_or_404(Post, pk=post_id)
