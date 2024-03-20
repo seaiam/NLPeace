@@ -976,7 +976,6 @@ button:hover {
   margin-top: 0;
 }
 
-/* TODO we might want to rename this since it's used for links other than comment. */
 .comment-link{
   text-decoration: none !important;
   color: #00001c;
