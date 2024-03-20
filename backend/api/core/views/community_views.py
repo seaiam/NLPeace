@@ -12,7 +12,7 @@ from core.models.post_models import Post, Repost
 from core.models.profile_models import Notifications
 from core.forms.posting_forms import PostForm, PostReportForm
 from django.http import HttpResponseRedirect
-from .services import get_post_interactions, handle_join_request, handle_leave_request, get_user_notifications, handle_admin_join, handle_delete_community, report_community_service, process_community_post
+from .services import get_post_interactions, handle_join_request, handle_leave_request, get_user_notifications, handle_admin_join, handle_delete_community, report_community_service, process_community_post, handle_user_banning, handle_user_unbanning
 from collections import namedtuple
 
 @login_required
