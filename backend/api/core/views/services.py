@@ -3,6 +3,7 @@ import langid
 from googletrans import Translator
 from api.logger_config import configure_logger # TODO add logging statements
 from django.conf import settings
+from django.shortcuts import redirect
 from django.contrib import messages
 from django.contrib.auth import update_session_auth_hash
 from django.contrib.auth.forms import PasswordChangeForm
@@ -11,6 +12,7 @@ from django.http import *
 from django.shortcuts import get_object_or_404
 from itertools import chain, cycle
 from core.forms.profile_forms import EditBioForm, EditUsernameForm, EditProfilePicForm, EditProfileBannerForm, PrivacySettingsForm, NLPToggleForm
+from core.forms.community_forms import CommunityForm
 from core.interest_resolver import RESOLVERS
 from core.models.post_models import Advertisement, Hashtag, HashtagInstance, Post, PostLike, PostDislike, PostPin, PostReport, PostSave, Repost
 from core.models.profile_models import Profile, Notifications, User, CommunityNotifications
@@ -656,5 +658,30 @@ def handle_user_unbanning(community_id, user_id):
     user_to_unban = User.objects.get(pk=user_id)
     community.banned_users.remove(user_to_unban)
 
-
-      
+def process_community_post(request, community, form):
+    if form.is_valid():
+        tweet_text = form.cleaned_data['content']
+        tweet_text = translation_service(tweet_text)
+        result = classify_text(tweet_text)
+        if result["prediction"][0] in [1, 0]:  # Offensive or hate speech
+            post = form.save(commit=False)
+            post.user = request.user
+            post.is_offensive = True
+            if community.allows_offensive:
+                message = 'This post contains offensive language. It won\'t be showed to users with content monitoring on.' if result["prediction"][0] == 1 else 'This post contains hateful language. It won\'t be showed to users with content monitoring on.'
+                messages.warning(request, message)
+                post.save()
+                CommunityPost.objects.create(post=post, community=community)
+                update_interests_and_hashtags(post)
+            else:
+                message = 'This post contains offensive language. It is not allowed on this community.' if result["prediction"][0] == 1 else 'This post contains hateful language. It is not allowed on this community.'
+                messages.warning(request, message)
+            return post
+        elif result["prediction"][0] == 2:  # Appropriate
+            post = form.save(commit=False)
+            post.user = request.user
+            post.save()
+            update_interests_and_hashtags(post)
+            CommunityPost.objects.create(post=post, community=community)
+            return post
+    return None
