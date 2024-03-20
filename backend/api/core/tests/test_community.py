@@ -2,7 +2,7 @@ from django.test import TestCase
 from django.urls import reverse
 from core.models.community_models import Community, CommunityPost, CommunityReport
 from core.models.post_models import Post
-from core.models.profile_models import User
+from core.models.profile_models import User, Profile
 from core.forms.community_forms import CommunityForm
 from django.core.exceptions import ObjectDoesNotExist
 from core.models.profile_models import Profile
@@ -25,7 +25,8 @@ class CommunityTestCase(TestCase):
         response = self.client.post(reverse('create_community'), {
             'name': 'Test Community',
             'description': 'A test community',
-            'is_private': True
+            'is_private': True,
+            'allows_offensive': False,
         })
         
         # check that we get redirected after successfull creation of comunity
@@ -40,6 +41,7 @@ class CommunityTestCase(TestCase):
         self.assertEqual(community.admin, self.user)
         self.assertTrue(community.is_private)
         self.assertIsNotNone(community.pic)
+        self.assertFalse(community.allows_offensive)
 
     def test_edit_community(self):
         community = Community.objects.create(name='Test Community', admin=self.user, is_private=True)
@@ -47,6 +49,7 @@ class CommunityTestCase(TestCase):
             'name': 'Updated Community',
             'description': 'Updated description',
             'is_private': False,
+            'allows_offensive': True,
         })
         
         # check that we get redirected after successfull editing of comunity
@@ -57,6 +60,7 @@ class CommunityTestCase(TestCase):
         self.assertEqual(community.name, 'Updated Community')
         self.assertEqual(community.description, 'Updated description')
         self.assertFalse(community.is_private)
+        self.assertTrue(community.allows_offensive)
 
     def test_community_form_validation(self):
         # try to create community without entering a name 
@@ -259,14 +263,23 @@ class CommunityJoinTest(TestCase):
         
         updated_community = Community.objects.get(id=community_id)
         self.assertNotIn(self.joiner, updated_community.banned_users.all())
+
 class CommunityPostTestCase(TestCase):
     def setUp(self):
         # Creating test users
         self.user = User.objects.create_user(username='testuser', password='password')
         self.other_user = User.objects.create_user(username='otheruser', password='password')
-
         # Creating a community
-        self.community = Community.objects.create(name='Test Community', admin=self.user, is_private=False)
+        self.community = Community.objects.create(name='Test Community', admin=self.user, is_private=False, allows_offensive = False)
+        self.offensive_community = Community.objects.create(name='Test Community', admin=self.user, is_private=False, allows_offensive = True)
+        
+        self.profile = Profile.objects.create(user=self.user)
+        self.profile.allows_offensive = True
+        self.profile.save()
+        
+        self.offensive_response = "This post contains offensive language. It is not allowed on this community."
+        self.offensive_post = "Bitch"
+        
         self.client.login(username='testuser', password='password')
 
     def test_create_community_post(self):
@@ -313,6 +326,43 @@ class CommunityPostTestCase(TestCase):
         self.assertEqual(community_comment.content, 'Community Test comment') #testing the content of the comment
 
         self.assertTrue(community_comment.is_community_post) #test if comment is a community post
+    
+    def test_create_offensive_post_in_monitored_community_by_monitored_user(self):
+        self.client.logout()
+        self.client.login(username='otheruser', password='password')
+
+        response = self.client.post(reverse('create_community_post', kwargs={'community_id': self.community.id}), {
+            'content': self.offensive_post,
+        },follow=True)
+        self.assertContains(response, self.offensive_response)
+        self.assertNotContains(response, self.offensive_post)
+    
+    def test_create_offensive_post_in_unmonitored_community_by_monitored_user(self):
+        self.client.logout()
+        self.client.login(username='otheruser', password='password')
+        response = self.client.post(reverse('create_community_post', kwargs={'community_id': self.offensive_community.id}), {
+            'content': self.offensive_post,
+        },follow=True)
+        self.assertNotContains(response, self.offensive_post)
+        self.assertNotContains(response, self.offensive_post)
+    
+    def test_create_offensive_post_in_monitored_community_by_unmonitored_user(self):
+        self.client.logout()
+        self.client.login(username='testuser', password='password')
+
+        response = self.client.post(reverse('create_community_post', kwargs={'community_id': self.community.id}), {
+            'content': self.offensive_post,
+        },follow=True)
+        self.assertContains(response, self.offensive_response)
+        self.assertNotContains(response, self.offensive_post)   
+    
+    def test_create_offensive_post_in_unmonitored_community_by_unmonitored_user(self):
+        self.client.logout()
+        self.client.login(username='testuser', password='password')
+        response = self.client.post(reverse('create_community_post', kwargs={'community_id': self.offensive_community.id}), {
+            'content': self.offensive_post,
+        },follow=True)
+        self.assertContains(response, self.offensive_post)    
 
 class CommunityReportTestCase(TestCase):
 
