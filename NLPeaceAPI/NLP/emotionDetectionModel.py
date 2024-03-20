@@ -47,13 +47,12 @@ df['label'] = df['label'].str.strip()
 
 # Initialize LabelEncoder
 label_encoder = LabelEncoder()
-label_encoder.fit(['anger', 'fear', 'joy', 'label', 'sadness'])  # Specify all classes present in your dataset
+label_encoder.fit(['anger', 'fear', 'joy', 'sadness'])  # Specify all classes present in your dataset
 
 # Transform labels to numerical values
 df['label'] = label_encoder.transform(df['label'])
 
 print(df.head(5))
-print(df.describe())
 
 #0 -> anger
 #1 -> fear
@@ -65,12 +64,16 @@ print(df.describe())
 X = vectorizer.fit_transform(df["text"])
 y = df["label"]
 
-#save the vectorizer
-#dump(vectorizer, 'models/vectorizer.joblib')
-#logger.info("Vectorizer saved successfully.")
+# Count occurrences of each label
+label_counts = df['label'].value_counts()
+
+# Print out the number of unique labels
+print("Number of unique labels:", len(label_counts))
+
 
 #get best models and score from training loops
 rf_model, rf_score = models.train_random_forest(X, y)
+xgb_model, xgb_score = models.train_xgboost(X, y, 4)
 svm_model, svm_score = models.train_svm(X,y)
 naive_model, naive_score = models.train_naive_bayes(X, y)
 knn_model, knn_score = models.train_knn(X,y)
@@ -80,6 +83,8 @@ knn_model, knn_score = models.train_knn(X,y)
 best_model, best_score, best_model_name = None, 0, ''
 if rf_score > best_score:
     best_model, best_score, best_model_name = rf_model, rf_score, 'Random Forest'
+if xgb_score > best_score:
+    best_model, best_score, best_model_name = xgb_model, xgb_score, 'XGBoost'
 if svm_score > best_score:
     best_model, best_score, best_model_name = svm_model, svm_score, 'SVM'
 if naive_score > best_score:

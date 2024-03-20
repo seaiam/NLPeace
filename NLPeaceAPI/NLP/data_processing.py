@@ -50,11 +50,21 @@ def import_bot_data():
     return df
 
 def import_emotion_data():
-    df = pd.read_csv('data/emotion.csv')
+    df = pd.read_csv('data/emotion.csv', header=0)
     return df
+
+def remove_emojis(text):
+    emoji_pattern = re.compile("["
+                               u"\U0001F600-\U0001F64F"  # emoticons
+                               u"\U0001F300-\U0001F5FF"  # symbols & pictographs
+                               u"\U0001F680-\U0001F6FF"  # transport & map symbols
+                               u"\U0001F1E0-\U0001F1FF"  # flags (iOS)
+                               "]+", flags=re.UNICODE)
+    return emoji_pattern.sub(r'', text)
 
 def preprocess(text):
     text = re.sub(r'@\w+', '', text)
+    text = remove_emojis(text)
     words = nltk.word_tokenize(text)
     words = [word.lower() for word in words]
     words = [word for word in words if word not in stop_words]
