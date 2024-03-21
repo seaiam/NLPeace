@@ -57,6 +57,19 @@
     </div>
 </div>
 
+<script src="https://cdn.jsdelivr.net/npm/web3@4.6.0/dist/web3.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/web3-eth@4.5.0/lib/commonjs/validation.min.js"></script>
+
+<div id="crypto-wallet-modal" class="popup">
+    <div class="popup-content">
+        <span class="close" onclick="toggleModal('crypto-wallet-modal')">&times;</span>
+        <p class="modalTitle">Wallet Information</p>
+        <p class="form-outline" style="text-align: left !important">Balance: </p>
+        <p class="form-outline" style="text-align: left !important" id="balanceText"></p>
+        <button class="saveButton" onclick="disconnectWallet()">Disconnect Wallet</button>
+    </div>
+</div>
+
 {% if word %}
 <p class="text-center text-white">Showing posts about {{ word }}</p>
 {% endif %}
