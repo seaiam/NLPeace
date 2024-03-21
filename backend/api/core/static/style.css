@@ -84,11 +84,31 @@ body {
   margin-top: 90px;
 }
 
+.google-sign-in-button{
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-top: 55rem;
+}
+
 .button1, .button2 {
   background: none;
   border: 1px solid black;
   border-radius: 20px;
   width: 70%;
+  padding: 10px;
+  font-weight: 600;
+  transition: 0.5s;
+  background-size: 200% auto;
+  box-shadow: 0 0 20px #eee;
+  background-image: linear-gradient(to right, #F9D1C4 0%, #9BBDDD 51%, #F9D1C4 100%);
+}
+
+.button3 {
+  background: none;
+  border: 1px solid black;
+  border-radius: 20px;
+  width: 350px;
   padding: 10px;
   font-weight: 600;
   transition: 0.5s;

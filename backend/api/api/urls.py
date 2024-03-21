@@ -75,6 +75,7 @@ urlpatterns = [
     path('trends/', main_pages_views.trends, name='trends'),
     path('trend_serach/<str:word>/', main_pages_views.trend_search, name='trend_search'),
     path('community/report/<int:reported_id>/', community_views.report_community, name='report_community'),
+    path('accounts/', include('allauth.urls')),
 ]
 
 if settings.DEBUG:
