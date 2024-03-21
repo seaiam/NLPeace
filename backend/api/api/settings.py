@@ -256,7 +256,6 @@ TRENDS_LIMIT = 10
 
 TRENDING_THRESHOLD = 100
 
-TREND_ANALYZERS = ['hashtags']
 
 AUTHENTICATION_BACKENDS = (
     'django.contrib.auth.backends.ModelBackend',
@@ -265,3 +264,4 @@ AUTHENTICATION_BACKENDS = (
 
 LOGIN_REDIRECT_URL = '/'
 LOGOUT_REDIRECT_URL='/'
+TREND_ANALYZERS = ['hashtags', 'nouns']

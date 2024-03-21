@@ -13,7 +13,7 @@ pytest
 daphne
 redis
 cachetools
-textblob
+spacy
 langid
 googletrans==4.0.0-rc1
 django-allauth
