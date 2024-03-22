@@ -6,9 +6,10 @@ from django.contrib.auth.decorators import login_required
 from django.db.models import Q
 from django.shortcuts import get_object_or_404
 from django.http import *
+from django.views.decorators.http import require_POST
 from core.forms.posting_forms import PostForm, PostReportForm
 from core.models.post_models import Post
-from django.http import HttpResponseRedirect
+from django.http import HttpResponseRedirect, JsonResponse
 from .services import *
 
 @login_required
@@ -22,12 +23,10 @@ def delete_post(request):
     return HttpResponseRedirect(request.META.get('HTTP_REFERER', '/'))
 
 @login_required
+@require_POST
 def repost(request, post_id):
-    create_repost(request.user, post_id)
-    referer = request.META.get('HTTP_REFERER')
-    if referer and 'profile' in referer.lower():
-        return redirect('profile')
-    return HttpResponseRedirect(request.META.get('HTTP_REFERER', '/'))
+    reposts = create_repost(request.user, post_id)
+    return JsonResponse({'reposted': True, 'reposts_count': reposts})
 
 @login_required
 def comment(request, post_id):
@@ -72,22 +71,16 @@ def comment(request, post_id):
     return render(request, 'comment.html', context)
     
 @login_required
+@require_POST
 def like(request, post_id):
-    handle_like(request.user, post_id)
-
-    referer = request.META.get('HTTP_REFERER')
-    if referer and 'profile' in referer.lower():
-        return redirect('profile')
-    return HttpResponseRedirect(request.META.get('HTTP_REFERER', '/'))
+    likes = handle_like(request.user, post_id)
+    return JsonResponse({'liked': True, 'likes_count': likes})
 
 @login_required
+@require_POST
 def dislike(request, post_id):
-    handle_dislike(request.user, post_id)
-
-    referer = request.META.get('HTTP_REFERER')
-    if referer and 'profile' in referer.lower():
-        return redirect('profile')
-    return HttpResponseRedirect(request.META.get('HTTP_REFERER', '/'))
+    dislikes = handle_dislike(request.user, post_id)
+    return JsonResponse({'disliked': True, 'dislikes_count': dislikes})
 
 @login_required
 def report(request, post_id):
@@ -136,9 +129,9 @@ def edit_post(request, post_id):
         return render(request, '401.html', status=401)
 
 @login_required
+@require_POST
 def save_post(request, post_id):
-    if request.method == 'POST':
-        message = save_or_unsave_post(request.user, post_id)
-        messages.info(request, message)
-        return HttpResponseRedirect(request.META.get('HTTP_REFERER', '/'))
-    return HttpResponseForbidden('Invalid request method.')
+    message, saved, saves_count = save_or_unsave_post(request.user, post_id)
+    messages.info(request, message)
+    return JsonResponse({'saved': saved, 'saves_count': saves_count})
+
