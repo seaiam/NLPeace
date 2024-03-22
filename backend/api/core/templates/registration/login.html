@@ -55,18 +55,28 @@
             <div class="forgot-password">
               <a href="{% url 'forget_password' %}" style = "color:#00001c;">Forgot Password ?</a>
             </div>
-
+            {% load socialaccount %}
             <div class = "login-button">
               <button type="submit" class="button1">Log In</button>
             </div>
-
+            <div class = "create-account">
+              <a  href="{% provider_login_url "google"%}">Sign in with google</a>
+              
+            </div>
             <div class="create-account">
               <p class = "account"><br>Not a member?&nbsp;<a href="{% url 'register_user' %}" style = "color:#00001c;">Create an Account</a></p> 
             </div>
         </div>
      </form>
+     <button class="google-sign-in-button button3"  id="redirectButton">Sign in With Google</a></button>
+
     </div> 
   </div>
+  <script>
+    document.getElementById('redirectButton').onclick = function() {
+    window.location.href = "{% provider_login_url "google"%}";
+};
+</script>
 
 {% endblock %}
 
