@@ -63,12 +63,22 @@
             </div>
              <!-- community member's list popup-->
              {% if request.user == community.admin %}
+            
             <div id="community-members-modal" class="popup">
             <div class="popup-content" id ="popupScroll">
                 <span class="close" onclick="toggleModal('community-members-modal')">&times;</span>
                 <p class="Community-modalTitle">Members List</p>
+                <!--search community member-->
+                <div class="ml-auto">
+                    <form id="search-form" class="form-inline" method="GET" action="">
+                        <input class="form-control mr-sm-2 community-member-search" style="width: 36rem; height:20%;" type="search" placeholder="Search" aria-label="Search" name="search" id="search-input">
+                        {% csrf_token %}
+                    </form>
+                </div>
+               
                 <form method="post" enctype="multipart/form-data" >
                     {% csrf_token %}
+                    <div id="members-list-container">
                     {% for member in members %}
                     <div class="container">
                         <div class="d-flex align-items-center justify-content-center">
@@ -111,7 +121,8 @@
                     {% endfor %}
                 </form>
             </div>
-        </div>  
+            </div>  
+            </div>
         {% endif %}
         <!-- end-->
         </div>
@@ -333,4 +344,60 @@
         </form>
     </div>
 </div>  
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        document.getElementById('search-form').addEventListener('submit', function(e) {
+            console.log("Form submitted");
+            e.preventDefault();
+            var formData = new FormData(this);
+            formData.append('csrfmiddlewaretoken', '{{ csrf_token }}');
+            var currentUrl = window.location.pathname;
+            fetch(currentUrl, {
+                method: 'POST',
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest' //so that django recognize AJAX 
+                },
+                body: formData,
+            })
+            .then(response => response.json())
+            .then(data => {
+                
+                document.getElementById('members-list-container').innerHTML = data.html;
+            })
+            .catch(error => console.error('Error:', error));
+        });
+
+        function toggleModal(modalId) {
+            console.log("toggleModal called for:", modalId);
+            var modal = document.getElementById(modalId);
+            var isModalOpen = modal.style.display === "block";
+
+            modal.style.display = isModalOpen ? "none" : "block";
+
+            if (!isModalOpen) {
+                var searchInput = document.getElementById('search-input');
+                searchInput.value = ''; 
+                
+                
+                var formData = new FormData();
+                formData.append('search', ''); 
+                formData.append('csrfmiddlewaretoken', document.querySelector('[name=csrfmiddlewaretoken]').value);
+                
+                fetch(window.location.pathname, {
+                    method: 'POST',
+                    headers: {
+                        'X-Requested-With': 'XMLHttpRequest'
+                    },
+                    body: formData,
+                })
+                .then(response => response.json())
+                .then(data => {
+                    console.log("Response data:", data);
+                    document.getElementById('members-list-container').innerHTML = data.html;
+                })
+                .catch(error => console.error('Error:', error));
+        }
+    }
+});
+    </script>
 {% endblock %}

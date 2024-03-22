@@ -1392,6 +1392,10 @@ img {
   margin-bottom:10px;
 }
 
+.community-member-search{
+  border-radius: 30px;
+}
+
 #popupScroll{
   overflow-y: scroll !important;
   max-height: 50%;

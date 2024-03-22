@@ -43,24 +43,24 @@
               </div>
               <div class="col-md-6">
                 {% if profile.user.id != request.user.id %}
+                {% if not profile.is_private or profile.user in request.user.profile.following.all|dictsort:"id" %}
               <div class="dropdown" style="float:right;">
                 <a class="hidden-arrow" type="button" data-toggle="dropdown" aria-expanded="false">
-                    &nbsp; &nbsp;
                     <i class="fas fa-ellipsis-v mt-4"></i>
                 </a>
-                <ul class="dropdown-menu">
+                <ul class="dropdown-menu dropdown-menu-right">
                   <li><a class="dropdown-item" href="#" onclick="toggleModal('reportModal')"> <i class="far fa-flag"></i> Report User</a></li>
                   {% if profile.user not in request.user.profile.blocked.all|dictsort:"id" %}                     
                     <li><a class="dropdown-item" href="{% url 'add_block' profile.user.id %}"><i class="fa fa-ban"></i> Block User</a></li>
                   {% else %}                  
                     <li><a class="dropdown-item" href="{% url 'add_block' profile.user.id %}"><i class="fa fa-ban"></i> Unblock User</a></li>
                   {% endif %}
-                  <li><a class="dropdown-item" href="#"><i class="far fa-paper-plane"></i>Share Profile</a></li>
                 </ul>
               </div>
+              {% endif %}   
               <div style="float:right;">
                 <a href="{% url 'room' profile.user.id %}" class="hidden-arrow" type="button" aria-expanded="false">
-                    <i class="fas fa-comment-dots mt-4"></i>
+                    <i class="fas fa-comment-dots mt-4 mr-3"></i>
                 </a>
               </div>
               {% endif %}   
