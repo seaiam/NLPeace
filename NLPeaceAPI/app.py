@@ -24,16 +24,26 @@ current_directory = os.path.dirname(os.path.abspath(__file__))
 logger.info(f"Current directory set to {current_directory}")
 
 #load models
-model_path = os.path.join(current_directory, "NLP", "models", "best_model.joblib")
+hate_model_path = os.path.join(current_directory, "NLP", "models", "best_hate_model.joblib")
+emotion_model_path = os.path.join(current_directory, "NLP", "models", "best_emotion_model.joblib")
+
 try:
-    model = joblib.load(model_path)
-    logger.info("Successfully loaded the model.")
+    hate_model = joblib.load(hate_model_path)
+    logger.info("Successfully loaded the hate model.")
+except Exception as e:
+    logger.error(f"Error loading model: {str(e)}")
+    raise
+
+try:
+    emotion_model = joblib.load(emotion_model_path)
+    logger.info("Successfully loaded the emotion model.")
 except Exception as e:
     logger.error(f"Error loading model: {str(e)}")
     raise
 
 # Load vectorizer
 vectorizer_path = os.path.join(current_directory, "NLP", "models", "vectorizer.joblib")
+
 try:
     vectorizer = joblib.load(vectorizer_path)
     logger.info("Successfully loaded the vectorizer.")
@@ -59,7 +69,36 @@ async def classify_tweet(tweet: Tweet):
     try:
         #preprocess and vectorize the tweet text
         processed_tweet = vectorizer.transform([tweet.text])
-        prediction = model.predict(processed_tweet)
+        prediction = hate_model.predict(processed_tweet)
+        return {"prediction": prediction.tolist()}
+    except Exception as e:
+        # Log the tweet text and the exception
+        logger.error(f"Error processing tweet: {tweet.text}, Error: {str(e)}")
+        raise HTTPException(status_code=500, detail="Internal Server Error")
+    
+
+@app.post("/classify-hatespeech/")
+async def classify_tweet(tweet: Tweet):
+    if not tweet.text:
+        return {"prediction": -1}
+    try:
+        #preprocess and vectorize the tweet text
+        processed_tweet = vectorizer.transform([tweet.text])
+        prediction = hate_model.predict(processed_tweet)
+        return {"prediction": prediction.tolist()}
+    except Exception as e:
+        # Log the tweet text and the exception
+        logger.error(f"Error processing tweet: {tweet.text}, Error: {str(e)}")
+        raise HTTPException(status_code=500, detail="Internal Server Error") 
+    
+@app.post("/classify-emotion/")
+async def classify_tweet(tweet: Tweet):
+    if not tweet.text:
+        return {"prediction": -1}
+    try:
+        #preprocess and vectorize the tweet text
+        processed_tweet = vectorizer.transform([tweet.text])
+        prediction = emotion_model.predict(processed_tweet)
         return {"prediction": prediction.tolist()}
     except Exception as e:
         # Log the tweet text and the exception
