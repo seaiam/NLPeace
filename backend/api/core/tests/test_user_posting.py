@@ -460,3 +460,33 @@ class ProfilePostCreationTestCase(TestCase):
         post = Post.objects.first()
         self.assertEqual(post.content, post_content)
         self.assertEqual(post.user, self.user)
+
+class ContentModerationToggleTestCase(TestCase):
+
+    def setUp(self):
+        self.user = User.objects.create_user(username='test', password='test')
+        self.client.login(username='test', password='test')
+    
+    def test_turning_content_moderation_on_with_offensive_content_hides_that_content_when_user_indicated_not_to_delete_it(self):
+        Profile.objects.create(user=self.user, allows_offensive=True)
+        offensive_post = Post.objects.create(content='test', user=self.user, is_offensive=True)
+        self.client.post(reverse('nlp_toggle'), {'allows_offensive': False, "delete_offensive": False})
+        response = self.client.get(reverse('home'))
+        posts = map(lambda carrier: carrier.payload, filter(lambda carrier: carrier.is_post, response.context['posts']))
+        self.assertIn(offensive_post, Post.objects.all())
+        self.assertNotIn(offensive_post, posts)
+    
+    def test_turning_content_moderation_on_with_offensive_content_deletes_that_content_permanently_when_user_indcated_to_delete_it(self):
+        Profile.objects.create(user=self.user, allows_offensive=True)
+        offensive_post = Post.objects.create(content='test', user=self.user, is_offensive=True)
+        self.client.post(reverse('nlp_toggle'), {'allows_offensive': False, "delete_offensive": True})
+        self.assertNotIn(offensive_post, Post.objects.all())
+    
+    def test_turning_content_moderation_on_with_offensive_content_displays_that_content(self):
+        Profile.objects.create(user=self.user, allows_offensive=False)
+        offensive_post = Post.objects.create(content='test', user=self.user, is_offensive=True)
+        self.client.post(reverse('nlp_toggle'), {'allows_offensive': True, "delete_offensive": False})
+        response = self.client.get(reverse('home'))
+        posts = map(lambda carrier: carrier.payload, filter(lambda carrier: carrier.is_post, response.context['posts']))
+        self.assertIn(offensive_post, posts)
+

@@ -588,6 +588,9 @@ def update_content_filtering_settings(user_id, form_data):
     form = NLPToggleForm(form_data, instance=user.profile)
     if form.is_valid():
         form.save()
+        if not user.profile.allows_offensive:
+            if user.profile.delete_offensive:
+                Post.objects.filter(user=user, is_offensive=True).delete()
         return True
     return False
 
