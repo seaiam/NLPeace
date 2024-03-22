@@ -12,6 +12,8 @@ class Community(models.Model):
     pic = models.ImageField(upload_to='communityPics/', null=True, blank=True)
     join_requests = models.ManyToManyField(User, related_name='join_requests', blank=True)
     banned_users = models.ManyToManyField(User, related_name='banned_users')
+    allows_offensive = models.BooleanField(default=False)
+    
 class CommunityPost(models.Model):
     post = models.ForeignKey(Post, on_delete=models.CASCADE)
     community = models.ForeignKey(Community, on_delete=models.CASCADE)

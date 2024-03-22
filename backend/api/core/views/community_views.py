@@ -8,10 +8,11 @@ from django.shortcuts import get_object_or_404
 from django.http import *
 from core.forms.community_forms import CommunityForm,CommunityReportForm
 from core.models.community_models import Community, CommunityPost
-from core.models.post_models import Post
+from core.models.post_models import Post, Repost
+from core.models.profile_models import Notifications
 from core.forms.posting_forms import PostForm, PostReportForm
 from django.http import HttpResponseRedirect
-from .services import *
+from .services import get_post_interactions, handle_join_request, handle_leave_request, get_user_notifications, handle_admin_join, handle_delete_community, report_community_service, process_community_post, handle_user_banning, handle_user_unbanning
 from collections import namedtuple
 from django.template.loader import render_to_string
 
@@ -25,6 +26,7 @@ def create_community(request):
             community = form.save(commit=False)
             community.admin = request.user
             community.is_private = form.cleaned_data['is_private'] == 'True'
+            community.allows_offensive = form.cleaned_data['allows_offensive'] == 'True'
             community.save()
             messages.success(request, 'Community created successfully.')
             return redirect('community_detail', community_id=community.id)
@@ -49,7 +51,8 @@ def create_community(request):
 def community_detail(request, community_id):
     community = get_object_or_404(Community, id=community_id)
     members = community.members.all()
-    community_posts = CommunityPost.objects.filter(community=community)
+    show_offensive  = community.allows_offensive and request.user.profile.allows_offensive
+    community_posts = CommunityPost.objects.filter(community = community, post__is_offensive = show_offensive)
     Carrier = namedtuple('Carrier', ['is_post', 'payload'])
     community_carriers = [Carrier(is_post=True, payload=cp.post) for cp in community_posts]
     likes, dislikes, saved_post_ids = get_post_interactions(request.user, community_carriers, False)
@@ -184,26 +187,24 @@ def accept_decline_join(request):
     }
     return render(request, 'notifications.html', context)
 
+@login_required
 def create_community_post(request, community_id):
     community = get_object_or_404(Community, id=community_id) 
     if request.method == 'POST':
         form = PostForm(request.POST, request.FILES)
-        if form.is_valid():
-            post = form.save(commit=False)
-            post.user = request.user 
-            post.save()
-
-            CommunityPost.objects.create(post=post, community=community)
-            messages.success(request, "Post created successfully!")  
+        community_post = process_community_post(request, community, form) 
+        if community_post:
             return redirect('community_detail', community_id=community_id)
         else:
             print(form.errors) 
             messages.error(request, "Error creating post.") 
     else:
         form = PostForm()
-
-    community_posts = CommunityPost.objects.filter(community=community)
-    return render(request, 'community_detail.html', {'form': form, 'community': community, 'community_posts': community_posts})
+    context =  {
+        'form': form, 
+        'community': community, 
+        }
+    return render(request, 'community_detail.html', context)
 
 @login_required
 def search_community(request):

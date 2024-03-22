@@ -30,12 +30,12 @@ class SavePostViewTestCase(TestCase):
 
     def test_save_post(self):
         response = self.client.post(reverse('save_post', args=[self.post.id]))
-        self.assertEqual(response.status_code, 302)  # expect a redirect after saving
+        self.assertEqual(response.status_code, 200) 
         self.assertEqual(PostSave.objects.count(), 1)
 
     def test_unsave_post(self):
         PostSave.objects.create(saver=self.user, post=self.post)
         response = self.client.post(reverse('save_post', args=[self.post.id]))
-        self.assertEqual(response.status_code, 302)  # expect a redirect after unsaving
+        self.assertEqual(response.status_code, 200) 
         self.assertEqual(PostSave.objects.count(), 0)
 

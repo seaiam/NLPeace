@@ -104,6 +104,10 @@
                     {% csrf_token %}
                         <div class="text-left">Filter Offensive and Harmful Content: </div>
                         {{ NLPToggle_form.allows_offensive }}
+                        <div class="mt-2 ml-2">
+                            {{ NLPToggle_form.delete_offensive }}
+                            {{ NLPToggle_form.delete_offensive.label_tag}}
+                        </div>
                             <div class = "privacy-button">
                                 <button type="submit" class="btn post-actions__publish">Save</button>
                             </div>

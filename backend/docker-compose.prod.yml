@@ -24,7 +24,7 @@ services:
   app:
     build:
       context: .
-      dockerfile: dockerfile.prod # or dockerfile.dev 
+      dockerfile: Dockerfile.prod # or dockerfile.dev 
       args:
         - DEV=false
     env_file:
@@ -34,7 +34,7 @@ services:
     volumes:
       - ./api:/api
     command: >
-      sh -c "python -m textblob.download_corpora
+      sh -c "python -m spacy download en_core_web_sm &&
              python manage.py wait_for_db &&
              python manage.py makemigrations core &&
              python manage.py migrate core &&
