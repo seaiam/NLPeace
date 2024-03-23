@@ -61,6 +61,7 @@ urlpatterns = [
     path('pin/<int:post_id>/', posting_views.pin, name='pin'),
     path('unpin/<int:post_id>/', posting_views.unpin, name='unpin'),
     path('edit/<int:post_id>/', posting_views.edit_post, name='edit_post'),
+    path('vote/<int:post_id>/', posting_views.vote, name='vote'),
 ]
 
 if settings.DEBUG:

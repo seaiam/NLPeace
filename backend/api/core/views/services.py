@@ -27,30 +27,39 @@ def process_post_form(request, form):
     if form.is_valid():
         tweet_text = form.cleaned_data['content']
         result = classify_text(tweet_text)
+                
         if result["prediction"][0] in [1, 0]:  # Offensive or hate speech
             message = 'This post contains offensive language and is not allowed on our platform.' if result["prediction"][0] == 1 else 'This post contains hateful language and is not allowed on our platform.'
             messages.error(request, message)
             return None
+        
         elif result["prediction"][0] == 2:  # Appropriate
-            #handle poll choices
+            # Handle poll choices
             poll_choices = form.cleaned_data.get('poll_choices')
-            for i in range(1, poll_choices + 1):
-                choice_text = form.cleaned_data.get(f'choice_{i}')
-                #pass text to nlp model
-                choice_result = classify_text(choice_text)
-                if choice_result["prediction"][0] in [1,0] : #offensive or hate speech in choice text
-                    message = 'This post contains offensive language and is not allowed on our platform.' if result["prediction"][0] == 1 else 'This post contains hateful language and is not allowed on our platform.'
-                    messages.error(request, message)
-                    return None
-                elif result["prediction"][0] == 2:
-                    PollChoice.objects.create(post=post, choice_text=choice_text)
-            
-            #save post
-            update_interests(request.user, tweet_text)
             post = form.save(commit=False)
             post.user = request.user
             post.save()
-            return post
+            
+            poll = Poll.objects.create(post=post, question="Your poll question here")  # Create a Poll associated with the Post
+            
+            for i in range(1, poll_choices + 1):
+                choice_text = form.cleaned_data.get(f'choice_{i}')
+                print(choice_text)
+                # Pass text to NLP model
+                choice_result = classify_text(choice_text)
+                
+                if choice_result["prediction"][0] in [1, 0]:  # Offensive or hate speech in choice text
+                    message = 'One of the poll choices contains offensive language and is not allowed on our platform.' if choice_result["prediction"][0] == 1 else 'One of the poll choices contains hateful language and is not allowed on our platform.'
+                    messages.error(request, message)
+                    post.delete()  # Delete the post if any poll choice is inappropriate
+                    return None
+                
+                elif choice_result["prediction"][0] == 2:
+                    # Create a poll with the given choices
+                    PollChoice.objects.create(poll=poll, choice_text=choice_text)
+            
+            update_interests(request.user, tweet_text)
+            return post    
     return None
 
 def classify_text(text):
@@ -420,3 +429,31 @@ def handle_edit_post(request,form, post, remove_image, parent_post):
     else:
         messages.error(request, "There was an error editing your post. Try again.")
     return post
+
+def handle_vote(request, post_id):
+    post = get_object_or_404(Post, pk=post_id)
+
+    # Check if the user has already voted on this post
+    if Vote.objects.filter(choice__poll__post=post, user=request.user).exists():
+        messages.error(request, "You have already voted on this poll")
+        return redirect('home')
+    
+    if request.method == 'POST':
+        choice_id = request.POST.get('choice')
+        if choice_id:
+            choice = post.poll.choices.get(pk=choice_id)
+            print(choice)
+            Vote.objects.create(choice=choice, user=request.user)
+            selected_choice = get_object_or_404(PollChoice, pk=choice_id)
+            selected_choice.choice_votes += 1
+            selected_choice.save()
+            # Update total votes for the poll
+            post.poll.total_votes += 1
+            post.poll.save()
+            # Update to keep track on users that have voted
+            voted_poll_ids = request.session.get('voted_poll_ids', [])
+            voted_poll_ids.append(post_id)
+            request.session['voted_poll_ids'] = voted_poll_ids
+            request.session.modified = True
+    else:
+        messages.error(request, "There was an error creating the poll. Try again.")

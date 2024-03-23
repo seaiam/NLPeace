@@ -22,3 +22,6 @@ class PostReportForm(forms.ModelForm):
     class Meta:
         model = PostReport
         fields = ['category', 'info']        
+
+class VoteForm(forms.ModelForm):
+    choice_id = forms.IntegerField(widget=forms.HiddenInput())

@@ -28,6 +28,12 @@ def home(request):
     following_users = request.user.profile.following.all()
     following_posts = get_following_posts(request.user, following_users)
     reported_posts = [post.payload for post in posts if post.is_post and not post.payload.is_reportable_by(request.user)] #for post reporting 
+    # Retrieve user's voted polls
+    voted_poll_ids = Vote.objects.filter(user=request.user).values_list('choice__poll__post_id', flat=True)
+    # Store polls that a user votes on
+    request.session['voted_poll_ids'] = list(voted_poll_ids)
+    request.session.modified = True
+
     context = {
         'posts': posts,
         'likes': likes,
@@ -64,7 +70,11 @@ def profile(request):
     reposted_post_ids = Repost.objects.filter(user=request.user).values_list('post_id', flat=True)    
     replies = [post for post in posts if post.is_post and post.payload.parent_post is not None]
     non_pinned_image_posts=[post for post in posts if post.is_post and not post.payload.is_pinned_by(request.user) and post.payload.image]
-   
+    # Retrieve user's voted polls
+    voted_poll_ids = Vote.objects.filter(user=request.user).values_list('choice__poll__post_id', flat=True)
+    # Store polls that a user votes on
+    request.session['voted_poll_ids'] = list(voted_poll_ids)
+    request.session.modified = True
     context = {
         'profile': profile,
         'posts': posts,
