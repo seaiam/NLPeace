@@ -176,7 +176,7 @@
                 <img class="card-img-top mt-2" src="{{ post.image.url }}" alt="Post image" /><br><br>
             {% endif %}
 
-            {% if post.poll %}
+            {% if post.poll.choices.all %}
                 {% if request.user.is_authenticated %}
                     {% if post.id in request.session.voted_poll_ids %}
                         <ul>
@@ -199,9 +199,9 @@
                                 {% endfor %}
             
                              </ul>
-                        {% if voted %}
+                             
                             <button type="submit" class="voteButton" data-post-id="{{ post.id }}">Vote</button>
-                        {%endif%}
+                        
                         </form>
                     {% endif %}
                 {% endif %}
