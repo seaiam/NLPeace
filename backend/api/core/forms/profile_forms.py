@@ -1,5 +1,5 @@
 from django import forms
-from core.models.models import Profile, User
+from core.models.profile_models import Profile, User
 
 class EditBioForm(forms.ModelForm):
     class Meta:
@@ -34,6 +34,7 @@ class PrivacySettingsForm(forms.ModelForm):
     class Meta:
         model = Profile
         fields = ['is_private'] 
+
 class MessagingSettingsForm(forms.ModelForm):
     messaging_is_private = forms.ChoiceField(
         choices=((False, 'Everyone'), (True, 'Followers')),
@@ -44,3 +45,19 @@ class MessagingSettingsForm(forms.ModelForm):
     class Meta:
         model = Profile
         fields = ['messaging_is_private'] 
+
+class NLPToggleForm(forms.ModelForm):
+    allows_offensive= forms.ChoiceField(
+        choices=((False, 'on'), (True, 'off')),
+        widget=forms.Select(attrs={'class': 'form-privacy'}),
+        initial=False
+    )
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.label_suffix = ''
+
+    class Meta:
+        model = Profile
+        fields = ['allows_offensive', 'delete_offensive']
+        labels = {'delete_offensive': 'Delete my offensive posts when I turn content moderation on'}

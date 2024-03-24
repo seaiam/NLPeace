@@ -30,7 +30,6 @@ class ChatConsumer(WebsocketConsumer):
         room_id = data.get('room_id')
         messages=Message.more_messages(room_id, self.pointer_message.timestamp)
         
-        
         if messages != -1:
             content={
                 'command': 'fetch_messages_more',
@@ -43,6 +42,10 @@ class ChatConsumer(WebsocketConsumer):
                     break
                 count+=1
             self.send_message(content)
+            
+    def delete_message(self,data):
+        message_id=data.get('id')
+        Message.change_message_to_deleted(message_id)
     
     def new_message(self,data):
         author=data['from']
@@ -61,8 +64,10 @@ class ChatConsumer(WebsocketConsumer):
         'fetch_messages':fetch_messages,
         'new_message':new_message,
         'fetch_messages_more': fetch_messages_more,
-        
+        'delete_message': delete_message,
     }
+    
+    
     
     def connect(self):
         self.room_name = self.scope["url_route"]["kwargs"]["room_name"]

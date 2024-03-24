@@ -5,7 +5,7 @@ from core.forms.user_forms import UserRegistrationForm
 import uuid 
 from django.conf import settings
 from django.core.mail import send_mail
-from core.models.models import Profile, User
+from core.models.profile_models import Profile, User
 
 def register_new_user(request, form_data):
     form = UserRegistrationForm(form_data)
@@ -14,6 +14,10 @@ def register_new_user(request, form_data):
         username = form.cleaned_data['username']
         password = form.cleaned_data['password1']
         user = authenticate(request, username=username, password=password)
+        # Create a profile for the user
+        profile = Profile.objects.create(user=user)
+        profile.save()
+        
         login(request, user)
         return True
     return False

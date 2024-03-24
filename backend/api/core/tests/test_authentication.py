@@ -1,7 +1,7 @@
 
 from django.test import TestCase
 from django.urls import reverse
-from core.models.models import User , Profile
+from core.models.profile_models import User , Profile
 from django.core.exceptions import ObjectDoesNotExist
 
 class UserLoginTest(TestCase):
@@ -12,6 +12,15 @@ class UserLoginTest(TestCase):
         self.username = 'testuser'
         self.password = 'testpassword123'
         self.user = User.objects.create_user(username=self.username, email=self.email, password=self.password)
+    
+        try:
+            self.profile = self.user.profile  # Try to access the profile
+        except ObjectDoesNotExist:
+            # Handle the case where the profile does not exist/ create a profile
+            self.profile = Profile.objects.create(user=self.user)
+        else:
+            self.profile.is_banned = False  # Ensure the profile is not banned for this test
+            self.profile.save()
 
     def test_correct_login(self):
         # Log in directly
@@ -33,6 +42,14 @@ class UserLoginTest(TestCase):
         }
         self.client.post(reverse('register_user'), registration_data)
 
+        # Ensure a profile is created for the registered user
+        registered_user = User.objects.get(username=registration_data['username'])
+        try:
+            registered_profile = registered_user.profile
+        except ObjectDoesNotExist:
+            # If profile does not exist, create one
+            registered_profile = Profile.objects.create(user=registered_user)
+
         # Now, attempt to log in with the new user
         login_data = {
             'username': 'newuser2',
@@ -47,10 +64,15 @@ class UserLoginTest(TestCase):
         self.assertRedirects(response, '/accounts/profile/')
     
     def test_login_fails_if_user_is_banned(self):
-        Profile.objects.create(user=self.user, is_banned=True)
+
+        self.emailbanned = 'banneduser@email.com'
+        self.usernamebanned = 'banneduser'
+        self.passwordbanned = 'testpassword123'
+        self.userbanned = User.objects.create_user(username=self.usernamebanned, email=self.emailbanned, password=self.passwordbanned)
+        Profile.objects.create(user=self.userbanned, is_banned=True)
         login_data = {
-            'username': self.user.username,
-            'password': self.user.password,
+            'username': self.userbanned.username,
+            'password': self.userbanned.password,
         }
         response = self.client.post(reverse('login'),login_data)
         self.assertRedirects(response, reverse('login'))

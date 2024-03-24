@@ -3,11 +3,10 @@ venv/
 flasky/venv/
 .vscode/
 .idea/
-
 # migrations/
 
 __pycache__/
-
+backend/.env.google_auth
 .env
 images/
 flasky/static/images/

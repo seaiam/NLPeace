@@ -3,7 +3,6 @@
 
 {% block title %}Home Page {% endblock %}
 
-
   {% block content %} 
   <div class="profile-page">
     <div class="box">
@@ -44,37 +43,35 @@
               </div>
               <div class="col-md-6">
                 {% if profile.user.id != request.user.id %}
+                {% if not profile.is_private or profile.user in request.user.profile.following.all|dictsort:"id" %}
               <div class="dropdown" style="float:right;">
                 <a class="hidden-arrow" type="button" data-toggle="dropdown" aria-expanded="false">
-                    &nbsp; &nbsp;
                     <i class="fas fa-ellipsis-v mt-4"></i>
                 </a>
-                <ul class="dropdown-menu">
+                <ul class="dropdown-menu dropdown-menu-right">
                   <li><a class="dropdown-item" href="#" onclick="toggleModal('reportModal')"> <i class="far fa-flag"></i> Report User</a></li>
                   {% if profile.user not in request.user.profile.blocked.all|dictsort:"id" %}                     
                     <li><a class="dropdown-item" href="{% url 'add_block' profile.user.id %}"><i class="fa fa-ban"></i> Block User</a></li>
                   {% else %}                  
                     <li><a class="dropdown-item" href="{% url 'add_block' profile.user.id %}"><i class="fa fa-ban"></i> Unblock User</a></li>
                   {% endif %}
-                  <li><a class="dropdown-item" href="#"><i class="far fa-paper-plane"></i>Share Profile</a></li>
                 </ul>
               </div>
+              {% endif %}   
               <div style="float:right;">
                 <a href="{% url 'room' profile.user.id %}" class="hidden-arrow" type="button" aria-expanded="false">
-                    <i class="fas fa-comment-dots mt-4"></i>
+                    <i class="fas fa-comment-dots mt-4 mr-3"></i>
                 </a>
               </div>
               {% endif %}   
             </div>
           </div>            
         <div class="row">
-          <div class="col-md-4">
+          <div class="col-md-3">
               <h4 style="color:#D9D9D9;">{{ user.username }}</h4>
           </div>
-          <div class="col-md-5">
-
+        <div class="col-md-5">
                 <i class='fas fa-user-friends'></i>
-
                 <button class="editFollowButton" onclick="toggleModal('home-follower-modal')">Followers</button>
                 {% if request.user == profile.user or not profile.is_private or profile.user in request.user.profile.following.all|dictsort:"id" %}
                     <div id="home-follower-modal" class="popup">
@@ -108,15 +105,11 @@
                                     </div>
                                 </div>
                                 {% endif %}
-
-                          
                         </div>
-                        
                     </div>
                     {% endif %}
 
                 <i class='fas fa-search'></i>
-
                     <button class="editFollowButton" onclick="toggleModal('home-following-modal')">Following</button>
                     {% if request.user == profile.user or not profile.is_private or profile.user in request.user.profile.following.all|dictsort:"id" %}
                         <div id="home-following-modal" class="popup">
@@ -149,9 +142,9 @@
                             </div>
                         </div> 
                     {% endif %}                   
-          </div>
+        </div>
           
-          {% if profile.user.id != request.user.id %}
+        {% if profile.user.id != request.user.id %}
           <div class="col-md-3 text-md-right">
                 {% if request.user in profile.followers.all %}
                 <form method="POST" action="{% url 'unfollow_user' %}">
@@ -182,11 +175,185 @@
         {% endif %}
 
           {% if request.user == profile.user or not profile.is_private or profile.user in request.user.profile.following.all|dictsort:"id" %}
-         
-          <div class="col-md-3 text-md-right">
+          <div class="col-md-4 text-md-right">
             {% if request.user == profile.user%}
+
+            <button id="connection" class="editButton" onclick = "connectWeb3Wallet()"></button>
+            <button class="postButton" onclick="toggleModal('start-a-post')">Post</button>
             <button class="editButton" onclick="toggleModal('home-edit-bio-modal')">Edit Profile</button>
+            <script src="{% static 'web3auth/js/web3auth.js' %}"></script>
+            <script src="https://cdn.jsdelivr.net/npm/web3@4.6.0/dist/web3.min.js"></script>
+            <script src="https://cdn.jsdelivr.net/npm/web3-eth@4.5.0/lib/commonjs/validation.min.js"></script>
+            <script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js" integrity="sha512-8Q6Y9XnTbOE+JNvjBQwJ2H8S+UV4uA6hiRykhdtIyDYZ2TprdNmWOUaKdGzOhyr4dCyk287OejbPvwl7lrfqrQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+            <script>
+
+                let walletAddress="";
+
+                async function connectWeb3Wallet() {
+                    if (typeof window != "undefined" && typeof window.ethereum != "undefined") {
+                        try {
+                            if (walletAddress.startsWith("0x")) { // all eth wallets start with 0x   
+                                toggleModal('crypto-wallet-modal');
+                            } else {
+                            const accounts = await window.ethereum.request({method: "eth_requestAccounts"}); // opens MetaMask prompt to sign in with wallet
+                            walletAddress = accounts[0];
+                            console.log(accounts[0]); // to show account is connected in console
+                            alert("MetaMask wallet successfully connected");
+                            }
+                            connectionStatus()
+                        } catch (err) {
+                        console.error(err.message); // for troubleshooting
+                        }
+                    } else {
+                        alert("MetaMask wallet not found");
+                    }
+                };
+
+                function disconnectWallet(){
+                    walletAddress="";   // sets address to empty so no wallet is connected
+                    toggleModal('crypto-wallet-modal'); // closes the modal
+                    connectionStatus(); // updates the button 
+                    alert("MetaMask wallet disconnected") 
+                }
+
+                function alert(message){
+
+                    const duplicateAlert = document.querySelector(".alert"); //check if an alert already exists
+
+                    if (duplicateAlert){
+                        duplicateAlert.remove(); //remove it if there is one
+                    }
+            
+                    const alert = document.createElement("div");
+                    alert.className = "alert alert-warning alert-dismissible fade show ";
+                    alert.style.position = "absolute";
+                    alert.style.zIndex = "10000";
+                    alert.style.top = "10px"; 
+                    alert.style.left = "50%"; 
+                    alert.style.transform = "translate(-50%)";
+                    alert.style.width ="85%";
+                    alert.style.maxWidth ="1200px";
+                    
+                    const alertDismiss = document.createElement("a");
+                    alertDismiss.href = "#";
+                    alertDismiss.className = "close";
+                    alertDismiss.setAttribute("data-dismiss", "alert");
+                    alertDismiss.setAttribute("aria-label", "close");
+                    
+                    alertDismiss.innerHTML = "&times;";
+                    alert.appendChild(alertDismiss);
+
+                    const alertMessage = document.createTextNode(message);
+                    alert.appendChild(alertMessage);
+
+                    document.body.appendChild(alert);
+                }
+           
+                window.onload = connectionStatus;   // happens when window loads
+
+                const web3 = new Web3("https://mainnet.infura.io/v3/9f1531079c90406d8062b2533d036a39") //path for infura to connect to ethereum node
+                const projectId = "9f1531079c90406d8062b2533d036a39"  // needed information from infura website to access requests
+             
+                async function connectionStatus() {   // change text of the button 
+                    var button = document.getElementById("connection");
+                    var connection;
+                    
+                    if (walletAddress.length > 0){
+                        const balance = await getBalance();     // need to wait to get balance before continuing
+                        connection = "Wallet: " + walletAddress.substring(0,6)+"...";
+                        balanceText.innerText = balance;
+                    } else {
+                        connection = "Connect wallet";
+                    }
+                    button.innerText = connection;
+                    }
+
+                async function getBalance() { 
+                    if (walletAddress && web3){
+                        try {
+                            const balance = await web3.eth.getBalance(walletAddress);
+                            return web3.utils.fromWei(balance, 'ether').substring(0,6) + ' ETH';
+                        } catch (err) {
+                            console.error(err.message);
+                        }
+                    }
+                }
+                
+            </script>
+            
             {% endif %}
+
+            <div id="crypto-wallet-modal" class="popup">
+                <div class="popup-content">
+                    <span class="close" onclick="toggleModal('crypto-wallet-modal')">&times;</span>
+                    <p class="modalTitle">Wallet Information</p>
+                    <p class="form-outline" style="text-align: left !important">Balance: </p>
+                    <p class="form-outline" style="text-align: left !important" id="balanceText"></p>
+                    <button class="saveButton" onclick="disconnectWallet()">Disconnect Wallet</button>
+                </div>
+            </div>
+
+             <!--Start a post popup-->
+             <div id="start-a-post" class="popup">
+                 <div class="popup-content">
+                     <span class="close" onclick="toggleModal('start-a-post')">&times;</span>
+                     <p class="post-modalTitle">Create Post</p>
+                     <!--post box -->
+                    <div class="d-flex justify-content-center align-items-center">   
+                        <div class="card" style="width: 39rem; background: linear-gradient(to right, #F9D1C4 0%, #9BBDDD 51%, #F9D1C4 100%);  border-radius: 15px; margin-bottom:30px;">
+                            <div class="card-body">
+                                <div class="row">
+                                    <div class="col">
+                                        <div>
+                                            <form method="post" id="widget-form" class="widget-post__form" enctype="multipart/form-data" name="form" aria-label="post widget">
+                                                {% csrf_token %}
+                                                <div class="widget-post__content">
+                                                <textarea name="{{ form.content.name }}" id="post-content" class="widget-post__textarea scroller" placeholder="Start a Post...">{{ form.content.value|default:'' }}</textarea>
+                                                </div>
+                                                <div id="create-preview-image" style="display: none;">
+                                                    <button type="button" class="close" onclick="handleDeletePostImage('create-preview-image')" style="color: #00001c;">&times;</button>
+                                                    <img class="card-img-top mb-2" src="#" />
+                                                </div>
+                                                <div class="widget-post__options is--hidden" id="stock-options">
+                                                </div>
+                                                <div class="widget-post__actions post--actions">
+                                                    <div class="post-actions__attachments">
+                                                        <label for="create-upload-image" class="post-actions__label">
+                                                        <i class="fa fa-camera" sty aria-hidden="true"></i> 
+                                                        Photo
+                                                        </label>
+                                                        <input type="file" id="create-upload-image" name="image" accept="image/*" style="display: none;">
+                                                        {{ form.image }}
+                                                        &nbsp; &nbsp; &nbsp; &nbsp;
+                    
+                                                        <label for="create-upload-video" class="post-actions__label">
+                                                            <i class="fa fa-video" aria-hidden="true"></i> 
+                                                            Video
+                                                        </label>
+                                                        <input type="file" id="create-upload-video" name="video" accept="video/*" style="display: none;">
+                                                        <p hidden> {{ form.video }} </p>
+                                                        &nbsp; &nbsp; &nbsp; &nbsp;
+                    
+                                                        <label for="upload-video" class="post-actions__label">
+                                                            <i class="fa fa-list-ul" aria-hidden="true"></i> 
+                                                        Poll
+                                                        </label>
+                                                    </div>
+                                                    <div class="post-actions__widget">
+                                                    <button type="submit" class="btn post-actions__publish">Post</button>
+                                                    </div>
+                                                </div>
+                                            </form>
+                                        </div> 
+                                    </div>    
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                     <!--end post box-->
+                 </div>
+             </div> 
+             <!--popup end-->
             <div id="home-edit-bio-modal" class="popup">
                 <div class="popup-content">
                     <span class="close" onclick="toggleModal('home-edit-bio-modal')">&times;</span>
@@ -197,7 +364,6 @@
                         <br>
                         <button id="saveBtn" class="saveButton">Save</button>
                     </form>
-                    
                 </div>
             </div>
           </div>
@@ -207,9 +373,7 @@
             <p style="color:#D9D9D9;">{{profile.bio}}</p>
             {% endif %}
           </header></div>
-       
       <hr>
-  
   
 <div class="container">
     <div class="profiletab-btns">
@@ -219,25 +383,20 @@
         <button class="profiletabbutton" onclick="openPostTab(event, 'Likes')">Likes</button>
     </div>
 
-
     <div id="Posts" class="posttabcontent">
-
         {% for post in pinned_posts %}
         {% include "posts.html" with carrier=post %}
         {% endfor %}
-
-    {% for post in non_pinned_posts %}
-    {% if post not in replies %}
-      {% include "posts.html" with carrier=post %}
-      {% endif %}
+        {% for post in non_pinned_posts %}
+        {% if post not in replies %}
+        {% include "posts.html" with carrier=post %}
+        {% endif %}
         {% empty %}
         {% if pinned_posts %}
-
         {% else %}
         <div class="no-post">No posts available. </div>
         {% endif %}
-    
-    {% endfor %}
+        {% endfor %}
     </div>
 
     <div id="Replies" class="posttabcontent">
@@ -262,24 +421,20 @@
         {% else %}
         <div class="no-post">No media available. </div>
         {% endif %}
-        
-     {% endfor %}
-      </div>
+        {% endfor %}
+    </div>
 
-      <div id="Likes" class="posttabcontent" style="display:none;">
+    <div id="Likes" class="posttabcontent" style="display:none;">
         {% for post in liked_posts %}
            {% include "posts.html" with carrier=post tab="likes" %}
             {% empty %}
             <div class="no-post">No Liked Posts available. </div>
-            {% endfor %}
-     </div>
-
+        {% endfor %}
+    </div>
           {%else%}
           <div class="account-private">This account is private</div>
-          {% endif %}
-   
+          {% endif %} 
 </div>
-
     </div>
 </div>
      

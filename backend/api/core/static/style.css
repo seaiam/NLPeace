@@ -84,11 +84,31 @@ body {
   margin-top: 90px;
 }
 
+.google-sign-in-button{
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-top: 55rem;
+}
+
 .button1, .button2 {
   background: none;
   border: 1px solid black;
   border-radius: 20px;
   width: 70%;
+  padding: 10px;
+  font-weight: 600;
+  transition: 0.5s;
+  background-size: 200% auto;
+  box-shadow: 0 0 20px #eee;
+  background-image: linear-gradient(to right, #F9D1C4 0%, #9BBDDD 51%, #F9D1C4 100%);
+}
+
+.button3 {
+  background: none;
+  border: 1px solid black;
+  border-radius: 20px;
+  width: 350px;
   padding: 10px;
   font-weight: 600;
   transition: 0.5s;
@@ -308,7 +328,7 @@ hr{
 }
 
 /* Profile Page css */
-.profile-page {
+.profile-page{
   padding: 4% 0 0;
   margin: auto;
 }
@@ -397,7 +417,7 @@ hr{
 }
 
 /* Follower / Following buttons */
-.editFollowButton {
+.editFollowButton, .community-members {
   display: inline-block;
   padding: 0px 4px;
   border: none;
@@ -412,7 +432,8 @@ hr{
   align-items: center;
 }
 
-.editButton, .statusButton {
+.editButton, .statusButton, .unbanButton {
+
   display: inline-block;
   padding: 5px 12px;
   border: none;
@@ -424,9 +445,21 @@ hr{
   text-decoration: none;
 }
 
-.editButton:hover {
+.editButton:hover, .postButton:hover {
   color: black;
   background: linear-gradient(to right, #F9D1C4 0%, #9BBDDD 51%, #F9D1C4 100%);
+  text-decoration: none;
+}
+
+.postButton {
+  display: inline-block;
+  padding: 5px 21px;
+  border: none;
+  background: linear-gradient(to right, #F9D1C4 0%, #9BBDDD 51%, #F9D1C4 100%);
+  color: #000;
+  text-align: center;
+  border-radius: 50px;
+  transition: background-color 0.3s ease;
   text-decoration: none;
 }
 
@@ -791,13 +824,6 @@ img {
   padding-bottom:10px;
 }
 
-.icons-list-2{/* for comments page */
-  color: #00001c;
-  display: grid;  
-  grid-template-columns: 1fr 1fr 1fr 1fr 1fr;  
-  padding-bottom:10px;
-}
-
 .feed{
   margin-left:18%;
 }
@@ -864,7 +890,7 @@ color: #0047ab;
 }
 
 .feed-bookmark{
-  color:#0047ab;
+  
   margin-left:18%;
 }
 
@@ -900,7 +926,6 @@ button:hover {
 }
 
 .user-name{
-  /* text-decoration: none; */
   color:#00001c;
   font-weight: 500;
   font-size: 150%;
@@ -971,7 +996,6 @@ button:hover {
   margin-top: 0;
 }
 
-/* TODO we might want to rename this since it's used for links other than comment. */
 .comment-link{
   text-decoration: none !important;
   color: #00001c;
@@ -981,16 +1005,16 @@ button:hover {
   color: #00001c;
 }
 
-.like-link{
+.like-link, .dislike-link, .bookmark-button, .dislike-count, .save-count, .repost-count{
   text-decoration: none !important;
   color: #00001c;
 }
 
-.like-link:hover{
+.like-link:hover, .dislike-link:hover{
   color: #00001c;
 }
 
-.post-liked, .post-disliked{
+.post-liked, .post-disliked, .bookmarked-button{
   border: none;
   padding: 0;
   background: none;
@@ -1048,7 +1072,7 @@ button:hover {
   border-bottom: 2px solid #fff;
 }
 
-.profiletab-btns {
+.profiletab-btns{
   font-size: 1.1em;
   display:flex;
   justify-content: center;
@@ -1269,6 +1293,182 @@ img {
 
 }
 
+/* COMMUNITY USER STORY */
+
+.community-post{
+  font-style: italic ;
+  color:#00008B;
+  font-size: large;
+  font-weight: 500;
+}
+
+.community-container{
+  display: flex;
+  justify-content: center;
+}
+
+.trending-community{
+  color: #fff;
+}
+
+.iconCommunity{
+  color: #fff;
+  font-size: xx-large;
+  border: none;
+  padding: 0;
+  background: none;
+  margin-left: 10px; 
+}
+
+.bi-person-plus, .bi-list{
+  color: #fff;
+}
+
+.col-md-4.text-right {
+  text-align: right;
+}
+
+.community-form {
+  font-size: small;
+  text-align: start;
+  font-size: large;
+  color: #fff;
+}
+
+.Community-modalTitle, .post-modalTitle {
+  text-align: center;
+  color: #D9D9D9;
+  font-size:30px;
+}
+
+.form-community {
+  width: 30%;
+  height: 30px;
+  border-color: #000;
+  border-radius: 5px;
+  margin-top:10px;
+  margin-left: 2%;
+}
+
+.form-name {
+  width: 50%;
+  height: 30px;
+  border-color: #000;
+  border-radius: 5px;
+  margin-top:10px;
+  margin-left: 2%;
+}
+
+.CreateButton {
+  display: inline-block;
+  padding: 2px 60px;
+  border: none;
+  background: linear-gradient(to right, #F9D1C4 0%, #9BBDDD 51%, #F9D1C4 100%);
+  color: #000;
+  text-align: center;
+  border-radius: 40px;
+  transition: background-color 0.3s ease;
+  font-size:x-large;
+}
+
+.community-Name{
+  color: #D9D9D9;
+}
+
+.community-description{
+  color: #D9D9D9;
+  word-wrap: break-word;
+  max-width: 100%; 
+}
+
+ .community-members {
+  display: inline-block;
+  padding: 0px 4px;
+  border: none;
+  color: #D9D9D9;
+  text-align: center;
+  text-decoration: none;
+  background: none;
+  margin-bottom:10px;
+}
+
+.community-member-search{
+  border-radius: 30px;
+}
+
+#popupScroll{
+  overflow-y: scroll !important;
+  max-height: 50%;
+}
+
+.name-link:hover {
+  color: #000;
+}
+
+.community-title{
+  color: #00001c;
+  font-weight: 600;
+}
+
+.members{
+  color: #00001c;
+}
+
+.post-actions__community {
+  display: grid;  
+  grid-template-columns: 1fr 1.2fr 1fr; 
+  float:left;
+}
+
+.community-private{
+  color: #D9D9D9;
+  font-size: larger;
+  margin-top:20px;
+}
+
+/* Community Banner */
+.community-banner {
+  background-color: #919196;
+  height: 150px;
+  border-radius: 20px;
+  position: relative;
+  z-index: 0;
+}
+
+.community-banner img {
+  width: 100%;
+  object-fit: cover;
+}
+
+.community-search{
+  width: 100%; 
+  border-radius: 40px;
+}
+
+.community-pic {
+  border-radius: 15px;
+  width:80px;
+  margin-right: 15px;
+  margin-top: 0;
+  height: 80px;
+}
+
+.community-name{
+  color:#00001c;
+  font-weight: 500;
+  font-size: 145%;
+  white-space: nowrap;
+}
+
+.trend-list .list-group-item
+{
+  background: linear-gradient(to right, #F9D1C4 0%, #9BBDDD 51%, #F9D1C4 100%);
+  font-size: larger;
+}
+
+.white-text {
+  color: #919196;
+}
 
 /* Media Queries */
 @media (max-width: 991.98px) { 

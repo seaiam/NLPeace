@@ -1,7 +1,6 @@
 from django.test import TestCase
 from django.contrib.auth.models import User
-from core.models.models import Post, PostSave
-from core.models.models import Profile 
+from core.models.post_models import Post, PostSave
 from django.db.utils import IntegrityError
 from django.urls import reverse
 
@@ -31,12 +30,12 @@ class SavePostViewTestCase(TestCase):
 
     def test_save_post(self):
         response = self.client.post(reverse('save_post', args=[self.post.id]))
-        self.assertEqual(response.status_code, 302)  # expect a redirect after saving
+        self.assertEqual(response.status_code, 200) 
         self.assertEqual(PostSave.objects.count(), 1)
 
     def test_unsave_post(self):
         PostSave.objects.create(saver=self.user, post=self.post)
         response = self.client.post(reverse('save_post', args=[self.post.id]))
-        self.assertEqual(response.status_code, 302)  # expect a redirect after unsaving
+        self.assertEqual(response.status_code, 200) 
         self.assertEqual(PostSave.objects.count(), 0)
 

@@ -1,13 +1,12 @@
 from django.test import TestCase
 from django.urls import reverse
+from django.conf import settings
 from django.contrib.auth.models import User 
-from core.models.models import  Profile
-from django.core.files.uploadedfile import SimpleUploadedFile
-from django.db.utils import IntegrityError
-from core.models.models import Post, PostDislike, PostLike, PostReport,PostPin, Profile
-from core.forms.posting_forms import PostForm
-from core.models.models import Repost
 from django.core.exceptions import ObjectDoesNotExist
+from django.core.files.uploadedfile import SimpleUploadedFile
+from core.forms.posting_forms import PostForm
+from core.models.post_models import Hashtag, HashtagInstance, Post, Repost, PostDislike, PostLike, PostReport, PostPin
+from core.models.profile_models import Profile
 
 class PostTestCase(TestCase):
     def setUp(self):
@@ -18,7 +17,7 @@ class PostTestCase(TestCase):
             self.profile = self.user.profile  # Try to access the profile
         except ObjectDoesNotExist:
             # Handle the case where the profile does not exist/ create a profile
-            self.profile = Profile.objects.create(user=self.user)          
+            self.profile, created = Profile.objects.get_or_create(user=self.user)         
 
     def test_post_post(self):
         # Create a post using a POST request
@@ -77,7 +76,7 @@ class PostTestCase(TestCase):
         post_id = new_post.id
         self.client.logout()
         user1 = User.objects.create_user(username='testuser1', password='password')
-        Profile.objects.create(user=user1)
+        Profile.objects.get_or_create(user=user1)
         self.client.login(username='testuser1', password='password')
         response = self.client.post(reverse('delete_post'), {'post_id': post_id}) 
         post_count = Post.objects.filter(id=post_id).count()
@@ -98,21 +97,81 @@ class PostTestCase(TestCase):
         otherProfile = self.client.get(reverse('guest',kwargs = {'user_id': otherId}))
         self.assertNotContains(otherProfile, 'Post on profile')
     
+    def test_post_with_new_hashtag_creates_new_hashtage_and_instance_entities(self):
+        count = Hashtag.objects.count()
+        self.client.post(reverse('home'), {'content': '#test'})
+        self.assertEqual(count + 1, Hashtag.objects.count())
+        post = self.user.post_set.first()
+        hashtag = Hashtag.objects.get(content='test')
+        self.assertTrue(HashtagInstance.objects.filter(post=post, hashtag=hashtag).exists())
+    
+    def test_post_with_existing_hashtag_does_not_create_new_hashtag_entity(self):
+        self.client.post(reverse('home'), {'content': '#test'})
+        count = Hashtag.objects.filter(content='test').count()
+        self.client.post(reverse('home'), {'content': '#test'})
+        self.assertEqual(count, Hashtag.objects.filter(content='test').count())
+    
+    def test_filtering_posts_on_hashtag_excludes_entities_without_selection(self):
+        hashtag = Hashtag.objects.create(content='test')
+        tagged = Post.objects.create(user=self.user, content='#test')
+        HashtagInstance.objects.create(post=tagged, hashtag=hashtag)
+        untagged = Post.objects.create(user=self.user, content='test')
+        response = self.client.get(reverse('hashtag_search', args=['test']), follow=True)
+        posts = list(map(lambda carrier: carrier.payload, filter(lambda carrier: carrier.is_post, response.context['posts'])))
+        self.assertIn(tagged, posts)
+        self.assertNotIn(untagged, posts)
+        self.assertContains(response, 'Showing posts about #test')
+    
+    def test_frequently_observed_topics_are_identified_as_trends(self):
+        for _ in range(settings.TRENDING_THRESHOLD + 1):
+            self.client.post(reverse('home'), {'content': '#test'})
+        response = self.client.get(reverse('trends'))
+        self.assertContains(response, '#test')
+
+
+    def test_only_appropriate_content_shown(self):        
+        self.appropriate_post = Post.objects.create(user=self.user, content="This is an appropriate post.")
+        self.offensive_post = Post.objects.create(user=self.user, content="This is an offensive post.", is_offensive=True)
+
+        self.user.profile.allows_offensive = False
+        self.user.profile.save()
+
+        response = self.client.get(reverse('home'))
+        self.assertEqual(response.status_code, 200)
+        self.assertNotContains(response, "This is an offensive post.")
+        self.assertContains(response, "This is an appropriate post.")
+
+    def test_process_post_form_offensive_content(self):
+        self.appropriate_post = Post.objects.create(user=self.user, content="This is an appropriate post.")
+        self.offensive_post = Post.objects.create(user=self.user, content="This is an offensive post.", is_offensive=True)
+        self.user.profile.allows_offensive = True
+        self.user.profile.save()
+
+        response = self.client.get(reverse('home'))
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "This is an offensive post.")
+        self.assertContains(response, "This is an appropriate post.")
+    
 class CommentTestCase(TestCase):
 
     def setUp(self):
         self.user = User.objects.create_user(username='testuser', password='password')
         self.client.login(username='testuser', password='password')
         self.post = Post.objects.create(user=self.user, content='Parent Post')
+
+        try:
+            self.profile = self.user.profile  # Try to access the profile
+        except ObjectDoesNotExist:
+            # Handle the case where the profile does not exist/ create a profile
+            self.profile, created = Profile.objects.get_or_create(user=self.user)
     
     def test_add_comment(self):
-        Profile.objects.create(user=self.user)
+        Profile.objects.get_or_create(user=self.user)
         response = self.client.post(reverse('comment', args=[self.post.id]), {'content': 'Test comment'})
         self.assertEqual(response.status_code, 302)  #testing that we get redirected
         self.assertEqual(self.post.replies.count(), 1) #testing that we have 1 reply in the database
         comment = self.post.replies.first()
         self.assertEqual(comment.content, 'Test comment') #testing the content of the comment
-        login_success = self.client.login(username=self.user.username, password=self.user.password)
         response = self.client.get(reverse('home'))
         self.assertContains(response, f"Replied to {self.user.username}'s post:")
 
@@ -137,6 +196,59 @@ class CommentTestCase(TestCase):
         self.assertEqual(comment.content, 'Test comment with image')
         self.assertIsNotNone(comment.image) #testing the content of the coment
 
+    def test_only_appropriate_comments_shown(self):
+        self.parentPost = Post.objects.create(user=self.user, content="This is a test post.")
+        self.appropriate_comment = Post.objects.create(user=self.user, content="This is an appropriate comment.", parent_post=self.parentPost)
+        self.offensive_comment = Post.objects.create(user=self.user, content="This is an offensive comment.", parent_post=self.parentPost, is_offensive=True)
+        self.user.profile.allows_offensive = False
+        self.user.profile.save()
+
+        url = reverse('comment', kwargs={'post_id': self.parentPost.id})
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 200)
+        self.assertNotContains(response, "This is an offensive comment.")
+        self.assertContains(response, "This is an appropriate comment.")
+
+    def test_inappropriate_comments_shown(self):
+        self.parentPost = Post.objects.create(user=self.user, content="This is a test post.")
+        self.appropriate_comment = Post.objects.create(user=self.user, content="This is an appropriate comment.", parent_post=self.parentPost)
+        self.offensive_comment = Post.objects.create(user=self.user, content="This is an offensive comment.", parent_post=self.parentPost, is_offensive=True)
+        self.user.profile.allows_offensive = True
+        self.user.profile.save()
+
+        url = reverse('comment', kwargs={'post_id': self.parentPost.id})
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "This is an offensive comment.")
+        self.assertContains(response, "This is an appropriate comment.")
+
+    def test_only_appropriate_comments_shown_inappropriate_parent_post(self):
+        self.parentPost = Post.objects.create(user=self.user, content="This is a test post.", is_offensive=True)
+        self.appropriate_comment = Post.objects.create(user=self.user, content="This is an appropriate comment.", parent_post=self.parentPost)
+        self.offensive_comment = Post.objects.create(user=self.user, content="This is an offensive comment.", parent_post=self.parentPost, is_offensive=True)
+        self.user.profile.allows_offensive = False
+        self.user.profile.save()
+
+        response = self.client.get(reverse('home'))
+        self.assertEqual(response.status_code, 200)
+        self.assertNotContains(response, "This is a test post.")
+        self.assertNotContains(response, "This is an offensive comment.")
+        self.assertNotContains(response, "This is an appropriate comment.")
+
+    def test_inappropriate_comments_shown_inappropriate_parent_post(self):
+        self.parentPost = Post.objects.create(user=self.user, content="This is a test post.", is_offensive=True)
+        self.appropriate_comment = Post.objects.create(user=self.user, content="This is an appropriate comment.", parent_post=self.parentPost)
+        self.offensive_comment = Post.objects.create(user=self.user, content="This is an offensive comment.", parent_post=self.parentPost, is_offensive=True)
+        self.user.profile.allows_offensive = True
+        self.user.profile.save()
+
+        url = reverse('comment', kwargs={'post_id': self.parentPost.id})
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "This is a test post.")
+        self.assertContains(response, "This is an offensive comment.")
+        self.assertContains(response, "This is an appropriate comment.")
+
 class LikeAndDislikeTestCase(TestCase):
     def setUp(self):
         self.user = User.objects.create_user(username='testuser', password='password')
@@ -145,9 +257,9 @@ class LikeAndDislikeTestCase(TestCase):
         self.client.login(username='testuser', password='password')
     
     def test_like_post(self):
-        response = self.client.get(reverse('like', args=[self.post.id]))
+        response = self.client.post(reverse('like', args=[self.post.id]))
         likes = PostLike.objects.all()
-        self.assertEqual(response.status_code, 302)
+        self.assertEqual(response.status_code, 200)
         self.assertEqual(1, likes.count())
         self.assertEqual(1, self.post.get_number_likes())
         self.assertEqual(0, self.post.get_number_dislikes())
@@ -156,26 +268,26 @@ class LikeAndDislikeTestCase(TestCase):
 
     def test_like_post_with_previous_dislike_deletes_dislike(self):
         PostDislike.objects.create(disliker=self.user, post=self.post)
-        response = self.client.get(reverse('like', args=[self.post.id]))
+        response = self.client.post(reverse('like', args=[self.post.id]))
         likes = PostLike.objects.all()
         dislikes = PostDislike.objects.all()
-        self.assertEqual(response.status_code, 302)
+        self.assertEqual(response.status_code, 200)
         self.assertEqual(1, likes.count())
         self.assertEqual(0, dislikes.count())
     
     def test_like_post_with_already_liked_is_removed(self): # changed to is_removed instead of is_error
         PostLike.objects.create(liker=self.user, post=self.post)
-        response = self.client.get(reverse('like', args=[self.post.id]))
-        self.assertEqual(response.status_code, 302)
+        response = self.client.post(reverse('like', args=[self.post.id]))
+        self.assertEqual(response.status_code, 200)
         self.assertEqual(0, self.post.get_number_likes())
         self.assertEqual(0, self.post.get_number_dislikes())
         self.assertTrue(self.post.is_likeable_by(self.user))
         self.assertTrue(self.post.is_dislikeable_by(self.user))
     
     def test_dislike_post(self):
-        response = self.client.get(reverse('dislike', args=[self.post.id]))
+        response = self.client.post(reverse('dislike', args=[self.post.id]))
         dislikes = PostDislike.objects.all()
-        self.assertEqual(response.status_code, 302)
+        self.assertEqual(response.status_code, 200)
         self.assertEqual(1, dislikes.count())
         self.assertEqual(0, self.post.get_number_likes())
         self.assertEqual(1, self.post.get_number_dislikes())
@@ -184,17 +296,17 @@ class LikeAndDislikeTestCase(TestCase):
     
     def test_dislike_post_with_previous_like_deletes_like(self):
         PostLike.objects.create(liker=self.user, post=self.post)
-        response = self.client.get(reverse('dislike', args=[self.post.id]))
+        response = self.client.post(reverse('dislike', args=[self.post.id]))
         likes = PostLike.objects.all()
         dislikes = PostDislike.objects.all()
-        self.assertEqual(response.status_code, 302)
+        self.assertEqual(response.status_code, 200)
         self.assertEqual(0, likes.count())
         self.assertEqual(1, dislikes.count())
     
     def test_dislike_post_with_already_disliked_is_removed(self): # changed to is_removed instead of is_error
         PostDislike.objects.create(disliker=self.user, post=self.post)
-        response = self.client.get(reverse('dislike', args=[self.post.id]))
-        self.assertEqual(response.status_code, 302)
+        response = self.client.post(reverse('dislike', args=[self.post.id]))
+        self.assertEqual(response.status_code, 200)
         self.assertEqual(0, self.post.get_number_likes())
         self.assertEqual(0, self.post.get_number_dislikes())
         self.assertTrue(self.post.is_likeable_by(self.user))
@@ -209,7 +321,7 @@ class RepostTestCase(TestCase):
 
     def test_repost_post(self):
         response = self.client.post(reverse('repost', kwargs={'post_id': self.post.id}))
-        self.assertEqual(response.status_code, 302)  # Expect a redirect after reposting
+        self.assertEqual(response.status_code, 200)  
         self.assertEqual(Repost.objects.count(), 1) # Check that repost was created in database
 
         repost = Repost.objects.first()
@@ -221,6 +333,14 @@ class RepostTestCase(TestCase):
         response = self.client.post(reverse('repost', kwargs={'post_id': self.post.id}))
         self.assertEqual(response.status_code, 302)  # redirect to login
         self.assertEqual(Repost.objects.count(), 0)  # repost not created in the database
+
+    def test_reposting_own_post(self):
+        self.post = Post.objects.create(user=self.user, content='Test post')
+        response = self.client.post(reverse('repost', kwargs={'post_id': self.post.id}))
+        self.assertEqual(response.status_code, 200)  
+        self.assertEqual(Repost.objects.count(), 1)  # Check that repost was created in the database
+        response = self.client.get(reverse('profile'))
+        self.assertContains(response, 'Test post', count=1)
 
 class ReportTestCase(TestCase):
     def setUp(self):
@@ -250,7 +370,7 @@ class PinTestCase(TestCase):
             self.profile = self.user.profile  # Try to access the profile
         except ObjectDoesNotExist:
             # Handle the case where the profile does not exist/ create a profile
-            self.profile = Profile.objects.create(user=self.user)          
+            self.profile, created = Profile.objects.get_or_create(user=self.user)          
 
     
     
@@ -321,3 +441,52 @@ class EditPostTestCase(TestCase):
         self.assertEqual(response.status_code, 302)  
         self.assertEquals(self.post2.content, self.original_text)
         self.assertFalse(self.post2.is_edited)
+        
+        
+class ProfilePostCreationTestCase(TestCase):
+    def setUp(self):
+        self.user = User.objects.create_user(username='testuser', password='password')
+        self.client.login(username='testuser', password='password')
+
+    def test_create_post_from_profile(self):
+        post_content = 'This is a test post from profile'
+        response = self.client.post(reverse('profile'), {
+            'content': post_content,
+        }, follow=True)
+
+        self.assertRedirects(response, reverse('profile'))
+
+        self.assertEqual(Post.objects.count(), 1)
+        post = Post.objects.first()
+        self.assertEqual(post.content, post_content)
+        self.assertEqual(post.user, self.user)
+
+class ContentModerationToggleTestCase(TestCase):
+
+    def setUp(self):
+        self.user = User.objects.create_user(username='test', password='test')
+        self.client.login(username='test', password='test')
+    
+    def test_turning_content_moderation_on_with_offensive_content_hides_that_content_when_user_indicated_not_to_delete_it(self):
+        Profile.objects.create(user=self.user, allows_offensive=True)
+        offensive_post = Post.objects.create(content='test', user=self.user, is_offensive=True)
+        self.client.post(reverse('nlp_toggle'), {'allows_offensive': False, "delete_offensive": False})
+        response = self.client.get(reverse('home'))
+        posts = map(lambda carrier: carrier.payload, filter(lambda carrier: carrier.is_post, response.context['posts']))
+        self.assertIn(offensive_post, Post.objects.all())
+        self.assertNotIn(offensive_post, posts)
+    
+    def test_turning_content_moderation_on_with_offensive_content_deletes_that_content_permanently_when_user_indcated_to_delete_it(self):
+        Profile.objects.create(user=self.user, allows_offensive=True)
+        offensive_post = Post.objects.create(content='test', user=self.user, is_offensive=True)
+        self.client.post(reverse('nlp_toggle'), {'allows_offensive': False, "delete_offensive": True})
+        self.assertNotIn(offensive_post, Post.objects.all())
+    
+    def test_turning_content_moderation_on_with_offensive_content_displays_that_content(self):
+        Profile.objects.create(user=self.user, allows_offensive=False)
+        offensive_post = Post.objects.create(content='test', user=self.user, is_offensive=True)
+        self.client.post(reverse('nlp_toggle'), {'allows_offensive': True, "delete_offensive": False})
+        response = self.client.get(reverse('home'))
+        posts = map(lambda carrier: carrier.payload, filter(lambda carrier: carrier.is_post, response.context['posts']))
+        self.assertIn(offensive_post, posts)
+

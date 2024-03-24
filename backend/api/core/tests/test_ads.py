@@ -3,7 +3,8 @@ from django.test import TestCase
 from django.urls import reverse
 from time import sleep
 
-from core.models.models import Advertisement, AdvertisementTopic, Post, Profile, ProfileInterest, User
+from core.models.post_models import Advertisement, AdvertisementTopic, Post
+from core.models.profile_models import Profile, ProfileInterest, User
 
 
 class AdvertisementTests(TestCase):

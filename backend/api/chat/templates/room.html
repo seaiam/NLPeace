@@ -41,8 +41,13 @@
                     </a>
                 </li>
                 <li class="sidebar-item">
+                    <a href="{% url 'create_community' %}">
+                        <i class="fas fa-users"></i>Communities
+                    </a>
+                </li>
+                <li class="sidebar-item">
                     <a href="{% url 'messages' %}">
-                        <i class="fas fa-comment-dots"></i>
+                        <i class="fas fa-comment"></i>
                         Messages
                     </a>
                 </li>
@@ -103,32 +108,25 @@
                         <div class="row no-gutters">
                             <div class="col-xl-4 col-lg-4 col-md-4 col-sm-3 col-3">
                                 <div class="users-container">
-                                    <div class="message-search-box">
+                                    <div class="return">
                                             <a href="{% url 'messages' %}">
                                                 <button type="button" class="btn btn-default p-2 rounded-circle btn-small">
                                                 <i class="fa fa-arrow-left"></i>
                                                 </button>
                                             </a>
                                     </div>
-                                    <ul class="users">
-                                        <li class="person" >
-                                            <div class="user">
-                                                {% if target_user.profile and target_user.profile.pic %}
-                                                <img src="{{ target_user.profile.pic.url }}" class="target_user-pic" alt="{{ target_user.username }}'s profile picture">
-                                                {% else %}
-                                                <img src="{% static 'default.jpg' %}" class="reply-user-pic" alt="{{ target_user.username }}'s profile picture" />
-                                                {% endif %}
-                                            </div>
-                                            <p class="message-list">
-                                                <span class="name">{{target_user.username}}</span>
-                                            </p>
-                                        </li>
-                                    </ul>
                                 </div>
                             </div>
                             <div class="col-xl-8 col-lg-8 col-md-8 col-sm-9 col-9">
                                 <div class="opened-user-message">
-                                    <span class="name">{{target_user.username}}</span>
+                                    <a href="{% url 'guest' target_user.id %}" class="profile-link">
+                                        {% if target_user.profile and target_user.profile.pic %}
+                                        <img src="{{ target_user.profile.pic.url }}" class="opened-user-pic" alt="{{ target_user.username }}'s profile picture" style="width: 40px; height: 40px; border-radius: 50%;">
+                                        {% else %}
+                                        <img src="{% static 'default.jpg' %}" class="opened-user-pic" alt="{{ target_user.username }}'s profile picture" style="width: 40px; height: 40px; border-radius: 50%;">
+                                        {% endif %}
+                                        <span class="name">{{ target_user.username }}</span>
+                                    </a>
                                 </div>
                                 <div class="message-container" id="message-container" >
 
@@ -215,7 +213,7 @@
         <div id="modalDmReport" class="popup">
             <div class="popup-content">
                 <span id="dmReportClose" class="close" onclick="toggleModal('modalDmReport')">&times;</span>
-                <p class="modalTitle">DM Report</p>
+                <p class="modalTitle">Report Message</p>
                 <form id="dmReportForm" action="" method="POST">
                     {% csrf_token %}
                     <label for="{{ dm_report_form.category.id_for_label }}" class="form-outline mb-4" style="font-size:20px;">Category</label>
@@ -326,9 +324,71 @@
         
             if (author === username){
                 msgListTag.className= 'message-right';
+              
+                dropdownDiv.className = 'dropdown-message';
+                dropdownToggle.className = 'hidden-arrow';
+                dropdownToggle.setAttribute('data-toggle', 'dropdown');
+                dropdownToggle.setAttribute('aria-expanded', 'false');
+                dropdownIcon.className = 'fas fa-ellipsis-v';
+                dropdownMenu.className = 'dropdown-menu';
+                reportLink.className = 'dropdown-item';
+
                 msgListTag.appendChild(timeDiv);
+                msgListTag.appendChild(dropdownDiv);
+                msgListTag.appendChild(dropdownDiv);
                 msgListTag.appendChild(content);
+                dropdownToggle.appendChild(dropdownIcon);
+                dropdownItem.appendChild(reportLink);
+                dropdownMenu.appendChild(dropdownItem);
+                dropdownDiv.appendChild(dropdownToggle);
+                dropdownDiv.appendChild(dropdownMenu);
+
                 msgListTag.appendChild(messageDiv);
+                msgListTag.appendChild(content);
+                dropdownToggle.appendChild(dropdownIcon);
+                dropdownItem.appendChild(reportLink);
+                dropdownMenu.appendChild(dropdownItem);
+                dropdownDiv.appendChild(dropdownToggle);
+                dropdownDiv.appendChild(dropdownMenu);
+
+                
+                msgListTag.appendChild(messageDiv);
+
+                reportLink.innerHTML = '<i class="bi bi-trash"></i>Delete'
+                reportLink.onclick = () => {   
+
+                    const messageContentElement = msgListTag.querySelector('.message-text'); 
+                  
+
+                        
+                    if (messageContentElement) {
+                        messageContentElement.textContent = "DELETED"; 
+                    } else {
+                        const imageElement = msgListTag.querySelector('img');
+                        if (imageElement) {
+                            imageElement.remove();
+                
+                            const existingTextOrNewElement = msgListTag.querySelector('.message-text') || document.createElement('p');
+                            existingTextOrNewElement.className = 'message-text'; 
+                            existingTextOrNewElement.textContent = "DELETED"; 
+                
+                            if (!existingTextOrNewElement.parentNode) {
+                                msgListTag.appendChild(existingTextOrNewElement);
+                            }
+                        }
+                        
+                    }
+                    const linkElements = msgListTag.querySelectorAll('a.message-text');
+                    linkElements.forEach(linkElement => {
+                        const span = document.createElement('span'); 
+                        span.textContent = linkElement.textContent; 
+                        span.className = 'message-text'; 
+                        linkElement.parentNode.replaceChild(span, linkElement); 
+                    });
+                    delteMessage(message.id)
+                }
+
+
             } else {
                 msgListTag.className ='message-left';
                 dropdownDiv.className = 'dropdown-message';
@@ -425,6 +485,16 @@
                 'username': username,
             }));
         };
+
+        const delteMessage = function(id) {
+            chatSocket.send(JSON.stringify({
+                'command': 'delete_message',
+                'id': id,
+                'room_id': roomName ,
+                'username': username,
+            }));
+        };
+        
 
         const createImagePopup = function(message) {
             const popup = document.createElement('div');

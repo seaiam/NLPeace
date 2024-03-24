@@ -1,0 +1,99 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Community Page {% endblock %}
+
+{% block content %}
+
+<div class = "community-container">
+    <div class = "community-items">
+        <div class="row">
+            <div class= "col-md-10">
+                <h2 class = "trending-community">Trending Communities</h2>
+            </div>  
+            <div class= "col-md-2">
+                <button class = "iconCommunity" onclick="toggleModal('create-community-modal')" title="Create Community"> <i class="bi bi-person-plus" style="margin-left: 10px;"></i></button>
+            </div>
+        </div> 
+        <br>
+        <div class="d-flex justify-content-center align-items-center">
+            <form class="form-inline" method="POST" action="{% url 'search_community' %}">
+                {% csrf_token %}
+                <input class="form-control mr-sm-2 community-search" type="search" placeholder="Search" aria-label="Search" name="search"  id="" style="width: 36rem;" value="{{ search }}">
+              
+            </form>
+        </div>
+        <div class = "container">
+            <div class="tab-btns">
+                <button class="tabbutton" onclick="openTab(event, 'all-communities')" id="defaultOpen">All Communities</button>
+                <button class="tabbutton" onclick="openTab(event, 'my-communities')">My Communities</button>
+                <button class="tabbutton" onclick="openTab(event, 'joined-communities')">Joined Communities</button>
+            </div>    
+    </div>
+    </div>           
+        <!--create community popup-->
+        <div id="create-community-modal" class="popup">
+            <div class="popup-content">
+                <span class="close" onclick="toggleModal('create-community-modal')">&times;</span>
+                <p class="Community-modalTitle">Create a Community</p>
+                <form method="post" enctype="multipart/form-data">
+                    {% csrf_token %}
+                    <div class = "community-form"> {{ form.as_p }}</div>
+                    <button type="submit" id="saveBtn" class="CreateButton">Create</button>
+                </form>
+            </div>
+        </div>  
+        <!--create community popup end-->
+</div>
+<br>
+
+<div id="all-communities" class="tabcontent" style="display:block;">
+    {% for community in communities%}
+    {% include "communities.html" with community=community %}
+    {% endfor %}
+</div>
+
+<div id="my-communities" class="tabcontent" style="display:none;"> 
+{% for community in user_communities%}
+    {% include "communities.html" with community=community %}
+{% empty %}
+    <div class="d-flex justify-content-center align-items-center white-text">
+            NO OWNED COMMUNITIES
+    </div>  
+{% endfor %}
+</div>  
+
+
+<div id="joined-communities" class="tabcontent" style="display:none;">
+{% for community in joined_communities%}
+        {% include "communities.html" with community=community %}
+    {% empty %}
+    <div class="d-flex justify-content-center align-items-center white-text">
+            NO JOINED COMMUNITIES
+    </div>  
+
+{% endfor %}
+</div>
+
+<script>
+    function openTab(event, tabName) {           
+        var tabcontent, tabbutton;
+    
+        tabcontent = document.getElementsByClassName("tabcontent");
+        for (i = 0; i < tabcontent.length; i++) {
+            tabcontent[i].style.display = "none";
+        }
+    
+        tabbutton = document.getElementsByClassName("tabbutton");
+    
+        for (i = 0; i < tabbutton.length; i++) {
+            tabbutton[i].className = tabbutton[i].className.replace(" active", "");
+        }
+        document.getElementById(tabName).style.display = "block";
+        event.currentTarget.classList.add("active");
+    
+    }
+    // opening tab 1 by default
+    document.getElementById("defaultOpen").click();
+</script>
+{% endblock %}

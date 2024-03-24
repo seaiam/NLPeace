@@ -16,7 +16,7 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path, include
-from core.views import authentication_views, main_pages_views, profile_views, posting_views
+from core.views import authentication_views, main_pages_views, profile_views, posting_views, community_views
 from django.conf import settings
 from django.conf.urls.static import static
 
@@ -28,6 +28,7 @@ urlpatterns = [
     path('logout_user', authentication_views.logout_user, name="logout_user"),
     path('register_user/', authentication_views.register_user, name='register_user'),
     path('', main_pages_views.home, name='home'),
+    path('<str:word>', main_pages_views.home, name='home_with_word'),
     path('accounts/profile/', main_pages_views.profile, name='profile'),
     path('accounts/profile/<int:blocked_id>/', profile_views.add_block, name='add_block'),
     path('accounts/profile/updateBio/', profile_views.updateBio, name='edit_bio'),
@@ -62,6 +63,20 @@ urlpatterns = [
     path('unpin/<int:post_id>/', posting_views.unpin, name='unpin'),
     path('edit/<int:post_id>/', posting_views.edit_post, name='edit_post'),
     path('vote/<int:post_id>/', posting_views.vote, name='vote'),
+    path('community/create/', community_views.create_community, name='create_community'),
+    path('community/<int:community_id>/', community_views.community_detail, name='community_detail'),
+    path('community/<int:community_id>/create_community_post/', community_views.create_community_post, name='create_community_post'),
+    path('join/', community_views.join_community ,name="join_community"),
+    path('leave/', community_views.leave_community ,name="leave_community"),
+    path('accounts/profile/notifications/join', community_views.accept_decline_join, name='accept_decline_join'),   
+    path('hashtag_search/<str:word>/', main_pages_views.hashtag_search, name='hashtag_search'),
+    path('search/', community_views.search_community, name='search_community'),
+    path('accounts/profile/settings/updateContentFiltering', profile_views.nlp_toggle, name='nlp_toggle'),
+    path('community/delete/<int:community_id>/', community_views.delete_community, name='delete_community'),
+    path('trends/', main_pages_views.trends, name='trends'),
+    path('trend_serach/<str:word>/', main_pages_views.trend_search, name='trend_search'),
+    path('community/report/<int:reported_id>/', community_views.report_community, name='report_community'),
+    path('accounts/', include('allauth.urls')),
 ]
 
 if settings.DEBUG:
