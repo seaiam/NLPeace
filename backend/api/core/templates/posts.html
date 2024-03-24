@@ -209,17 +209,12 @@
                     {% endif %}
                 {% endif %}
             {% endif %}
-        
+            
+            {% if request.user.is_authenticated %}
             <script>
-                document.getElementById("pollForm{{ post.id }}").addEventListener("submit", function(event) {
-                    {% if request.user.is_authenticated %}
-                        // store users that vote on a poll
-                        var votedPostIds = JSON.parse('{{ request.session.voted_post_ids|escapejs }}' || '[]');
-                        votedPostIds.push({{ post.id }});
-                        localStorage.setItem('votedPostIds', JSON.stringify(votedPostIds));
-                    {% endif %}
-                });
+                votedPolls(post.id); 
             </script>
+            {% endif %}
 
             <h6 class="card-subtitle mb-2" style ="float: right; margin-top:5px;">{{ post.created_at|date:"M d, Y H:i" }}</h6>
             <br>

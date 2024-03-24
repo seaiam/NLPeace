@@ -212,3 +212,13 @@ fetch(`/repost/${postId}/`, {
 })
 .catch(error => console.error('Error:', error));
 }
+
+// store users that have voted on a poll
+function votedPolls(postId) {
+    document.getElementById("pollForm" + postId).addEventListener("submit", function(event) {
+        // store users that vote on a poll
+        var votedPostIds = JSON.parse('{{ request.session.voted_post_ids|escapejs }}' || '[]');
+        votedPostIds.push(postId);
+        localStorage.setItem('votedPostIds', JSON.stringify(votedPostIds));
+    });
+}
