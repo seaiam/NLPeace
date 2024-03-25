@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}verify 2fa page {% endblock %}
+
+  {% block content %}
+  <div class="container">
+    <h2>Enter Your 2FA Code</h2>
+    <form method="post">
+        {% csrf_token %}
+        <label for="code">2FA Code:</label>
+        <input type="text" id="code" name="code" required>
+        <button type="submit">Verify</button>
+    </form>
+  </div>
+  {% endblock %}
