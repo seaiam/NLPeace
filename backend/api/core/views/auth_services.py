@@ -1,3 +1,4 @@
+from django.shortcuts import redirect
 from api.logger_config import configure_logger # TODO add logging statements
 from django.contrib.auth import login, authenticate, logout
 
@@ -6,6 +7,10 @@ import uuid
 from django.conf import settings
 from django.core.mail import send_mail
 from core.models.profile_models import Profile, User
+import random
+
+def generate_2fa_code():
+    return random.randint(100000, 999999)
 
 def register_new_user(request, form_data):
     form = UserRegistrationForm(form_data)
@@ -26,9 +31,19 @@ def user_login(request, username, password):
     user = authenticate(request, username=username, password=password)
     profile = Profile.objects.filter(user=user).first()
     if user is not None and (profile is None or not profile.is_banned):
-        login(request, user)
-        return True
+        code = generate_2fa_code()
+        request.session['2fa_code'] = str(code)
+        request.session['user_id'] = user.id  
+        send_mail(
+            'Your 2FA Code',
+            f'Your code is: {code}',
+            settings.EMAIL_HOST_USER,
+            [user.email],
+            fail_silently=False,
+        )
+        return redirect('verify_2fa')
     return False
+
 
 def user_logout(request):
     logout(request)
