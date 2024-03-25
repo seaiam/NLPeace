@@ -27,7 +27,8 @@ def login_user(request):
         username = request.POST['username']
         password = request.POST['password']
         if user_login(request, username, password):
-            return redirect('profile')
+            #return redirect('profile')
+            return redirect('verify_2fa')
         else:
             messages.error(request, 'There was an error logging in. Try again...')
             return redirect('login')
@@ -56,3 +57,21 @@ def ForgetPassword(request):
         return redirect('/accounts/login/')
     return render(request, 'forget_password.html')
   
+def verify_2fa(request):
+    if request.method == "POST":
+        user_code = request.POST.get('code', '')
+        stored_code = request.session.get('2fa_code', '')
+        user_id = request.session.get('user_id', None)
+
+        if user_code == stored_code and user_id is not None:
+            del request.session['2fa_code']
+            del request.session['user_id']
+            user = User.objects.get(id=user_id)
+            user.backend = 'django.contrib.auth.backends.ModelBackend'
+            login(request, user)
+            return redirect('profile')
+        else:
+            messages.error(request, 'Invalid 2FA code.')
+            return redirect('verify_2fa')
+    
+    return render(request, 'verify_2fa.html')
