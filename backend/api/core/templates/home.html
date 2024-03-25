@@ -242,6 +242,10 @@
                                                             <i class="fa fa-list-ul" aria-hidden="true"></i> 
                                                         Poll
                                                         </label>
+
+                                                        <label id="getSignature" onclick="getSignatureFromWeb3Wallet('{{form.signature.id_for_label}}')" class="post-actions__label"><i class="fa fa-signature"></i> Sign</label>
+                                                        {{ form.signature }}
+
                                                     </div>
                                                     <div class="post-actions__widget">
                                                     <button type="submit" class="btn post-actions__publish">Post</button>
