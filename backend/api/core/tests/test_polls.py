@@ -1,6 +1,7 @@
 from django.test import TestCase
 from django.contrib.auth.models import User
-from core.models.post_models import Post, Poll, PollChoice, Vote, Profile
+from core.models.post_models import Post, Poll, PollChoice, Vote
+from core.models.profile_models import Profile
 from django.core.exceptions import ObjectDoesNotExist
 
 class PollTestCase(TestCase):
