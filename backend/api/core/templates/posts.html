@@ -49,6 +49,15 @@
 
                    {% endif %}
                     </ul>
+
+                    {% if post.signature %}
+
+                    <div style ="font-style: italic">
+                        Signed
+                    </div>
+
+                    {% endif %}
+
                     <!-- Edit Posts Popup -->
                     <div id="edit-post-modal-{{ post.id }}" class="popup edit-post-modal">
                         <div class="popup-content-edit">

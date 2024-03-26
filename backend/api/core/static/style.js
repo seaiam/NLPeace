@@ -246,7 +246,7 @@ document.getElementById("defaultOpenPost").click();
         
         if (walletAddress.length > 0){
             const balance = await getBalance();     // need to wait to get balance before continuing
-            connection = "Wallet: " + walletAddress.substring(0,6)+"...";
+            connection = "<i class='fas fa-wallet'></i> Wallet: " + walletAddress.substring(0,6)+"...";
             balanceText.innerText = balance;
         } else {
             connection = "<i class='fas fa-link'></i> Connect wallet";
