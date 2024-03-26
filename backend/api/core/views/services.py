@@ -55,19 +55,19 @@ def process_post_form(request, form):
             
             for i in range(1, poll_choices + 1):
                 choice_text = form.cleaned_data.get(f'choice_{i}')
-                print(choice_text)
-                # Pass text to NLP model
-                choice_result = classify_text(choice_text)
-                
-                if choice_result["prediction"][0] in [1, 0]:  # Offensive or hate speech in choice text
-                    message = 'One of the poll choices contains offensive language and is not allowed on our platform.' if choice_result["prediction"][0] == 1 else 'One of the poll choices contains hateful language and is not allowed on our platform.'
-                    messages.error(request, message)
-                    post.delete()  # Delete the post if any poll choice is inappropriate
-                    return None
-                
-                elif choice_result["prediction"][0] == 2:
-                    # Create a poll with the given choices
-                    PollChoice.objects.create(poll=poll, choice_text=choice_text)
+                if (choice_text != ''):
+                    # Pass text to NLP model
+                    choice_result = classify_text(choice_text)
+                    
+                    if choice_result["prediction"][0] in [1, 0]:  # Offensive or hate speech in choice text
+                        message = 'One of the poll choices contains offensive language and is not allowed on our platform.' if choice_result["prediction"][0] == 1 else 'One of the poll choices contains hateful language and is not allowed on our platform.'
+                        messages.error(request, message)
+                        post.delete()  # Delete the post if any poll choice is inappropriate
+                        return None
+                    
+                    elif choice_result["prediction"][0] == 2:
+                        # Create a poll with the given choices
+                        PollChoice.objects.create(poll=poll, choice_text=choice_text)
             
             update_interests_and_hashtags(post)
             trends.analyze(post) # TODO this is potentially very expensive
@@ -730,7 +730,6 @@ def handle_vote(request, post_id):
         choice_id = request.POST.get('choice')
         if choice_id:
             choice = post.poll.choices.get(pk=choice_id)
-            print(choice)
             Vote.objects.create(choice=choice, user=request.user)
             selected_choice = get_object_or_404(PollChoice, pk=choice_id)
             selected_choice.choice_votes += 1
