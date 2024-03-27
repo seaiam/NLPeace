@@ -13,10 +13,12 @@ class PostForm(forms.ModelForm):
                    }
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
+        self.fields['poll_choices'].required = False
         poll_choices = self.initial.get('poll_choices', 6)
-        for i in range(poll_choices):
-            if (i <= 6): #limiting polls to 6 options 
-                self.fields[f'choice_{i+1}'] = forms.CharField(label=f'Choice {i+1}', max_length=30, required=False)
+        if (poll_choices > 0):
+            for i in range(poll_choices):
+                if (i <= 6): #limiting polls to 6 options 
+                    self.fields[f'choice_{i+1}'] = forms.CharField(label=f'Choice {i+1}', max_length=30, required=False)
 
 class PostReportForm(forms.ModelForm):
     class Meta:
