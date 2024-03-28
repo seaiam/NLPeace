@@ -26,13 +26,31 @@ def login_user(request):
     if request.method == "POST":
         username = request.POST['username']
         password = request.POST['password']
-        if user_login(request, username, password):
-            #return redirect('profile')
-            return redirect('verify_2fa')
+        user = authenticate(request, username=username, password=password)
+        if user is not None:
+            profile = Profile.objects.filter(user=user).first()
+            if profile is not None and not profile.is_banned:
+                if profile.is_2fa_enabled:
+                    code = generate_2fa_code()
+                    request.session['2fa_code'] = str(code)
+                    request.session['user_id'] = user.id
+                    send_mail(
+                        'Your 2FA Code',
+                        f'Your code is: {code}',
+                        settings.EMAIL_HOST_USER,
+                        [user.email],
+                        fail_silently=False,
+                    )
+                    return redirect('verify_2fa')
+                else:
+                    login(request, user, backend='django.contrib.auth.backends.ModelBackend')
+                    return redirect('profile')
+            else:
+                messages.error(request, 'There was an error logging in. Try again...')
         else:
-            messages.error(request, 'There was an error logging in. Try again...')
-            return redirect('login')
+            messages.error(request, 'Invalid login credentials!')
     return render(request, 'registration/login.html')
+
 
 def logout_user(request):
     user_logout(request)
