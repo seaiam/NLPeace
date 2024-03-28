@@ -12,25 +12,33 @@ contract Chats {
 
     mapping(uint256 => ChatMessage[]) private messages;
     mapping(uint256 => uint256) private counts;
-    uint256 private count;
+    uint256 private count = 0;
 
     function create() public {
         messages[count].push(ChatMessage(msg.sender, "Hello World", block.timestamp));
         counts[count] = 1;
-        count = count + 1;
+        count++;
     }
 
     function put(uint256 id, string calldata message) public {
         messages[id].push(ChatMessage(msg.sender, message, block.timestamp));
-        counts[id] = counts[id] + 1;
+        counts[id]++;
     }
 
-    function get(uint256 id) public view returns (string[] memory) {
-        string[] memory messages1 = new string[](counts[id]);
-        ChatMessage[] memory messages2 = messages[id];
-        for (uint256 i = 1; i < counts[id]; i++) {
-            messages1[i] = (messages2[i].message);
-        }
-        return messages1;
+    function getMsg(uint256 id, uint256 index) public view returns (string memory) {
+        return messages[id][index].message;
     }
+
+    function getSender(uint256 id, uint256 index) public view returns (address){
+        return messages[id][index].sender;
+    }
+
+    function getTime(uint256 id, uint256 index) public view returns (uint256){
+        return messages[id][index].timestamp;
+    }
+
+    function countChat(uint256 id) public view returns (uint256){
+        return counts[id];
+    }
+
 }
