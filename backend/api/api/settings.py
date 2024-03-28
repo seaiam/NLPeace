@@ -9,12 +9,13 @@ https://docs.djangoproject.com/en/4.2/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/4.2/ref/settings/
 """
+from dotenv import load_dotenv
+load_dotenv()
 import os
 from pathlib import Path
 import dj_database_url
 #import redis
 from urllib.parse import urlparse
-
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = os.getenv('SECRET_KEY')
 
@@ -37,6 +38,9 @@ else:
     ALLOWED_HOSTS = []
 
 # Application definition
+
+SITE_ID=2
+
 INSTALLED_APPS = [
     'daphne',
     'django.contrib.admin',
@@ -48,8 +52,15 @@ INSTALLED_APPS = [
     'core',
     'core.tests',
     'api',
-    'chat'
+    'chat',
+    'django.contrib.sites',
+    'allauth',
+    'allauth.account',
+    'allauth.socialaccount',
+    'allauth.socialaccount.providers.google'
+    
 ]
+
 
 MIDDLEWARE = [
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -60,10 +71,28 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    "allauth.account.middleware.AccountMiddleware"
 ]
+SOCIALACCOUNT_LOGIN_ON_GET=True
+SOCIALACCOUNT_PROVIDERS = {
+    'google': {
+        'SCOPE': [
+          'profile',
+             'email'
+         ],
+         'AUTH_PARAMS': {'access_type': 'online'},
+        'APP': {
+            'client_id': os.getenv('GOOGLE_CLIENT_ID'),
+            'secret': os.getenv('GOOGLE_SECRET'),
+            'key': ''
+        }
+    }
+}
+
 
 ROOT_URLCONF = 'api.urls'
-AUTHENTICATION_BACKENDS = ['django.contrib.auth.backends.ModelBackend']
+AUTHENTICATION_BACKENDS = ['django.contrib.auth.backends.ModelBackend',    
+                           'allauth.account.auth_backends.AuthenticationBackend',]
 
 
 TEMPLATES = [
@@ -227,4 +256,12 @@ TRENDS_LIMIT = 10
 
 TRENDING_THRESHOLD = 100
 
+
+AUTHENTICATION_BACKENDS = (
+    'django.contrib.auth.backends.ModelBackend',
+    'allauth.account.auth_backends.AuthenticationBackend'
+)
+
+LOGIN_REDIRECT_URL = '/'
+LOGOUT_REDIRECT_URL='/'
 TREND_ANALYZERS = ['hashtags', 'nouns']

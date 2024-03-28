@@ -257,9 +257,9 @@ class LikeAndDislikeTestCase(TestCase):
         self.client.login(username='testuser', password='password')
     
     def test_like_post(self):
-        response = self.client.get(reverse('like', args=[self.post.id]))
+        response = self.client.post(reverse('like', args=[self.post.id]))
         likes = PostLike.objects.all()
-        self.assertEqual(response.status_code, 302)
+        self.assertEqual(response.status_code, 200)
         self.assertEqual(1, likes.count())
         self.assertEqual(1, self.post.get_number_likes())
         self.assertEqual(0, self.post.get_number_dislikes())
@@ -268,26 +268,26 @@ class LikeAndDislikeTestCase(TestCase):
 
     def test_like_post_with_previous_dislike_deletes_dislike(self):
         PostDislike.objects.create(disliker=self.user, post=self.post)
-        response = self.client.get(reverse('like', args=[self.post.id]))
+        response = self.client.post(reverse('like', args=[self.post.id]))
         likes = PostLike.objects.all()
         dislikes = PostDislike.objects.all()
-        self.assertEqual(response.status_code, 302)
+        self.assertEqual(response.status_code, 200)
         self.assertEqual(1, likes.count())
         self.assertEqual(0, dislikes.count())
     
     def test_like_post_with_already_liked_is_removed(self): # changed to is_removed instead of is_error
         PostLike.objects.create(liker=self.user, post=self.post)
-        response = self.client.get(reverse('like', args=[self.post.id]))
-        self.assertEqual(response.status_code, 302)
+        response = self.client.post(reverse('like', args=[self.post.id]))
+        self.assertEqual(response.status_code, 200)
         self.assertEqual(0, self.post.get_number_likes())
         self.assertEqual(0, self.post.get_number_dislikes())
         self.assertTrue(self.post.is_likeable_by(self.user))
         self.assertTrue(self.post.is_dislikeable_by(self.user))
     
     def test_dislike_post(self):
-        response = self.client.get(reverse('dislike', args=[self.post.id]))
+        response = self.client.post(reverse('dislike', args=[self.post.id]))
         dislikes = PostDislike.objects.all()
-        self.assertEqual(response.status_code, 302)
+        self.assertEqual(response.status_code, 200)
         self.assertEqual(1, dislikes.count())
         self.assertEqual(0, self.post.get_number_likes())
         self.assertEqual(1, self.post.get_number_dislikes())
@@ -296,17 +296,17 @@ class LikeAndDislikeTestCase(TestCase):
     
     def test_dislike_post_with_previous_like_deletes_like(self):
         PostLike.objects.create(liker=self.user, post=self.post)
-        response = self.client.get(reverse('dislike', args=[self.post.id]))
+        response = self.client.post(reverse('dislike', args=[self.post.id]))
         likes = PostLike.objects.all()
         dislikes = PostDislike.objects.all()
-        self.assertEqual(response.status_code, 302)
+        self.assertEqual(response.status_code, 200)
         self.assertEqual(0, likes.count())
         self.assertEqual(1, dislikes.count())
     
     def test_dislike_post_with_already_disliked_is_removed(self): # changed to is_removed instead of is_error
         PostDislike.objects.create(disliker=self.user, post=self.post)
-        response = self.client.get(reverse('dislike', args=[self.post.id]))
-        self.assertEqual(response.status_code, 302)
+        response = self.client.post(reverse('dislike', args=[self.post.id]))
+        self.assertEqual(response.status_code, 200)
         self.assertEqual(0, self.post.get_number_likes())
         self.assertEqual(0, self.post.get_number_dislikes())
         self.assertTrue(self.post.is_likeable_by(self.user))
@@ -321,7 +321,7 @@ class RepostTestCase(TestCase):
 
     def test_repost_post(self):
         response = self.client.post(reverse('repost', kwargs={'post_id': self.post.id}))
-        self.assertEqual(response.status_code, 302)  # Expect a redirect after reposting
+        self.assertEqual(response.status_code, 200)  
         self.assertEqual(Repost.objects.count(), 1) # Check that repost was created in database
 
         repost = Repost.objects.first()
@@ -337,7 +337,7 @@ class RepostTestCase(TestCase):
     def test_reposting_own_post(self):
         self.post = Post.objects.create(user=self.user, content='Test post')
         response = self.client.post(reverse('repost', kwargs={'post_id': self.post.id}))
-        self.assertEqual(response.status_code, 302)  # Expect a redirect after reposting
+        self.assertEqual(response.status_code, 200)  
         self.assertEqual(Repost.objects.count(), 1)  # Check that repost was created in the database
         response = self.client.get(reverse('profile'))
         self.assertContains(response, 'Test post', count=1)
@@ -460,3 +460,33 @@ class ProfilePostCreationTestCase(TestCase):
         post = Post.objects.first()
         self.assertEqual(post.content, post_content)
         self.assertEqual(post.user, self.user)
+
+class ContentModerationToggleTestCase(TestCase):
+
+    def setUp(self):
+        self.user = User.objects.create_user(username='test', password='test')
+        self.client.login(username='test', password='test')
+    
+    def test_turning_content_moderation_on_with_offensive_content_hides_that_content_when_user_indicated_not_to_delete_it(self):
+        Profile.objects.create(user=self.user, allows_offensive=True)
+        offensive_post = Post.objects.create(content='test', user=self.user, is_offensive=True)
+        self.client.post(reverse('nlp_toggle'), {'allows_offensive': False, "delete_offensive": False})
+        response = self.client.get(reverse('home'))
+        posts = map(lambda carrier: carrier.payload, filter(lambda carrier: carrier.is_post, response.context['posts']))
+        self.assertIn(offensive_post, Post.objects.all())
+        self.assertNotIn(offensive_post, posts)
+    
+    def test_turning_content_moderation_on_with_offensive_content_deletes_that_content_permanently_when_user_indcated_to_delete_it(self):
+        Profile.objects.create(user=self.user, allows_offensive=True)
+        offensive_post = Post.objects.create(content='test', user=self.user, is_offensive=True)
+        self.client.post(reverse('nlp_toggle'), {'allows_offensive': False, "delete_offensive": True})
+        self.assertNotIn(offensive_post, Post.objects.all())
+    
+    def test_turning_content_moderation_on_with_offensive_content_displays_that_content(self):
+        Profile.objects.create(user=self.user, allows_offensive=False)
+        offensive_post = Post.objects.create(content='test', user=self.user, is_offensive=True)
+        self.client.post(reverse('nlp_toggle'), {'allows_offensive': True, "delete_offensive": False})
+        response = self.client.get(reverse('home'))
+        posts = map(lambda carrier: carrier.payload, filter(lambda carrier: carrier.is_post, response.context['posts']))
+        self.assertIn(offensive_post, posts)
+

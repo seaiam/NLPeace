@@ -53,6 +53,11 @@ class NLPToggleForm(forms.ModelForm):
         initial=False
     )
 
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.label_suffix = ''
+
     class Meta:
         model = Profile
-        fields = ['allows_offensive']
+        fields = ['allows_offensive', 'delete_offensive']
+        labels = {'delete_offensive': 'Delete my offensive posts when I turn content moderation on'}

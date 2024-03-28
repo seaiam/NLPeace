@@ -142,6 +142,7 @@ def create_repost(user, post_id):
         Repost.objects.filter(post=post_to_repost, user=user).delete()
     else:
         Repost.objects.create(post=post_to_repost, user=user)
+    return post_to_repost.get_number_reposts()    
 
 def get_user_profile(user):
     profile, _ = Profile.objects.get_or_create(user=user)
@@ -306,7 +307,8 @@ def handle_like(user, post_id):
         PostLike.objects.filter(liker=user, post=post).delete()
     else:
         #like post
-        like = PostLike.objects.create(liker=user, post=post)
+        PostLike.objects.create(liker=user, post=post)
+    return post.get_number_likes()
 
 def handle_dislike(user, post_id):
     post = get_object_or_404(Post, id=post_id)
@@ -322,7 +324,8 @@ def handle_dislike(user, post_id):
         PostDislike.objects.filter(disliker=user, post=post).delete()
     else:
         #dislike post
-        dislike = PostDislike.objects.create(disliker=user, post=post)
+        PostDislike.objects.create(disliker=user, post=post)
+    return post.get_number_dislikes()    
 
 def report_post_service(request, post_id, form):
     post = get_object_or_404(Post, pk=post_id)
@@ -344,13 +347,15 @@ def report_user_service(request, reported_id, form):
 
 def save_or_unsave_post(user, post_id):
     post = get_object_or_404(Post, pk=post_id)
+    saved = False
     post_save, created = PostSave.objects.get_or_create(saver=user, post=post)
     if created:
         message = 'Post saved successfully.'
+        saved = True
     else:
         post_save.delete()
         message = 'Post unsaved.'
-    return message
+    return message, saved, post.get_number_saves()
 
 def get_bookmarked_posts(user, allows_offensive):
     saves = PostSave.objects.filter(saver=user).select_related('post').order_by('-post__created_at')
@@ -588,6 +593,9 @@ def update_content_filtering_settings(user_id, form_data):
     form = NLPToggleForm(form_data, instance=user.profile)
     if form.is_valid():
         form.save()
+        if not user.profile.allows_offensive:
+            if user.profile.delete_offensive:
+                Post.objects.filter(user=user, is_offensive=True).delete()
         return True
     return False
 

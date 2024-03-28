@@ -84,11 +84,31 @@ body {
   margin-top: 90px;
 }
 
+.google-sign-in-button{
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-top: 55rem;
+}
+
 .button1, .button2 {
   background: none;
   border: 1px solid black;
   border-radius: 20px;
   width: 70%;
+  padding: 10px;
+  font-weight: 600;
+  transition: 0.5s;
+  background-size: 200% auto;
+  box-shadow: 0 0 20px #eee;
+  background-image: linear-gradient(to right, #F9D1C4 0%, #9BBDDD 51%, #F9D1C4 100%);
+}
+
+.button3 {
+  background: none;
+  border: 1px solid black;
+  border-radius: 20px;
+  width: 350px;
   padding: 10px;
   font-weight: 600;
   transition: 0.5s;
@@ -870,7 +890,7 @@ color: #0047ab;
 }
 
 .feed-bookmark{
-  color:#0047ab;
+  
   margin-left:18%;
 }
 
@@ -976,7 +996,6 @@ button:hover {
   margin-top: 0;
 }
 
-/* TODO we might want to rename this since it's used for links other than comment. */
 .comment-link{
   text-decoration: none !important;
   color: #00001c;
@@ -986,16 +1005,16 @@ button:hover {
   color: #00001c;
 }
 
-.like-link{
+.like-link, .dislike-link, .bookmark-button, .dislike-count, .save-count, .repost-count{
   text-decoration: none !important;
   color: #00001c;
 }
 
-.like-link:hover{
+.like-link:hover, .dislike-link:hover{
   color: #00001c;
 }
 
-.post-liked, .post-disliked{
+.post-liked, .post-disliked, .bookmarked-button{
   border: none;
   padding: 0;
   background: none;
@@ -1371,6 +1390,10 @@ img {
   text-decoration: none;
   background: none;
   margin-bottom:10px;
+}
+
+.community-member-search{
+  border-radius: 30px;
 }
 
 #popupScroll{
