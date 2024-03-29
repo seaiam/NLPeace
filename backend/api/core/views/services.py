@@ -31,9 +31,9 @@ def process_post_form(request, form):
     if form.is_valid():
         tweet_text = form.cleaned_data['content']
         tweet_text = translation_service(tweet_text)
-        result = classify_text(tweet_text)
-        if result["prediction"][0] in [1, 0]:  # Offensive or hate speech
-            message = 'This post contains offensive language. It will only be showed to users who turn off content filtering.' if result["prediction"][0] == 1 else 'This post contains hateful language. It will only be showed to users who turn off content filtering.'
+        result = classify_text(tweet_text)     
+        if result["prediction"] in [1, 0]:  # Offensive or hate speech
+            message = 'This post contains offensive language. It will only be showed to users who turn off content filtering.' if result["prediction"] == 1 else 'This post contains hateful language. It will only be showed to users who turn off content filtering.'
             messages.warning(request, message)
             post = form.save(commit=False)
             post.user = request.user
@@ -41,7 +41,7 @@ def process_post_form(request, form):
             post.save()
             update_interests_and_hashtags(post)
             return post
-        elif result["prediction"][0] == 2:  # Appropriate
+        elif result["prediction"] == 2:  # Appropriate
             post = form.save(commit=False)
             post.user = request.user
             post.save()
@@ -270,8 +270,8 @@ def process_comment_form(request, form, post_id):
         comment_text = translation_service(comment_text)
         result = classify_text(comment_text)
 
-        if result["prediction"][0] in [1, 0]:  # Offensive or hate speech
-            message = 'This comment contains offensive language and is not allowed on our platform.' if result["prediction"][0] == 1 else 'This comment contains hateful language and is not allowed on our platform.'
+        if result["prediction"] in [1, 0]:  # Offensive or hate speech
+            message = 'This comment contains offensive language and is not allowed on our platform.' if result["prediction"] == 1 else 'This comment contains hateful language and is not allowed on our platform.'
             messages.warning(request, message)
             comment = form.save(commit=False)
             comment.user = request.user
@@ -280,7 +280,7 @@ def process_comment_form(request, form, post_id):
             comment.save()
             update_interests_and_hashtags(comment)
             return comment
-        elif result["prediction"][0] == 2:  # Appropriate
+        elif result["prediction"] == 2:  # Appropriate
             comment = form.save(commit=False)
             comment.user = request.user
             comment.parent_post = Post.objects.get(pk=post_id)
@@ -512,8 +512,8 @@ def handle_edit_post(request,form, post, remove_image, parent_post):
         edited_text = form.cleaned_data['content']
         edited_text = translation_service(edited_text)
         result = classify_text(edited_text)
-        if result["prediction"][0] in [1, 0]:  # Offensive or hate speech
-            message = 'This post contains offensive language. It will only be showed to users who turn off content filtering.' if result["prediction"][0] == 1 else 'This post contains hateful language. It will only be showed to users who turn off content filtering.'
+        if result["prediction"] in [1, 0]:  # Offensive or hate speech
+            message = 'This post contains offensive language. It will only be showed to users who turn off content filtering.' if result["prediction"] == 1 else 'This post contains hateful language. It will only be showed to users who turn off content filtering.'
             messages.warning(request, message)
             if remove_image and post.image:
                 post.image.delete(save=True)
@@ -523,7 +523,7 @@ def handle_edit_post(request,form, post, remove_image, parent_post):
             post.is_offensive = True
             post.parent_post = parent_post
             post.save()
-        elif result["prediction"][0] == 2:  # Appropriate
+        elif result["prediction"]== 2:  # Appropriate
             if remove_image and post.image:
                 post.image.delete(save=True)
                 post.image = None
@@ -671,21 +671,21 @@ def process_community_post(request, community, form):
         tweet_text = form.cleaned_data['content']
         tweet_text = translation_service(tweet_text)
         result = classify_text(tweet_text)
-        if result["prediction"][0] in [1, 0]:  # Offensive or hate speech
+        if result["prediction"] in [1, 0]:  # Offensive or hate speech
             post = form.save(commit=False)
             post.user = request.user
             post.is_offensive = True
             if community.allows_offensive:
-                message = 'This post contains offensive language. It won\'t be showed to users with content monitoring on.' if result["prediction"][0] == 1 else 'This post contains hateful language. It won\'t be showed to users with content monitoring on.'
+                message = 'This post contains offensive language. It won\'t be showed to users with content monitoring on.' if result["prediction"] == 1 else 'This post contains hateful language. It won\'t be showed to users with content monitoring on.'
                 messages.warning(request, message)
                 post.save()
                 CommunityPost.objects.create(post=post, community=community)
                 update_interests_and_hashtags(post)
             else:
-                message = 'This post contains offensive language. It is not allowed on this community.' if result["prediction"][0] == 1 else 'This post contains hateful language. It is not allowed on this community.'
+                message = 'This post contains offensive language. It is not allowed on this community.' if result["prediction"] == 1 else 'This post contains hateful language. It is not allowed on this community.'
                 messages.warning(request, message)
             return post
-        elif result["prediction"][0] == 2:  # Appropriate
+        elif result["prediction"] == 2:  # Appropriate
             post = form.save(commit=False)
             post.user = request.user
             post.save()
