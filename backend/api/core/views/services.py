@@ -28,7 +28,6 @@ class ContentCarrier:
 trends = Trends()
 
 def process_post_form(request, form):
-    print(form.errors)
     if form.is_valid():
         tweet_text = form.cleaned_data['content']
         tweet_text = translation_service(tweet_text)
