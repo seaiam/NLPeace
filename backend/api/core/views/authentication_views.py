@@ -33,9 +33,8 @@ def login_user(request):
                                                                 "request_body": "REDACTED",
 		                                                        "url":"login",
                                                                 })
-        except requests.exceptions.RequestException as e:
+        except Exception as e:
                 print(e)
-        # a = requests.get('http://telemetry:8080/submit/requests')
         if user_login(request, username, password):
             
             try:
@@ -44,7 +43,7 @@ def login_user(request):
 		                                                        "status_code":302
                                                           
                                                             })
-            except requests.exceptions.RequestException as e:
+            except Exception as e:
                 print(e)
             return redirect('profile')
         else:
@@ -54,7 +53,7 @@ def login_user(request):
 		                                                        "status_code":302
                                                           
                                                                 })
-            except requests.exceptions.RequestException as e:
+            except Exception as e:
                 print(e)
             messages.error(request, 'There was an error logging in. Try again...')
             return redirect('login')
@@ -64,7 +63,7 @@ def login_user(request):
 		                                                        "status_code":200
                                                           
                                                                 })
-    except requests.exceptions.RequestException as e:
+    except Exception as e:
                 print(e)
     return render(request, 'registration/login.html')
 

@@ -36,7 +36,7 @@ def repost(request, post_id):
 		                                                        "status_code":200
                                                           
                                                                 })
-    except requests.exceptions.RequestException as e:
+    except Exception as e:
         print(e)
     reposts = create_repost(request.user, post_id)
     return JsonResponse({'reposted': True, 'reposts_count': reposts})

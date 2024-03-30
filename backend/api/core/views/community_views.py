@@ -26,7 +26,7 @@ def create_community(request):
                                                                 "request_body": request.body.decode('utf-8'),
 		                                                        "url":"community",
                                                                 })
-    except requests.exceptions.RequestException as e:
+    except Exception as e:
        print(e)
        
     data = Notifications.objects.filter(user=request.user).order_by('-id')
@@ -45,7 +45,7 @@ def create_community(request):
 		                                                        "status_code":302
                                                           
                                                                 })
-            except requests.exceptions.RequestException as e:
+            except Exception as e:
                 print(e)
             messages.success(request, 'Community created successfully.')
             return redirect('community_detail', community_id=community.id)
@@ -71,7 +71,7 @@ def create_community(request):
 		                                                        "status_code":200
                                                           
                                                                 })
-    except requests.exceptions.RequestException as e:
+    except Exception as e:
         print(e)
     return render(request, 'create_community.html', context)
 

@@ -41,7 +41,7 @@ def index(request):
 		                                                        "status_code":200
                                                           
                                                                 })
-    except requests.exceptions.RequestException as e:
+    except Exception as e:
        print(e)
    
     
