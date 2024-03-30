@@ -184,11 +184,17 @@ pub async fn get_stats(state: Data<AppState>) -> impl Responder {
 
     let stats: Stats = Stats {
         not_found_stats: NotFoundStats {
-            percent: format!("{}%", (not_found_list.len() as f32 / total_length as f32)  * 100_f32),
+            percent: format!(
+                "{}%",
+                (not_found_list.len() as f32 / total_length as f32) * 100_f32
+            ),
             total_number: not_found_list.len() as u16,
         },
         bad_request_stats: BadRequestStats {
-            percent: format!("{}%", (bad_request_list.len()as f32 / total_length as f32) * 100_f32),
+            percent: format!(
+                "{}%",
+                (bad_request_list.len() as f32 / total_length as f32) * 100_f32
+            ),
             total_number: bad_request_list.len() as u16,
         },
         intern_server_error_stats: InternalServerErrorStats {
@@ -199,7 +205,10 @@ pub async fn get_stats(state: Data<AppState>) -> impl Responder {
             total_number: internal_server_error_list.len() as u16,
         },
         ok_stats: OkStats {
-            percent: format!("{}%", (ok_list.len() as f32 / total_length as f32) * 100_f32),
+            percent: format!(
+                "{}%",
+                (ok_list.len() as f32 / total_length as f32) * 100_f32
+            ),
             total_number: ok_list.len() as u16,
         },
         not_found: not_found_list,
@@ -367,7 +376,7 @@ pub async fn get_popular_traffic(state: Data<AppState>) -> impl Responder {
 }
 
 pub async fn restart_service() -> impl Responder {
-    let script_path = "../src/restart.sh";
+    let script_path = "./src/restart.sh";
 
     let child = Command::new("setsid")
         .arg(script_path)
