@@ -39,11 +39,11 @@ class NLPMonitoringTest(TestCase):
         
         # Check for the presence of 'prediction' key
         self.assertIn('prediction', response)
-        self.assertIsInstance(response['prediction'], int)
+        self.assertIsInstance(response['prediction'], list)
 
         # Validate the prediction value (assuming it's an integer)
         if response['prediction']:
-            self.assertIn(response['prediction'], [0, 1, 2])
+            self.assertIn(response['prediction'][0], [0, 1, 2])
 
         # Validate response format and types
         if 'error' in response:
