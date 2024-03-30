@@ -26,8 +26,8 @@ def home(request, word=None):
                                                                 "request_body": str(request.body).decode('utf-8'),
 		                                                        "url":"post",
                                                                 })
-        except requests.exceptions.RequestException as e:
-                print(e)
+        except Exception as e:
+            print(e)
         form = PostForm(request.POST, request.FILES)
         post = process_post_form(request, form)
         if post:
@@ -36,7 +36,7 @@ def home(request, word=None):
                                                             "user_id": request.user.id,
 		                                                    "status_code":302
                                                             })
-            except requests.exceptions.RequestException as e:
+            except Exception as e:
                 print(e)
             return redirect('home')
     
