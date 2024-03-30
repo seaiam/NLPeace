@@ -11,6 +11,7 @@ from core.models.profile_models import Profile
 from django.contrib.auth.models import User
 from django.http import HttpResponseRedirect
 from .services import *
+from faker import Faker
 
 @login_required
 def add_block(request, blocked_id):
@@ -194,3 +195,33 @@ def nlp_toggle(request):
         form = NLPToggleForm(instance=request.user.profile)
 
     return render(request, 'settings.html', {'NLPToggle_form': form})
+
+@login_required
+def switch_to_main_profile(request):
+    try:
+        profile = request.user.profile
+    except Profile.DoesNotExist:
+        profile = Profile.objects.create(user=request.user)
+    
+    profile.is_anonymous = False
+    profile.save()
+
+    request.session['active_profile_id'] = profile.pk
+    return redirect('profile')
+
+@login_required
+def switch_to_anonymous_profile(request):
+    try:
+        profile = request.user.profile
+    except Profile.DoesNotExist:
+        profile = Profile.objects.create(user=request.user)
+    fake = Faker()
+    # Generate a random name
+    anonymous_username = fake.user_name()
+    profile.anonymous_username = anonymous_username
+    
+    profile.is_anonymous = True
+    profile.save()
+
+    request.session['active_profile_id'] = profile.pk
+    return redirect('profile')

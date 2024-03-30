@@ -9,7 +9,7 @@
              Posted in Community <a href="{% url 'community_detail' community_id=post.community_id %}" style="color:#00008B; text-decoration: none;"><strong> {{ post.community_name }}</strong></a>
             {% endif %}
             </div>
-
+            
             {% if carrier.is_post %}
             {% with post=carrier.payload %}
             
@@ -150,7 +150,11 @@
                 </div>
                 <div class="col-10">
                     <h5 class="card-title">
-                        <strong><a href="{% url 'guest' post.user.id %}" class="username-link">@{{ post.user.username }}</a></strong>
+                        {% if post.is_anonymous %}
+                            <strong><a href="{% url 'guest' request.user.id %}" class="username-link">@{{ post.get_username }}</a></strong>
+                        {% else %}
+                            <strong><a href="{% url 'guest' post.user.id %}" class="username-link">@{{ post.get_username }}</a></strong>
+                        {% endif %}
                         {% if post.is_edited %}           
                         <span class="edit-status"><i class="bi bi-dot"></i>Edited</span>
                         {% endif %}

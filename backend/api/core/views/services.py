@@ -43,6 +43,13 @@ def process_post_form(request, form):
             return post
         elif result["prediction"] == 2:  # Appropriate
             post = form.save(commit=False)
+            if request.user.profile.is_anonymous:
+                post.anonymous_username = request.user.profile.anonymous_username
+                post.user = request.user
+                post.is_anonymous = True
+                post.save()
+            else:
+                post.anonymous_username = None  
             post.user = request.user
             post.save()
             update_interests_and_hashtags(post)
@@ -149,7 +156,7 @@ def get_user_profile(user):
     return profile
 
 def get_user_posts_and_reposts(user, allows_offensive):
-    posts = Post.objects.filter(Q(user=user) & Q(parent_post=None))
+    posts = Post.objects.filter(Q(user=user) & Q(parent_post=None), is_anonymous=False)
     reposts_ids = Repost.objects.filter(user=user).values_list('post_id', flat=True)
     reposts = Post.objects.filter(id__in=reposts_ids)
     reposts = [repost for repost in reposts if repost not in posts]

@@ -76,6 +76,8 @@ urlpatterns = [
     path('trend_serach/<str:word>/', main_pages_views.trend_search, name='trend_search'),
     path('community/report/<int:reported_id>/', community_views.report_community, name='report_community'),
     path('accounts/', include('allauth.urls')),
+    path('switch-to-main-profile/', profile_views.switch_to_main_profile, name='switch_to_main_profile'),
+    path('switch-to-anonymous-profile/', profile_views.switch_to_anonymous_profile, name='switch_to_anonymous_profile'),
 ]
 
 if settings.DEBUG:
