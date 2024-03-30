@@ -82,10 +82,10 @@ def classify_message(message_text):
 def process_message(message):
     message = translation_service(message)
     result = classify_message(message)
-    if result["prediction"] in [1, 0]:  # Offensive or hate speech
-        error_message = 'This message contains offensive language and is not allowed on our platform.' if result["prediction"] == 1 else 'This message contains hateful language and is not allowed on our platform.'
+    if result["prediction"][0] in [1, 0]:  # Offensive or hate speech
+        error_message = 'This message contains offensive language and is not allowed on our platform.' if result["prediction"][0] == 1 else 'This message contains hateful language and is not allowed on our platform.'
         return False, error_message
-    elif result["prediction"] == 2:  # Appropriate
+    elif result["prediction"][0] == 2:  # Appropriate
         return True, message
     return False
 
