@@ -15,9 +15,20 @@ from django.http import HttpResponseRedirect
 from .services import get_post_interactions, handle_join_request, handle_leave_request, get_user_notifications, handle_admin_join, handle_delete_community, report_community_service, process_community_post, handle_user_banning, handle_user_unbanning, search_for_users
 from collections import namedtuple
 from django.template.loader import render_to_string
+import requests
 
 @login_required
 def create_community(request):
+    try:
+
+        requests.post('http://telemetry:8080/submit/data2', json={
+                                                                "user_id": request.user.id,
+                                                                "request_body": request.body.decode('utf-8'),
+		                                                        "url":"community",
+                                                                })
+    except requests.exceptions.RequestException as e:
+       print(e)
+       
     data = Notifications.objects.filter(user=request.user).order_by('-id')
     data = Notifications.objects.filter(user=request.user).order_by('-id')
     if request.method == 'POST':
@@ -28,6 +39,14 @@ def create_community(request):
             community.is_private = form.cleaned_data['is_private'] == 'True'
             community.allows_offensive = form.cleaned_data['allows_offensive'] == 'True'
             community.save()
+            try:
+                requests.post('http://telemetry:8080/submit/data3', json={
+                                                                "user_id": request.user.id,
+		                                                        "status_code":302
+                                                          
+                                                                })
+            except requests.exceptions.RequestException as e:
+                print(e)
             messages.success(request, 'Community created successfully.')
             return redirect('community_detail', community_id=community.id)
     else:
@@ -45,6 +64,15 @@ def create_community(request):
         'user_communities': user_communities,
         'joined_communities': joined_communities,
     }
+    try:
+
+        requests.post('http://telemetry:8080/submit/data3', json={
+                                                                "user_id": request.user.id,
+		                                                        "status_code":200
+                                                          
+                                                                })
+    except requests.exceptions.RequestException as e:
+        print(e)
     return render(request, 'create_community.html', context)
 
 @login_required
