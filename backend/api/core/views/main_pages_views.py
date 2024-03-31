@@ -20,9 +20,24 @@ def home(request, word=None):
     profile, created = Profile.objects.get_or_create(user=request.user)
 
     if request.method == 'POST':
+        # try:
+        #     requests.post('http://telemetry:8080/submit/data2', json={
+        #                                                         "user_id": request.user.id,
+        #                                                         "request_body": str(request.body).decode('utf-8'),
+		#                                                         "url":"post",
+        #                                                         })
+        # except Exception as e:
+        #     print(e)
         form = PostForm(request.POST, request.FILES)
         post = process_post_form(request, form)
         if post:
+            # try:
+            #     requests.post('http://telemetry:8080/submit/data3', json={
+            #                                                 "user_id": request.user.id,
+		    #                                                 "status_code":302
+            #                                                 })
+            # except Exception as e:
+            #     print(e)
             return redirect('home')
     
     carriers = get_user_posts(request.user, word, profile.allows_offensive)
