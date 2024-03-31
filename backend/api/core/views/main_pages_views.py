@@ -8,7 +8,7 @@ from django.urls import reverse
 from core.forms.user_forms import UserReportForm
 from core.forms.profile_forms import EditProfileBannerForm, EditProfilePicForm, EditBioForm
 from core.forms.posting_forms import PostForm, PostReportForm
-from core.models.post_models import Post, Repost, PostReport
+from core.models.post_models import Post, Repost, PostReport, Vote
 from core.models.profile_models import Notifications
 from core.models.community_models import CommunityPost
 from .services import *
@@ -55,7 +55,12 @@ def home(request, word=None):
     following_posts = [carrier for carrier in following_carriers if (not hasattr(carrier.payload, 'is_community_post')) or (hasattr(carrier.payload, 'is_community_post') and not carrier.payload.is_community_post())]
 
 
-    reported_posts = [post.payload for post in posts if post.is_post and not post.payload.is_reportable_by(request.user)] #for post reporting
+    reported_posts = [post.payload for post in posts if post.is_post and not post.payload.is_reportable_by(request.user)] #for post reporting 
+    # Retrieve user's voted polls
+    voted_poll_ids = Vote.objects.filter(user=request.user).values_list('choice__poll__post_id', flat=True)
+    # Store polls that a user votes on
+    request.session['voted_poll_ids'] = list(voted_poll_ids)
+    request.session.modified = True
 
     if profile.allows_offensive == False:
             offensive_posts = Post.objects.filter(is_offensive=True)
@@ -114,7 +119,11 @@ def profile(request):
     replies = [post for post in posts if post.is_post and post.payload.parent_post is not None]
     non_pinned_image_posts=[post for post in posts if post.is_post and not post.payload.is_pinned_by(request.user) and post.payload.image]
     community_posts = get_user_community_posts(request.user, allows_offensive) 
-
+    # Retrieve user's voted polls
+    voted_poll_ids = Vote.objects.filter(user=request.user).values_list('choice__poll__post_id', flat=True)
+    # Store polls that a user votes on
+    request.session['voted_poll_ids'] = list(voted_poll_ids)
+    request.session.modified = True
     context = {
         'profile': profile,
         'posts': posts,
