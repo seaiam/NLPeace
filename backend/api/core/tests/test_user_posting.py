@@ -152,6 +152,13 @@ class PostTestCase(TestCase):
         self.assertContains(response, "This is an offensive post.")
         self.assertContains(response, "This is an appropriate post.")
     
+    def test_anon_post(self):
+        response = self.client.post(reverse('home'), {'content': 'This is an anonymous post', 'is_anonymous': True})
+        self.assertEqual(response.status_code, 302)  # Expect a redirect after posting
+        self.assertEqual(Post.objects.count(), 1)
+        post = Post.objects.first()
+        self.assertEqual(post.content, 'This is an anonymous post')
+
 class CommentTestCase(TestCase):
 
     def setUp(self):

@@ -58,13 +58,13 @@
                                             <div class = "row top-aligned-row">
                                                 <div class = "col-2">
                                                     {% if post.user.profile and post.user.profile.pic %}
-                                                        <img src="{{ post.user.profile.pic.url }}" alt="{{ post.user.username }}'s profile picture" class="user-pic">
+                                                        <img src="{{ post.user.profile.pic.url }}" alt="{{ post.get_username }}'s profile picture" class="user-pic">
                                                     {% else %}
-                                                        <img src="{% static 'default.jpg' %}" class="user-pic" alt="{{ post.user.username }}'s profile picture" />
+                                                        <img src="{% static 'default.jpg' %}" class="user-pic" alt="{{ post.get_username }}'s profile picture" />
                                                     {% endif %}
                                                     </div>
                                                     <div class="col-10">
-                                                        <h5 class="card-title"><strong>@{{ post.user.username }}</strong></h5>
+                                                        <h5 class="card-title"><strong>@{{ post.get_username }}</strong></h5>
                                                         <textarea name="content" class="edit-post-textarea">{{ post.content }}</textarea>
                                                     </div>
                                                 </div>
@@ -128,29 +128,29 @@
             {% if post.reposts.all %}
             {% if post.reposts.all|length == 1%}
                 <div class="repost-info">
-                    Reposted by @{{ post.reposts.all.0.user.username }}
+                    Reposted by @{{ post.reposts.all.0.get_username }}
                 </div>
             {% elif post.reposts.all|length == 2%}
                 <div class="repost-info">
-                    Reposted by @{{ post.reposts.all.0.user.username }} and @{{ post.reposts.all.1.user.username }}
+                    Reposted by @{{ post.reposts.all.0.get_username }} and @{{ post.reposts.all.1.get_username }}
                 </div>
             {% else %}
                 <div class="repost-info">
-                    Reposted by @{{ post.reposts.all.0.user.username }}, @{{ post.reposts.all.1.user.username }} , and {{post.reposts.all|length|add:"-2"}} others
+                    Reposted by @{{ post.reposts.all.0.get_username }}, @{{ post.reposts.all.1.get_username }} , and {{post.reposts.all|length|add:"-2"}} others
                 </div>
             {% endif %}
         {% endif %}
             <div class = "row top-aligned-row">
                 <div class = "col-2">
                     {% if post.user.profile and post.user.profile.pic %}
-                        <img src="{{ post.user.profile.pic.url }}" alt="{{ post.user.username }}'s profile picture" class="user-pic">
+                        <img src="{{ post.user.profile.pic.url }}" alt="{{ post.get_username }}'s profile picture" class="user-pic">
                     {% else %}
-                        <img src="{% static 'default.jpg' %}" class="user-pic" alt="{{ post.user.username }}'s profile picture" />
+                        <img src="{% static 'default.jpg' %}" class="user-pic" alt="{{ post.get_username }}'s profile picture" />
                     {% endif %}
                 </div>
                 <div class="col-10">
                     <h5 class="card-title">
-                        {% if post.is_anonymous %}
+                        {% if post.is_anonymous or reply.is_anonymous %}
                             <strong><a href="{% url 'guest' request.user.id %}" class="username-link">@{{ post.get_username }}</a></strong>
                         {% else %}
                             <strong><a href="{% url 'guest' post.user.id %}" class="username-link">@{{ post.get_username }}</a></strong>
@@ -162,7 +162,7 @@
                     <p class="card-text">
                     {% if post.parent_post %}
                     <i>
-                        <a href="{% url 'comment' post.parent_post.id %}" style="color:#00008B; text-decoration: none;">Replied to {{ post.parent_post.user.username}}'s post:</a><br>
+                        <a href="{% url 'comment' post.parent_post.id %}" style="color:#00008B; text-decoration: none;">Replied to {{ post.parent_post.get_username}}'s post:</a><br>
                     </i>
                     {% endif %}
                         {{ post|render_post|safe }}

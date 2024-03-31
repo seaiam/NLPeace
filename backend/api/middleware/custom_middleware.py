@@ -5,7 +5,7 @@ class AnonymousProfileMiddleware:
         self.get_response = get_response
 
     def __call__(self, request):
-        if request.user.is_authenticated and request.user.profile.is_anonymous:
+        if request.user.is_authenticated and hasattr(request.user, 'profile') and request.user.profile.is_anonymous:
             request.user.username = request.user.profile.anonymous_username
 
         response = self.get_response(request)
