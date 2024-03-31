@@ -95,11 +95,4 @@ class UserReport(models.Model):
     date_reported = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
-        return f'{self.reporter.username} -- {UserReport.Reason(self.reason).name} -- {self.date_reported}'  
-
-
-class TemporaryAccount(models.Model):
-    original_user = models.OneToOneField(User, on_delete=models.CASCADE)
-    temporary_username = models.CharField(max_length=150, unique=True)
-
-    
+        return f'{self.reporter.username} -- {UserReport.Reason(self.reason).name} -- {self.date_reported}'      
