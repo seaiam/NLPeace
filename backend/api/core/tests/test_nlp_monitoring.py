@@ -52,65 +52,24 @@ class NLPMonitoringTest(TestCase):
             self.assertIsInstance(response['error'], str)
             self.assertIsInstance(response['status_code'], int)
 
-class PostProcessingTest(TestCase):
-
+class PostProcessing(TestCase):
     def setUp(self):
-        self.factory = RequestFactory()
-        self.user = User.objects.create_user(username='testuser', password='12345')
-        self.form_data = {'content': 'Test post content'}
+        self.email = 'testuser@email.com'
+        self.username = 'testuser'
+        self.password = 'testpassword123'
+        self.user = User.objects.create_user(username=self.username, email=self.email, password=self.password)
+        self.client.login(username=self.username, password=self.password )
 
-    @patch('core.views.services.classify_text')
-    def test_process_post_form_with_appropriate_content(self, mock_classify_text):
-        mock_classify_text.return_value = {"prediction": [2]} 
-
-        request = self.factory.post('/home/', self.form_data)
-        request.user = self.user
-        form = PostForm(data=self.form_data)
-
-        # Dummy function for middleware initialization
-        def dummy_get_response(request):
-            return None
-
-        # Add session middleware to the request
-        middleware = SessionMiddleware(dummy_get_response)
-        middleware.process_request(request)
-        request.session.save()
-
-        # Add messages to the request
-        messages = SessionStorage(request)
-        setattr(request, '_messages', messages)
-
-
-        if form.is_valid():
-            response = process_post_form(request, form)
-            self.assertIsNotNone(response)
-
-    @patch('core.views.services.classify_text')
-    def test_process_post_form_with_offensive_content(self, mock_classify_text):
-        mock_classify_text.return_value = {"prediction": [1]}  # Offensive content
-
-        request = self.factory.post('/home/', self.form_data)
-        request.user = self.user
-        form = PostForm(data=self.form_data)
-
-        # Dummy function for middleware initialization
-        def dummy_get_response(request):
-            return None
-
-        # Add session middleware to the request
-        middleware = SessionMiddleware(dummy_get_response)
-        middleware.process_request(request)
-        request.session.save()
-
-        # Add messages to the request
-        messages = SessionStorage(request)
-        setattr(request, '_messages', messages)
-
-        if form.is_valid():
-            process_post_form(request, form)
-            messages = list(get_messages(request))
-            self.assertEqual(len(messages), 1)
-            self.assertIn('offensive language', str(messages[0]))
+    def test_offensive_post(self):
+        response = self.client.post(reverse('home'), {'content': 'bitch'}, follow = True)
+        self.assertContains(response, 'This post contains offensive language. It will only be showed to users who turn off content filtering.')
+        self.assertNotContains(response, 'bitch')
+    
+    def test_inoffensive_post(self):
+        response = self.client.post(reverse('home'), {'content': 'hello world'})
+        self.assertEqual(Post.objects.count(), 1)
+        post = Post.objects.first()
+        self.assertEqual(post.content, 'hello world')
 
 class ForeignLanguagePost(TestCase):
     def setUp(self):

@@ -7,7 +7,6 @@ flasky/venv/
 
 __pycache__/
 backend/.env.google_auth
-.env
 images/
 flasky/static/images/
 static/images
@@ -140,7 +139,6 @@ celerybeat.pid
 *.sage.py
 
 # Environments
-.env
 .venv
 env/
 venv/

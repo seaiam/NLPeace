@@ -31,8 +31,7 @@ def process_post_form(request, form):
     if form.is_valid():
         tweet_text = form.cleaned_data['content']
         tweet_text = translation_service(tweet_text)
-        result = classify_text(tweet_text)
-                
+        result = classify_text(tweet_text)     
         if result["prediction"][0] in [1, 0]:  # Offensive or hate speech
             message = 'This post contains offensive language. It will only be showed to users who turn off content filtering.' if result["prediction"][0] == 1 else 'This post contains hateful language. It will only be showed to users who turn off content filtering.'
             messages.warning(request, message)
@@ -543,7 +542,7 @@ def handle_edit_post(request,form, post, remove_image, parent_post):
             post.is_offensive = True
             post.parent_post = parent_post
             post.save()
-        elif result["prediction"][0] == 2:  # Appropriate
+        elif result["prediction"][0]== 2:  # Appropriate
             if remove_image and post.image:
                 post.image.delete(save=True)
                 post.image = None
