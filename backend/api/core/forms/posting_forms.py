@@ -5,9 +5,11 @@ class PostForm(forms.ModelForm):
     content = forms.CharField(label='', widget=forms.Textarea(attrs={'class': 'widget-post__textarea scroller', 'style': 'background-color: #D9D9D9;', 'placeholder': 'Start a Post...'}))
     class Meta:
         model = Post
-        fields = ['content', 'image','parent_post', 'video']
+        fields = ['content', 'image','parent_post', 'video', 'signature', 'web3verify']
         widgets = {'image': forms.FileInput(attrs={'style': 'display:none'}),
-                   'video':forms.FileInput(attrs={'accept':'video/*'}) # 'style': 'display:none'}
+                   'video':forms.FileInput(attrs={'accept':'video/*'}), # 'style': 'display:none'}
+                   'signature':forms.HiddenInput(),
+                   'web3verify':forms.HiddenInput()
                    }
 
 class PostReportForm(forms.ModelForm):
