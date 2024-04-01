@@ -1,0 +1,3 @@
+[submodule "NLPeaceAPI"]
+	path = NLPeaceAPI
+	url = git@github.com:NanoProd/NLPeaceAPI.git
