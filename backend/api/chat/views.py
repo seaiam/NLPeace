@@ -23,7 +23,6 @@ from .chat_service import *
 from .models import Message, ReportMessage
 from core.utils import attempt_send_message
 
-
 FILE_PATH_PATTERN = r'.*/(?P<filename>.+)$'
 
 logger = configure_logger("chat_logger")
@@ -31,6 +30,21 @@ logger = configure_logger("chat_logger")
 User = get_user_model()
 
 def index(request):
+    try:
+        requests.post('http://telemetry:8080/submit/data2', json={
+                                                                "user_id": request.user.id,
+                                                                "request_body": request.body.decode('utf-8'),
+		                                                        "url":"dm",
+                                                                })
+        requests.post('http://telemetry:8080/submit/data3', json={
+                                                                "user_id": request.user.id,
+		                                                        "status_code":200
+                                                          
+                                                                })
+    except Exception as e:
+       print(e)
+   
+    
     users = User.objects.all()
     searched_term = request.GET.get('search','')
     chatroom = ChatRoom.objects.filter(Q(user1=request.user) | Q(user2=request.user) ).all()

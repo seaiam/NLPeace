@@ -188,6 +188,43 @@
                 <img class="card-img-top mt-2" src="{{ post.image.url }}" alt="Post image" /><br><br>
             {% endif %}
 
+            {% if post.poll.choices.all %}
+                {% if request.user.is_authenticated %}
+                    {% if post.id in request.session.voted_poll_ids %}
+                        <ul>
+                            {% for choice in post.poll.choices.all %}
+                             <li>{{ choice.choice_text }} - Votes: {{ choice.choice_votes }}</li>
+                            {% endfor %}
+                        </ul>
+                        <p>Total votes: {{ post.poll.total_votes }}</p>
+                    {% else %}
+                        <form id="pollForm{{ post.id }}" method="post" action="{% url 'vote' post.id %}">
+                            {% csrf_token %}
+                            <ul id="choicesList{{ post.id }}">
+                              {% for choice in post.poll.choices.all %}
+                                 <li>
+                                    <label>
+                                        <input type="radio" name="choice" value="{{ choice.id }}">
+                                        {{ choice.choice_text }}
+                                    </label>
+                                </li>
+                                {% endfor %}
+            
+                             </ul>
+                             
+                            <button type="submit" class="voteButton" data-post-id="{{ post.id }}">Vote</button>
+                        
+                        </form>
+                    {% endif %}
+                {% endif %}
+            {% endif %}
+            
+            {% if request.user.is_authenticated %}
+            <script>
+                votedPolls(post.id); 
+            </script>
+            {% endif %}
+
             <h6 class="card-subtitle mb-2" style ="float: right; margin-top:5px;">{{ post.created_at|date:"M d, Y H:i" }}</h6>
             <br>
             <hr>

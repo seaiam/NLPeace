@@ -236,4 +236,30 @@ class Migration(migrations.Migration):
             model_name='postdislike',
             constraint=models.UniqueConstraint(fields=('disliker', 'post'), name='disliker_post_unique'),
         ),
+        migrations.CreateModel(
+            name='Poll',
+            fields=[
+                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
+                ('question', models.CharField(max_length=255)),
+                ('post', models.OneToOneField(on_delete=django.db.models.deletion.CASCADE, related_name='poll', to='core.post')),
+                ('total_votes', models.IntegerField(default=0)),
+            ],
+        ),
+        migrations.CreateModel(
+            name='PollChoice',
+            fields=[
+                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
+                ('choice_text', models.CharField(blank=True, max_length=50, null=False)),
+                ('poll', models.ForeignKey(null=True, on_delete=django.db.models.deletion.CASCADE, related_name='choices', to='core.poll')),
+                ('choice_votes', models.IntegerField(default=0)),
+            ],
+        ),
+        migrations.CreateModel(
+            name='Vote',
+            fields=[
+                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
+                ('choice', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='votes', to='core.pollchoice')),
+                ('user', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to=settings.AUTH_USER_MODEL)),
+            ],
+        ),
     ]
