@@ -2,8 +2,13 @@ import spacy
 
 from asgiref.sync import async_to_sync
 from channels.layers import get_channel_layer
+import os
 
-nlp = spacy.load('en_core_web_sm')
+model = 'en_core_web_sm'
+if not spacy.util.is_package(model):
+    os.system(f"python -m spacy download {model}")
+
+nlp = spacy.load(model, disable=['parser', 'ner'])
 
 def attempt_send_message(group, message):
     """
