@@ -2,6 +2,7 @@ from api.logger_config import configure_logger # TODO add logging statements
 from django.contrib import messages
 from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import login_required
+import requests
 
 from core.forms.user_forms import UserRegistrationForm
 
@@ -26,11 +27,44 @@ def login_user(request):
     if request.method == "POST":
         username = request.POST['username']
         password = request.POST['password']
+        try:
+            requests.post('http://telemetry:8080/submit/data2', json={
+                                                                "user_id": 0,
+                                                                "request_body": "REDACTED",
+		                                                        "url":"login",
+                                                                })
+        except Exception as e:
+                print(e)
         if user_login(request, username, password):
+            
+            try:
+                requests.post('http://telemetry:8080/submit/data3', json={
+                                                                "user_id": 0,
+		                                                        "status_code":302
+                                                          
+                                                            })
+            except Exception as e:
+                print(e)
             return redirect('profile')
         else:
+            try:
+                requests.post('http://telemetry:8080/submit/data3', json={
+                                                                "user_id": 0,
+		                                                        "status_code":302
+                                                          
+                                                                })
+            except Exception as e:
+                print(e)
             messages.error(request, 'There was an error logging in. Try again...')
             return redirect('login')
+    try:
+        requests.post('http://telemetry:8080/submit/data3', json={
+                                                                "user_id": 0,
+		                                                        "status_code":200
+                                                          
+                                                                })
+    except Exception as e:
+                print(e)
     return render(request, 'registration/login.html')
 
 def logout_user(request):

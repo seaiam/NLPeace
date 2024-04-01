@@ -52,11 +52,48 @@ services:
     depends_on:
       db:
         condition: service_healthy
-  
+  #http://127.0.0.1:8080/submit/data
   redis:
     image: "redis:alpine"
     expose:
       - "6379"
+
+  telemetry:
+    build:
+      context: ../telemetry/telemetry_service/
+      dockerfile: Dockerfile
+    environment:
+      - DATABASE_URL=postgresql://more_simple_api_user:pwd@telemetry_db/telemetry_db
+      # - DB_USER=more_simple_api_user
+      # - DB_PASS=pwd
+    ports:
+      - "8080:8080"
+    depends_on:
+      - telemetry_db
+      # telemetry_db:
+      #   condition: service_healthy
+      
+  telemetry_db:
+    image: postgres:16.0-bookworm
+    user: postgres
+    volumes:
+      - telemetry-db-data:/var/lib/postgresql/data
+      - ./init-db:/docker-entrypoint-initdb.d
+    environment:
+        POSTGRES_DB: telemetry_db
+        POSTGRES_USER: more_simple_api_user
+        POSTGRES_PASSWORD: pwd
+      # POSTGRES_PASSWORD: pwd
+    # healthcheck:
+    #   test: ["CMD-SHELL", "pg_isready -d telemetry_db -U more_simple_api_user"]
+    #   interval: 1s
+    #   timeout: 5s
+    #   retries: 25
+    ports:
+      - "65433:65433" # Optional: only needed if you want to access the database from the host
+
+
+
 
   db:
     image: postgres:16.0-alpine
@@ -74,5 +111,4 @@ services:
 
 volumes:
   dev-db-data:
-    
-      
+    telemetry-db-data:
