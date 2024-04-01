@@ -73,15 +73,18 @@ def login_user(request):
                     return redirect('profile')
             else:
                 messages.error(request, 'There was an error logging in. Try again...')
+                return redirect('login')
         else:
             messages.error(request, 'Invalid login credentials!')
+            #return redirect('login')
         try:
             requests.post('http://telemetry:8080/submit/data3', json={
-                "user_id": 0,  # Consider updating this to reflect actual user ID if possible
-                "status_code": 401  # Assuming 401 represents unauthorized/failed login
+                "user_id": 0,  
+                "status_code": 401 
             })
         except Exception as e:
             print(e)
+        return redirect('login')
     return render(request, 'registration/login.html')
 
 
