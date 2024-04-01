@@ -2,7 +2,7 @@ from api.logger_config import configure_logger # TODO add logging statements
 from django.contrib import messages
 from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import login_required
-
+import requests
 from core.forms.user_forms import UserRegistrationForm
 
 #import BLL auth_services
@@ -26,9 +26,19 @@ def login_user(request):
     if request.method == "POST":
         username = request.POST['username']
         password = request.POST['password']
+        try:
+            requests.post('http://telemetry:8080/submit/data2', json={
+                "user_id": 0,
+                "request_body": "REDACTED",
+                "url": "login",
+            })
+        except Exception as e:
+            print(e)
+
         user = authenticate(request, username=username, password=password)
         if user is not None:
             profile = Profile.objects.filter(user=user).first()
+            
             if profile is not None and not profile.is_banned:
                 if profile.is_2fa_enabled:
                     code = generate_2fa_code()
@@ -41,14 +51,37 @@ def login_user(request):
                         [user.email],
                         fail_silently=False,
                     )
+                    try:
+                        requests.post('http://telemetry:8080/submit/data3', json={
+                            "user_id": user.id,
+                            "status_code": 302  
+                        })
+                    except Exception as e:
+                        print(e)
                     return redirect('verify_2fa')
                 else:
                     login(request, user, backend='django.contrib.auth.backends.ModelBackend')
+
+                    try:
+                        requests.post('http://telemetry:8080/submit/data3', json={
+                            "user_id": user.id,
+                            "status_code": 302  
+                        })
+                    except Exception as e:
+                        print(e)
+
                     return redirect('profile')
             else:
                 messages.error(request, 'There was an error logging in. Try again...')
         else:
             messages.error(request, 'Invalid login credentials!')
+        try:
+            requests.post('http://telemetry:8080/submit/data3', json={
+                "user_id": 0,  # Consider updating this to reflect actual user ID if possible
+                "status_code": 401  # Assuming 401 represents unauthorized/failed login
+            })
+        except Exception as e:
+            print(e)
     return render(request, 'registration/login.html')
 
 

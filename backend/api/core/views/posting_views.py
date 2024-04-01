@@ -25,6 +25,19 @@ def delete_post(request):
 @login_required
 @require_POST
 def repost(request, post_id):
+    try:
+        requests.post('http://telemetry:8080/submit/data2', json={
+                                                                "user_id": request.user.id,
+                                                                "request_body": request.body.decode('utf-8'),
+		                                                        "url":"repost",
+                                                                })
+        requests.post('http://telemetry:8080/submit/data3', json={
+                                                                "user_id": request.user.id,
+		                                                        "status_code":200
+                                                          
+                                                                })
+    except Exception as e:
+        print(e)
     reposts = create_repost(request.user, post_id)
     return JsonResponse({'reposted': True, 'reposts_count': reposts})
 
@@ -135,3 +148,10 @@ def save_post(request, post_id):
     messages.info(request, message)
     return JsonResponse({'saved': saved, 'saves_count': saves_count})
 
+def vote(request, post_id):
+    if request.method == 'POST':
+        handle_vote(request, post_id) 
+        referer = request.META.get('HTTP_REFERER')
+    if referer and 'profile' in referer.lower():
+        return redirect('profile')
+    return HttpResponseRedirect(request.META.get('HTTP_REFERER', '/'))
