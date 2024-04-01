@@ -211,7 +211,7 @@ if os.getenv('ENV') == 'production':
     redis_url = urlparse(os.environ.get('REDIS_URL', ''))
     redis_host = redis_url.hostname
     redis_port = redis_url.port
-    redis_password = redis_url.password
+    # redis_password = redis_url.password
 
     ASGI_APPLICATION = "api.asgi.application"
     CHANNEL_LAYERS = {
@@ -219,12 +219,12 @@ if os.getenv('ENV') == 'production':
             "BACKEND": "channels_redis.core.RedisChannelLayer",
             "CONFIG": {
                 "hosts": [(redis_host, redis_port)],
-                "password": redis_password,
+                # "password": redis_password,
             },
         },
     }
-    if redis_password:
-        CHANNEL_LAYERS["default"]["CONFIG"]["password"] = redis_password
+    # if redis_password:
+        # CHANNEL_LAYERS["default"]["CONFIG"]["password"] = redis_password
 else:
     REDIS_HOST = os.getenv('REDIS_HOST')
     REDIS_PORT = os.getenv('REDIS_PORT')
