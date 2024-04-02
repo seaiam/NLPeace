@@ -54,6 +54,14 @@
 
                     {% endif %}
 
+                    {% if post.web3verify %}
+
+                    <div style ="font-style: italic">
+                        Verified
+                    </div>
+
+                    {% endif %}
+
                     <!-- Edit Posts Popup -->
                     <div id="edit-post-modal-{{ post.id }}" class="popup edit-post-modal">
                         <div class="popup-content-edit">

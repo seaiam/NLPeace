@@ -18,6 +18,7 @@ class Post(models.Model):
     is_edited = models.BooleanField(default = False)
     is_offensive = models.BooleanField(default=False)
     signature = models.CharField(max_length=400, null=True, blank=True)
+    web3verify = models.BooleanField(default = False)
 
     def get_number_likes(self):
         return self.postlike_set.all().count()

@@ -181,7 +181,6 @@
             <button id="connection" class="editButton" onclick = "connectWeb3Wallet()"></button>
             <button class="postButton" onclick="toggleModal('start-a-post')">Post</button>
             <button class="editButton" onclick="toggleModal('home-edit-bio-modal')">Edit Profile</button>
-
             <script src="https://cdn.jsdelivr.net/npm/web3@4.6.0/dist/web3.min.js"></script>
             <script src="https://cdn.jsdelivr.net/npm/web3-eth@4.5.0/lib/commonjs/validation.min.js"></script>
 
@@ -245,6 +244,10 @@
 
                                                         <label id="getSignature" onclick="getSignatureFromWeb3Wallet('{{form.signature.id_for_label}}')" class="post-actions__label"><i class="fa fa-signature"></i> Sign</label>
                                                         {{ form.signature }}
+                                                        &nbsp; &nbsp; &nbsp; 
+
+                                                        <label id="getVerification" onclick="payVerification('{{form.web3verify.id_for_label}}')" class="post-actions__label"><i class="fas fa-dollar-sign"></i> Verify</label>
+                                                        {{ form.web3verify }}   
 
                                                     </div>
                                                     <div class="post-actions__widget">
