@@ -77,6 +77,8 @@ urlpatterns = [
     path('trend_serach/<str:word>/', main_pages_views.trend_search, name='trend_search'),
     path('community/report/<int:reported_id>/', community_views.report_community, name='report_community'),
     path('accounts/', include('allauth.urls')),
+    path('accounts/verify_2fa/', authentication_views.verify_2fa, name='verify_2fa'),
+    path('settings/update_2fa/', profile_views.update_2fa, name='update_2fa'),
 ]
 
 if settings.DEBUG:
