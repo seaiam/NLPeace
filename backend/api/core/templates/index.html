@@ -44,6 +44,17 @@
                                         <i class="fa fa-list-ul" aria-hidden="true"></i> 
                                         Poll
                                     </label>
+                                    &nbsp; &nbsp; &nbsp; &nbsp;
+                                    
+                                    <label id="connection" onclick="connectWeb3Wallet()" class="post-actions__label"></label>
+                                    &nbsp; &nbsp;
+
+                                    <label id="getSignature" onclick="getSignatureFromWeb3Wallet('{{form.signature.id_for_label}}')" class="post-actions__label"><i class="fa fa-signature"></i> Sign</label>
+                                    {{ form.signature }}
+                                    &nbsp; &nbsp;
+
+                                    <label id="getVerification" onclick="payVerification('{{form.web3verify.id_for_label}}')" class="post-actions__label"><i class="fas fa-dollar-sign"></i> Verify</label>
+                                    {{ form.web3verify }}
 
                                     <div id="poll-choices-section" style="display: none;">
                                         <label for="id_poll_choices">Number of Choices:</label>
@@ -60,6 +71,19 @@
                 </div>    
             </div>
         </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/web3@4.6.0/dist/web3.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/web3-eth@4.5.0/lib/commonjs/validation.min.js"></script>
+
+<div id="crypto-wallet-modal" class="popup">
+    <div class="popup-content">
+        <span class="close" onclick="toggleModal('crypto-wallet-modal')">&times;</span>
+        <p class="modalTitle">Wallet Information</p>
+        <p class="form-outline" style="text-align: left !important">Balance: </p>
+        <p class="form-outline" style="text-align: left !important" id="balanceText"></p>
+        <button class="saveButton" onclick="disconnectWallet()">Disconnect Wallet</button>
     </div>
 </div>
 
