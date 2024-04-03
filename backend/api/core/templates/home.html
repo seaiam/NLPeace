@@ -177,14 +177,13 @@
           {% if request.user == profile.user or not profile.is_private or profile.user in request.user.profile.following.all|dictsort:"id" %}
           <div class="col-md-4 text-md-right">
             {% if request.user == profile.user%}
-
+            
             <button id="connection" class="editButton" onclick = "connectWeb3Wallet()"></button>
             <button class="postButton" onclick="toggleModal('start-a-post')">Post</button>
             <button class="editButton" onclick="toggleModal('home-edit-bio-modal')">Edit Profile</button>
             <script src="https://cdn.jsdelivr.net/npm/web3@4.6.0/dist/web3.min.js"></script>
             <script src="https://cdn.jsdelivr.net/npm/web3-eth@4.5.0/lib/commonjs/validation.min.js"></script>
-            
-            
+
             {% endif %}
 
             <div id="crypto-wallet-modal" class="popup">
