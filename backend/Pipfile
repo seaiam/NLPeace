@@ -11,7 +11,7 @@ factory_boy = "*"
 faker = "*"
 channels-redis = "*"
 coverage = "*"
-daphne
+daphne = "*"
 [dev-packages]
 flake8 = "*"
 
