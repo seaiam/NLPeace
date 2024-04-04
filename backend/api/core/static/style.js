@@ -288,8 +288,6 @@ async function payVerification(id) {
         }
     }
 
-
-
 // Post interactions
 function likePost(postId) {
     const csrftoken = document.querySelector('[name=csrfmiddlewaretoken]').value; 

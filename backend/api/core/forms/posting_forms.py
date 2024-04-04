@@ -7,6 +7,7 @@ class PostForm(forms.ModelForm):
 
     class Meta:
         model = Post
+
         fields = ['content', 'image','parent_post', 'video','poll_choices', 'signature', 'web3verify']
         widgets = {'image': forms.FileInput(attrs={'style': 'display:none'}),
                    'video':forms.FileInput(attrs={'accept':'video/*'}), # 'style': 'display:none'}
