@@ -63,6 +63,18 @@
                     <i class="fas fa-comment-dots mt-4 mr-3"></i>
                 </a>
               </div>
+              {% else %} 
+              <!-- Connect Wallet -->
+              <div class="dropdown" style="float:right;">
+                <a class="hidden-arrow" type="button" data-toggle="dropdown" aria-expanded="false">
+                    <i class="fas fa-ellipsis-h mt-4 fa-ellipsis-h-white"></i>
+                </a>
+                <ul class="dropdown-menu dropdown-menu-right">
+                    <li>
+                        <button id="connection" class="dropdown-item" onclick="connectWeb3Wallet()"></button>
+                    </li>
+                </ul>
+              </div>
               {% endif %}   
             </div>
           </div>            
@@ -177,8 +189,7 @@
           {% if request.user == profile.user or not profile.is_private or profile.user in request.user.profile.following.all|dictsort:"id" %}
           <div class="col-md-4 text-md-right">
             {% if request.user == profile.user%}
-            
-            <button id="connection" class="editButton" onclick = "connectWeb3Wallet()"></button>
+
             <button class="postButton" onclick="toggleModal('start-a-post')">Post</button>
             <button class="editButton" onclick="toggleModal('home-edit-bio-modal')">Edit Profile</button>
             <script src="https://cdn.jsdelivr.net/npm/web3@4.6.0/dist/web3.min.js"></script>
