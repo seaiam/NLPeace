@@ -33,7 +33,8 @@ def profile_settings(request):
         'editPasswordForm': PasswordChangeForm(request.user),
         'privacy_form':PrivacySettingsForm(instance=user.profile),
         'messaging_form':MessagingSettingsForm(instance=user.profile),
-        'NLPToggle_form' : NLPToggleForm(instance=user.profile)
+        'NLPToggle_form' : NLPToggleForm(instance=user.profile),
+        'two_fa_form':TwoFAForm(instance=request.user.profile)
       }
     return render(request, 'settings.html', context)
     
@@ -194,3 +195,16 @@ def nlp_toggle(request):
         form = NLPToggleForm(instance=request.user.profile)
 
     return render(request, 'settings.html', {'NLPToggle_form': form})
+
+@login_required
+def update_2fa(request):
+    if request.method == 'POST':
+        form = TwoFAForm(request.POST, instance=request.user.profile)
+        if form.is_valid():
+            form.save()
+            messages.success(request, "2FA settings updated successfully.")
+            return redirect('profile_settings')
+        else:
+            messages.error(request, "There was an error updating your 2FA settings.")
+            return redirect('profile_settings')
+    return HttpResponseNotAllowed(['POST'])

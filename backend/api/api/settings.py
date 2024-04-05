@@ -22,17 +22,16 @@ SECRET_KEY = os.getenv('SECRET_KEY')
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 AUTH_PROFILE_MODULE = 'core.Profile'
-CSRF_COOKIE_SECURE = True
+#CSRF_COOKIE_SECURE = True
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/4.2/howto/deployment/checklist/
 
 if os.getenv('ENV') == 'production':
-    ALLOWED_HOSTS = ['nlpeace-0c427559664a.herokuapp.com','https://nlpeace-0c427559664a.herokuapp.com', 'https://nlpeace.com', 'https://nlpeace.herokuapp.com']
+    ALLOWED_HOSTS = ['20.220.170.29']
 
     CSRF_TRUSTED_ORIGINS = [
-    'https://nlpeace-0c427559664a.herokuapp.com',
-    'https://nlpeace.com', 'https://nlpeace.herokuapp.com'
+    'http://20.220.170.29'
     ]
 else:
     ALLOWED_HOSTS = []
@@ -119,11 +118,11 @@ MESSAGE_STORAGE = 'django.contrib.messages.storage.session.SessionStorage'
 # Database
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases
 if 'DATABASE_URL' in os.environ:
-    DEBUG = True
+    DEBUG =  False
     #Heroku prod db
     DATABASES = {'default': dj_database_url.config(default=os.environ.get('DATABASE_URL'))}
 else:
-    DEBUG = True
+    DEBUG = False
     DATABASES = {
         'default': {
             'ENGINE': 'django.db.backends.postgresql',
@@ -207,11 +206,11 @@ REDIS_URL = os.environ.get('REDIS_URL', 'redis://localhost:6379')
 REDIS_TLS_URL = os.environ.get('REDIS_TLS_URL', 'redis://localhost:6379')
 #redis_instance = redis.StrictRedis.from_url(REDIS_URL)
 # Channels
-if os.getenv('ENV') == 'production':
+if os.getenv('ENV') != 'production':
     redis_url = urlparse(os.environ.get('REDIS_URL', ''))
     redis_host = redis_url.hostname
     redis_port = redis_url.port
-    redis_password = redis_url.password
+    # redis_password = redis_url.password
 
     ASGI_APPLICATION = "api.asgi.application"
     CHANNEL_LAYERS = {
@@ -219,12 +218,12 @@ if os.getenv('ENV') == 'production':
             "BACKEND": "channels_redis.core.RedisChannelLayer",
             "CONFIG": {
                 "hosts": [(redis_host, redis_port)],
-                "password": redis_password,
+                # "password": redis_password,
             },
         },
     }
-    if redis_password:
-        CHANNEL_LAYERS["default"]["CONFIG"]["password"] = redis_password
+    # if redis_password:
+        # CHANNEL_LAYERS["default"]["CONFIG"]["password"] = redis_password
 else:
     REDIS_HOST = os.getenv('REDIS_HOST')
     REDIS_PORT = os.getenv('REDIS_PORT')

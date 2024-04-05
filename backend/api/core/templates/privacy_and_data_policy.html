@@ -1,0 +1,91 @@
+
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.5.0/css/all.css" integrity="sha384-B4dIYHKNBt8Bc12p+WXckhzcICo0wtJAoU8YZTY5qE0Id1GSseTk6S+L3BlXeVIU" crossorigin="anonymous">
+    <link rel="stylesheet"  type="text/css" href="{% static 'style.css' %}">
+</head>
+{% block content %}
+<body>
+
+<div style = "color: #919196 ;  padding-right: 25%; padding-left: 25%;">
+            <h1>
+                Privacy Policy
+            </h1>
+            <p>
+                At NLPeace , we are committed to safeguarding the privacy of our users. This Privacy Policy outlines how we collect, use, and protect your personal information.
+            </p>
+            &nbsp;&nbsp;&nbsp;&nbsp;
+            <ol>
+                <li>
+                    <h4>
+                        Collection of Information
+                    </h4>
+                    We do not collect any personal data from our users without their consent. The only information we gather is the necessary data for the functioning of our services. 
+                </li>
+                &nbsp;&nbsp;&nbsp;&nbsp;
+                <li>
+                    <h4>
+                        Storage and Use of Data
+                    </h4>
+                    We do not store, use, or sell any personal data of our users under any circumstances. Your privacy is our top priority, and we ensure that your information remains secure and confidential.
+                </li>
+                &nbsp;&nbsp;&nbsp;&nbsp;
+                <li>
+                    <h4>
+                        Handling of Data by Heroku
+                    </h4>
+                    Our application is hosted on Heroku, and we adhere to Heroku's privacy and security policies as outlined in Heroku's Privacy Policy. Heroku staff does not access or use customer data except as necessary for the provision of services or where required by law. 
+                </li>
+                &nbsp;&nbsp;&nbsp;&nbsp;
+                <li>
+                    <h4>
+                        Monitoring of Messages and Posts
+                    </h4>
+                    We only monitor messages or posts if they have been reported for hate, abuse, or impersonation. This is done solely to ensure that our platform remains a safe and respectful environment for all users. We do not engage in any form of surveillance or monitoring of user activities without valid reasons. 
+                </li>
+                &nbsp;&nbsp;&nbsp;&nbsp;
+                <li>
+                    <h4>
+                        Your Rights
+                    </h4>
+                    As a user of our platform, you have the right to access, correct, or delete any personal information that we may hold about you. You can also opt-out of any communications or services provided by us at any time. 
+                </li>
+                &nbsp;&nbsp;&nbsp;&nbsp;
+                <li>
+                    <h4>
+                        Changes to Privacy Policy
+                    </h4>
+                    We reserve the right to amend this Privacy Policy at any time to reflect changes in our practices or legal requirements. We encourage you to review this Privacy Policy periodically for any updates. 
+                </li>
+                &nbsp;&nbsp;&nbsp;&nbsp;
+                <li>
+                    <h4>
+                        Contact Us
+                    </h4>
+                    If you have any questions or concerns regarding our Privacy Policy or the handling of your personal data, please contact us at nlpeaceinfo@gmail.com
+                </li>
+                &nbsp;&nbsp;&nbsp;&nbsp;
+            </ol>
+            <p>
+                By using our services, you agree to the terms outlined in this Privacy Policy.
+            </p> 
+            <p>
+                Thank you for trusting NLPeace with your privacy.
+            </p>
+
+        
+</div> 
+
+  <!-- Bootstrap JS and Popper.js -->
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+  <script src="{% static 'style.js' %}" type="text/javascript"></script>
+</body>
+{% endblock %}
+</html>
