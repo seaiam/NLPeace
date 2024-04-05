@@ -35,14 +35,18 @@ def process_post_form(request, form):
         tweet_text = translation_service(tweet_text)
         img_text = ""
         post = form.save(commit=False)
+        img_flag = False #flag if an image has offensive language
         if (post.image):
             img = Image.open(post.image)
             img_text = pytesseract.image_to_string(img)
             print(img_text)
-        result = classify_text(tweet_text)     
-        result_img = classify_text(img_text)     
-        if result["prediction"][0] in [1, 0] or result_img["prediction"][0] in [1, 0]:  # Offensive or hate speech
-            message = 'This post contains offensive language. It will only be showed to users who turn off content filtering.' if result["prediction"][0] == 1 or result_img["prediction"][0] == 1 else 'This post contains hateful language. It will only be showed to users who turn off content filtering.'
+            result_img = classify_text(img_text)  
+            if (result_img["prediction"][0] in [1, 0]):
+                img_flag = True
+        result = classify_text(tweet_text)      
+        print(result["prediction"][0])   
+        if result["prediction"][0] in [1, 0] or img_flag:  # Offensive or hate speech
+            message = 'This post contains offensive language. It will only be showed to users who turn off content filtering.' if result["prediction"][0] == 1 else 'This post contains hateful language. It will only be showed to users who turn off content filtering.'
             messages.warning(request, message)
             post = form.save(commit=False)
             post.user = request.user
