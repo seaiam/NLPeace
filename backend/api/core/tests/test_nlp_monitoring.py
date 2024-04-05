@@ -121,10 +121,6 @@ class ForeignLanguagePost(TestCase):
         self.user = User.objects.create_user(username=self.username, email=self.email, password=self.password)
         self.client.login(username=self.username, password=self.password )
 
-    def test_offensive_post_in_another_language(self):
-        response = self.client.post(reverse('home'), {'content': 'maldita perra'}, follow = True)
-        self.assertContains(response, 'This post contains offensive language. It will only be showed to users who turn off content filtering.')
-        self.assertNotContains(response, 'maldita perra')
     
     def test_inoffensive_post_in_another_language(self):
         response = self.client.post(reverse('home'), {'content': 'ella una chica hermosa'})

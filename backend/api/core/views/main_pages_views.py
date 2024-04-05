@@ -303,3 +303,6 @@ def trends(request):
 @login_required
 def trend_search(request, word):
     return redirect(reverse('home_with_word', args=[word]))
+
+def privacy_policy(request):
+    return render(request, 'privacy_and_data_policy.html')

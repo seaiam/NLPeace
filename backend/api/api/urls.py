@@ -79,6 +79,7 @@ urlpatterns = [
     path('accounts/', include('allauth.urls')),
     path('accounts/verify_2fa/', authentication_views.verify_2fa, name='verify_2fa'),
     path('settings/update_2fa/', profile_views.update_2fa, name='update_2fa'),
+    path('privacy_policy/', main_pages_views.privacy_policy, name ='privacy_policy'),
 ]
 
 if settings.DEBUG:
