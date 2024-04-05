@@ -117,15 +117,16 @@ WSGI_APPLICATION = 'api.wsgi.application'
 ASGI_APPLICATION = "api.asgi.application"
 MESSAGE_STORAGE = 'django.contrib.messages.storage.session.SessionStorage'
 
-
+if os.getenv('ENV') == 'production':
+    DEBUG = False 
+else:
+    DEBUG = True
 # Database
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases
 if 'DATABASE_URL' in os.environ:
-    DEBUG =  True
     #Heroku prod db
     DATABASES = {'default': dj_database_url.config(default=os.environ.get('DATABASE_URL'))}
 else:
-    DEBUG = True
     DATABASES = {
         'default': {
             'ENGINE': 'django.db.backends.postgresql',
