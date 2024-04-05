@@ -14,7 +14,7 @@ from itertools import chain, cycle
 from core.forms.profile_forms import EditBioForm, EditUsernameForm, EditProfilePicForm, EditProfileBannerForm, PrivacySettingsForm, NLPToggleForm
 from core.forms.community_forms import CommunityForm
 from core.interest_resolver import RESOLVERS
-from core.models.post_models import Advertisement, Hashtag, HashtagInstance, Post, PostLike, PostDislike, PostPin, PostReport, PostSave, Repost
+from core.models.post_models import Advertisement, Hashtag, HashtagInstance, Post, PostLike, PostDislike, PostPin, PostReport, PostSave, Repost, Poll, PollChoice, Vote
 from core.models.profile_models import Profile, Notifications, User, CommunityNotifications
 from core.models.community_models import Community, CommunityPost
 from core.trends import Trends
@@ -42,6 +42,8 @@ def process_post_form(request, form):
             update_interests_and_hashtags(post)
             return post
         elif result["prediction"][0] == 2:  # Appropriate
+            # Handle poll choices
+            poll_choices = form.cleaned_data.get('poll_choices')
             post = form.save(commit=False)
             if request.user.profile.is_anonymous:
                 post.anonymous_username = request.user.profile.anonymous_username
@@ -54,7 +56,24 @@ def process_post_form(request, form):
             post.save()
             update_interests_and_hashtags(post)
             trends.analyze(post) # TODO this is potentially very expensive
-            return post
+            if (poll_choices): 
+                poll = Poll.objects.create(post=post) 
+                for i in range(1, poll_choices + 1):
+                    choice_text = form.cleaned_data.get(f'choice_{i}')
+                    if (choice_text != ''):
+                        # Pass text to NLP model
+                        choice_result = classify_text(choice_text)
+                        
+                        if choice_result["prediction"][0] in [1, 0]:  # Offensive or hate speech in choice text
+                            message = 'One of the poll choices contains offensive language and is not allowed on our platform.' if choice_result["prediction"][0] == 1 else 'One of the poll choices contains hateful language and is not allowed on our platform.'
+                            messages.error(request, message)
+                            post.delete()  # Delete the post if any poll choice is inappropriate
+                            return None
+                        
+                        elif choice_result["prediction"][0] == 2:
+                            # Create a poll with the given choices
+                            PollChoice.objects.create(poll=poll, choice_text=choice_text)
+            return post    
     return None
 
 def classify_text(text):
@@ -700,3 +719,30 @@ def process_community_post(request, community, form):
             CommunityPost.objects.create(post=post, community=community)
             return post
     return None
+
+def handle_vote(request, post_id):
+    post = get_object_or_404(Post, pk=post_id)
+
+    # Check if the user has already voted on this post
+    if Vote.objects.filter(choice__poll__post=post, user=request.user).exists():
+        messages.error(request, "You have already voted on this poll")
+        return redirect('home')
+    
+    if request.method == 'POST':
+        choice_id = request.POST.get('choice')
+        if choice_id:
+            choice = post.poll.choices.get(pk=choice_id)
+            Vote.objects.create(choice=choice, user=request.user)
+            selected_choice = get_object_or_404(PollChoice, pk=choice_id)
+            selected_choice.choice_votes += 1
+            selected_choice.save()
+            # Update total votes for the poll
+            post.poll.total_votes += 1
+            post.poll.save()
+            # Update to keep track on users that have voted
+            voted_poll_ids = request.session.get('voted_poll_ids', [])
+            voted_poll_ids.append(post_id)
+            request.session['voted_poll_ids'] = voted_poll_ids
+            request.session.modified = True
+    else:
+        messages.error(request, "There was an error creating the poll. Try again.")

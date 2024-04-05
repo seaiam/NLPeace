@@ -18,9 +18,10 @@ class Profile(models.Model):
     messaging_is_private = models.BooleanField(default=True)
     allows_offensive = models.BooleanField(default=False)
     delete_offensive = models.BooleanField(default=False)
+    is_2fa_enabled = models.BooleanField(default=False)
     is_anonymous = models.BooleanField(default=False)
     anonymous_username = models.CharField(max_length=150, blank=True, null=True)
-    
+
     def insert_interests(self, interests):
         for name in map(lambda n: n.lower(), interests):
             interest = self.profileinterest_set.filter(name=name)

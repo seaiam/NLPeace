@@ -63,6 +63,18 @@
                     <i class="fas fa-comment-dots mt-4 mr-3"></i>
                 </a>
               </div>
+              {% else %} 
+              <!-- Connect Wallet -->
+              <div class="dropdown" style="float:right;">
+                <a class="hidden-arrow" type="button" data-toggle="dropdown" aria-expanded="false">
+                    <i class="fas fa-ellipsis-h mt-4 fa-ellipsis-h-white"></i>
+                </a>
+                <ul class="dropdown-menu dropdown-menu-right">
+                    <li>
+                        <button id="connection" class="dropdown-item" onclick="connectWeb3Wallet()"></button>
+                    </li>
+                </ul>
+              </div>
               {% endif %}   
             </div>
           </div>            
@@ -178,109 +190,11 @@
           <div class="col-md-4 text-md-right">
             {% if request.user == profile.user%}
 
-            <button id="connection" class="editButton" onclick = "connectWeb3Wallet()"></button>
             <button class="postButton" onclick="toggleModal('start-a-post')">Post</button>
             <button class="editButton" onclick="toggleModal('home-edit-bio-modal')">Edit Profile</button>
-            <script src="{% static 'web3auth/js/web3auth.js' %}"></script>
             <script src="https://cdn.jsdelivr.net/npm/web3@4.6.0/dist/web3.min.js"></script>
             <script src="https://cdn.jsdelivr.net/npm/web3-eth@4.5.0/lib/commonjs/validation.min.js"></script>
-            <script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js" integrity="sha512-8Q6Y9XnTbOE+JNvjBQwJ2H8S+UV4uA6hiRykhdtIyDYZ2TprdNmWOUaKdGzOhyr4dCyk287OejbPvwl7lrfqrQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
-            <script>
 
-                let walletAddress="";
-
-                async function connectWeb3Wallet() {
-                    if (typeof window != "undefined" && typeof window.ethereum != "undefined") {
-                        try {
-                            if (walletAddress.startsWith("0x")) { // all eth wallets start with 0x   
-                                toggleModal('crypto-wallet-modal');
-                            } else {
-                            const accounts = await window.ethereum.request({method: "eth_requestAccounts"}); // opens MetaMask prompt to sign in with wallet
-                            walletAddress = accounts[0];
-                            console.log(accounts[0]); // to show account is connected in console
-                            alert("MetaMask wallet successfully connected");
-                            }
-                            connectionStatus()
-                        } catch (err) {
-                        console.error(err.message); // for troubleshooting
-                        }
-                    } else {
-                        alert("MetaMask wallet not found");
-                    }
-                };
-
-                function disconnectWallet(){
-                    walletAddress="";   // sets address to empty so no wallet is connected
-                    toggleModal('crypto-wallet-modal'); // closes the modal
-                    connectionStatus(); // updates the button 
-                    alert("MetaMask wallet disconnected") 
-                }
-
-                function alert(message){
-
-                    const duplicateAlert = document.querySelector(".alert"); //check if an alert already exists
-
-                    if (duplicateAlert){
-                        duplicateAlert.remove(); //remove it if there is one
-                    }
-            
-                    const alert = document.createElement("div");
-                    alert.className = "alert alert-warning alert-dismissible fade show ";
-                    alert.style.position = "absolute";
-                    alert.style.zIndex = "10000";
-                    alert.style.top = "10px"; 
-                    alert.style.left = "50%"; 
-                    alert.style.transform = "translate(-50%)";
-                    alert.style.width ="85%";
-                    alert.style.maxWidth ="1200px";
-                    
-                    const alertDismiss = document.createElement("a");
-                    alertDismiss.href = "#";
-                    alertDismiss.className = "close";
-                    alertDismiss.setAttribute("data-dismiss", "alert");
-                    alertDismiss.setAttribute("aria-label", "close");
-                    
-                    alertDismiss.innerHTML = "&times;";
-                    alert.appendChild(alertDismiss);
-
-                    const alertMessage = document.createTextNode(message);
-                    alert.appendChild(alertMessage);
-
-                    document.body.appendChild(alert);
-                }
-           
-                window.onload = connectionStatus;   // happens when window loads
-
-                const web3 = new Web3("https://mainnet.infura.io/v3/9f1531079c90406d8062b2533d036a39") //path for infura to connect to ethereum node
-                const projectId = "9f1531079c90406d8062b2533d036a39"  // needed information from infura website to access requests
-             
-                async function connectionStatus() {   // change text of the button 
-                    var button = document.getElementById("connection");
-                    var connection;
-                    
-                    if (walletAddress.length > 0){
-                        const balance = await getBalance();     // need to wait to get balance before continuing
-                        connection = "Wallet: " + walletAddress.substring(0,6)+"...";
-                        balanceText.innerText = balance;
-                    } else {
-                        connection = "Connect wallet";
-                    }
-                    button.innerText = connection;
-                    }
-
-                async function getBalance() { 
-                    if (walletAddress && web3){
-                        try {
-                            const balance = await web3.eth.getBalance(walletAddress);
-                            return web3.utils.fromWei(balance, 'ether').substring(0,6) + ' ETH';
-                        } catch (err) {
-                            console.error(err.message);
-                        }
-                    }
-                }
-                
-            </script>
-            
             {% endif %}
 
             <div id="crypto-wallet-modal" class="popup">
@@ -338,6 +252,14 @@
                                                             <i class="fa fa-list-ul" aria-hidden="true"></i> 
                                                         Poll
                                                         </label>
+
+                                                        <label id="getSignature" onclick="getSignatureFromWeb3Wallet('{{form.signature.id_for_label}}')" class="post-actions__label"><i class="fa fa-signature"></i> Sign</label>
+                                                        {{ form.signature }}
+                                                        &nbsp; &nbsp; &nbsp; 
+
+                                                        <label id="getVerification" onclick="payVerification('{{form.web3verify.id_for_label}}')" class="post-actions__label"><i class="fas fa-dollar-sign"></i> Verify</label>
+                                                        {{ form.web3verify }}   
+
                                                     </div>
                                                     <div class="post-actions__widget">
                                                     <button type="submit" class="btn post-actions__publish">Post</button>

@@ -18,6 +18,8 @@ class Post(models.Model):
     parent_post = models.ForeignKey('self', null=True, blank=True, on_delete=models.CASCADE, related_name='replies')
     is_edited = models.BooleanField(default = False)
     is_offensive = models.BooleanField(default=False)
+    signature = models.CharField(max_length=400, null=True, blank=True)
+    web3verify = models.BooleanField(default = False)
     is_anonymous = models.BooleanField(default=False)
 
     def get_username(self):
@@ -168,3 +170,23 @@ class Advertisement(models.Model):
 class AdvertisementTopic(models.Model):
     ad = models.ForeignKey(Advertisement, on_delete=models.CASCADE)
     name = models.CharField(max_length=1024)
+
+class Poll(models.Model):
+    post = models.OneToOneField(Post, on_delete=models.CASCADE, related_name='poll')
+    question = models.CharField(max_length=255)
+    total_votes = models.IntegerField(default=0)
+
+class PollChoice(models.Model):
+    poll = models.ForeignKey(Poll, on_delete=models.CASCADE, related_name='choices', null=True)
+    choice_text = models.CharField(blank=True, max_length=50, null=False)
+    choice_votes = models.IntegerField(default=0)
+
+    def __str__(self):
+        return self.choice_text
+   
+class Vote(models.Model):
+    choice = models.ForeignKey(PollChoice, on_delete=models.CASCADE, related_name='votes')
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+
+    def __str__(self):
+        return f"Vote by {self.user} for {self.choice.choice_text} in Poll {self.choice.post_id}"

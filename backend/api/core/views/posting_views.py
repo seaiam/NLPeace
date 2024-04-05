@@ -148,3 +148,10 @@ def save_post(request, post_id):
     messages.info(request, message)
     return JsonResponse({'saved': saved, 'saves_count': saves_count})
 
+def vote(request, post_id):
+    if request.method == 'POST':
+        handle_vote(request, post_id) 
+        referer = request.META.get('HTTP_REFERER')
+    if referer and 'profile' in referer.lower():
+        return redirect('profile')
+    return HttpResponseRedirect(request.META.get('HTTP_REFERER', '/'))
