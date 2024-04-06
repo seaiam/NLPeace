@@ -19,3 +19,5 @@ googletrans==4.0.0-rc1
 django-allauth
 python-dotenv
 faker
+django-storages
+boto3

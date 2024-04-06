@@ -56,7 +56,8 @@ INSTALLED_APPS = [
     'allauth',
     'allauth.account',
     'allauth.socialaccount',
-    'allauth.socialaccount.providers.google'
+    'allauth.socialaccount.providers.google',
+    'storages'
     
 ]
 
@@ -73,6 +74,8 @@ MIDDLEWARE = [
     "allauth.account.middleware.AccountMiddleware",
     "middleware.custom_middleware.AnonymousProfileMiddleware",
 ]
+
+
 SOCIALACCOUNT_LOGIN_ON_GET=True
 SOCIALACCOUNT_PROVIDERS = {
     'google': {
@@ -115,15 +118,16 @@ WSGI_APPLICATION = 'api.wsgi.application'
 ASGI_APPLICATION = "api.asgi.application"
 MESSAGE_STORAGE = 'django.contrib.messages.storage.session.SessionStorage'
 
-
+if os.getenv('ENV') == 'production':
+    DEBUG = False 
+else:
+    DEBUG = True
 # Database
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases
 if 'DATABASE_URL' in os.environ:
-    DEBUG =  False
     #Heroku prod db
     DATABASES = {'default': dj_database_url.config(default=os.environ.get('DATABASE_URL'))}
 else:
-    DEBUG = False
     DATABASES = {
         'default': {
             'ENGINE': 'django.db.backends.postgresql',
@@ -174,14 +178,14 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/4.2/howto/static-files/
 STATICFILES_STORAGE = 'whitenoise.storage.CompressedStaticFilesStorage'
 WHITENOISE_MAX_AGE = 31536000  # 1 year in seconds
-STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
+	#STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 WHITENOISE_MANIFEST_STRICT = False
 
 STATIC_URL = 'static/'
 STATICFILES_DIR=[
     os.path.join(BASE_DIR,'static')
 ]
-
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 
 
 # Default primary key field type
@@ -190,9 +194,29 @@ STATICFILES_DIR=[
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 #We define where profile pictures and banner pictures will be stored
-MEDIA_URL = '/media/'
-MEDIA_ROOT = os.path.join(BASE_DIR, 'api','core', 'media')
+#MEDIA_URL = '/media/'
+#MEDIA_ROOT = os.path.join(BASE_DIR, 'api','core', 'media')
+if os.getenv('ENV') == 'production':
+	#AWS s3 storage Configuration
+	AWS_ACCESS_KEY_ID = os.getenv('AWS_ACCESS_KEY_ID')
+	AWS_SECRET_ACCESS_KEY = os.getenv('AWS_SECRET_ACCESS_KEY')
+	AWS_STORAGE_BUCKET_NAME = os.getenv('AWS_STORAGE_BUCKET_NAME')
+	AWS_S3_REGION_NAME = os.getenv('AWS_S3_REGION_NAME')
+	AWS_S3_CUSTOM_DOMAIN = os.getenv('AWS_S3_CUSTOM_DOMAIN')
+	STATIC_URL = AWS_S3_CUSTOM_DOMAIN + '/static/'
+	AWS_DEFAULT_ACL = None
+	AWS_QUERYSTRING_AUTH = False
 
+	DEFAULT_FILE_STORAGE = 'storages.backends.s3boto3.S3Boto3Storage'
+	MEDIA_URL = f'https://{AWS_S3_CUSTOM_DOMAIN}/media/'
+else:
+	STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
+	MEDIA_ROOT = os.path.join(BASE_DIR, 'api','core', 'media')
+	MEDIA_URL = '/media/'
+	STATIC_URL = 'static/'
+	STATICFILES_DIR=[
+    	os.path.join(BASE_DIR,'static')
+	]
 #SMTP Configuration
 EMAIL_BACKEND = os.getenv('EMAIL_BACKEND')
 EMAIL_HOST= os.getenv('EMAIL_HOST')
