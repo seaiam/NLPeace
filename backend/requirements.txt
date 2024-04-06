@@ -18,3 +18,5 @@ langid
 googletrans==4.0.0-rc1
 django-allauth
 python-dotenv
+django-storages
+boto3
