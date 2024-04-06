@@ -62,6 +62,8 @@ class Migration(migrations.Migration):
                 ('web3verify', models.BooleanField(default=False)),
                 ('parent_post', models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.CASCADE, related_name='replies', to='core.post')),
                 ('user', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to=settings.AUTH_USER_MODEL)),
+                ('anonymous_username', models.CharField(blank=True, max_length=100, null=True)),
+                ('is_anonymous', models.BooleanField(default=False)),
             ],
         ),
         migrations.CreateModel(
@@ -81,6 +83,8 @@ class Migration(migrations.Migration):
                 ('follow_requests', models.ManyToManyField(blank=True, related_name='follow_requests', to=settings.AUTH_USER_MODEL)),
                 ('followers', models.ManyToManyField(blank=True, related_name='followers', to=settings.AUTH_USER_MODEL)),
                 ('following', models.ManyToManyField(blank=True, related_name='following', to=settings.AUTH_USER_MODEL)),
+                ('anonymous_username', models.CharField(blank=True, max_length=150, null=True)),
+                ('is_anonymous', models.BooleanField(default=False)),
             ],
         ),
         migrations.CreateModel(

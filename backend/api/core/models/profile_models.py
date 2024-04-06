@@ -19,6 +19,8 @@ class Profile(models.Model):
     allows_offensive = models.BooleanField(default=False)
     delete_offensive = models.BooleanField(default=False)
     is_2fa_enabled = models.BooleanField(default=False)
+    is_anonymous = models.BooleanField(default=False)
+    anonymous_username = models.CharField(max_length=150, blank=True, null=True)
 
     def insert_interests(self, interests):
         for name in map(lambda n: n.lower(), interests):
@@ -39,6 +41,9 @@ class Profile(models.Model):
                 to_delete.append(interest)
         for interest in to_delete:
             interest.delete()
+
+    def get_display_name(self):
+        return self.anonymous_username if self.anonymous_username else self.user.username
 
 class ProfileInterest(models.Model):
     profile = models.ForeignKey(Profile, on_delete=models.CASCADE)
@@ -91,4 +96,4 @@ class UserReport(models.Model):
     date_reported = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
-        return f'{self.reporter.username} -- {UserReport.Reason(self.reason).name} -- {self.date_reported}'  
+        return f'{self.reporter.username} -- {UserReport.Reason(self.reason).name} -- {self.date_reported}'      

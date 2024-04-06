@@ -10,6 +10,7 @@ whitespace_pattern = re.compile(r'(\S+)')
 
 class Post(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
+    anonymous_username = models.CharField(max_length=100, blank=True, null=True)
     content = models.CharField(max_length=280)
     image = models.ImageField(upload_to='postImages/', null=True, blank=True)
     video= models.FileField(upload_to='postVideos/', null=True, blank=True)
@@ -19,6 +20,13 @@ class Post(models.Model):
     is_offensive = models.BooleanField(default=False)
     signature = models.CharField(max_length=400, null=True, blank=True)
     web3verify = models.BooleanField(default = False)
+    is_anonymous = models.BooleanField(default=False)
+
+    def get_username(self):
+        if self.anonymous_username:
+            return self.anonymous_username
+        else:
+            return self.user.username
 
     def get_number_likes(self):
         return self.postlike_set.all().count()
