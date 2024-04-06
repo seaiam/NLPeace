@@ -19,3 +19,6 @@ googletrans==4.0.0-rc1
 django-allauth
 python-dotenv
 pytesseract
+django-storages
+boto3
+
