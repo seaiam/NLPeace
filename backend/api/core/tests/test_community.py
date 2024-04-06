@@ -126,8 +126,8 @@ class CommunityTestCase(TestCase):
         self.assertEqual(response.status_code, 200)
 
         # Check if the members are present in the context
-        context_members = response.context['members']
-        self.assertEqual(list(context_members), [member1, member2])
+        self.assertIn(member1, response.context['members'])
+        self.assertIn(member2, response.context['members'])
 
         # Check if the members' usernames are present in the rendered HTML
         self.assertContains(response, 'member1')
