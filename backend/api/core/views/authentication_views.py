@@ -2,7 +2,7 @@ from api.logger_config import configure_logger # TODO add logging statements
 from django.contrib import messages
 from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import login_required
-
+import requests
 from core.forms.user_forms import UserRegistrationForm
 
 #import BLL auth_services
@@ -26,12 +26,67 @@ def login_user(request):
     if request.method == "POST":
         username = request.POST['username']
         password = request.POST['password']
-        if user_login(request, username, password):
-            return redirect('profile')
+        try:
+            requests.post('http://telemetry:8080/submit/data2', json={
+                "user_id": 0,
+                "request_body": "REDACTED",
+                "url": "login",
+            })
+        except Exception as e:
+            print(e)
+
+        user = authenticate(request, username=username, password=password)
+        if user is not None:
+            profile = Profile.objects.filter(user=user).first()
+            
+            if profile is not None and not profile.is_banned:
+                if profile.is_2fa_enabled:
+                    code = generate_2fa_code()
+                    request.session['2fa_code'] = str(code)
+                    request.session['user_id'] = user.id
+                    send_mail(
+                        'Your 2FA Code',
+                        f'Your code is: {code}',
+                        settings.EMAIL_HOST_USER,
+                        [user.email],
+                        fail_silently=False,
+                    )
+                    try:
+                        requests.post('http://telemetry:8080/submit/data3', json={
+                            "user_id": user.id,
+                            "status_code": 302  
+                        })
+                    except Exception as e:
+                        print(e)
+                    return redirect('verify_2fa')
+                else:
+                    login(request, user, backend='django.contrib.auth.backends.ModelBackend')
+
+                    try:
+                        requests.post('http://telemetry:8080/submit/data3', json={
+                            "user_id": user.id,
+                            "status_code": 302  
+                        })
+                    except Exception as e:
+                        print(e)
+
+                    return redirect('profile')
+            else:
+                messages.error(request, 'There was an error logging in. Try again...')
+                return redirect('login')
         else:
-            messages.error(request, 'There was an error logging in. Try again...')
-            return redirect('login')
+            messages.error(request, 'Invalid login credentials!')
+            #return redirect('login')
+        try:
+            requests.post('http://telemetry:8080/submit/data3', json={
+                "user_id": 0,  
+                "status_code": 401 
+            })
+        except Exception as e:
+            print(e)
+        return redirect('login')
     return render(request, 'registration/login.html')
+
 
 def logout_user(request):
     user_logout(request)
@@ -56,3 +111,21 @@ def ForgetPassword(request):
         return redirect('/accounts/login/')
     return render(request, 'forget_password.html')
   
+def verify_2fa(request):
+    if request.method == "POST":
+        user_code = request.POST.get('code', '')
+        stored_code = request.session.get('2fa_code', '')
+        user_id = request.session.get('user_id', None)
+
+        if user_code == stored_code and user_id is not None:
+            del request.session['2fa_code']
+            del request.session['user_id']
+            user = User.objects.get(id=user_id)
+            user.backend = 'django.contrib.auth.backends.ModelBackend'
+            login(request, user)
+            return redirect('profile')
+        else:
+            messages.error(request, 'Invalid 2FA code.')
+            return redirect('verify_2fa')
+    
+    return render(request, 'verify_2fa.html')

@@ -12,6 +12,7 @@
     <button class="tabbutton" onclick="openTab(event, 'Privacy')">Privacy</button>
     <button class="tabbutton" onclick="openTab(event, 'Messaging')">Messaging</button>
     <button class="tabbutton" onclick="openTab(event, 'NLPToggle')" ]>Content Filtering</button>
+    <button class="tabbutton" onclick="openTab(event, 'TwoFA')">2FA Settings</button>
   </div>
 
 
@@ -117,6 +118,24 @@
       
     </div> 
 </div>
+
+<div id="TwoFA" class="tabcontent">
+    <div class = "d-flex align-items-center justify-content-center">
+        <div class="card" style="width: 40rem; border-radius: 30px; margin:50px; overflow: hidden;background: linear-gradient(to right, #F9D1C4 0%, #9BBDDD 51%, #F9D1C4 100%);">
+            <div class="card-body">
+                <form action="{% url 'update_2fa' %}" method="POST" name="TwoFAForm" >
+                    {% csrf_token %}
+                        <div class="text-left">Enable Two-Factor Authentication (2FA): </div>
+                        {{ two_fa_form.is_2fa_enabled }}
+                            <div class = "privacy-button">
+                                <button type="submit" class="btn post-actions__publish">Save 2FA Settings</button>
+                            </div>
+                </form>
+            </div>
+        </div>
+    </div> 
+</div>
+
  
 </div>
 

@@ -18,6 +18,7 @@ class Profile(models.Model):
     messaging_is_private = models.BooleanField(default=True)
     allows_offensive = models.BooleanField(default=False)
     delete_offensive = models.BooleanField(default=False)
+    is_2fa_enabled = models.BooleanField(default=False)
 
     def insert_interests(self, interests):
         for name in map(lambda n: n.lower(), interests):

@@ -61,3 +61,14 @@ class NLPToggleForm(forms.ModelForm):
         model = Profile
         fields = ['allows_offensive', 'delete_offensive']
         labels = {'delete_offensive': 'Delete my offensive posts when I turn content moderation on'}
+
+class TwoFAForm(forms.ModelForm):
+    IS_2FA_CHOICES = [
+        (True, "On"),
+        (False, "Off"),
+    ]
+    is_2fa_enabled = forms.ChoiceField(choices=IS_2FA_CHOICES, widget=forms.Select(), label="Enable Two-Factor Authentication (2FA)")
+
+    class Meta:
+        model = Profile
+        fields = ['is_2fa_enabled']
