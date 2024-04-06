@@ -21,3 +21,6 @@ python-dotenv
 faker
 django-storages
 boto3
+pytesseract
+django-storages
+boto3
