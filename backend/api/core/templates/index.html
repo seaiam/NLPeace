@@ -56,11 +56,20 @@
                                     <label id="getVerification" onclick="payVerification('{{form.web3verify.id_for_label}}')" class="post-actions__label"><i class="fas fa-dollar-sign"></i> Verify</label>
                                     {{ form.web3verify }}
 
+                                    &nbsp; &nbsp; &nbsp; &nbsp;
+
+                                    <label id="getSignature" onclick="getSignatureFromWeb3Wallet('{{form.signature.id_for_label}}')" class="post-actions__label"><i class="fa fa-signature"></i> Sign</label>
+                                    {{ form.signature }}
+
+                                    <label id="connection" onclick="connectWeb3Wallet()" class="post-actions__label">
+                                    </label>
+
                                     <div id="poll-choices-section" style="display: none;">
                                         <label for="id_poll_choices">Number of Choices:</label>
                                         {{ form.poll_choices }}
                                         <div id="choice-fields"></div>
                                     </div>
+
                                 </div>
                                 <div class="post-actions__widget">
                                 <button type="submit" class="btn post-actions__publish">Post</button>

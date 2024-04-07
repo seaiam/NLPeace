@@ -12,7 +12,9 @@
     <button class="tabbutton" onclick="openTab(event, 'Privacy')">Privacy</button>
     <button class="tabbutton" onclick="openTab(event, 'Messaging')">Messaging</button>
     <button class="tabbutton" onclick="openTab(event, 'NLPToggle')" ]>Content Filtering</button>
+    <button class="tabbutton" onclick="openTab(event, 'Anonymous')" ]>Anonymous</button>
     <button class="tabbutton" onclick="openTab(event, 'TwoFA')">2FA Settings</button>
+
   </div>
 
 
@@ -139,6 +141,25 @@
  
 </div>
 
+<div id="Anonymous" class="tabcontent">
+    <div class="d-flex align-items-center justify-content-center">
+        <div class="card" style="width: 40rem; border-radius: 30px; margin:50px; overflow: hidden;background: linear-gradient(to right, #F9D1C4 0%, #9BBDDD 51%, #F9D1C4 100%);">
+            <div class="card-body">
+                {% if request.user.is_authenticated %}
+                <div class="text-left">Go Anonymous? </div>
+                <div class="text-left" style="font-size: 14px;">Going Anonymous will allow you to create and interact with other posts with a different username. Actions done while anonymous will not be associated to your account. </div>
+                <div class="text-center mt-3">    
+                    {% if request.user.profile.is_anonymous %}
+                        <a href="{% url 'switch_to_main_profile' %}" class="btn post-actions__publish">Switch to Main Profile</a>
+                    {% else %}
+                        <a href="{% url 'switch_to_anonymous_profile' %}" class="btn post-actions__publish">Switch to Anonymous Profile</a>
+                    {% endif %}
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div> 
+</div>
 
 <script>
         function openTab(event, tabName) {           
