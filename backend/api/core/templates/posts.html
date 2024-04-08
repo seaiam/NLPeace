@@ -77,7 +77,7 @@
                                                     {% if post.user.profile and post.user.profile.pic %}
                                                         <img src="{{ post.user.profile.pic.url }}" alt="{{ post.get_username }}'s profile picture" class="user-pic">
                                                     {% else %}
-                                                        <img src="{% static 'default.jpg' %}" class="user-pic" alt="{{ post.get_username }}'s profile picture" />
+                                                        <img src="https://nlpeace-bucket.s3.ca-central-1.amazonaws.com/default.jpg" class="user-pic" alt="{{ post.get_username }}'s profile picture" />
                                                     {% endif %}
                                                     </div>
                                                     <div class="col-10">
@@ -162,7 +162,7 @@
                     {% if post.user.profile and post.user.profile.pic %}
                         <img src="{{ post.user.profile.pic.url }}" alt="{{ post.get_username }}'s profile picture" class="user-pic">
                     {% else %}
-                        <img src="{% static 'default.jpg' %}" class="user-pic" alt="{{ post.get_username }}'s profile picture" />
+                        <img src="https://nlpeace-bucket.s3.ca-central-1.amazonaws.com/default.jpg" class="user-pic" alt="{{ post.get_username }}'s profile picture" />
                     {% endif %}
                 </div>
                 <div class="col-10">

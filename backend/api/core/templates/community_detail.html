@@ -86,7 +86,7 @@
                                         {% if member.profile and member.profile.pic %}
                                         <img src="{{ member.profile.pic.url }}" alt="{{ member.username }}'s profile picture" class="reply-user-pic">
                                         {% else %}
-                                        <img src="{% static 'default.jpg' %}" class="reply-user-pic" alt="{{ member.username }}'s profile picture" />
+                                        <img src="https://nlpeace-bucket.s3.ca-central-1.amazonaws.com/default.jpg" class="reply-user-pic" alt="{{ member.username }}'s profile picture" />
                                         {% endif %}
                                         </div>
                                     </div>  
@@ -315,7 +315,7 @@
                                 {% if member.profile and member.profile.pic %}
                                 <img src="{{ member.profile.pic.url }}" alt="{{ member.username }}'s profile picture" class="reply-user-pic">
                                 {% else %}
-                                <img src="{% static 'default.jpg' %}" class="reply-user-pic" alt="{{ member.username }}'s profile picture" />
+                                <img src="https://nlpeace-bucket.s3.ca-central-1.amazonaws.com/default.jpg" class="reply-user-pic" alt="{{ member.username }}'s profile picture" />
                                 {% endif %}
                                 </div>
                             </div>  

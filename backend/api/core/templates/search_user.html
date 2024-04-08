@@ -16,7 +16,7 @@
                         {% if result.profile and result.profile.pic %}
                             <img src="{{ result.profile.pic.url }}" alt="{{ result.username }}'s profile picture" class="user-pic">
                         {% else %}
-                            <img src="{% static 'default.jpg' %}" class="user-pic" alt="{{ result.username }}'s profile picture" />
+                            <img src="https://nlpeace-bucket.s3.ca-central-1.amazonaws.com/default.jpg" class="user-pic" alt="{{ result.username }}'s profile picture" />
                         {% endif %}
                         <a href="{% url 'guest' result.id %}" class="user-name">{{ result.username }}</a>
                     </div>
