@@ -10,6 +10,8 @@
         <div class="banner">
           {% if profile.banner %}
           <img src="{{profile.banner.url}}" class="banner" alt="Banner">
+	  {% else %}
+	  <img src="https://nlpeace-bucket.s3.ca-central-1.amazonaws.com/defaultBanner.jpg" class="banner" alt="Banner - default">
           {% endif %}
           {% if profile.user.id == request.user.id %}
           <label class="clickable-label" onclick="openFilePicker('{{ editBannerForm.banner.id_for_label }}')">
@@ -28,7 +30,7 @@
               {% if profile.pic %}
               <img src="{{profile.pic.url}}" width="130" class="profile-picture" alt="Profile Picture">
               {% else %}
-              <img src="{% static 'default.jpg' %}" width="100%" class="profile-picture default-profile-picture" alt="Profile Picture" />
+              <img src="https://nlpeace-bucket.s3.ca-central-1.amazonaws.com/default.jpg" width="100%" class="profile-picture default-profile-picture" alt="Profile Picture" />
               {% endif %}
               </div>
               {% if profile.user.id == request.user.id %}
