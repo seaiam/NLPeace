@@ -23,6 +23,11 @@ This product will be Mobile and PC compatible. Users will require an account to 
 their liking such as texts and images. Users can connect with others by adding them as friends and messaging within the platform. To maintain a positive and 
 respectful environment, all written posts undergo automatic moderation to prevent hate speech.
 
+## Diversity statement
+
+One of our goals was to develop a safe space for all of our users. In this spirit our project leverages an NLP to monitor and mitigate hate speech ensuring a respectful and welcoming environment for all. We believe in the power of technology to unite diverse voices and foster equality. We aim to make our application a model for positive interaction and understanding, reflecting the rich diversity of our community.   
+
+
 ## Team members
 
 | # | Name | Student ID | GitHub Username | 
